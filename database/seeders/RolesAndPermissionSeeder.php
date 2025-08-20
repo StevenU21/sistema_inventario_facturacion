@@ -11,13 +11,13 @@ class RolesAndPermissionSeeder extends Seeder
 {
     const PERMISSIONS = [
         'users' => [],
-        'profiles' => ['read', 'update'],
         'roles' => ['read'],
         'permissions' => ['read'],
     ];
 
     const SPECIAL_PERMISSIONS = [
         'permissions' => ['assign permissions', 'revoke permissions'],
+        'roles' => ['assign roles', 'revoke roles'],
     ];
 
     /**
@@ -58,7 +58,7 @@ class RolesAndPermissionSeeder extends Seeder
         $adminRole->givePermissionTo(Permission::all());
 
         $cashierPermissions = array_merge(
-            $this->filterPermissions('users')->get(),
+            $this->filterPermissions('users')->only(['read users'])->get(),
         );
 
         $cashierRole->givePermissionTo($cashierPermissions);
