@@ -20,4 +20,9 @@ class Profile extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->avatar ? asset('storage/' . $this->avatar) : null;
+    }
 }
