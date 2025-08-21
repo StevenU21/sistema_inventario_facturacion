@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Profile;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -21,6 +22,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
             'password' => bcrypt('password')
         ]);
+        Profile::factory()->create([
+            'user_id' => $adminUser->id
+        ]);
         $adminUser->assignRole('admin');
 
         $cashierUser = User::factory()->create([
@@ -28,6 +32,9 @@ class DatabaseSeeder extends Seeder
             'last_name' => 'User',
             'email' => 'cashier@example.com',
             'password' => bcrypt('password')
+        ]);
+        Profile::factory()->create([
+            'user_id' => $cashierUser->id
         ]);
         $cashierUser->assignRole('cashier');
     }

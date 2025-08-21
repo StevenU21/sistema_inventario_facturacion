@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('avatar')->nullable();
             $table->string('phone')->nullable();
             $table->string('identity_card')->nullable();
-            $table->string('gender')->nullable();
+            $table->enum('gender', ['male', 'female'])->nullable();
             $table->string('address')->nullable();
 
             $table->integer('user_id')->unsigned();
