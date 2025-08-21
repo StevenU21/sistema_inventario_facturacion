@@ -11,7 +11,7 @@
     @keydown.escape="closeSideMenu">
     <div class="py-4 text-gray-500 dark:text-gray-400">
         <a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200" href="#">
-            Windmill
+            Blessa Boutique
         </a>
         <ul class="mt-6">
             <li class="relative px-6 py-3">
@@ -21,7 +21,7 @@
                 <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 {{ Route::is('dashboard') ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}"
                     href="{{ route('dashboard') }}">
                     <i class="fas fa-home w-5 h-5"></i>
-                    <span class="ml-4">Dashboard</span>
+                    <span class="ml-4">Inicio</span>
                 </a>
             </li>
         </ul>
@@ -33,7 +33,7 @@
                 <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 {{ Route::is('categories.*') ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}"
                     href="{{ route('categories.index') }}">
                     <i class="fas fa-tags w-5 h-5"></i>
-                    <span class="ml-4">Categories</span>
+                    <span class="ml-4">Categorías</span>
                 </a>
             </li>
             <li class="relative px-6 py-3">
@@ -42,7 +42,7 @@
                     @click="togglePagesMenu" aria-haspopup="true">
                     <span class="inline-flex items-center">
                         <i class="fas fa-copy w-5 h-5"></i>
-                        <span class="ml-4">Pages</span>
+                        <span class="ml-4">Páginas</span>
                     </span>
                     <i class="fas fa-chevron-down w-4 h-4"></i>
                 </button>
@@ -57,42 +57,42 @@
                             class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
                             <a class="w-full flex items-center {{ Route::is('forms') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                                 href="{{ route('forms') }}">
-                                <i class="fas fa-edit w-4 h-4 mr-2"></i> Forms
+                                <i class="fas fa-edit w-4 h-4 mr-2"></i> Formularios
                             </a>
                         </li>
                         <li
                             class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
                             <a class="w-full flex items-center {{ Route::is('cards') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                                 href="{{ route('cards') }}">
-                                <i class="fas fa-id-card w-4 h-4 mr-2"></i> Cards
+                                <i class="fas fa-id-card w-4 h-4 mr-2"></i> Tarjetas
                             </a>
                         </li>
                         <li
                             class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
                             <a class="w-full flex items-center {{ Route::is('charts') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                                 href="{{ route('charts') }}">
-                                <i class="fas fa-chart-bar w-4 h-4 mr-2"></i> Charts
+                                <i class="fas fa-chart-bar w-4 h-4 mr-2"></i> Gráficas
                             </a>
                         </li>
                         <li
                             class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
                             <a class="w-full flex items-center {{ Route::is('buttons') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                                 href="{{ route('buttons') }}">
-                                <i class="fas fa-square w-4 h-4 mr-2"></i> Buttons
+                                <i class="fas fa-square w-4 h-4 mr-2"></i> Botones
                             </a>
                         </li>
                         <li
                             class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
                             <a class="w-full flex items-center {{ Route::is('modals') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                                 href="{{ route('modals') }}">
-                                <i class="fas fa-window-maximize w-4 h-4 mr-2"></i> Modals
+                                <i class="fas fa-window-maximize w-4 h-4 mr-2"></i> Modales
                             </a>
                         </li>
                         <li
                             class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
                             <a class="w-full flex items-center {{ Route::is('tables') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                                 href="{{ route('tables') }}">
-                                <i class="fas fa-table w-4 h-4 mr-2"></i> Tables
+                                <i class="fas fa-table w-4 h-4 mr-2"></i> Tablas
                             </a>
                         </li>
                     </ul>
@@ -103,7 +103,7 @@
             <button
                 class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                 <i class="fas fa-user-plus mr-2"></i>
-                Create account
+                Crear cuenta
                 <span class="ml-2" aria-hidden="true">+</span>
             </button>
         </div>

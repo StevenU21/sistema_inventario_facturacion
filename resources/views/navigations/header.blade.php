@@ -13,7 +13,7 @@
                 </div>
                 <input
                     class="w-full pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600 bg-gray-100 border-0 rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:border-purple-300 focus:outline-none focus:shadow-outline-purple form-input"
-                    type="text" placeholder="Search for projects" aria-label="Search" />
+                    type="text" placeholder="Buscar proyectos" aria-label="Buscar" />
             </div>
         </div>
         <ul class="flex items-center flex-shrink-0 space-x-6">
@@ -47,7 +47,7 @@
                         <li class="flex">
                             <a class="inline-flex items-center justify-between w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                 href="#">
-                                <span>Messages</span>
+                                <span>Mensajes</span>
                                 <span
                                     class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-600 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-600">
                                     13
@@ -57,7 +57,7 @@
                         <li class="flex">
                             <a class="inline-flex items-center justify-between w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                 href="#">
-                                <span>Sales</span>
+                                <span>Ventas</span>
                                 <span
                                     class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-600 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-600">
                                     2
@@ -67,7 +67,7 @@
                         <li class="flex">
                             <a class="inline-flex items-center justify-between w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                 href="#">
-                                <span>Alerts</span>
+                                <span>Alertas</span>
                             </a>
                         </li>
                     </ul>
@@ -92,14 +92,14 @@
                             <a class="inline-flex items-center w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                 href="{{ route('profile.show') }}">
                                 <i class="fas fa-user w-4 h-4 mr-3"></i>
-                                <span>Profile</span>
+                                <span>Perfil</span>
                             </a>
                         </li>
                         <li class="flex">
                             <a class="inline-flex items-center w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                 href="#">
                                 <i class="fas fa-cog w-4 h-4 mr-3"></i>
-                                <span>Settings</span>
+                                <span>Configuración</span>
                             </a>
                         </li>
                         <li class="flex">
@@ -108,7 +108,7 @@
                                 <button type="submit"
                                     class="inline-flex items-center w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200">
                                     <i class="fas fa-sign-out-alt w-4 h-4 mr-3"></i>
-                                    <span>Log out</span>
+                                    <span>Cerrar sesión</span>
                                 </button>
                             </form>
                         </li>

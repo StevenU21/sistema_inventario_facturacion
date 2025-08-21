@@ -1,7 +1,7 @@
 <aside class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0">
     <div class="py-4 text-gray-500 dark:text-gray-400">
         <a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200" href="#">
-            Windmill
+            Blessa Boutique
         </a>
         <ul class="mt-6">
             <li class="relative px-6 py-3">
@@ -11,7 +11,7 @@
                 <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('dashboard') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                     href="{{ route('dashboard') }}">
                     <i class="fas fa-home w-5 h-5"></i>
-                    <span class="ml-4">Dashboard</span>
+                    <span class="ml-4">Inicio</span>
                 </a>
             </li>
         </ul>
@@ -22,7 +22,7 @@
                 <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 {{ Route::is('categories.*') ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}"
                     href="{{ route('categories.index') }}">
                     <i class="fas fa-tags w-5 h-5"></i>
-                    <span class="ml-4">Categories</span>
+                    <span class="ml-4">Categorías</span>
                 </a>
             </li>
             <!-- Dropdown menu -->
@@ -32,7 +32,7 @@
                     @click="isOpen = !isOpen" aria-haspopup="true">
                     <span class="inline-flex items-center">
                         <i class="fas fa-copy w-5 h-5"></i>
-                        <span class="ml-4">Pages</span>
+                        <span class="ml-4">Páginas</span>
                     </span>
                     <i class="fas" :class="{ 'fa-chevron-down': !isOpen, 'fa-chevron-up': isOpen }"></i>
                 </button>
@@ -47,42 +47,42 @@
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('forms') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('forms') }}">
                             <i class="fas fa-file-alt w-5 h-5"></i>
-                            <span class="ml-4">Forms</span>
+                            <span class="ml-4">Formularios</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('cards') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('cards') }}">
                             <i class="fas fa-id-card w-5 h-5"></i>
-                            <span class="ml-4">Cards</span>
+                            <span class="ml-4">Tarjetas</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('charts') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('charts') }}">
                             <i class="fas fa-chart-pie w-5 h-5"></i>
-                            <span class="ml-4">Charts</span>
+                            <span class="ml-4">Gráficas</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('buttons') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('buttons') }}">
                             <i class="fas fa-mouse-pointer w-5 h-5"></i>
-                            <span class="ml-4">Buttons</span>
+                            <span class="ml-4">Botones</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('modals') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('modals') }}">
                             <i class="fas fa-window-maximize w-5 h-5"></i>
-                            <span class="ml-4">Modals</span>
+                            <span class="ml-4">Modales</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('tables') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('tables') }}">
                             <i class="fas fa-table w-5 h-5"></i>
-                            <span class="ml-4">Tables</span>
+                            <span class="ml-4">Tablas</span>
                         </a>
                     </li>
                 </ul>
