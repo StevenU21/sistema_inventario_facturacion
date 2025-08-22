@@ -14,7 +14,7 @@
             </a>
         </div>
 
-        <form action="{{ route('users.store') }}" method="POST">
+        <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             @include('admin.users.form')
         </form>

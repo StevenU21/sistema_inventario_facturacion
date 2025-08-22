@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
 use Spatie\Permission\Models\Role;
+use App\Services\FileService;
 
 class UserController extends Controller
 {
@@ -38,12 +39,30 @@ class UserController extends Controller
 
     public function store(UserRequest $request)
     {
-        $user = User::create($request->validated() + [
-            'password' => Hash::make($request->password),
-        ]);
-        Profile::create([
-            'user_id' => $user->id
-        ]);
+        $data = $request->validated();
+        $data['password'] = Hash::make($request->password);
+
+        $user = User::create($data);
+
+        $fileService = new FileService();
+        $profileData = [
+            'user_id' => $user->id,
+            'phone' => $request->input('phone'),
+            'identity_card' => $request->input('identity_card'),
+            'gender' => $request->input('gender'),
+            'address' => $request->input('address'),
+        ];
+
+        if ($request->hasFile('avatar')) {
+            $profileData['avatar'] = $fileService->storeLocal($user, 'avatar', $request->file('avatar'));
+        } else if ($request->filled('avatar')) {
+            $profileData['avatar'] = $request->input('avatar'); // por si es url o texto
+        }
+
+        // Eliminar nulos para evitar errores de mass assignment
+        $profileData = array_filter($profileData, fn($v) => !is_null($v));
+        Profile::create($profileData);
+
         $role = $request->input('role', 'reader');
         $user->assignRole($role);
         return redirect()->route('users.index')->with('success', 'Usuario creado correctamente');
