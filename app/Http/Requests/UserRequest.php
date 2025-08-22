@@ -14,15 +14,15 @@ class UserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        if ($this->isMethod('post')) {
-            return $this->user()->can('create', User::class);
-        }
+        // if ($this->isMethod('post')) {
+        //     return $this->user()->can('create', User::class);
+        // }
 
-        if ($this->isMethod('put') || $this->isMethod('patch')) {
-            return $this->user()->can('update', $this->route('user'));
-        }
+        // if ($this->isMethod('put') || $this->isMethod('patch')) {
+        //     return $this->user()->can('update', $this->route('user'));
+        // }
 
-        return false;
+        return true;
     }
 
     /**
@@ -32,10 +32,18 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => ['required', 'string', 'min:3', 'max:60'],
+        $rules = [
+            'first_name' => ['required', 'string', 'min:3', 'max:60'],
+            'last_name' => ['required', 'string', 'min:3', 'max:60'],
             'email' => ['required', 'string', 'email', 'max:30', Rule::unique('users')->ignore($this->user)],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ];
+
+        if ($this->isMethod('post')) {
+            $rules['password'] = ['required', 'confirmed', Rules\Password::defaults()];
+        } elseif ($this->isMethod('put') || $this->isMethod('patch')) {
+            $rules['password'] = ['nullable', 'confirmed', Rules\Password::defaults()];
+        }
+
+        return $rules;
     }
 }

@@ -8,29 +8,32 @@ use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    use AuthorizesRequests;
+    // use AuthorizesRequests;
 
     public function index()
     {
-        $this->authorize('viewAny', User::class);
+        // $this->authorize('viewAny', User::class);
         $users = User::with(['roles.permissions', 'profile'])->latest()->paginate(10);
-        return view('users.index', compact('users'));
+        return view('admin.users.index', compact('users'));
     }
 
     public function show(User $user)
     {
-        $this->authorize('view', $user);
+        // $this->authorize('view', $user);
         $user->load(['roles.permissions', 'profile']);
-        return view('users.show', compact('user'));
+        return view('admin.users.show', compact('user'));
     }
 
     public function create()
     {
-        $this->authorize('create', User::class);
-        return view('users.create');
+        // $this->authorize('create', User::class);
+        $roles = Role::all();
+        $user = new User();
+        return view('admin.users.create', compact('roles', 'user'));
     }
 
     public function store(UserRequest $request)
@@ -48,9 +51,10 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $this->authorize('update', $user);
+        // $this->authorize('update', $user);
         $user->load(['roles', 'profile']);
-        return view('users.edit', compact('user'));
+        $roles = Role::all();
+        return view('admin.users.edit', compact('user', 'roles'));
     }
 
     public function update(UserRequest $request, User $user)
@@ -69,7 +73,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        $this->authorize('destroy', $user);
+        // $this->authorize('destroy', $user);
         $user->delete();
         return redirect()->route('users.index')->with('success', 'Usuario eliminado correctamente');
     }

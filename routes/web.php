@@ -56,8 +56,6 @@ Route::middleware('auth')->prefix('/profile')->name('profile.')->group(function 
 });
 
 // Admin Routes
-Route::middleware('role:admin')->prefix('/admin')->name('admin.')->group(function () {
-    Route::resource('users', UserController::class);
-});
+Route::resource('users', UserController::class);
 
 require __DIR__ . '/auth.php';
