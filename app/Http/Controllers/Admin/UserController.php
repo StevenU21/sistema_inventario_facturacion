@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProfileRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\Profile;
 use App\Models\User;
@@ -37,7 +38,7 @@ class UserController extends Controller
         return view('admin.users.create', compact('roles', 'user'));
     }
 
-    public function store(UserRequest $request)
+    public function store(UserRequest $request, ProfileRequest $profileRequest)
     {
         $data = $request->validated();
         $data['password'] = Hash::make($request->password);
@@ -45,18 +46,13 @@ class UserController extends Controller
         $user = User::create($data);
 
         $fileService = new FileService();
-        $profileData = [
-            'user_id' => $user->id,
-            'phone' => $request->input('phone'),
-            'identity_card' => $request->input('identity_card'),
-            'gender' => $request->input('gender'),
-            'address' => $request->input('address'),
-        ];
+        $profileData = $profileRequest->validated();
+        $profileData['user_id'] = $user->id;
 
-        if ($request->hasFile('avatar')) {
-            $profileData['avatar'] = $fileService->storeLocal($user, 'avatar', $request->file('avatar'));
-        } else if ($request->filled('avatar')) {
-            $profileData['avatar'] = $request->input('avatar'); // por si es url o texto
+        if ($profileRequest->hasFile('avatar')) {
+            $profileData['avatar'] = $fileService->storeLocal($user, 'avatar', $profileRequest->file('avatar'));
+        } else if ($profileRequest->filled('avatar')) {
+            $profileData['avatar'] = $profileRequest->input('avatar');
         }
 
         // Eliminar nulos para evitar errores de mass assignment
