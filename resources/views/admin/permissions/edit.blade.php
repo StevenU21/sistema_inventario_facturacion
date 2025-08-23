@@ -17,7 +17,7 @@
 
         <!-- Permisos heredados por roles -->
         <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-400 mb-2">Permisos heredados por roles</label>
+            <label class="block text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">Permisos heredados por roles</label>
             @if($rolePermissions->count())
                 <div class="overflow-x-auto">
                     <table class="w-full table-fixed">
@@ -26,7 +26,7 @@
                                 <tr>
                                     @foreach($row as $perm)
                                         <td class="px-2 py-2 align-middle">
-                                            <label class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 font-semibold">
+                                            <label class="flex items-center space-x-2 font-semibold text-gray-400 dark:text-gray-500 opacity-80 cursor-not-allowed">
                                                 <input type="checkbox" checked disabled class="form-checkbox">
                                                 <span class="uppercase">{{ $perm }}</span>
                                             </label>
@@ -41,7 +41,7 @@
                     </table>
                 </div>
             @else
-                <span class="text-gray-700 dark:text-gray-300">Sin permisos heredados</span>
+                <span class="text-gray-400 dark:text-gray-500">Sin permisos heredados</span>
             @endif
         </div>
 
@@ -58,9 +58,9 @@
                                 <tr>
                                     @foreach($row as $perm)
                                         <td class="px-2 py-2 align-middle">
-                                            <label class="flex items-center space-x-2 font-semibold @if($directPermissions->contains($perm)) text-gray-300 dark:text-gray-500 opacity-80 cursor-not-allowed line-through @else text-gray-700 dark:text-gray-300 @endif">
+                                            <label class="flex items-center space-x-2 font-semibold text-gray-700 dark:text-gray-300">
                                                 <input type="checkbox" name="permission[]" value="{{ $perm }}" class="form-checkbox"
-                                                    @if($directPermissions->contains($perm)) checked disabled @endif>
+                                                    @if($directPermissions->contains($perm)) checked @endif>
                                                 <span class="uppercase">{{ $perm }}</span>
                                             </label>
                                         </td>

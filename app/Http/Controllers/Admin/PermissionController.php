@@ -22,12 +22,13 @@ class PermissionController extends Controller
     public function assignPermission(Request $request, User $user)
     {
         $request->validate([
-            'permission' => ['required', 'array'],
+            'permission' => ['nullable', 'array'],
             'permission.*' => ['exists:permissions,name'],
         ]);
-        $permissions = $request->input('permission');
-        $user->givePermissionTo($permissions);
-        return back()->with('success', 'Permisos asignados correctamente.');
+        $permissions = $request->input('permission', []);
+        // Solo sincroniza los permisos directos, sin tocar los heredados por roles
+        $user->syncPermissions($permissions);
+        return back()->with('success', 'Permisos actualizados correctamente.');
     }
 
     public function revokePermission(Request $request, User $user)
