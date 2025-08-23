@@ -138,11 +138,14 @@
     </div>
 
     <!-- Avatar -->
-    <label class="block mt-4 text-sm">
+    <label class="block mt-4 text-sm w-full">
         <span class="text-gray-700 dark:text-gray-400">Avatar (imagen)</span>
-        <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+        <div class="relative flex items-center text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400 mt-1">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <i class="fas fa-image w-5 h-5"></i>
+            </div>
             <input name="avatar" type="file" accept="image/*"
-                class="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100" />
+                class="block w-full pl-10 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('avatar') border-red-600 @enderror" />
         </div>
         @error('avatar')
             <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
