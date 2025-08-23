@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 @section('title', 'Usuarios')
 
@@ -35,55 +34,58 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                        @foreach($users as $user)
-                        <tr class="text-gray-700 dark:text-gray-400">
-                            <td class="px-4 py-3 text-xs">
-                                <span class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
-                                    {{ $user->id }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $user->first_name }} {{ $user->last_name }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $user->email }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                @if($user->roles->count())
-                                    <span class="px-2 py-1 font-semibold leading-tight text-white bg-blue-600 rounded-full dark:bg-blue-700 dark:text-white">
-                                        {{ $user->roles->pluck('name')->join(', ') }}
+                        @foreach ($users as $user)
+                            <tr class="text-gray-700 dark:text-gray-400">
+                                <td class="px-4 py-3 text-xs">
+                                    <span
+                                        class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
+                                        {{ $user->id }}
                                     </span>
-                                @else
-                                    <span class="text-gray-400">Sin rol</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                {{ $user->created_at->format('Y-m-d') }}
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-4 text-sm">
-                                    <a href="{{ route('users.show', $user) }}"
-                                        class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                        aria-label="Show">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('users.edit', $user) }}"
-                                        class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                        aria-label="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este usuario?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $user->first_name }} {{ $user->last_name }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $user->email }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    @if ($user->roles->count())
+                                        <span
+                                            class="px-2 py-1 font-semibold leading-tight text-white bg-blue-600 rounded-full dark:bg-blue-700 dark:text-white">
+                                            {{ $user->roles->pluck('name')->join(', ') }}
+                                        </span>
+                                    @else
+                                        <span class="text-gray-400">Sin rol</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $user->created_at->format('Y-m-d') }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center space-x-4 text-sm">
+                                        <a href="{{ route('users.show', $user) }}"
                                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Delete">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
+                                            aria-label="Show">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ route('users.edit', $user) }}"
+                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                            aria-label="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('users.destroy', $user) }}" method="POST"
+                                            onsubmit="return confirm('¿Estás seguro de eliminar este usuario?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                aria-label="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
