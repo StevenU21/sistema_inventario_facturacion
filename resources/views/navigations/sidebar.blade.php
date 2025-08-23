@@ -114,13 +114,6 @@
                             <span class="ml-4">Usuarios</span>
                         </a>
                     </li>
-                    <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('permissions') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('permissions.index') }}">
-                            <i class="fas fa-id-card w-5 h-5"></i>
-                            <span class="ml-4">Permisos</span>
-                        </a>
-                    </li>
                 </ul>
             </li>
         </ul>

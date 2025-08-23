@@ -63,6 +63,11 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
+                                        <a href="{{ route('users.permissions.edit', $user) }}"
+                                            class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green"
+                                            aria-label="Asignar Permisos">
+                                            <i class="fas fa-user-shield mr-2"></i> Permisos
+                                        </a>
                                         <a href="{{ route('users.show', $user) }}"
                                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                             aria-label="Show">
