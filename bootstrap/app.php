@@ -4,7 +4,6 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -22,23 +21,16 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+
         $exceptions->renderable(function (NotFoundHttpException $e, $request) {
-            if ($request->json()) {
-                return response()->json(['message' => 'Resouce was not found'], 404);
-            }
-            throw $e;
+            return back()->with('error', 'El recurso no fue encontrado.');
         });
 
-        $exceptions->render(function (AuthenticationException $e, Request $request) {
-            return response()->json(['message' => 'You are not authenticated, please register or log in.'], 401);
+        $exceptions->render(function (AuthenticationException $e, $request) {
+            return back()->with('error', 'No estás autenticado, por favor regístrate o inicia sesión.');
         });
 
         $exceptions->render(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, $request) {
-            return response()->json(['message' => 'You do not have the required authorization to perform this action.'], 403);
-        });
-
-        $exceptions->render(function (HttpException $e, Request $request) {
-            return response()->json(['message' => 'Your email address is not verified.'], 403);
-
+            return back()->with('error', 'No tienes autorización para realizar esta acción.');
         });
     })->create();

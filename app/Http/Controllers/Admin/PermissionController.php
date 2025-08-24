@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
+    use AuthorizesRequests;
+
     public function edit(User $user)
     {
+        $this->authorize('view', $user);
         $directPermissions = $user->getDirectPermissions()->pluck('name');
         $rolePermissions = $user->getPermissionsViaRoles()->pluck('name');
         $allPermissions = Permission::all()->pluck('name');
@@ -21,6 +25,7 @@ class PermissionController extends Controller
 
     public function assignPermission(Request $request, User $user)
     {
+        $this->authorize('create', $user);
         $request->validate([
             'permission' => ['nullable', 'array'],
             'permission.*' => ['exists:permissions,name'],
@@ -33,6 +38,7 @@ class PermissionController extends Controller
 
     public function revokePermission(Request $request, User $user)
     {
+        $this->authorize('update', $user);
         $request->validate([
             'permission' => ['required', 'array'],
             'permission.*' => ['exists:permissions,name'],

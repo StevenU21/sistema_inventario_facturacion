@@ -7,31 +7,32 @@ use App\Http\Requests\ProfileRequest;
 use App\Models\Profile;
 use App\Models\User;
 use App\Services\FileService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    // use AuthorizesRequests;
+    use AuthorizesRequests;
 
     public function index()
     {
-        // $this->authorize('viewAny', User::class);
+        $this->authorize('viewAny', User::class);
         $users = User::with(['roles.permissions', 'profile'])->latest()->paginate(10);
         return view('admin.users.index', compact('users'));
     }
 
     public function show(User $user)
     {
-        // $this->authorize('view', $user);
+        $this->authorize('view', $user);
         $user->load(['roles.permissions', 'profile']);
         return view('admin.users.show', compact('user'));
     }
 
     public function create()
     {
-        // $this->authorize('create', User::class);
+        $this->authorize('create', User::class);
         $roles = Role::all();
         $user = new User();
         return view('admin.users.create', compact('roles', 'user'));
@@ -64,7 +65,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        // $this->authorize('update', $user);
+        $this->authorize('update', $user);
         $user->load(['roles', 'profile']);
         $roles = Role::all();
         return view('admin.users.edit', compact('user', 'roles'));
@@ -124,7 +125,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        // $this->authorize('destroy', $user);
+        $this->authorize('destroy', $user);
         $fileService = new FileService();
         if ($user->profile && $user->profile->avatar) {
             $fileService->deleteLocal($user->profile, 'avatar');

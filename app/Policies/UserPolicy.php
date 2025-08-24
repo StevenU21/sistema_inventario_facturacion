@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Policies;
+
+use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+use App\Traits\HasPermissionCheck;
+
+class UserPolicy
+{
+    use HandlesAuthorization, HasPermissionCheck;
+
+    public function viewAny(User $user): bool
+    {
+        return $this->checkPermission($user, 'read users');
+    }
+
+    public function view(User $user): bool
+    {
+        return $this->checkPermission($user, 'read users');
+    }
+
+    public function create(User $user): bool
+    {
+        return $this->checkPermission($user, 'create users');
+    }
+
+    public function update(User $user): bool
+    {
+        return $this->checkPermission($user, 'update users');
+    }
+
+    public function destroy(User $user): bool
+    {
+        return $this->checkPermission($user, 'destroy users');
+    }
+}
