@@ -29,6 +29,7 @@
                             <th class="px-4 py-3"><i class="fas fa-user mr-2"></i>Nombre</th>
                             <th class="px-4 py-3"><i class="fas fa-envelope mr-2"></i>Email</th>
                             <th class="px-4 py-3"><i class="fas fa-user-tag mr-2"></i>Rol</th>
+                            <th class="px-4 py-3"><i class="fas fa-toggle-on mr-2"></i>Estado</th>
                             <th class="px-4 py-3"><i class="fas fa-calendar-alt mr-2"></i>Fecha de registro</th>
                             <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                         </tr>
@@ -56,6 +57,13 @@
                                         </span>
                                     @else
                                         <span class="text-gray-400">Sin rol</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    @if($user->is_active)
+                                        <span class="px-2 py-1 font-semibold leading-tight text-white bg-green-600 rounded-full dark:bg-green-700 dark:text-white">Activo</span>
+                                    @else
+                                        <span class="px-2 py-1 font-semibold leading-tight text-white bg-red-600 rounded-full dark:bg-red-700 dark:text-white">Inactivo</span>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">

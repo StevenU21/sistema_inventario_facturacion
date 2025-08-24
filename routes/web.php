@@ -19,7 +19,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin Routes
     Route::resource('users', UserController::class);
-
     // User Permissions
     Route::get('users/{user}/permissions/edit', [PermissionController::class, 'edit'])->name('users.permissions.edit');
     Route::post('users/{user}/permissions/assign', [PermissionController::class, 'assignPermission'])->name('users.permissions.assign');
