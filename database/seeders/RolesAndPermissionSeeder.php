@@ -12,6 +12,7 @@ class RolesAndPermissionSeeder extends Seeder
     const PERMISSIONS = [
         'users' => [],
         'permissions' => ['read'],
+        'audits' => ['read'],
     ];
 
     const SPECIAL_PERMISSIONS = [

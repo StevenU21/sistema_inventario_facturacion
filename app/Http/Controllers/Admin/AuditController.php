@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Spatie\Activitylog\Models\Activity;
 
 class AuditController extends Controller
 {
+    use AuthorizesRequests;
     public function index()
     {
+        $this->authorize('viewAny', Activity::class);
         $activities = Activity::latest()->paginate(10);
 
         foreach ($activities as $activity) {
@@ -16,7 +19,6 @@ class AuditController extends Controller
             $old = $changes['old'] ?? [];
             $attributes = $changes['attributes'] ?? [];
 
-            // Solo mostrar los campos que cambiaron
             $diffKeys = array_unique(array_merge(
                 array_keys(array_diff_assoc($old, $attributes)),
                 array_keys(array_diff_assoc($attributes, $old))
