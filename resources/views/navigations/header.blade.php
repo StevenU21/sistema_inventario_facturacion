@@ -5,15 +5,26 @@
             @click="toggleSideMenu" aria-label="Menu">
             <i class="fas fa-bars w-6 h-6"></i>
         </button>
-        <!-- Search input -->
+        <!-- Reloj con fecha y hora en tiempo real, nombre y rol de usuario -->
         <div class="flex justify-center flex-1 lg:mr-32">
-            <div class="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
-                <div class="absolute inset-y-0 flex items-center pl-2">
-                    <i class="fas fa-search w-4 h-4"></i>
-                </div>
-                <input
-                    class="w-full pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600 bg-gray-100 border-0 rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:border-purple-300 focus:outline-none focus:shadow-outline-purple form-input"
-                    type="text" placeholder="Buscar proyectos" aria-label="Buscar" />
+            <div x-data="{ now: new Date() }" x-init="setInterval(() => now = new Date(), 1000)">
+                <span class="text-lg font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-4 uppercase">
+                    <span>
+                        <span
+                            x-text="now.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase()"></span>
+                        <span class="mx-2">|</span>
+                        <span
+                            x-text="now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).toUpperCase()"></span>
+                    </span>
+                    @auth
+                        <span class="ml-4 font-bold text-xl text-gray-800 dark:text-gray-100">
+                            {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+                            @if (Auth::user()->formatted_role_name)
+                                - {{ Auth::user()->formatted_role_name }}
+                            @endif
+                        </span>
+                    @endauth
+                </span>
             </div>
         </div>
         <ul class="flex items-center flex-shrink-0 space-x-6">
@@ -78,9 +89,15 @@
                 <button class="align-middle rounded-full focus:shadow-outline-purple focus:outline-none"
                     @click="toggleProfileMenu" @keydown.escape="closeProfileMenu" aria-label="Account"
                     aria-haspopup="true">
-                    <img class="object-cover w-8 h-8 rounded-full"
-                        src="https://images.unsplash.com/photo-1502378735452-bc7d86632805?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=aa3a807e1bbdfd4364d1f449eaa96d82"
-                        alt="" aria-hidden="true" />
+                    @auth
+                        <img class="object-cover w-8 h-8 rounded-full"
+                            src="{{ Auth::user()->profile && Auth::user()->profile->avatar_url ? Auth::user()->profile->avatar_url : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->first_name . ' ' . Auth::user()->last_name) . '&background=6D28D9&color=fff&size=128' }}"
+                            alt="Avatar de {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}" />
+                    @else
+                        <img class="object-cover w-8 h-8 rounded-full"
+                            src="https://ui-avatars.com/api/?name=Usuario&background=6D28D9&color=fff&size=128"
+                            alt="Avatar" />
+                    @endauth
                 </button>
                 <template x-if="isProfileMenuOpen">
                     <ul x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
