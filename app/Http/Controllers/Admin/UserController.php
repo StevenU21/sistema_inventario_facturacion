@@ -4,13 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileRequest;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\Profile;
 use App\Models\User;
+use App\Services\FileService;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
 use Spatie\Permission\Models\Role;
-use App\Services\FileService;
 
 class UserController extends Controller
 {
@@ -38,19 +37,18 @@ class UserController extends Controller
         return view('admin.users.create', compact('roles', 'user'));
     }
 
-    public function store(UserRequest $request, ProfileRequest $profileRequest)
+    public function store(UserRequest $request, ProfileRequest $profileRequest, FileService $fileService)
     {
         $data = $request->validated();
         $data['password'] = Hash::make($request->password);
 
         $user = User::create($data);
 
-        $fileService = new FileService();
         $profileData = $profileRequest->validated();
         $profileData['user_id'] = $user->id;
 
         if ($profileRequest->hasFile('avatar')) {
-            $profileData['avatar'] = $fileService->storeLocal($user, 'avatar', $profileRequest->file('avatar'));
+            $profileData['avatar'] = $fileService->storeLocal($user, 'avatar', $profileRequest->file('avatar'), 'user_avatar');
         } else if ($profileRequest->filled('avatar')) {
             $profileData['avatar'] = $profileRequest->input('avatar');
         }
@@ -59,7 +57,7 @@ class UserController extends Controller
         $profileData = array_filter($profileData, fn($v) => !is_null($v));
         Profile::create($profileData);
 
-        $role = $request->input('role', 'reader');
+        $role = $request->input('role');
         $user->assignRole($role);
         return redirect()->route('users.index')->with('success', 'Usuario creado correctamente');
     }
@@ -77,7 +75,45 @@ class UserController extends Controller
         $request->validate([
             'role' => 'required|exists:roles,name',
         ]);
-        $user->update($request->validated());
+        $data = $request->validated();
+        // Si el password está vacío, no actualizarlo
+        if (empty($data['password'])) {
+            unset($data['password']);
+        } else {
+            $data['password'] = \Hash::make($data['password']);
+        }
+        $user->update($data);
+
+        // Actualizar datos de perfil y avatar
+        if ($request->has(['phone', 'identity_card', 'gender', 'address']) || $request->hasFile('avatar')) {
+            $profileData = $request->only(['phone', 'identity_card', 'gender', 'address']);
+            $fileService = new FileService();
+            if ($user->profile && $request->hasFile('avatar')) {
+                // Actualizar avatar y eliminar el anterior
+                $fileService->updateLocal($user->profile, 'avatar', $request->file('avatar'), 'user_avatar');
+                $profileData['avatar'] = $user->profile->avatar;
+            } else if ($request->hasFile('avatar')) {
+                $profileData['avatar'] = $fileService->storeLocal($user, 'avatar', $request->file('avatar'), 'user_avatar');
+            } else if ($request->filled('avatar')) {
+                $profileData['avatar'] = $request->input('avatar');
+            }
+            // Eliminar nulos para evitar errores de mass assignment
+            $profileData = array_filter($profileData, fn($v) => !is_null($v));
+            if ($user->profile) {
+                $user->profile->update($profileData);
+            } else {
+                $profileData['user_id'] = $user->id;
+                // Si hay archivo avatar en la request, procesar igual que en store
+                if ($request->hasFile('avatar')) {
+                    $profileData['avatar'] = $fileService->storeLocal($user, 'avatar', $request->file('avatar'), 'user_avatar');
+                } else if ($request->filled('avatar')) {
+                    $profileData['avatar'] = $request->input('avatar');
+                }
+                $profileData = array_filter($profileData, fn($v) => !is_null($v));
+                Profile::create($profileData);
+            }
+        }
+
         $role = $request->input('role');
         if (is_array($role)) {
             return redirect()->back()->withErrors(['role' => 'Solo se puede asignar un rol a la vez']);
@@ -89,6 +125,10 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         // $this->authorize('destroy', $user);
+        $fileService = new FileService();
+        if ($user->profile && $user->profile->avatar) {
+            $fileService->deleteLocal($user->profile, 'avatar');
+        }
         $user->delete();
         return redirect()->route('users.index')->with('success', 'Usuario eliminado correctamente');
     }

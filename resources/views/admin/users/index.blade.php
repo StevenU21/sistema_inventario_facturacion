@@ -52,14 +52,14 @@
                                     @if ($user->roles->count())
                                         <span
                                             class="px-2 py-1 font-semibold leading-tight text-white bg-blue-600 rounded-full dark:bg-blue-700 dark:text-white">
-                                            {{ $user->roles->pluck('name')->join(', ') }}
+                                            {{ $user->formatted_role_name ?? '-' }}
                                         </span>
                                     @else
                                         <span class="text-gray-400">Sin rol</span>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $user->created_at->format('Y-m-d') }}
+                                    {{ $user->formatted_created_at ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">

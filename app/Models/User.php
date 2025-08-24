@@ -49,6 +49,29 @@ class User extends Authenticatable
         ];
     }
 
+    public function getFormattedCreatedAtAttribute(): ?string
+    {
+        return $this->created_at ? $this->created_at->format('d/m/Y H:i:s') : null;
+    }
+
+    public function getFormattedUpdatedAtAttribute(): ?string
+    {
+        return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
+    }
+
+    public function getFormattedRoleNameAttribute(): ?string
+    {
+        $roleName = $this->roles->pluck('name')->first();
+        if ($roleName === 'admin') {
+            return 'ADMINISTRADOR';
+        } elseif ($roleName === 'cashier') {
+            return 'CAJERO';
+        } elseif ($roleName) {
+            return mb_strtoupper($roleName);
+        }
+        return null;
+    }
+
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);

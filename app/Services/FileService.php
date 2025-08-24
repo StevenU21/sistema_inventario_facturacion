@@ -41,7 +41,12 @@ class FileService
             Storage::disk('public')->delete($model->$file_attribute);
         }
         $stored = $this->storeLocal($model, $file_attribute, $file, $folder);
-        return is_string($stored) && !empty($stored);
+        if (is_string($stored) && !empty($stored)) {
+            $model->$file_attribute = $stored;
+            $model->save();
+            return true;
+        }
+        return false;
     }
 
     public function deleteLocal(Model $model, $file_attribute)

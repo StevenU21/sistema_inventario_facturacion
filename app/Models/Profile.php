@@ -28,4 +28,13 @@ class Profile extends Model
     {
         return $this->avatar ? asset('storage/' . $this->avatar) : null;
     }
+
+    public function getFormattedIdentityCardAttribute(): ?string
+    {
+        $ced = $this->identity_card;
+        if ($ced && preg_match('/^([0-9]{3})([0-9]{6})([0-9]{5}[A-Za-z]?)$/', $ced, $m)) {
+            return $m[1] . '-' . $m[2] . '-' . $m[3];
+        }
+        return $ced ?: null;
+    }
 }
