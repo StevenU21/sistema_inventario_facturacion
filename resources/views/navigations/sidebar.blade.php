@@ -121,6 +121,13 @@
                             <span class="ml-4">Usuarios Inactivos</span>
                         </a>
                     </li>
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('audits.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('audits.index') }}">
+                            <i class="fas fa-clipboard-list w-5 h-5"></i>
+                            <span class="ml-4">Auditoría</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
         </ul>
