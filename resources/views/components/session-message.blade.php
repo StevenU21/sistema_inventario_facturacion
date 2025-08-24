@@ -37,4 +37,17 @@
             </button>
         </div>
     @endif
+
+    @if (session('error'))
+        <div x-data="{ show: true }" x-show="show"
+            class="relative mb-4 text-sm font-medium text-red-700 bg-red-100 rounded-lg dark:bg-red-700 dark:text-red-100 px-4 py-3 flex items-center justify-between">
+            <div>
+                <i class="fas fa-exclamation-triangle mr-2"></i> {{ session('error') }}
+            </div>
+            <button @click="show = false"
+                class="text-red-700 dark:text-red-100 hover:text-red-900 dark:hover:text-red-300 focus:outline-none transition-colors duration-150">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    @endif
 </div>

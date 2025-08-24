@@ -9,60 +9,61 @@ Route::get('/', function () {
     return view('auth/login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('/profile')->name('profile.')->group(function () {
+        Route::get('/', [ProfileController::class, 'show'])->name('show');
+        Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+        Route::patch('/update', [ProfileController::class, 'update'])->name('update');
+        Route::delete('/destroy', [ProfileController::class, 'destroy'])->name('destroy');
+    });
 
-Route::get('/forms', function () {
-    return view('pages/forms');
-})->name('forms');
+    // Admin Routes
+    Route::resource('users', UserController::class);
 
-Route::get('/cards', function () {
-    return view('pages/cards');
-})->name('cards');
+    // User Permissions
+    Route::get('users/{user}/permissions/edit', [PermissionController::class, 'edit'])->name('users.permissions.edit');
+    Route::post('users/{user}/permissions/assign', [PermissionController::class, 'assignPermission'])->name('users.permissions.assign');
+    Route::post('users/{user}/permissions/revoke', [PermissionController::class, 'revokePermission'])->name('users.permissions.revoke');
 
-Route::get('/charts', function () {
-    return view('pages/charts');
-})->name('charts');
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
 
-Route::get('/buttons', function () {
-    return view('pages/buttons');
-})->name('buttons');
+    Route::get('/forms', function () {
+        return view('pages/forms');
+    })->name('forms');
 
-Route::get('/modals', function () {
-    return view('pages/modals');
-})->name('modals');
+    Route::get('/cards', function () {
+        return view('pages/cards');
+    })->name('cards');
 
-Route::get('/tables', function () {
-    return view('pages/tables');
-})->name('tables');
+    Route::get('/charts', function () {
+        return view('pages/charts');
+    })->name('charts');
 
-Route::get('/categories', function () {
-    return view('categories/index');
-})->name('categories.index');
+    Route::get('/buttons', function () {
+        return view('pages/buttons');
+    })->name('buttons');
 
-Route::get('/categories/create', function () {
-    return view('categories/create');
-})->name('categories.create');
+    Route::get('/modals', function () {
+        return view('pages/modals');
+    })->name('modals');
 
-Route::get('/categories/show', function () {
-    return view('categories/show');
-})->name('categories.show');
+    Route::get('/tables', function () {
+        return view('pages/tables');
+    })->name('tables');
 
-Route::middleware('auth')->prefix('/profile')->name('profile.')->group(function () {
-    Route::get('/', [ProfileController::class, 'show'])->name('show');
-    Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
-    Route::patch('/update', [ProfileController::class, 'update'])->name('update');
-    Route::delete('/destroy', [ProfileController::class, 'destroy'])->name('destroy');
+    Route::get('/categories', function () {
+        return view('categories/index');
+    })->name('categories.index');
+
+    Route::get('/categories/create', function () {
+        return view('categories/create');
+    })->name('categories.create');
+
+    Route::get('/categories/show', function () {
+        return view('categories/show');
+    })->name('categories.show');
 });
-
-// Admin Routes
-Route::resource('users', UserController::class);
-
-// User Permissions
-Route::get('users/{user}/permissions/edit', [PermissionController::class, 'edit'])->name('users.permissions.edit');
-Route::post('users/{user}/permissions/assign', [PermissionController::class, 'assignPermission'])->name('users.permissions.assign');
-Route::post('users/{user}/permissions/revoke', [PermissionController::class, 'revokePermission'])->name('users.permissions.revoke');
-
 
 require __DIR__ . '/auth.php';
