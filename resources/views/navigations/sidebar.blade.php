@@ -108,10 +108,17 @@
                     x-transition:leave-end="opacity-0 transform scale-95"
                     class="mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 dark:text-gray-400">
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('users') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('users.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('users.index') }}">
                             <i class="fas fa-users-cog w-5 h-5"></i>
                             <span class="ml-4">Usuarios</span>
+                        </a>
+                    </li>
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('users.inactive') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('users.inactive') }}">
+                            <i class="fas fa-user-slash w-5 h-5"></i>
+                            <span class="ml-4">Usuarios Inactivos</span>
                         </a>
                     </li>
                 </ul>

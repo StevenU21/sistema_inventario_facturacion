@@ -18,9 +18,9 @@ class UserController extends Controller
 
     public function index()
     {
-        $this->authorize('viewAny', User::class);
-        $users = User::with(['roles.permissions', 'profile'])->latest()->paginate(10);
-        return view('admin.users.index', compact('users'));
+    $this->authorize('viewAny', User::class);
+    $users = User::with(['roles.permissions', 'profile'])->where('is_active', true)->latest()->paginate(10);
+    return view('admin.users.index', compact('users'));
     }
 
     public function show(User $user)

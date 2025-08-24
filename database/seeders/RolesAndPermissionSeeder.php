@@ -16,6 +16,7 @@ class RolesAndPermissionSeeder extends Seeder
 
     const SPECIAL_PERMISSIONS = [
         'permissions' => ['assign permissions', 'revoke permissions'],
+        'users' => ['reactivate users'],
     ];
 
     /**

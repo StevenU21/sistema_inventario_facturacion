@@ -34,4 +34,9 @@ class UserPolicy
     {
         return $this->checkPermission($user, 'destroy users');
     }
+
+    public function reactivate(User $user): bool
+    {
+        return $this->checkPermission($user, 'reactivate users');
+    }
 }

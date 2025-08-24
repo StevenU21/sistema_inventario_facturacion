@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\InactiveUserController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
@@ -10,6 +11,7 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+
     Route::prefix('/profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'show'])->name('show');
         Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
@@ -18,6 +20,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Admin Routes
+    Route::get('users/inactive', [InactiveUserController::class, 'index'])->name('users.inactive');
+    Route::post('users/inactive/{id}/reactivate', [InactiveUserController::class, 'reactivate'])->name('inactive-users.reactivate');
     Route::resource('users', UserController::class);
     // User Permissions
     Route::get('users/{user}/permissions/edit', [PermissionController::class, 'edit'])->name('users.permissions.edit');
