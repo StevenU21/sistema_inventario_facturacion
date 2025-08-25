@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AuditController;
 use App\Http\Controllers\Admin\InactiveUserController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\UserController;
@@ -11,7 +12,8 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('audits', [\App\Http\Controllers\Admin\AuditController::class, 'index'])->name('audits.index');
+    Route::get('audits', [AuditController::class, 'index'])->name('audits.index');
+    Route::get('audits/export', [AuditController::class, 'export'])->name('admin.audits.export');
 
     Route::prefix('/profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'show'])->name('show');

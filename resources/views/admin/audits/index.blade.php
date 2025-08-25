@@ -6,6 +6,16 @@
         <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
             Auditoría
         </h2>
+        <form method="GET" action="{{ route('admin.audits.export') }}" class="mb-4 flex items-center gap-2">
+            <label for="range" class="mr-2 font-semibold">Exportar:</label>
+            <select name="range" id="range" class="form-select rounded border-gray-300">
+                <option value="today">Hoy</option>
+                <option value="week">Esta semana</option>
+                <option value="month">Este mes</option>
+                <option value="all">Histórico</option>
+            </select>
+            <button type="submit" class="ml-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Exportar Excel</button>
+        </form>
         <x-session-message />
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">

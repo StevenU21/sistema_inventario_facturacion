@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Spatie\Activitylog\Models\Activity;
+use \App\Classes\AuditPresenter;
+use Illuminate\Http\Request;
+use App\Exports\AuditExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AuditController extends Controller
 {
@@ -15,36 +19,29 @@ class AuditController extends Controller
         $activities = Activity::latest()->paginate(10);
 
         foreach ($activities as $activity) {
-            $changes = json_decode($activity->changes(), true);
-            $old = $changes['old'] ?? [];
-            $attributes = $changes['attributes'] ?? [];
-
-            $diffKeys = array_unique(array_merge(
-                array_keys(array_diff_assoc($old, $attributes)),
-                array_keys(array_diff_assoc($attributes, $old))
-            ));
-
-            $oldFiltered = array_intersect_key($old, array_flip($diffKeys));
-            $attributesFiltered = array_intersect_key($attributes, array_flip($diffKeys));
-
-            $activity->old = $this->arrayToString($oldFiltered);
-            $activity->new = $this->arrayToString($attributesFiltered);
+            $presented = AuditPresenter::present($activity);
+            $activity->old = $presented['Antes'];
+            $activity->new = $presented['Después'];
         }
 
         return view('admin.audits.index', compact('activities'));
     }
 
-    public function arrayToString($array)
+    public function export(Request $request)
     {
-        $result = [];
+        $this->authorize('viewAny', Activity::class);
 
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $result[] = $this->arrayToString($value);
-            } else {
-                $result[] = "$key: $value";
-            }
+        $range = $request->input('range', 'all');
+        $query = Activity::query();
+
+        if ($range === 'today') {
+            $query->whereDate('created_at', now()->toDateString());
+        } elseif ($range === 'week') {
+            $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+        } elseif ($range === 'month') {
+            $query->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
         }
-        return implode(', ', $result);
+
+        return Excel::download(new AuditExport($query), 'auditoria.xlsx');
     }
 }
