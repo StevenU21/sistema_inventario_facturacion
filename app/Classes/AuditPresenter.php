@@ -3,6 +3,7 @@
 namespace App\Classes;
 
 use Spatie\Activitylog\Models\Activity;
+use App\Classes\AuditTranslation;
 
 class AuditPresenter
 {
@@ -24,45 +25,21 @@ class AuditPresenter
         $oldFiltered = array_intersect_key($old, array_flip($diffKeys));
         $attributesFiltered = array_intersect_key($attributes, array_flip($diffKeys));
 
+
         // Traducción de atributos por modelo
-        $attributeTranslations = [
-            'User' => [
-                'first_name' => 'Nombre',
-                'last_name' => 'Apellido',
-                'email' => 'Correo',
-                'password' => 'Contraseña',
-                'is_active' => 'Activo',
-            ],
-            'Profile' => [
-                'avatar' => 'Avatar',
-                'phone' => 'Teléfono',
-                'identity_card' => 'Cédula',
-                'gender' => 'Género',
-                'address' => 'Dirección',
-                'user_id' => 'Usuario',
-            ],
-        ];
-
         $modelKey = class_basename($activity->subject_type);
-        $attrMap = $attributeTranslations[$modelKey] ?? [];
-
+        $attrTranslations = AuditTranslation::attributeTranslations();
+        $attrMap = $attrTranslations[$modelKey] ?? [];
         $oldFiltered = self::translateKeys($oldFiltered, $attrMap);
         $attributesFiltered = self::translateKeys($attributesFiltered, $attrMap);
 
         // Traducción de eventos
-        $eventMap = [
-            'created' => 'Creado',
-            'updated' => 'Actualizado',
-            'deleted' => 'Eliminado',
-        ];
+        $eventMap = AuditTranslation::eventMap();
         $evento = $activity->event ?? '-';
         $evento = $eventMap[$evento] ?? $evento;
 
         // Traducción de modelos
-        $modelMap = [
-            'User' => 'Usuario',
-            'Profile' => 'Perfil',
-        ];
+        $modelMap = AuditTranslation::modelMap();
         $modelo = class_basename($activity->subject_type) ?? '-';
         $modelo = $modelMap[$modelo] ?? $modelo;
 
