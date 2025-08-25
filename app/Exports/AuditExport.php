@@ -28,5 +28,4 @@ class AuditExport implements FromCollection, WithHeadings
         return ['ID', 'Fecha', 'Usuario', 'Evento', 'Modelo', 'ID Modelo', 'Antes', 'Después'];
     }
 
-
 }
