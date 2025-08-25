@@ -12,8 +12,6 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('audits', [AuditController::class, 'index'])->name('audits.index');
-    Route::get('audits/export', [AuditController::class, 'export'])->name('admin.audits.export');
 
     Route::prefix('/profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'show'])->name('show');
@@ -26,10 +24,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('users/inactive', [InactiveUserController::class, 'index'])->name('users.inactive');
     Route::post('users/inactive/{id}/reactivate', [InactiveUserController::class, 'reactivate'])->name('inactive-users.reactivate');
     Route::resource('users', UserController::class);
+    
     // User Permissions
     Route::get('users/{user}/permissions/edit', [PermissionController::class, 'edit'])->name('users.permissions.edit');
     Route::post('users/{user}/permissions/assign', [PermissionController::class, 'assignPermission'])->name('users.permissions.assign');
     Route::post('users/{user}/permissions/revoke', [PermissionController::class, 'revokePermission'])->name('users.permissions.revoke');
+
+    // Audit Logs
+    Route::get('audits', [AuditController::class, 'index'])->name('audits.index');
+    Route::get('audits/export', [AuditController::class, 'export'])->name('audits.export');
 
     Route::get('/dashboard', function () {
         return view('dashboard');

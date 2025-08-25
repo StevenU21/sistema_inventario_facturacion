@@ -6,7 +6,7 @@
         <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
             Auditoría
         </h2>
-        <form method="GET" action="{{ route('admin.audits.export') }}" class="mb-4 flex items-center gap-2">
+        <form method="GET" action="{{ route('audits.export') }}" class="mb-4 flex items-center gap-2">
             <label for="range" class="mr-2 font-semibold">Exportar:</label>
             <select name="range" id="range" class="form-select rounded border-gray-300">
                 <option value="hoy">Hoy</option>
