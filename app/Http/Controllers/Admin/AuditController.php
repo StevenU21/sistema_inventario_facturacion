@@ -34,14 +34,16 @@ class AuditController extends Controller
         $range = $request->input('range', 'all');
         $query = Activity::query();
 
-        if ($range === 'today') {
+        if ($range === 'hoy') {
             $query->whereDate('created_at', now()->toDateString());
-        } elseif ($range === 'week') {
+        } elseif ($range === 'semana') {
             $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-        } elseif ($range === 'month') {
+        } elseif ($range === 'mes') {
             $query->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
         }
 
-        return Excel::download(new AuditExport($query), 'auditoria.xlsx');
+        $timestamp = now()->format('Ymd_His');
+        $filename = "auditoria_{$range}_{$timestamp}.xlsx";
+        return Excel::download(new AuditExport($query), $filename);
     }
 }
