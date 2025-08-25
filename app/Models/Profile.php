@@ -34,7 +34,9 @@ class Profile extends Model
 
     public function getAvatarUrlAttribute(): ?string
     {
-        return $this->avatar ? asset('storage/' . $this->avatar) : null;
+        return $this->avatar
+            ? asset('storage/' . $this->avatar)
+            : asset('img/image03.png');
     }
 
     public function getFormattedIdentityCardAttribute(): ?string

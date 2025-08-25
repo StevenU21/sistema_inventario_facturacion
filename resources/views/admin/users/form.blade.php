@@ -74,9 +74,11 @@
                 <select name="gender"
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('gender') border-red-600 @enderror">
                     <option value="">Selecciona un género</option>
-                    <option value="male" {{ old('gender', $user->profile->gender ?? '') == 'male' ? 'selected' : '' }}>
+                    <option value="male"
+                        {{ old('gender', $user->profile->gender ?? '') == 'male' ? 'selected' : '' }}>
                         Masculino</option>
-                    <option value="female" {{ old('gender', $user->profile->gender ?? '') == 'female' ? 'selected' : '' }}>
+                    <option value="female"
+                        {{ old('gender', $user->profile->gender ?? '') == 'female' ? 'selected' : '' }}>
                         Femenino</option>
                 </select>
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
@@ -117,7 +119,7 @@
                     @foreach ($roles as $role)
                         <option value="{{ $role->name }}"
                             {{ old('role', optional(optional($user)->roles)->first()->name ?? '') == $role->name ? 'selected' : '' }}>
-                            @if($role->name === 'admin')
+                            @if ($role->name === 'admin')
                                 Administrador
                             @elseif($role->name === 'cashier')
                                 Cajero
@@ -140,7 +142,8 @@
     <!-- Avatar -->
     <label class="block mt-4 text-sm w-full">
         <span class="text-gray-700 dark:text-gray-400">Avatar (imagen)</span>
-        <div class="relative flex items-center text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400 mt-1">
+        <div
+            class="relative flex items-center text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400 mt-1">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <i class="fas fa-image w-5 h-5"></i>
             </div>

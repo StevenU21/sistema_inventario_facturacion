@@ -30,7 +30,8 @@
                         @forelse ($users as $user)
                             <tr class="text-gray-700 dark:text-gray-400">
                                 <td class="px-4 py-3 text-xs">
-                                    <span class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
+                                    <span
+                                        class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
                                         {{ $user->id }}
                                     </span>
                                 </td>
@@ -50,7 +51,8 @@
                                                 $roleColor = 'bg-orange-500 dark:bg-orange-600';
                                             }
                                         @endphp
-                                        <span class="px-2 py-1 font-semibold leading-tight text-white rounded-full {{ $roleColor }}">
+                                        <span
+                                            class="px-2 py-1 font-semibold leading-tight text-white rounded-full {{ $roleColor }}">
                                             {{ $user->formatted_role_name ?? '-' }}
                                         </span>
                                     @else
@@ -58,15 +60,18 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    <span class="px-2 py-1 font-semibold leading-tight text-white bg-red-600 rounded-full dark:bg-red-700 dark:text-white">Inactivo</span>
+                                    <span
+                                        class="px-2 py-1 font-semibold leading-tight text-white bg-red-600 rounded-full dark:bg-red-700 dark:text-white">Inactivo</span>
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $user->formatted_created_at ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3">
-                                    <form action="{{ route('inactive-users.reactivate', $user->id) }}" method="POST" onsubmit="return confirm('¿Reactivar este usuario?');">
+                                    <form action="{{ route('inactive-users.reactivate', $user->id) }}" method="POST"
+                                        onsubmit="return confirm('¿Reactivar este usuario?');">
                                         @csrf
-                                        <button type="submit" class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green">
+                                        <button type="submit"
+                                            class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green">
                                             <i class="fas fa-user-check mr-2"></i> Reactivar
                                         </button>
                                     </form>
@@ -74,7 +79,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-4 py-3 text-center text-gray-400 dark:text-gray-500">No hay usuarios inactivos.</td>
+                                <td colspan="7" class="px-4 py-3 text-center text-gray-400 dark:text-gray-500">No hay
+                                    usuarios inactivos.</td>
                             </tr>
                         @endforelse
                     </tbody>

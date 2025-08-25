@@ -17,7 +17,7 @@ class ProfileFactory extends Factory
     public function definition(): array
     {
         return [
-            'avatar' => fake()->imageUrl(),
+            'avatar' => null,
             'phone' => fake()->phoneNumber(),
             'identity_card' => fake()->unique()->numberBetween(10000000, 99999999),
             'gender' => fake()->randomElement(['male', 'female']),
