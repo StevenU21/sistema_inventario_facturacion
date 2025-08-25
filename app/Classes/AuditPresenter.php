@@ -20,8 +20,34 @@ class AuditPresenter
             array_keys(array_diff_assoc($attributes, $old))
         ));
 
+
         $oldFiltered = array_intersect_key($old, array_flip($diffKeys));
         $attributesFiltered = array_intersect_key($attributes, array_flip($diffKeys));
+
+        // Traducción de atributos por modelo
+        $attributeTranslations = [
+            'User' => [
+                'first_name' => 'Nombre',
+                'last_name' => 'Apellido',
+                'email' => 'Correo',
+                'password' => 'Contraseña',
+                'is_active' => 'Activo',
+            ],
+            'Profile' => [
+                'avatar' => 'Avatar',
+                'phone' => 'Teléfono',
+                'identity_card' => 'Cédula',
+                'gender' => 'Género',
+                'address' => 'Dirección',
+                'user_id' => 'Usuario',
+            ],
+        ];
+
+        $modelKey = class_basename($activity->subject_type);
+        $attrMap = $attributeTranslations[$modelKey] ?? [];
+
+        $oldFiltered = self::translateKeys($oldFiltered, $attrMap);
+        $attributesFiltered = self::translateKeys($attributesFiltered, $attrMap);
 
         // Traducción de eventos
         $eventMap = [
@@ -52,6 +78,9 @@ class AuditPresenter
         ];
     }
 
+    /**
+     * Convierte un array en una cadena legible.
+     */
     public static function arrayToString($array)
     {
         $result = [];
@@ -63,5 +92,18 @@ class AuditPresenter
             }
         }
         return implode(', ', $result);
+    }
+
+    /**
+     * Traduce las claves de un array según un mapa de traducción.
+     */
+    public static function translateKeys(array $array, array $map): array
+    {
+        $translated = [];
+        foreach ($array as $key => $value) {
+            $translatedKey = $map[$key] ?? $key;
+            $translated[$translatedKey] = $value;
+        }
+        return $translated;
     }
 }
