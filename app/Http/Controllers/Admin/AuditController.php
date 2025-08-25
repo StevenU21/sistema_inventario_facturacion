@@ -31,7 +31,7 @@ class AuditController extends Controller
     {
         $this->authorize('viewAny', Activity::class);
 
-        $range = $request->input('range', 'all');
+        $range = $request->input('range', 'completo');
         $query = Activity::query();
 
         if ($range === 'hoy') {
