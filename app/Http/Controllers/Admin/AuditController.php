@@ -22,6 +22,8 @@ class AuditController extends Controller
             $presented = AuditPresenter::present($activity);
             $activity->old = $presented['Antes'];
             $activity->new = $presented['Después'];
+            $activity->evento_es = $presented['Evento'];
+            $activity->modelo_es = $presented['Modelo'];
         }
 
         return view('admin.audits.index', compact('activities'));

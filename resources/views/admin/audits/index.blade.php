@@ -46,8 +46,8 @@
                                         <span class="text-gray-400">-</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3 text-sm">{{ $activity->event ?? '-' }}</td>
-                                <td class="px-4 py-3 text-sm">{{ class_basename($activity->subject_type) ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $activity->evento_es ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $activity->modelo_es ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $activity->subject_id ?? '-' }}</td>
                                 <td class="px-4 py-3 text-xs">{{ $activity->old }}</td>
                                 <td class="px-4 py-3 text-xs">{{ $activity->new }}</td>

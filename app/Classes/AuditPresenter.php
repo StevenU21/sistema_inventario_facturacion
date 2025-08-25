@@ -23,12 +23,29 @@ class AuditPresenter
         $oldFiltered = array_intersect_key($old, array_flip($diffKeys));
         $attributesFiltered = array_intersect_key($attributes, array_flip($diffKeys));
 
+        // Traducción de eventos
+        $eventMap = [
+            'created' => 'Creado',
+            'updated' => 'Actualizado',
+            'deleted' => 'Eliminado',
+        ];
+        $evento = $activity->event ?? '-';
+        $evento = $eventMap[$evento] ?? $evento;
+
+        // Traducción de modelos
+        $modelMap = [
+            'User' => 'Usuario',
+            'Profile' => 'Perfil',
+        ];
+        $modelo = class_basename($activity->subject_type) ?? '-';
+        $modelo = $modelMap[$modelo] ?? $modelo;
+
         return [
             'ID' => $activity->id,
             'Fecha' => $activity->created_at->format('d/m/Y H:i:s'),
             'Usuario' => $activity->causer ? (($activity->causer->first_name ?? '') . ' ' . ($activity->causer->last_name ?? '')) : '-',
-            'Evento' => $activity->event ?? '-',
-            'Modelo' => class_basename($activity->subject_type) ?? '-',
+            'Evento' => $evento,
+            'Modelo' => $modelo,
             'ID Modelo' => $activity->subject_id ?? '-',
             'Antes' => self::arrayToString($oldFiltered),
             'Después' => self::arrayToString($attributesFiltered),

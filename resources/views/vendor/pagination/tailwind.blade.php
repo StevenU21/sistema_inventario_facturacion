@@ -3,9 +3,9 @@
         class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
         <span class="flex items-center col-span-3">
             @if ($paginator->firstItem())
-                Showing {{ $paginator->firstItem() }}-{{ $paginator->lastItem() }} of {{ $paginator->total() }}
+                Mostrando {{ $paginator->firstItem() }}-{{ $paginator->lastItem() }} de {{ $paginator->total() }}
             @else
-                Showing {{ $paginator->count() }} results
+                Mostrando {{ $paginator->count() }} resultados
             @endif
         </span>
         <span class="col-span-2"></span>
