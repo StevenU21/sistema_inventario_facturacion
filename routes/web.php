@@ -37,6 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Backups
     Route::get('admin/backups', [BackupController::class, 'index'])->name('backups.index');
+    Route::post('admin/backups/restore', [BackupController::class, 'restore'])->name('backups.restore');
 
     Route::get('/dashboard', function () {
         return view('dashboard');
