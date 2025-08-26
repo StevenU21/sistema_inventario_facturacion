@@ -28,7 +28,6 @@
                             <th class="px-4 py-3">Nombre</th>
                             <th class="px-4 py-3">Tamaño</th>
                             <th class="px-4 py-3">Última modificación</th>
-                            <th class="px-4 py-3">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
@@ -37,17 +36,6 @@
                                 <td class="px-4 py-3 text-sm">{{ $file->name }}</td>
                                 <td class="px-4 py-3 text-sm">{{ number_format($file->size / 1048576, 2) }} MB</td>
                                 <td class="px-4 py-3 text-sm">{{ $file->last_modified }}</td>
-                                <td class="px-4 py-3 text-sm">
-                                    <form action="{{ route('backups.restore') }}" method="POST"
-                                        onsubmit="return confirm('¿Está seguro que desea restaurar la base de datos desde este backup?\n\nEsta acción es irreversible y reemplazará todos los datos actuales.');">
-                                        @csrf
-                                        <input type="hidden" name="file" value="{{ $file->name }}">
-                                        <button type="submit"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray border border-purple-600 hover:bg-purple-50 dark:hover:bg-purple-800 transition">
-                                            <i class="fas fa-database mr-2"></i> Restaurar
-                                        </button>
-                                    </form>
-                                </td>
                             </tr>
                         @empty
                             <tr>
