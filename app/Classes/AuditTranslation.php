@@ -25,6 +25,23 @@ class AuditTranslation
                 'address' => 'Dirección',
                 'user_id' => 'Usuario',
             ],
+            'Brand' => [
+                'name' => 'Nombre',
+                'description' => 'Descripción',
+            ],
+            'Company' => [
+                'name' => 'Nombre',
+                'ruc' => 'RUC',
+                'logo' => 'Logo',
+                'description' => 'Descripción',
+                'address' => 'Dirección',
+                'phone' => 'Teléfono',
+                'email' => 'Correo',
+            ],
+            'Category' => [
+                'name' => 'Nombre',
+                'description' => 'Descripción',
+            ],
         ];
     }
 
@@ -48,6 +65,9 @@ class AuditTranslation
         return [
             'User' => 'Usuario',
             'Profile' => 'Perfil',
+            'Brand' => 'Marca',
+            'Company' => 'Empresa',
+            'Category' => 'Categoría'
         ];
     }
     /**
