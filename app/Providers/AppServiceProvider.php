@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-
 use App\Policies\AuditPolicy;
+use App\Policies\BrandPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\PermissionPolicy;
 use App\Policies\UserPolicy;
@@ -12,6 +12,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\Brand;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Permission;
 
@@ -35,5 +36,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Permission::class, PermissionPolicy::class);
         Gate::policy(Activity::class, AuditPolicy::class);
         Gate::policy(Category::class, CategoryPolicy::class);
+        Gate::policy(Brand::class, BrandPolicy::class);
     }
 }

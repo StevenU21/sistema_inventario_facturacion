@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('title', 'Categorías')
+@section('title', 'Marcas')
 
 @section('content')
     <div class="container grid px-6 mx-auto">
         <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Categorías
+            Marcas
         </h2>
 
         <!-- Mensajes de éxito -->
@@ -12,9 +12,9 @@
         <!-- Fin mensajes de éxito -->
 
         <div class="flex justify-end mb-4">
-            <a href="{{ route('categories.create') }}"
+            <a href="{{ route('brands.create') }}"
                 class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                <span>Crear Categoría</span>
+                <span>Crear Marca</span>
                 <i class="fas fa-plus ml-2"></i>
             </a>
         </div>
@@ -43,37 +43,35 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                        @forelse($categories as $category)
+                        @forelse($brands as $brand)
                             <tr class="text-gray-700 dark:text-gray-400">
                                 <td class="px-4 py-3 text-xs">
-                                    <span
-                                        class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
-                                        {{ $category->id }}
+                                    <span class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
+                                        {{ $brand->id }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $category->name }}
+                                    {{ $brand->name }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $category->description }}
+                                    {{ $brand->description }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $category->created_at ? $category->created_at->format('d-m-Y H:i:s') : '-' }}
+                                    {{ $brand->created_at ? $brand->created_at->format('d-m-Y H:i:s') : '-' }}
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
-                                        <a href="{{ route('categories.show', $category) }}"
+                                        <a href="{{ route('brands.show', $brand) }}"
                                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                             aria-label="Ver">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('categories.edit', $category) }}"
+                                        <a href="{{ route('brands.edit', $brand) }}"
                                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                             aria-label="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ route('categories.destroy', $category) }}" method="POST"
-                                            onsubmit="return confirm('¿Estás seguro de eliminar esta categoría?');">
+                                        <form action="{{ route('brands.destroy', $brand) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta marca?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -87,15 +85,14 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-3 text-center text-gray-400 dark:text-gray-500">No se
-                                    encontraron categorías.</td>
+                                <td colspan="4" class="px-4 py-3 text-center text-gray-400 dark:text-gray-500">No se encontraron marcas.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
             <div class="mt-4">
-                {{ $categories->links() }}
+                {{ $brands->links() }}
             </div>
         </div>
     </div>

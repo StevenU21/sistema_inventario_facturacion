@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AuditController;
 use App\Http\Controllers\Admin\BackupController;
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\InactiveUserController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -41,6 +42,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('admin/backups/restore', [BackupController::class, 'restore'])->name('backups.restore');
 
     Route::resource('categories', CategoryController::class);
+    Route::resource('brands', BrandController::class);
 
     Route::get('/dashboard', function () {
         return view('dashboard');
