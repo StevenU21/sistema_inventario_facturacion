@@ -26,7 +26,6 @@ class BrandController extends Controller
 
     public function store(BrandRequest $request)
     {
-        $this->authorize('create', Brand::class);
         Brand::create($request->validated());
         return redirect()->route('brands.index')->with('success', 'Marca creada correctamente.');
     }
@@ -45,7 +44,6 @@ class BrandController extends Controller
 
     public function update(BrandRequest $request, Brand $brand)
     {
-        $this->authorize('update', $brand);
         $brand->update($request->validated());
         return redirect()->route('brands.index')->with('success', 'Marca actualizada correctamente.');
     }

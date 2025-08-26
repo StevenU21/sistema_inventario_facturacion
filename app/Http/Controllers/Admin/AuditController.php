@@ -31,7 +31,7 @@ class AuditController extends Controller
 
     public function export(Request $request)
     {
-        $this->authorize('viewAny', Activity::class);
+        $this->authorize('export', Activity::class);
 
         $range = $request->input('range', 'completo');
         $query = Activity::query();

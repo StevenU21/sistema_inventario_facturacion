@@ -57,7 +57,7 @@
                                     {{ $brand->description }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $brand->created_at ? $brand->created_at->format('d-m-Y H:i:s') : '-' }}
+                                    {{ $brand->formatted_created_at ?? '-'}}
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">

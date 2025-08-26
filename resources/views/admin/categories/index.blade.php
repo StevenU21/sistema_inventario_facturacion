@@ -58,7 +58,7 @@
                                     {{ $category->description }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $category->created_at ? $category->created_at->format('d-m-Y H:i:s') : '-' }}
+                                    {{ $category->formatted_created_at ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
