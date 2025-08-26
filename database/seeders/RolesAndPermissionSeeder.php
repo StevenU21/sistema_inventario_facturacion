@@ -13,11 +13,14 @@ class RolesAndPermissionSeeder extends Seeder
         'users' => [],
         'permissions' => ['read'],
         'audits' => ['read'],
+        'categories' => [],
+        'backups' => ['read backups']
     ];
 
     const SPECIAL_PERMISSIONS = [
         'permissions' => ['assign permissions', 'revoke permissions'],
         'users' => ['reactivate users'],
+        'audits' => ['export audits'],
     ];
 
     /**
@@ -59,6 +62,7 @@ class RolesAndPermissionSeeder extends Seeder
 
         $cashierPermissions = array_merge(
             $this->filterPermissions('users')->only(['read users'])->get(),
+            $this->filterPermissions('categories')->only(['read categories'])->get(),
         );
 
         $cashierRole->givePermissionTo($cashierPermissions);

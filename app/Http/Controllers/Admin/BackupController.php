@@ -14,7 +14,7 @@ class BackupController extends Controller
         $filter = request('type');
         $backups = Backup::all($this->backupPath);
         $filtered = Backup::filterByType($backups, $filter);
-        $files = Backup::paginate($filtered, 10);
+        $files = collect($filtered)->sortByDesc('created_at')->paginate(10);
         return view('admin.backups.index', [
             'files' => $files,
             'filter' => $filter,

@@ -14,4 +14,14 @@ class AuditPolicy
     {
         return $this->checkPermission($user, 'read audits');
     }
+
+    public function view(User $user): bool
+    {
+        return $this->checkPermission($user, 'read audits');
+    }
+
+    public function export(User $user): bool
+    {
+        return $this->checkPermission($user, 'export audits');
+    }
 }

@@ -3,54 +3,55 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CategoryController extends Controller
 {
+    use AuthorizesRequests;
     public function index()
     {
+        $this->authorize('viewAny', Category::class);
         $categories = Category::latest()->paginate(10);
         return view('admin.categories.index', compact('categories'));
     }
 
     public function create()
     {
+        $this->authorize('create', Category::class);
         return view('admin.categories.create');
     }
 
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-        ]);
-        Category::create($validated);
+        $this->authorize('create', Category::class);
+        Category::create($request->validated());
         return redirect()->route('categories.index')->with('success', 'Category created successfully.');
     }
 
     public function show(Category $category)
     {
+        $this->authorize('view', $category);
         return view('admin.categories.show', compact('category'));
     }
 
     public function edit(Category $category)
     {
+        $this->authorize('update', $category);
         return view('admin.categories.edit', compact('category'));
     }
 
-    public function update(Request $request, Category $category)
+    public function update(CategoryRequest $request, Category $category)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-        ]);
-        $category->update($validated);
+        $this->authorize('update', $category);
+        $category->update($request->validated());
         return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
     }
 
     public function destroy(Category $category)
     {
+        $this->authorize('destroy', $category);
         $category->delete();
         return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
     }
