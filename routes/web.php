@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AuditController;
 use App\Http\Controllers\Admin\BackupController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\InactiveUserController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\UserController;
@@ -39,6 +40,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('admin/backups', [BackupController::class, 'index'])->name('backups.index');
     Route::post('admin/backups/restore', [BackupController::class, 'restore'])->name('backups.restore');
 
+    Route::resource('categories', CategoryController::class);
+
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
@@ -66,18 +69,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/tables', function () {
         return view('pages/tables');
     })->name('tables');
-
-    Route::get('/categories', function () {
-        return view('categories/index');
-    })->name('categories.index');
-
-    Route::get('/categories/create', function () {
-        return view('categories/create');
-    })->name('categories.create');
-
-    Route::get('/categories/show', function () {
-        return view('categories/show');
-    })->name('categories.show');
 });
 
 require __DIR__ . '/auth.php';

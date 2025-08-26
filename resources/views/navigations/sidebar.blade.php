@@ -34,7 +34,7 @@
                     @click="isOpen = !isOpen" aria-haspopup="true">
                     <span class="inline-flex items-center">
                         <i class="fas fa-sign-in-alt w-5 h-5"></i>
-                        <span class="ml-4">Entradas</span>
+                        <span class="ml-4">Catálogo</span>
                     </span>
                     <i class="fas" :class="{ 'fa-chevron-down': !isOpen, 'fa-chevron-up': isOpen }"></i>
                 </button>
@@ -46,10 +46,10 @@
                     x-transition:leave-end="opacity-0 transform scale-95"
                     class="mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 dark:text-gray-400">
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('forms') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('forms') }}">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('categories') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('categories.index') }}">
                             <i class="fas fa-file-alt w-5 h-5"></i>
-                            <span class="ml-4">Formularios</span>
+                            <span class="ml-4">Categorias</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">

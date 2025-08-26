@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\Profile;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -37,5 +38,7 @@ class DatabaseSeeder extends Seeder
             'user_id' => $cashierUser->id
         ]);
         $cashierUser->assignRole('cashier');
+
+        Category::factory()->count(20)->create();
     }
 }
