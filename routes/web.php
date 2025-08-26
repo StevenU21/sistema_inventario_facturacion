@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AuditController;
+use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\InactiveUserController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\UserController;
@@ -24,7 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('users/inactive', [InactiveUserController::class, 'index'])->name('users.inactive');
     Route::post('users/inactive/{id}/reactivate', [InactiveUserController::class, 'reactivate'])->name('inactive-users.reactivate');
     Route::resource('users', UserController::class);
-    
+
     // User Permissions
     Route::get('users/{user}/permissions/edit', [PermissionController::class, 'edit'])->name('users.permissions.edit');
     Route::post('users/{user}/permissions/assign', [PermissionController::class, 'assignPermission'])->name('users.permissions.assign');
@@ -33,6 +34,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Audit Logs
     Route::get('audits', [AuditController::class, 'index'])->name('audits.index');
     Route::get('audits/export', [AuditController::class, 'export'])->name('audits.export');
+
+    // Backups
+    Route::get('admin/backups', [BackupController::class, 'index'])->name('backups.index');
 
     Route::get('/dashboard', function () {
         return view('dashboard');
