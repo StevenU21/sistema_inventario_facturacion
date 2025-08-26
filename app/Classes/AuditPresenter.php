@@ -30,8 +30,8 @@ class AuditPresenter
         $modelKey = class_basename($activity->subject_type);
         $attrTranslations = AuditTranslation::attributeTranslations();
         $attrMap = $attrTranslations[$modelKey] ?? [];
-        $oldFiltered = self::translateKeys($oldFiltered, $attrMap);
-        $attributesFiltered = self::translateKeys($attributesFiltered, $attrMap);
+        $oldFiltered = self::translateAndMapValues($oldFiltered, $attrMap);
+        $attributesFiltered = self::translateAndMapValues($attributesFiltered, $attrMap);
 
         // Traducción de eventos
         $eventMap = AuditTranslation::eventMap();
@@ -69,6 +69,19 @@ class AuditPresenter
             }
         }
         return implode(', ', $result);
+    }
+
+    /**
+     * Traduce las claves y valores de un array según un mapa de traducción y reglas de valores estáticos.
+     */
+    public static function translateAndMapValues(array $array, array $map): array
+    {
+        $translated = [];
+        foreach ($array as $key => $value) {
+            $translatedKey = $map[$key] ?? $key;
+            $translated[$translatedKey] = AuditTranslation::translateValue($key, $value);
+        }
+        return $translated;
     }
 
     /**

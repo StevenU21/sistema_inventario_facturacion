@@ -50,4 +50,27 @@ class AuditTranslation
             'Profile' => 'Perfil',
         ];
     }
+    /**
+     * Traduce valores estáticos de campos conocidos.
+     */
+    public static function translateValue(string $field, $value)
+    {
+        // Traducción para is_active
+        if ($field === 'is_active' || $field === 'Activo') {
+            if ($value === 1 || $value === true || $value === '1') {
+                return 'Verdadero';
+            } elseif ($value === 0 || $value === false || $value === '0') {
+                return 'Falso';
+            }
+        }
+        // Traducción para gender
+        if ($field === 'gender' || $field === 'Género') {
+            if ($value === 'male') {
+                return 'Hombre';
+            } elseif ($value === 'female') {
+                return 'Mujer';
+            }
+        }
+        return $value;
+    }
 }
