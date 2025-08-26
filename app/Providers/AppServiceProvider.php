@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Backup;
 use App\Models\Company;
+use App\Policies\BackupPolicy;
 use App\Policies\CompanyPolicy;
 use App\Policies\UserPolicy;
 use App\Policies\AuditPolicy;
@@ -40,5 +42,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Category::class, CategoryPolicy::class);
         Gate::policy(Brand::class, BrandPolicy::class);
         Gate::policy(Company::class, CompanyPolicy::class);
+        Gate::policy(Backup::class, BackupPolicy::class);
     }
 }

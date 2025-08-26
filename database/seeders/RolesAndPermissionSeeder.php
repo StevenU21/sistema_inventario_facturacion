@@ -13,6 +13,7 @@ class RolesAndPermissionSeeder extends Seeder
         'users' => [],
         'permissions' => ['read'],
         'audits' => ['read'],
+        'brands' => ['read'],
         'categories' => [],
         'backups' => ['read backups'],
         'companies' => ['read companies', 'create companies', 'update companies'],
