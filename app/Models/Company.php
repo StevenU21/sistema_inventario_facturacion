@@ -32,4 +32,14 @@ class Company extends Model
         return LogOptions::defaults()
             ->logOnly(['name', 'description']);
     }
+
+    public function getFormattedCreatedAtAttribute(): ?string
+    {
+        return $this->created_at ? $this->created_at->format('d/m/Y H:i:s') : null;
+    }
+
+    public function getFormattedUpdatedAtAttribute(): ?string
+    {
+        return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
+    }
 }
