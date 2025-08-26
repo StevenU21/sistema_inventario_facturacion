@@ -21,10 +21,8 @@ class AuditPresenter
             array_keys(array_diff_assoc($attributes, $old))
         ));
 
-
         $oldFiltered = array_intersect_key($old, array_flip($diffKeys));
         $attributesFiltered = array_intersect_key($attributes, array_flip($diffKeys));
-
 
         // Traducción de atributos por modelo
         $modelKey = class_basename($activity->subject_type);

@@ -17,6 +17,7 @@ class RolesAndPermissionSeeder extends Seeder
         'categories' => [],
         'backups' => ['read backups'],
         'companies' => ['read companies', 'create companies', 'update companies'],
+        'unit_measures' => [],
     ];
 
     const SPECIAL_PERMISSIONS = [
@@ -67,6 +68,7 @@ class RolesAndPermissionSeeder extends Seeder
             $this->filterPermissions('categories')->only(['read categories'])->get(),
             $this->filterPermissions('brands')->only(['read brands'])->get(),
             $this->filterPermissions('companies')->only(['read companies'])->get(),
+            $this->filterPermissions('unit_measures')->only(['read unit_measures'])->get(),
         );
 
         $cashierRole->givePermissionTo($cashierPermissions);

@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Company;
 use App\Models\Profile;
+use App\Models\UnitMeasure;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -43,5 +44,6 @@ class DatabaseSeeder extends Seeder
         Category::factory()->count(20)->create();
         Brand::factory()->count(20)->create();
         Company::factory()->count(1)->create();
+        UnitMeasure::factory()->count(10)->create();
     }
 }

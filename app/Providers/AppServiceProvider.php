@@ -2,10 +2,15 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use App\Models\Brand;
 use App\Models\Backup;
 use App\Models\Company;
+use App\Models\UnitMeasure;
+use App\Models\Category;
 use App\Policies\BackupPolicy;
 use App\Policies\CompanyPolicy;
+use App\Policies\UnitMeasurePolicy;
 use App\Policies\UserPolicy;
 use App\Policies\AuditPolicy;
 use App\Policies\BrandPolicy;
@@ -14,9 +19,6 @@ use App\Policies\PermissionPolicy;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
-use App\Models\User;
-use App\Models\Category;
-use App\Models\Brand;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Permission;
 
@@ -43,5 +45,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Brand::class, BrandPolicy::class);
         Gate::policy(Company::class, CompanyPolicy::class);
         Gate::policy(Backup::class, BackupPolicy::class);
+        Gate::policy(UnitMeasure::class, UnitMeasurePolicy::class);
     }
 }
