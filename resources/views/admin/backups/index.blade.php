@@ -33,9 +33,9 @@
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
                         @forelse ($files as $file)
                             <tr class="text-gray-700 dark:text-gray-400">
-                                <td class="px-4 py-3 text-sm">{{ $file['name'] }}</td>
-                                <td class="px-4 py-3 text-sm">{{ number_format($file['size'] / 1048576, 2) }} MB</td>
-                                <td class="px-4 py-3 text-sm">{{ $file['last_modified'] }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $file->name }}</td>
+                                <td class="px-4 py-3 text-sm">{{ number_format($file->size / 1048576, 2) }} MB</td>
+                                <td class="px-4 py-3 text-sm">{{ $file->last_modified }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -45,6 +45,9 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+            <div class="mt-4">
+                {{ $files->links() }}
             </div>
         </div>
     </div>
