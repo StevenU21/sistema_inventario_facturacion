@@ -10,16 +10,19 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('suppliers', function (Blueprint $table) {
+        Schema::create('entities', function (Blueprint $table) {
             $table->increments('id');
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('identity_card')->nullable();
+            $table->string('identity_card')->unique();
             $table->string('ruc')->nullable();
             $table->string('email')->unique();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->string('description')->nullable();
+            $table->boolean('is_client')->default(false);
+            $table->boolean('is_supplier')->default(false);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
@@ -29,6 +32,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('suppliers');
+        Schema::dropIfExists('entities');
     }
 };
