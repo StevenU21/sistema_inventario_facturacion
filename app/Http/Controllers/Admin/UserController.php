@@ -77,7 +77,6 @@ class UserController extends Controller
             'role' => 'required|exists:roles,name',
         ]);
         $data = $request->validated();
-        // Si el password está vacío, no actualizarlo
         if (empty($data['password'])) {
             unset($data['password']);
         } else {
@@ -90,7 +89,6 @@ class UserController extends Controller
             $profileData = $request->only(['phone', 'identity_card', 'gender', 'address']);
             $fileService = new FileService();
             if ($user->profile && $request->hasFile('avatar')) {
-                // Actualizar avatar y eliminar el anterior
                 $fileService->updateLocal($user->profile, 'avatar', $request->file('avatar'), 'user_avatar');
                 $profileData['avatar'] = $user->profile->avatar;
             } else if ($request->hasFile('avatar')) {
@@ -98,13 +96,11 @@ class UserController extends Controller
             } else if ($request->filled('avatar')) {
                 $profileData['avatar'] = $request->input('avatar');
             }
-            // Eliminar nulos para evitar errores de mass assignment
             $profileData = array_filter($profileData, fn($v) => !is_null($v));
             if ($user->profile) {
                 $user->profile->update($profileData);
             } else {
                 $profileData['user_id'] = $user->id;
-                // Si hay archivo avatar en la request, procesar igual que en store
                 if ($request->hasFile('avatar')) {
                     $profileData['avatar'] = $fileService->storeLocal($user, 'avatar', $request->file('avatar'), 'user_avatar');
                 } else if ($request->filled('avatar')) {
