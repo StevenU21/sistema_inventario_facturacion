@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Company;
+use App\Policies\CompanyPolicy;
+use App\Policies\UserPolicy;
 use App\Policies\AuditPolicy;
 use App\Policies\BrandPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\PermissionPolicy;
-use App\Policies\UserPolicy;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -37,5 +39,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Activity::class, AuditPolicy::class);
         Gate::policy(Category::class, CategoryPolicy::class);
         Gate::policy(Brand::class, BrandPolicy::class);
+        Gate::policy(Company::class, CompanyPolicy::class);
     }
 }
