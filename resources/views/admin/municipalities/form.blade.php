@@ -19,12 +19,12 @@
     <label class="block text-sm w-full">
         <span class="text-gray-700 dark:text-gray-400">Departamento</span>
         <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-            <select name="department"
-                class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('department') border-red-600 @enderror">
+            <select name="department_id"
+                class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('department_id') border-red-600 @enderror">
                 <option value="">Selecciona un departamento</option>
                 @foreach ($departments as $id => $name)
                     <option value="{{ $id }}"
-                        {{ old('department', isset($municipality) ? $municipality->department_id : '') == $id ? 'selected' : '' }}>
+                        {{ old('department_id', isset($municipality) ? $municipality->department_id : '') == $id ? 'selected' : '' }}>
                         {{ $name }}</option>
                 @endforeach
             </select>
@@ -32,7 +32,7 @@
                 <i class="fas fa-venus-mars w-5 h-5"></i>
             </div>
         </div>
-        @error('department')
+        @error('department_id')
             <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
         @enderror
     </label>
