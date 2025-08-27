@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\DepartmentController;
+use App\Http\Controllers\Admin\EntityController;
 use App\Http\Controllers\Admin\InactiveUserController;
 use App\Http\Controllers\Admin\MunicipalityController;
 use App\Http\Controllers\Admin\PaymentMethodController;
@@ -55,6 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('municipalities', MunicipalityController::class);
     Route::resource('payment_methods', PaymentMethodController::class);
     Route::resource('taxes', TaxController::class);
+    Route::resource('entities', EntityController::class);
 
     Route::get('/dashboard', function () {
         return view('dashboard');

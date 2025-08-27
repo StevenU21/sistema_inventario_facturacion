@@ -35,6 +35,7 @@ class EntityRequest extends FormRequest
         return [
             'first_name' => ['required', 'string', 'min:2', 'max:60'],
             'last_name' => ['required', 'string', 'min:2', 'max:60'],
+            'identity_card' => ['required', 'string', 'max:30', Rule::unique('entities')->ignore($this->entity)],
             'ruc' => ['required', 'string', 'max:20', Rule::unique('entities')->ignore($this->entity)],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('entities')->ignore($this->entity)],
             'phone' => ['nullable', 'string', 'max:20', Rule::unique('entities')->ignore($this->entity)],

@@ -16,6 +16,9 @@ class EntityFactory extends Factory
      */
     public function definition(): array
     {
+        $is_client = fake()->boolean(70);
+        $is_supplier = $is_client ? fake()->boolean(30) : true;
+
         return [
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
@@ -25,8 +28,8 @@ class EntityFactory extends Factory
             'phone' => fake()->phoneNumber(),
             'address' => fake()->address(),
             'description' => fake()->sentence(),
-            'is_client' => fake()->boolean(70),
-            'is_supplier' => fake()->boolean(30),
+            'is_client' => $is_client,
+            'is_supplier' => $is_supplier,
             'is_active' => fake()->boolean(90)
         ];
     }
