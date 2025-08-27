@@ -16,6 +16,11 @@ class Department extends Model
         'description',
     ];
 
+    public function municipalities()
+    {
+        return $this->hasMany(Municipality::class);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

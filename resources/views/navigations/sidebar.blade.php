@@ -10,7 +10,7 @@
                     aria-hidden="true"></span>
                 <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('dashboard') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                     href="{{ route('dashboard') }}">
-                    <i class="fas fa-home w-5 h-5"></i>
+                    <i class="fas fa-tachometer-alt w-5 h-5"></i>
                     <span class="ml-4">Inicio</span>
                 </a>
             </li>
@@ -22,7 +22,7 @@
                     aria-hidden="true"></span>
                 <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 {{ Route::is('categories.*') ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}"
                     href="{{ route('categories.index') }}">
-                    <i class="fas fa-tags w-5 h-5"></i>
+                    <i class="fas fa-th-list w-5 h-5"></i>
                     <span class="ml-4">Categorías</span>
                 </a>
             </li>
@@ -33,7 +33,7 @@
                     class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none"
                     @click="isOpen = !isOpen" aria-haspopup="true">
                     <span class="inline-flex items-center">
-                        <i class="fas fa-sign-in-alt w-5 h-5"></i>
+                        <i class="fas fa-boxes w-5 h-5"></i>
                         <span class="ml-4">Catálogo</span>
                     </span>
                     <i class="fas" :class="{ 'fa-chevron-down': !isOpen, 'fa-chevron-up': isOpen }"></i>
@@ -48,14 +48,14 @@
                     <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('categories') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('categories.index') }}">
-                            <i class="fas fa-file-alt w-5 h-5"></i>
+                            <i class="fas fa-th-list w-5 h-5"></i>
                             <span class="ml-4">Categorias</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('brands') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('brands.index') }}">
-                            <i class="fas fa-id-card w-5 h-5"></i>
+                            <i class="fas fa-tags w-5 h-5"></i>
                             <span class="ml-4">Marcas</span>
                         </a>
                     </li>
@@ -63,22 +63,29 @@
                         @php $company = \App\Models\Company::first(); @endphp
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('companies.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ $company ? route('companies.show', $company) : route('companies.create') }}">
-                            <i class="fas fa-chart-bar w-5 h-5"></i>
+                            <i class="fas fa-building w-5 h-5"></i>
                             <span class="ml-4">Empresas</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('unit_measures') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('unit_measures.index') }}">
-                            <i class="fas fa-mouse-pointer w-5 h-5"></i>
+                            <i class="fas fa-balance-scale w-5 h-5"></i>
                             <span class="ml-4">Unidades de Medida</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('departments') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('departments.index') }}">
-                            <i class="fas fa-mouse-pointer w-5 h-5"></i>
+                            <i class="fas fa-map-marked-alt w-5 h-5"></i>
                             <span class="ml-4">Departamentos</span>
+                        </a>
+                    </li>
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('municipalities') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('municipalities.index') }}">
+                            <i class="fas fa-city w-5 h-5"></i>
+                            <span class="ml-4">Municipios</span>
                         </a>
                     </li>
                 </ul>
@@ -89,7 +96,7 @@
                     class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none"
                     @click="isOpen = !isOpen" aria-haspopup="true">
                     <span class="inline-flex items-center">
-                        <i class="fas fa-cogs w-5 h-5"></i>
+                        <i class="fas fa-tools w-5 h-5"></i>
                         <span class="ml-4">Administración</span>
                     </span>
                     <i class="fas" :class="{ 'fa-chevron-down': !isOpen, 'fa-chevron-up': isOpen }"></i>
@@ -104,28 +111,28 @@
                     <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('users.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('users.index') }}">
-                            <i class="fas fa-users-cog w-5 h-5"></i>
+                            <i class="fas fa-user-friends w-5 h-5"></i>
                             <span class="ml-4">Usuarios</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('users.inactive') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('users.inactive') }}">
-                            <i class="fas fa-user-slash w-5 h-5"></i>
+                            <i class="fas fa-user-times w-5 h-5"></i>
                             <span class="ml-4">Usuarios Inactivos</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('audits.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('audits.index') }}">
-                            <i class="fas fa-clipboard-list w-5 h-5"></i>
+                            <i class="fas fa-search w-5 h-5"></i>
                             <span class="ml-4">Auditoría</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('backups.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('backups.index') }}">
-                            <i class="fas fa-database w-5 h-5"></i>
+                            <i class="fas fa-hdd w-5 h-5"></i>
                             <span class="ml-4">Backups</span>
                         </a>
                     </li>
