@@ -58,6 +58,15 @@ class EntityRequest extends FormRequest
                 $validator->errors()->add('is_client', 'Debe seleccionar al menos Cliente o Proveedor.');
                 $validator->errors()->add('is_supplier', 'Debe seleccionar al menos Cliente o Proveedor.');
             }
+
+            // Validación para cashier: no puede establecer is_supplier en true sin permiso especial
+            $user = $this->user();
+            if ($user && $user->hasRole('cashier')) {
+                // Si intenta marcar is_supplier como true y no tiene permiso especial
+                if ($isSupplier && !$user->can('can create suppliers')) {
+                    $validator->errors()->add('is_supplier', 'No tiene permiso para registrar proveedores.');
+                }
+            }
         });
     }
 }
