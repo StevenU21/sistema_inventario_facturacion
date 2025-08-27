@@ -46,7 +46,8 @@
                         @forelse($unitMeasures as $unitMeasure)
                             <tr class="text-gray-700 dark:text-gray-400">
                                 <td class="px-4 py-3 text-xs">
-                                    <span class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
+                                    <span
+                                        class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
                                         {{ $unitMeasure->id }}
                                     </span>
                                 </td>
@@ -57,7 +58,7 @@
                                     {{ $unitMeasure->description }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $unitMeasure->formatted_created_at ?? '-'}}
+                                    {{ $unitMeasure->formatted_created_at ?? '-' }}
                                 </td>
 
                                 <td class="px-4 py-3">
@@ -72,7 +73,8 @@
                                             aria-label="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ route('unit_measures.destroy', $unitMeasure) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta unidad de medida?');">
+                                        <form action="{{ route('unit_measures.destroy', $unitMeasure) }}" method="POST"
+                                            onsubmit="return confirm('¿Estás seguro de eliminar esta unidad de medida?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -86,7 +88,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-4 py-3 text-center text-gray-400 dark:text-gray-500">No se encontraron marcas.</td>
+                                <td colspan="4" class="px-4 py-3 text-center text-gray-400 dark:text-gray-500">No se
+                                    encontraron marcas.</td>
                             </tr>
                         @endforelse
                     </tbody>
