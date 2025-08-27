@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CompanyController;
+use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\InactiveUserController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\UnitMeasureController;
@@ -28,7 +29,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin Routes
     Route::get('users/inactive', [InactiveUserController::class, 'index'])->name('users.inactive');
     Route::post('users/inactive/{id}/reactivate', [InactiveUserController::class, 'reactivate'])->name('inactive-users.reactivate');
-    Route::resource('users', UserController::class);
+    Route::resource('users', UserController::class)->except(['destroy']);
 
     // User Permissions
     Route::get('users/{user}/permissions/edit', [PermissionController::class, 'edit'])->name('users.permissions.edit');
@@ -45,8 +46,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('categories', CategoryController::class);
     Route::resource('brands', BrandController::class);
-    Route::resource('companies', CompanyController::class);
+    Route::resource('companies', CompanyController::class)->except(['destroy']);
     Route::resource('unit_measures', UnitMeasureController::class);
+    Route::resource('departments', DepartmentController::class);
 
     Route::get('/dashboard', function () {
         return view('dashboard');

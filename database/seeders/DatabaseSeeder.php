@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Company;
+use App\Models\Department;
 use App\Models\Profile;
 use App\Models\UnitMeasure;
 use App\Models\User;
@@ -41,9 +42,10 @@ class DatabaseSeeder extends Seeder
         ]);
         $cashierUser->assignRole('cashier');
 
-        Category::factory()->count(20)->create();
-        Brand::factory()->count(20)->create();
+        Category::factory()->count(26)->create();
+        Brand::factory()->count(33)->create();
         Company::factory()->count(1)->create();
-        UnitMeasure::factory()->count(10)->create();
+        UnitMeasure::factory()->count(12)->create();
+        Department::factory()->count(45)->create();
     }
 }
