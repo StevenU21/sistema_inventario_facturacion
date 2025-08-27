@@ -42,31 +42,7 @@ class EntityRequest extends FormRequest
             'description' => ['nullable', 'string', 'min:5', 'max:120'],
             'is_client' => ['required', 'boolean'],
             'is_supplier' => ['required', 'boolean'],
-            'is_active' => ['required', 'boolean'],
+            'is_active' => ['required', 'boolean']
         ];
-    }
-
-    /**
-     * Configure the validator instance.
-     */
-    public function withValidator($validator)
-    {
-        $validator->after(function ($validator) {
-            $isClient = $this->boolean('is_client');
-            $isSupplier = $this->boolean('is_supplier');
-            if (!$isClient && !$isSupplier) {
-                $validator->errors()->add('is_client', 'Debe seleccionar al menos Cliente o Proveedor.');
-                $validator->errors()->add('is_supplier', 'Debe seleccionar al menos Cliente o Proveedor.');
-            }
-
-            // Validación para cashier: no puede establecer is_supplier en true sin permiso especial
-            $user = $this->user();
-            if ($user && $user->hasRole('cashier')) {
-                // Si intenta marcar is_supplier como true y no tiene permiso especial
-                if ($isSupplier && !$user->can('can create suppliers')) {
-                    $validator->errors()->add('is_supplier', 'No tiene permiso para registrar proveedores.');
-                }
-            }
-        });
     }
 }
