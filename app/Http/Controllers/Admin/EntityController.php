@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EntityRequest;
+use App\Models\Department;
 use App\Models\Entity;
+use App\Models\Municipality;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class EntityController extends Controller
@@ -21,7 +23,10 @@ class EntityController extends Controller
     public function create()
     {
         $this->authorize('create', Entity::class);
-        return view('admin.entities.create');
+        $departments = Department::orderBy('name')->pluck('name', 'id');
+        $municipalities = Municipality::orderBy('name')->pluck('name', 'id');
+        $departmentsByMunicipality = Municipality::pluck('department_id', 'id');
+        return view('admin.entities.create', compact('departments', 'municipalities', 'departmentsByMunicipality'));
     }
 
     public function store(EntityRequest $request)
@@ -39,7 +44,10 @@ class EntityController extends Controller
     public function edit(Entity $entity)
     {
         $this->authorize('update', $entity);
-        return view('admin.entities.edit', compact('entity'));
+        $departments = Department::orderBy('name')->pluck('name', 'id');
+        $municipalities = Municipality::orderBy('name')->pluck('name', 'id');
+        $departmentsByMunicipality = Municipality::pluck('department_id', 'id');
+        return view('admin.entities.edit', compact('entity', 'departments', 'municipalities', 'departmentsByMunicipality'));
     }
 
     public function update(EntityRequest $request, Entity $entity)

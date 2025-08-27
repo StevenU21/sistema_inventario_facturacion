@@ -102,6 +102,57 @@
         @enderror
     </label>
 
+
+    <!-- Departamento y Municipio en la misma línea -->
+    <div class="flex flex-col md:flex-row gap-4 mt-4">
+        <!-- Departamento -->
+        <label class="block text-sm w-full">
+            <span class="text-gray-700 dark:text-gray-400">Departamento</span>
+            <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+                <select name="department_id" id="department_id"
+                    class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('department_id') border-red-600 @enderror"
+                    required>
+                    <option value="">Seleccione un departamento...</option>
+                    @foreach ($departments as $id => $name)
+                        <option value="{{ $id }}"
+                            {{ old('department_id', isset($entity) && isset($entity->municipality) ? $entity->municipality->department_id : '') == $id ? 'selected' : '' }}>
+                            {{ $name }}</option>
+                    @endforeach
+                </select>
+                <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
+                    <i class="fas fa-map w-5 h-5"></i>
+                </div>
+            </div>
+            @error('department_id')
+                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+            @enderror
+        </label>
+
+        <!-- Municipio -->
+        <label class="block text-sm w-full">
+            <span class="text-gray-700 dark:text-gray-400">Municipio</span>
+            <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+                <select name="municipality_id" id="municipality_id"
+                    class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('municipality_id') border-red-600 @enderror"
+                    required>
+                    <option value="">Seleccione un municipio...</option>
+                    @foreach ($municipalities as $id => $name)
+                        <option value="{{ $id }}"
+                            data-department="{{ $departmentsByMunicipality[$id] ?? '' }}"
+                            {{ old('municipality_id', isset($entity) ? $entity->municipality_id : '') == $id ? 'selected' : '' }}>
+                            {{ $name }}</option>
+                    @endforeach
+                </select>
+                <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
+                    <i class="fas fa-map-marked-alt w-5 h-5"></i>
+                </div>
+            </div>
+            @error('municipality_id')
+                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+            @enderror
+        </label>
+    </div>
+
     <!-- Dirección -->
     <label class="block mt-4 text-sm w-full">
         <span class="text-gray-700 dark:text-gray-400">Dirección</span>
@@ -136,28 +187,28 @@
 
     <!-- Apartado Cliente | Proveedor | Activo -->
     <div class="mt-6 p-4 border-2 border-purple-300 rounded-lg">
-        <span class="block text-lg font-semibold text-purple-700 dark:text-purple-300 mb-4">Estado del Usuario</span>
+        <span class="block text-base font-semibold text-purple-700 dark:text-purple-300 mb-4">Estado del Usuario</span>
         <div class="flex flex-col md:flex-row gap-4">
-            <label class="flex items-center text-lg w-full">
+            <label class="flex items-center text-sm w-full">
                 <input type="hidden" name="is_client" value="0" />
                 <input type="checkbox" name="is_client" value="1"
                     {{ old('is_client', isset($entity) ? $entity->is_client : false) ? 'checked' : '' }}
-                    class="form-checkbox text-purple-600 h-6 w-6" />
-                <span class="ml-3 text-gray-800 dark:text-gray-200">Cliente</span>
+                    class="form-checkbox text-purple-600 h-4 w-4" />
+                <span class="ml-2 text-gray-800 dark:text-gray-200">Cliente</span>
             </label>
-            <label class="flex items-center text-lg w-full">
+            <label class="flex items-center text-sm w-full">
                 <input type="hidden" name="is_supplier" value="0" />
                 <input type="checkbox" name="is_supplier" value="1"
                     {{ old('is_supplier', isset($entity) ? $entity->is_supplier : false) ? 'checked' : '' }}
-                    class="form-checkbox text-purple-600 h-6 w-6" />
-                <span class="ml-3 text-gray-800 dark:text-gray-200">Proveedor</span>
+                    class="form-checkbox text-purple-600 h-4 w-4" />
+                <span class="ml-2 text-gray-800 dark:text-gray-200">Proveedor</span>
             </label>
-            <label class="flex items-center text-lg w-full">
+            <label class="flex items-center text-sm w-full">
                 <input type="hidden" name="is_active" value="0" />
                 <input type="checkbox" name="is_active" value="1"
                     {{ old('is_active', isset($entity) ? $entity->is_active : true) ? 'checked' : '' }}
-                    class="form-checkbox text-purple-600 h-6 w-6" />
-                <span class="ml-3 text-gray-800 dark:text-gray-200">Activo</span>
+                    class="form-checkbox text-purple-600 h-4 w-4" />
+                <span class="ml-2 text-gray-800 dark:text-gray-200">Activo</span>
             </label>
         </div>
     </div>
@@ -170,3 +221,26 @@
         </button>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const departmentSelect = document.getElementById('department_id');
+        const municipalitySelect = document.getElementById('municipality_id');
+
+        function filterMunicipalities() {
+            const departmentId = departmentSelect.value;
+            Array.from(municipalitySelect.options).forEach(option => {
+                if (!option.value) return; // skip placeholder
+                option.style.display = option.getAttribute('data-department') === departmentId ? '' :
+                    'none';
+            });
+            // Opcional: reset municipio si no corresponde
+            if (municipalitySelect.selectedOptions.length && municipalitySelect.selectedOptions[0].style
+                .display === 'none') {
+                municipalitySelect.value = '';
+            }
+        }
+        departmentSelect.addEventListener('change', filterMunicipalities);
+        filterMunicipalities();
+    });
+</script>

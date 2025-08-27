@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Municipality;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,7 +23,7 @@ class EntityFactory extends Factory
         return [
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
-            'identity_card' => fake()->unique()->safeEmail(),
+            'identity_card' => fake()->unique()->identificationNumber(),
             'ruc' => fake()->unique()->numerify('###-###-###'),
             'email' => fake()->unique()->safeEmail(),
             'phone' => fake()->phoneNumber(),
@@ -30,7 +31,8 @@ class EntityFactory extends Factory
             'description' => fake()->sentence(),
             'is_client' => $is_client,
             'is_supplier' => $is_supplier,
-            'is_active' => fake()->boolean(90)
+            'is_active' => fake()->boolean(90),
+            'municipality_id' => Municipality::inRandomOrder()->first()->id
         ];
     }
 }

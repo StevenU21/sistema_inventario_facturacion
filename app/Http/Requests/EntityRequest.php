@@ -43,7 +43,8 @@ class EntityRequest extends FormRequest
             'description' => ['nullable', 'string', 'min:5', 'max:120'],
             'is_client' => ['required', 'boolean'],
             'is_supplier' => ['required', 'boolean'],
-            'is_active' => ['required', 'boolean']
+            'is_active' => ['required', 'boolean'],
+            'municipality_id' => ['required', 'exists:municipalities,id'],
         ];
     }
 }

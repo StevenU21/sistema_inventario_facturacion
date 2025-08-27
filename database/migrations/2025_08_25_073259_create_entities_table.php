@@ -23,6 +23,9 @@ return new class extends Migration {
             $table->boolean('is_client')->default(false);
             $table->boolean('is_supplier')->default(false);
             $table->boolean('is_active')->default(true);
+
+            $table->integer('municipality_id')->unsigned();
+            $table->foreign('municipality_id')->references('id')->on('municipalities')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

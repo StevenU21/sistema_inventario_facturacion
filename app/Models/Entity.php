@@ -24,6 +24,11 @@ class Entity extends Model
         'is_active'
     ];
 
+    public function municipality()
+    {
+        return $this->belongsTo(Municipality::class);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
