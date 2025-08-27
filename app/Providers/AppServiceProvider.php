@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Department;
 use App\Models\Municipality;
 use App\Models\PaymentMethod;
+use App\Models\Tax;
 use App\Models\User;
 use App\Models\Brand;
 use App\Models\Backup;
@@ -16,6 +17,7 @@ use App\Policies\CompanyPolicy;
 use App\Policies\DepartmentPolicy;
 use App\Policies\MunicipalityPolicy;
 use App\Policies\PaymentMethodPolicy;
+use App\Policies\TaxPolicy;
 use App\Policies\UnitMeasurePolicy;
 use App\Policies\UserPolicy;
 use App\Policies\AuditPolicy;
@@ -55,5 +57,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Municipality::class, MunicipalityPolicy::class);
         Gate::policy(PaymentMethod::class, PaymentMethodPolicy::class);
+        Gate::policy(Tax::class, TaxPolicy::class);
     }
 }

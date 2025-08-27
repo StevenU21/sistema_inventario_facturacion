@@ -21,6 +21,7 @@ class RolesAndPermissionSeeder extends Seeder
         'departments' => [],
         'municipalities' => [],
         'payment_methods' => [],
+        'taxes' => [],
     ];
 
     const SPECIAL_PERMISSIONS = [
@@ -75,6 +76,7 @@ class RolesAndPermissionSeeder extends Seeder
             $this->filterPermissions('departments')->only(['read departments'])->get(),
             $this->filterPermissions('municipalities')->only(['read municipalities'])->get(),
             $this->filterPermissions('payment_methods')->only(['read payment_methods'])->get(),
+            $this->filterPermissions('taxes')->only(['read taxes'])->get(),
         );
 
         $cashierRole->givePermissionTo($cashierPermissions);

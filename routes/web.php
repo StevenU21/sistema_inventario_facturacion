@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\InactiveUserController;
 use App\Http\Controllers\Admin\MunicipalityController;
 use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Admin\UnitMeasureController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
@@ -53,6 +54,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('departments', DepartmentController::class);
     Route::resource('municipalities', MunicipalityController::class);
     Route::resource('payment_methods', PaymentMethodController::class);
+    Route::resource('taxes', TaxController::class);
 
     Route::get('/dashboard', function () {
         return view('dashboard');
