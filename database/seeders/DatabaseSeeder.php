@@ -6,8 +6,10 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Company;
 use App\Models\Department;
+use App\Models\Entity;
 use App\Models\Municipality;
 use App\Models\PaymentMethod;
+use App\Models\ProductStatus;
 use App\Models\Profile;
 use App\Models\Tax;
 use App\Models\UnitMeasure;
@@ -53,5 +55,7 @@ class DatabaseSeeder extends Seeder
         Municipality::factory()->count(50)->create();
         PaymentMethod::factory()->count(10)->create();
         Tax::factory()->count(10)->create();
+        ProductStatus::factory()->count(10)->create();
+        Entity::factory()->count(50)->create();
     }
 }
