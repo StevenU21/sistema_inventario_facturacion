@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Brand;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class BrandRequest extends FormRequest
 {
@@ -31,7 +32,7 @@ class BrandRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'min:3', 'max:60'],
+            'name' => ['required', 'string', 'min:3', 'max:60', Rule::unique('brands')->ignore($this->brand)],
             'description' => ['nullable', 'string', 'min:10', 'max:120'],
         ];
     }

@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\UnitMeasure;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UnitMeasureRequest extends FormRequest
 {
@@ -31,7 +32,7 @@ class UnitMeasureRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', Rule::unique('unit_measures')->ignore($this->unit_measure)],
             'abbreviation' => ['required', 'string', 'max:10'],
             'description' => ['nullable', 'string', 'max:255'],
         ];
