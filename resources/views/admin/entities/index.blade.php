@@ -31,9 +31,9 @@
                             <th class="px-4 py-3"><i class="fas fa-user mr-2"></i>Nombres</th>
                             <th class="px-4 py-3"><i class="fas fa-user mr-2"></i>Apellidos</th>
                             <th class="px-4 py-3"><i class="fas fa-id-card mr-2"></i>Cédula</th>
-                            <th class="px-4 py-3"><i class="fas fa-id-card mr-2"></i>RUC</th>
-                            <th class="px-4 py-3"><i class="fas fa-envelope mr-2"></i>Email</th>
                             <th class="px-4 py-3"><i class="fas fa-phone mr-2"></i>Teléfono</th>
+                            <th class="px-4 py-3"><i class="fas fa-envelope mr-2"></i>Email</th>
+                            <th class="px-4 py-3"><i class="fas fa-id-card mr-2"></i>RUC</th>
                             <th class="px-4 py-3"><i class="fas fa-map-marker-alt mr-2"></i>Dirección</th>
                             <th class="px-4 py-3"><i class="fas fa-align-left mr-2"></i>Descripción</th>
                             <th class="px-4 py-3"><i class="fas fa-user-check mr-2"></i>Cliente</th>
@@ -55,9 +55,9 @@
                                 <td class="px-4 py-3 text-sm">{{ $entity->first_name }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $entity->last_name }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $entity->identity_card }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $entity->ruc }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $entity->email }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $entity->phone }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $entity->email }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $entity->ruc }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $entity->address }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $entity->description }}</td>
                                 <td class="px-4 py-3 text-sm">

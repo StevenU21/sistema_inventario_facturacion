@@ -134,29 +134,32 @@
         @enderror
     </label>
 
-    <!-- Cliente | Proveedor | Activo -->
-    <div class="flex flex-col md:flex-row gap-4 mt-4">
-        <label class="flex items-center text-sm w-full">
-            <input type="hidden" name="is_client" value="0" />
-            <input type="checkbox" name="is_client" value="1"
-                {{ old('is_client', isset($entity) ? $entity->is_client : false) ? 'checked' : '' }}
-                class="form-checkbox text-purple-600" />
-            <span class="ml-2 text-gray-700 dark:text-gray-400">Cliente</span>
-        </label>
-        <label class="flex items-center text-sm w-full">
-            <input type="hidden" name="is_supplier" value="0" />
-            <input type="checkbox" name="is_supplier" value="1"
-                {{ old('is_supplier', isset($entity) ? $entity->is_supplier : false) ? 'checked' : '' }}
-                class="form-checkbox text-purple-600" />
-            <span class="ml-2 text-gray-700 dark:text-gray-400">Proveedor</span>
-        </label>
-        <label class="flex items-center text-sm w-full">
-            <input type="hidden" name="is_active" value="0" />
-            <input type="checkbox" name="is_active" value="1"
-                {{ old('is_active', isset($entity) ? $entity->is_active : true) ? 'checked' : '' }}
-                class="form-checkbox text-purple-600" />
-            <span class="ml-2 text-gray-700 dark:text-gray-400">Activo</span>
-        </label>
+    <!-- Apartado Cliente | Proveedor | Activo -->
+    <div class="mt-6 p-4 border-2 border-purple-300 rounded-lg">
+        <span class="block text-lg font-semibold text-purple-700 dark:text-purple-300 mb-4">Estado del Usuario</span>
+        <div class="flex flex-col md:flex-row gap-4">
+            <label class="flex items-center text-lg w-full">
+                <input type="hidden" name="is_client" value="0" />
+                <input type="checkbox" name="is_client" value="1"
+                    {{ old('is_client', isset($entity) ? $entity->is_client : false) ? 'checked' : '' }}
+                    class="form-checkbox text-purple-600 h-6 w-6" />
+                <span class="ml-3 text-gray-800 dark:text-gray-200">Cliente</span>
+            </label>
+            <label class="flex items-center text-lg w-full">
+                <input type="hidden" name="is_supplier" value="0" />
+                <input type="checkbox" name="is_supplier" value="1"
+                    {{ old('is_supplier', isset($entity) ? $entity->is_supplier : false) ? 'checked' : '' }}
+                    class="form-checkbox text-purple-600 h-6 w-6" />
+                <span class="ml-3 text-gray-800 dark:text-gray-200">Proveedor</span>
+            </label>
+            <label class="flex items-center text-lg w-full">
+                <input type="hidden" name="is_active" value="0" />
+                <input type="checkbox" name="is_active" value="1"
+                    {{ old('is_active', isset($entity) ? $entity->is_active : true) ? 'checked' : '' }}
+                    class="form-checkbox text-purple-600 h-6 w-6" />
+                <span class="ml-3 text-gray-800 dark:text-gray-200">Activo</span>
+            </label>
+        </div>
     </div>
 
     <!-- Botón enviar -->
