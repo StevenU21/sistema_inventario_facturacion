@@ -29,7 +29,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin Routes
     Route::get('users/inactive', [InactiveUserController::class, 'index'])->name('users.inactive');
     Route::post('users/inactive/{id}/reactivate', [InactiveUserController::class, 'reactivate'])->name('inactive-users.reactivate');
-    Route::resource('users', UserController::class)->except(['destroy']);
+    Route::resource('users', UserController::class);
 
     // User Permissions
     Route::get('users/{user}/permissions/edit', [PermissionController::class, 'edit'])->name('users.permissions.edit');

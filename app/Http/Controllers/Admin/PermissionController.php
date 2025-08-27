@@ -14,7 +14,7 @@ class PermissionController extends Controller
 
     public function edit(User $user)
     {
-        $this->authorize('view', $user);
+        $this->authorize('view', Permission::class);
         $directPermissions = $user->getDirectPermissions()->pluck('name');
         $rolePermissions = $user->getPermissionsViaRoles()->pluck('name');
         $allPermissions = Permission::all()->pluck('name');
@@ -25,7 +25,7 @@ class PermissionController extends Controller
 
     public function assignPermission(Request $request, User $user)
     {
-        $this->authorize('create', $user);
+        $this->authorize('create', Permission::class);
         $request->validate([
             'permission' => ['nullable', 'array'],
             'permission.*' => ['exists:permissions,name'],
@@ -38,7 +38,7 @@ class PermissionController extends Controller
 
     public function revokePermission(Request $request, User $user)
     {
-        $this->authorize('update', $user);
+        $this->authorize('update', Permission::class);
         $request->validate([
             'permission' => ['required', 'array'],
             'permission.*' => ['exists:permissions,name'],
