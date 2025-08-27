@@ -33,7 +33,7 @@ class TaxRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('taxes')->ignore($this->tax)],
-            'percentaje' => ['required', 'numeric', 'min:0', 'max:100'],
+            'percentage' => ['required', 'numeric', 'min:0', 'max:100'],
             'is_default' => ['nullable', 'boolean']
         ];
     }

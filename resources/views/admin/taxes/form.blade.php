@@ -22,7 +22,8 @@
             <input name="percentage" type="number" min="0" max="100"
                 class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray"
                 placeholder="Escribe un porcentaje..."
-                value="{{ old('percentage', isset($tax) ? $tax->percentage : '') }}" required />
+                value="{{ old('percentage', isset($tax) ? $tax->percentage : '') }}" required step="0.01"
+                inputmode="decimal" pattern="[0-9]+([\.,][0-9]{1,2})?" />
             <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                 <i class="fas fa-percent w-5 h-5"></i>
             </div>
