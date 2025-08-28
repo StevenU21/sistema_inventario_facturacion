@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Company;
 use App\Models\Entity;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -16,7 +15,7 @@ class EntityRequest extends FormRequest
     {
         if ($this->isMethod('post')) {
             return $this->user()->can('create', Entity::class);
-        }
+        }                                 
 
         if ($this->isMethod('put') || $this->isMethod('patch')) {
             return $this->user()->can('update', $this->route('entity'));

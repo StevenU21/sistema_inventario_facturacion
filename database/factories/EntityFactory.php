@@ -23,7 +23,7 @@ class EntityFactory extends Factory
         return [
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
-            'identity_card' => fake()->unique()->identificationNumber(),
+            'identity_card' => fake()->unique()->numerify('##########'),
             'ruc' => fake()->unique()->numerify('###-###-###'),
             'email' => fake()->unique()->safeEmail(),
             'phone' => fake()->phoneNumber(),
