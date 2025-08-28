@@ -42,6 +42,38 @@ class AuditTranslation
                 'name' => 'Nombre',
                 'description' => 'Descripción',
             ],
+            'Municipality' => [
+                'name' => 'Nombre',
+                'description' => 'Descripción',
+            ],
+            'Department' => [
+                'name' => 'Nombre',
+                'description' => 'Descripción',
+            ],
+            'PaymentMethod' => [
+                'name' => 'Nombre',
+                'description' => 'Descripción',
+            ],
+            'Tax' => [
+                'name' => 'Nombre',
+                'description' => 'Descripción',
+            ],
+            'Entity' => [
+                'first_name' => 'Nombre',
+                'last_name' => 'Apellido',
+                'identity_card' => 'Cédula',
+                'ruc' => 'RUC',
+                'address' => 'Dirección',
+                'description' => 'Descripción',
+                'is_client' => 'Es Cliente',
+                'is_supplier' => 'Es Proveedor',
+                'is_active' => 'Es Activo',
+                'municipality_id' => 'Municipio'
+            ],
+            'UnitMeasure' => [
+                'name' => 'Nombre',
+                'description' => 'Descripción',
+            ],
         ];
     }
 
@@ -83,6 +115,22 @@ class AuditTranslation
     {
         // Traducción para is_active
         if ($field === 'is_active' || $field === 'Activo') {
+            if ($value === 1 || $value === true || $value === '1') {
+                return 'Verdadero';
+            } elseif ($value === 0 || $value === false || $value === '0') {
+                return 'Falso';
+            }
+        }
+
+        if ($field === 'is_client' || $field === 'Activo') {
+            if ($value === 1 || $value === true || $value === '1') {
+                return 'Verdadero';
+            } elseif ($value === 0 || $value === false || $value === '0') {
+                return 'Falso';
+            }
+        }
+
+        if ($field === 'is_supplier' || $field === 'Activo') {
             if ($value === 1 || $value === true || $value === '1') {
                 return 'Verdadero';
             } elseif ($value === 0 || $value === false || $value === '0') {
