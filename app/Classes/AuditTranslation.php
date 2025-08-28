@@ -67,7 +67,13 @@ class AuditTranslation
             'Profile' => 'Perfil',
             'Brand' => 'Marca',
             'Company' => 'Empresa',
-            'Category' => 'Categoría'
+            'Category' => 'Categoría',
+            'Municipality' => 'Municipio',
+            'Department' => 'Departamento',
+            'PaymentMethod' => 'Método de Pago',
+            'Tax' => 'Impuesto',
+            'Entity' => 'Cliente & Proveedor',
+            'UnitMeasure' => 'Unidad de Medida'
         ];
     }
     /**
@@ -83,6 +89,7 @@ class AuditTranslation
                 return 'Falso';
             }
         }
+
         // Traducción para gender
         if ($field === 'gender' || $field === 'Género') {
             if ($value === 'male') {
