@@ -186,29 +186,49 @@
     </label>
 
     <!-- Apartado Cliente | Proveedor | Activo -->
-    <div class="mt-6 p-4 border-2 border-purple-300 rounded-lg">
-        <span class="block text-base font-semibold text-purple-700 dark:text-purple-300 mb-4">Estado del Usuario</span>
-        <div class="flex flex-col md:flex-row gap-4">
-            <label class="flex items-center text-sm w-full">
+    <div class="mt-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+        <span class="block text-base font-semibold text-gray-800 dark:text-gray-200 mb-4">Estado del Usuario</span>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <label class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-transparent hover:border-purple-300 transition-colors cursor-pointer">
                 <input type="hidden" name="is_client" value="0" />
                 <input type="checkbox" name="is_client" value="1"
                     {{ old('is_client', isset($entity) ? $entity->is_client : false) ? 'checked' : '' }}
-                    class="form-checkbox text-purple-600 h-4 w-4" />
-                <span class="ml-2 text-gray-800 dark:text-gray-200">Cliente</span>
+                    class="form-checkbox h-5 w-5 text-purple-600" />
+                <div class="ml-3">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-user text-purple-600"></i>
+                        <span class="text-sm font-medium text-gray-800 dark:text-gray-200">Cliente</span>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Marcar si es cliente</p>
+                </div>
             </label>
-            <label class="flex items-center text-sm w-full">
+
+            <label class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-transparent hover:border-purple-300 transition-colors cursor-pointer">
                 <input type="hidden" name="is_supplier" value="0" />
                 <input type="checkbox" name="is_supplier" value="1"
                     {{ old('is_supplier', isset($entity) ? $entity->is_supplier : false) ? 'checked' : '' }}
-                    class="form-checkbox text-purple-600 h-4 w-4" />
-                <span class="ml-2 text-gray-800 dark:text-gray-200">Proveedor</span>
+                    class="form-checkbox h-5 w-5 text-purple-600" />
+                <div class="ml-3">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-truck text-purple-600"></i>
+                        <span class="text-sm font-medium text-gray-800 dark:text-gray-200">Proveedor</span>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Marcar si es proveedor</p>
+                </div>
             </label>
-            <label class="flex items-center text-sm w-full">
+
+            <label class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-transparent hover:border-purple-300 transition-colors cursor-pointer">
                 <input type="hidden" name="is_active" value="0" />
                 <input type="checkbox" name="is_active" value="1"
                     {{ old('is_active', isset($entity) ? $entity->is_active : true) ? 'checked' : '' }}
-                    class="form-checkbox text-purple-600 h-4 w-4" />
-                <span class="ml-2 text-gray-800 dark:text-gray-200">Activo</span>
+                    class="form-checkbox h-5 w-5 text-purple-600" />
+                <div class="ml-3">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-check-circle text-green-500"></i>
+                        <span class="text-sm font-medium text-gray-800 dark:text-gray-200">Activo</span>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Estado activo del usuario</p>
+                </div>
             </label>
         </div>
     </div>
