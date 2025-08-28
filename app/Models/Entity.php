@@ -21,7 +21,8 @@ class Entity extends Model
         'description',
         'is_client',
         'is_supplier',
-        'is_active'
+        'is_active',
+        'municipality_id'
     ];
 
     public function municipality()

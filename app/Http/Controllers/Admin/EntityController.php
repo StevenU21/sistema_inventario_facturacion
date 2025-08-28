@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\EntityRequest;
 use App\Models\Department;
 use App\Models\Entity;
 use App\Models\Municipality;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\EntityRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class EntityController extends Controller
@@ -31,6 +31,7 @@ class EntityController extends Controller
 
     public function store(EntityRequest $request)
     {
+        $this->authorize('create', Entity::class);
         Entity::create($request->validated());
         return redirect()->route('entities.index')->with('success', 'Entidad creada correctamente.');
     }
@@ -52,6 +53,7 @@ class EntityController extends Controller
 
     public function update(EntityRequest $request, Entity $entity)
     {
+        $this->authorize('update', $entity);
         $entity->update($request->validated());
         return redirect()->route('entities.index')->with('success', 'Entidad actualizada correctamente.');
     }

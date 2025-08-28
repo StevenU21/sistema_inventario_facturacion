@@ -20,14 +20,24 @@ class EntityPolicy
         return $this->checkPermission($user, 'read entities');
     }
 
-    public function create(User $user): bool
+    public function create_clients(User $user): bool
     {
-        return $this->checkPermission($user, 'create entities');
+        return $this->checkPermission($user, 'create clients');
     }
 
-    public function update(User $user): bool
+    public function update_clients(User $user): bool
     {
-        return $this->checkPermission($user, 'update entities');
+        return $this->checkPermission($user, 'update clients');
+    }
+
+    public function create_suppliers(User $user): bool
+    {
+        return $this->checkPermission($user, 'create suppliers');
+    }
+
+    public function update_suppliers(User $user): bool
+    {
+        return $this->checkPermission($user, 'update suppliers');
     }
 
     public function destroy(User $user): bool
