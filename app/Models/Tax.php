@@ -22,6 +22,11 @@ class Tax extends Model
             ->logOnly(['name', 'percentage', 'is_default']);
     }
 
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
     public function getFormattedCreatedAtAttribute(): ?string
     {
         return $this->created_at ? $this->created_at->format('d/m/Y H:i:s') : null;

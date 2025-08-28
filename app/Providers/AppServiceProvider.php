@@ -6,6 +6,7 @@ use App\Models\Department;
 use App\Models\Entity;
 use App\Models\Municipality;
 use App\Models\PaymentMethod;
+use App\Models\Product;
 use App\Models\Tax;
 use App\Models\User;
 use App\Models\Brand;
@@ -19,6 +20,7 @@ use App\Policies\DepartmentPolicy;
 use App\Policies\EntityPolicy;
 use App\Policies\MunicipalityPolicy;
 use App\Policies\PaymentMethodPolicy;
+use App\Policies\ProductPolicy;
 use App\Policies\TaxPolicy;
 use App\Policies\UnitMeasurePolicy;
 use App\Policies\UserPolicy;
@@ -61,5 +63,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(PaymentMethod::class, PaymentMethodPolicy::class);
         Gate::policy(Tax::class, TaxPolicy::class);
         Gate::policy(Entity::class, EntityPolicy::class);
+        Gate::policy(Product::class, ProductPolicy::class);
     }
 }

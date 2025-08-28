@@ -21,6 +21,11 @@ class Category extends Model
             ->logOnly(['name', 'description']);
     }
 
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
     public function getFormattedCreatedAtAttribute(): ?string
     {
         return $this->created_at ? $this->created_at->format('d/m/Y H:i:s') : null;

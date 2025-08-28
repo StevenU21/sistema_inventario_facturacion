@@ -61,4 +61,3 @@ class PermissionController extends Controller
         return back()->with('success', $message);
     }
 }
-
