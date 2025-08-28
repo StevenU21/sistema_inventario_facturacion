@@ -22,14 +22,14 @@ class RolesAndPermissionSeeder extends Seeder
         'municipalities' => [],
         'payment_methods' => [],
         'taxes' => [],
-        'entities' => ['read', 'destroy']
+        'entities' => ['destroy']
     ];
 
     const SPECIAL_PERMISSIONS = [
         'permissions' => ['assign permissions', 'revoke permissions'],
         'users' => ['reactivate users'],
         'audits' => ['export audits'],
-        'entities' => ['create suppliers', 'update suppliers', 'create clients', 'update clients'],
+        'entities' => ['read suppliers', 'create suppliers', 'update suppliers', 'read clients', 'create clients', 'update clients'],
     ];
 
     /**
@@ -79,7 +79,7 @@ class RolesAndPermissionSeeder extends Seeder
             $this->filterPermissions('municipalities')->only(['read municipalities'])->get(),
             $this->filterPermissions('payment_methods')->only(['read payment_methods'])->get(),
             $this->filterPermissions('taxes')->only(['read taxes'])->get(),
-            $this->filterPermissions('entities')->only(['read entities', 'create clients', 'update clients'])->get()
+            $this->filterPermissions('entities')->only(['read clients', 'create clients', 'update clients'])->get()
         );
 
         $cashierRole->givePermissionTo($cashierPermissions);

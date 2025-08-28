@@ -1,34 +1,42 @@
 <?php
-
 namespace App\Http\Requests;
 
-use App\Models\Entity;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class EntityRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
+        $user = $this->user();
+        if (!$user)
+            return false;
+
+        $isClient = $this->boolean('is_client');
+        $isSupplier = $this->boolean('is_supplier');
+
         if ($this->isMethod('post')) {
-            return $this->user()->can('create', Entity::class);
+            if (($isClient && !$user->can('create clients')) || ($isSupplier && !$user->can('create suppliers'))) {
+                return false;
+            }
         }
 
-        if ($this->isMethod('put') || $this->isMethod('patch')) {
-            return $this->user()->can('update', $this->route('entity'));
+        if ($this->isMethod('put')) {
+            if (($isClient && !$user->can('update clients')) || ($isSupplier && !$user->can('update suppliers'))) {
+                return false;
+            }
         }
 
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
+    protected function failedAuthorization()
+    {
+        throw \Illuminate\Validation\ValidationException::withMessages([
+            'error' => 'No tiene permisos para crear o editar clientes/proveedores.'
+        ]);
+    }
+
     public function rules(): array
     {
         return [

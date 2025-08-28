@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\User;
+use App\Models\Entity;
 use App\Traits\HasPermissionCheck;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -12,32 +13,34 @@ class EntityPolicy
 
     public function viewAny(User $user): bool
     {
-        return $this->checkPermission($user, 'read entities');
+        return $this->checkPermission($user, 'read clients') || $this->checkPermission($user, 'read suppliers');
     }
 
-    public function view(User $user): bool
+    public function view(User $user, Entity $entity): bool
     {
-        return $this->checkPermission($user, 'read entities');
+        if ($entity->is_client && $this->checkPermission($user, 'read clients')) {
+            return true;
+        }
+        if ($entity->is_supplier && $this->checkPermission($user, 'read suppliers')) {
+            return true;
+        }
+        return $this->checkPermission($user, 'read clients') || $this->checkPermission($user, 'read suppliers');
     }
 
-    public function create_clients(User $user): bool
+    public function create(User $user): bool
     {
-        return $this->checkPermission($user, 'create clients');
+        return $this->checkPermission($user, 'create clients') || $this->checkPermission($user, 'create suppliers');
     }
 
-    public function update_clients(User $user): bool
+    public function update(User $user, Entity $entity): bool
     {
-        return $this->checkPermission($user, 'update clients');
-    }
-
-    public function create_suppliers(User $user): bool
-    {
-        return $this->checkPermission($user, 'create suppliers');
-    }
-
-    public function update_suppliers(User $user): bool
-    {
-        return $this->checkPermission($user, 'update suppliers');
+        if ($entity->is_client && $this->checkPermission($user, 'update clients')) {
+            return true;
+        }
+        if ($entity->is_supplier && $this->checkPermission($user, 'update suppliers')) {
+            return true;
+        }
+        return $this->checkPermission($user, 'update clients') || $this->checkPermission($user, 'update suppliers');
     }
 
     public function destroy(User $user): bool

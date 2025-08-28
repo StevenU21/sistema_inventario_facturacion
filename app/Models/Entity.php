@@ -10,6 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Entity extends Model
 {
     use HasFactory, LogsActivity;
+
     protected $fillable = [
         'first_name',
         'last_name',
@@ -44,5 +45,27 @@ class Entity extends Model
     public function getFormattedUpdatedAtAttribute(): ?string
     {
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
+    }
+
+    public function scopeVisibleFor($query, $user)
+    {
+        $canViewClients = $user && $user->can('read clients');
+        $canViewSuppliers = $user && $user->can('read suppliers');
+
+        $query->where('is_active', true);
+
+        if ($canViewClients && !$canViewSuppliers) {
+            $query->where('is_client', true)->where('is_supplier', false);
+        } elseif (!$canViewClients && $canViewSuppliers) {
+            $query->where('is_supplier', true)->where('is_client', false);
+        } elseif ($canViewClients && $canViewSuppliers) {
+            $query->where(function ($q) {
+                $q->where('is_client', true)->orWhere('is_supplier', true);
+            });
+        } else {
+            $query->whereRaw('0=1');
+        }
+
+        return $query;
     }
 }

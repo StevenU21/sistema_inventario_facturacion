@@ -15,9 +15,10 @@ class EntityController extends Controller
 
     public function index()
     {
-        $this->authorize('viewAny', Entity::class);
-        $entities = Entity::latest()->paginate(10);
-        return view('admin.entities.index', compact('entities'));
+    $this->authorize('viewAny', Entity::class);
+    $user = auth()->user();
+    $entities = Entity::visibleFor($user)->latest()->paginate(10);
+    return view('admin.entities.index', compact('entities'));
     }
 
     public function create()
@@ -26,6 +27,7 @@ class EntityController extends Controller
         $departments = Department::orderBy('name')->pluck('name', 'id');
         $municipalities = Municipality::orderBy('name')->pluck('name', 'id');
         $departmentsByMunicipality = Municipality::pluck('department_id', 'id');
+
         return view('admin.entities.create', compact('departments', 'municipalities', 'departmentsByMunicipality'));
     }
 
@@ -48,6 +50,7 @@ class EntityController extends Controller
         $departments = Department::orderBy('name')->pluck('name', 'id');
         $municipalities = Municipality::orderBy('name')->pluck('name', 'id');
         $departmentsByMunicipality = Municipality::pluck('department_id', 'id');
+
         return view('admin.entities.edit', compact('entity', 'departments', 'municipalities', 'departmentsByMunicipality'));
     }
 
@@ -61,7 +64,8 @@ class EntityController extends Controller
     public function destroy(Entity $entity)
     {
         $this->authorize('destroy', $entity);
-        $entity->delete();
-        return redirect()->route('entities.index')->with('success', 'Entidad eliminada correctamente.');
+        $entity->is_active = false;
+        $entity->save();
+        return redirect()->route('entities.index')->with('success', 'Entidad desactivada correctamente.');
     }
 }
