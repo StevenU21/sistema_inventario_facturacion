@@ -9,6 +9,7 @@ use App\Models\Department;
 use App\Models\Entity;
 use App\Models\Municipality;
 use App\Models\PaymentMethod;
+use App\Models\Product;
 use App\Models\ProductStatus;
 use App\Models\Profile;
 use App\Models\Tax;
@@ -57,5 +58,6 @@ class DatabaseSeeder extends Seeder
         Tax::factory()->count(10)->create();
         ProductStatus::factory()->count(10)->create();
         Entity::factory()->count(50)->create();
+        Product::factory()->count(200)->create();
     }
 }

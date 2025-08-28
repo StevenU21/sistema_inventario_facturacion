@@ -44,7 +44,7 @@
                 <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 {{ Route::is('products.*') ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}"
                     href="{{ route('products.index') }}">
                     <i class="fas fa-tags w-5 h-5"></i>
-                    <span class="ml-4">Productosn>
+                    <span class="ml-4">Productos</span>
                 </a>
             </li>
 

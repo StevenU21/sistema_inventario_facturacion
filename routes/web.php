@@ -63,30 +63,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
-
-    Route::get('/forms', function () {
-        return view('pages/forms');
-    })->name('forms');
-
-    Route::get('/cards', function () {
-        return view('pages/cards');
-    })->name('cards');
-
-    Route::get('/charts', function () {
-        return view('pages/charts');
-    })->name('charts');
-
-    Route::get('/buttons', function () {
-        return view('pages/buttons');
-    })->name('buttons');
-
-    Route::get('/modals', function () {
-        return view('pages/modals');
-    })->name('modals');
-
-    Route::get('/tables', function () {
-        return view('pages/tables');
-    })->name('tables');
 });
 
 require __DIR__ . '/auth.php';
