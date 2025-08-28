@@ -1,3 +1,24 @@
+<style>
+    /* Scrollbar styles for sidebar */
+    aside::-webkit-scrollbar {
+        width: 8px;
+        background: #f1f1f1;
+    }
+
+    aside::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+
+    aside::-webkit-scrollbar-thumb:hover {
+        background: #a0aec0;
+    }
+
+    aside {
+        scrollbar-width: thin;
+        scrollbar-color: #c1c1c1 #f1f1f1;
+    }
+</style>
 <aside class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0">
     <div class="py-4 text-gray-500 dark:text-gray-400">
         <a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200" href="#">
@@ -46,6 +67,13 @@
                     x-transition:leave-end="opacity-0 transform scale-95"
                     class="mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 dark:text-gray-400">
                     <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('entities.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('entities.index') }}">
+                            <i class="fas fa-users w-5 h-5"></i>
+                            <span class="ml-4">Clientes & Proveedores</span>
+                        </a>
+                    </li>
+                    <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('categories.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('categories.index') }}">
                             <i class="fas fa-th-list w-5 h-5"></i>
@@ -57,14 +85,6 @@
                             href="{{ route('brands.index') }}">
                             <i class="fas fa-tags w-5 h-5"></i>
                             <span class="ml-4">Marcas</span>
-                        </a>
-                    </li>
-                    <li class="px-6 py-2">
-                        @php $company = \App\Models\Company::first(); @endphp
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('companies.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ $company ? route('companies.show', $company) : route('companies.create') }}">
-                            <i class="fas fa-building w-5 h-5"></i>
-                            <span class="ml-4">Empresas</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">
@@ -103,10 +123,11 @@
                         </a>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('entities.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('entities.index') }}">
-                            <i class="fas fa-cube w-5 h-5"></i>
-                            <span class="ml-4">Entidades</span>
+                        @php $company = \App\Models\Company::first(); @endphp
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('companies.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ $company ? route('companies.show', $company) : route('companies.create') }}">
+                            <i class="fas fa-building w-5 h-5"></i>
+                            <span class="ml-4">Empresa</span>
                         </a>
                     </li>
                 </ul>
