@@ -31,7 +31,7 @@ class RolesAndPermissionSeeder extends Seeder
         'permissions' => ['assign permissions', 'revoke permissions'],
         'users' => ['reactivate users'],
         'audits' => ['export audits'],
-        'entities' => ['read suppliers', 'create suppliers', 'update suppliers', 'read clients', 'create clients', 'update clients'],
+        'entities' => ['read suppliers', 'create suppliers', 'update suppliers', 'read clients', 'create clients', 'update clients']
     ];
 
     /**
@@ -82,7 +82,8 @@ class RolesAndPermissionSeeder extends Seeder
             $this->filterPermissions('payment_methods')->only(['read payment_methods'])->get(),
             $this->filterPermissions('taxes')->only(['read taxes'])->get(),
             $this->filterPermissions('entities')->only(['read clients', 'create clients', 'update clients'])->get(),
-            $this->filterPermissions('products')->only(['read products'])->get()
+            $this->filterPermissions('products')->only(['read products'])->get(),
+            $this->filterPermissions('roles')->only(['read roles'])->get()
         );
 
         $cashierRole->givePermissionTo($cashierPermissions);

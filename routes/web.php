@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\MunicipalityController;
 use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Admin\UnitMeasureController;
 use App\Http\Controllers\Admin\UserController;
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('taxes', TaxController::class);
     Route::resource('entities', EntityController::class);
     Route::resource('products', ProductController::class);
+    Route::resource('roles', RoleController::class);
 
     Route::get('/dashboard', function () {
         return view('dashboard');
