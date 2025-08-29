@@ -15,7 +15,6 @@ use App\Models\Profile;
 use App\Models\Tax;
 use App\Models\UnitMeasure;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -60,6 +59,5 @@ class DatabaseSeeder extends Seeder
         ProductStatus::factory()->count(10)->create();
         Entity::factory()->count(50)->create();
         Product::factory()->count(200)->create();
-        Role::factory()->count(5)->create();
     }
 }

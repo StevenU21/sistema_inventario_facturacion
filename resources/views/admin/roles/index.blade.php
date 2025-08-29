@@ -25,9 +25,9 @@
                     <thead>
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3">
+                            {{-- <th class="px-4 py-3">
                                 <i class="fas fa-hashtag mr-2"></i>ID
-                            </th>
+                            </th> --}}
                             <th class="px-4 py-3">
                                 <i class="fas fa-tag mr-2"></i>Nombre
                             </th>
@@ -45,12 +45,12 @@
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
                         @forelse($roles as $role)
                             <tr class="text-gray-700 dark:text-gray-400">
-                                <td class="px-4 py-3 text-xs">
+                                {{-- <td class="px-4 py-3 text-xs">
                                     <span
                                         class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
                                         {{ $role->id }}
                                     </span>
-                                </td>
+                                </td> --}}
                                 <td class="px-4 py-3 text-sm">
                                     {{ $role->name }}
                                 </td>
