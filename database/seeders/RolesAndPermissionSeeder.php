@@ -24,6 +24,7 @@ class RolesAndPermissionSeeder extends Seeder
         'taxes' => [],
         'entities' => ['destroy'],
         'products' => [],
+        'roles' => []
     ];
 
     const SPECIAL_PERMISSIONS = [
