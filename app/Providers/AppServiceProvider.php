@@ -21,6 +21,7 @@ use App\Policies\EntityPolicy;
 use App\Policies\MunicipalityPolicy;
 use App\Policies\PaymentMethodPolicy;
 use App\Policies\ProductPolicy;
+use App\Policies\RolePolicy;
 use App\Policies\TaxPolicy;
 use App\Policies\UnitMeasurePolicy;
 use App\Policies\UserPolicy;
@@ -33,6 +34,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -64,5 +66,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Tax::class, TaxPolicy::class);
         Gate::policy(Entity::class, EntityPolicy::class);
         Gate::policy(Product::class, ProductPolicy::class);
+        Gate::policy(Role::class, RolePolicy::class);
     }
 }
