@@ -13,12 +13,9 @@ return new class extends Migration {
         Schema::create('products', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('image')->nullable();
             $table->text('description')->nullable();
-            $table->decimal('purchase_price', 10, 2);
-            $table->decimal('sale_price', 10, 2);
-            $table->unsignedInteger('stock');
-            $table->unsignedInteger('min_stock');
+            $table->string('barcode')->unique();
+            $table->string('image')->nullable();
 
             $table->integer('brand_id')->unsigned();
             $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade')->onUpdate('cascade');
