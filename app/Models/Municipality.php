@@ -27,6 +27,11 @@ class Municipality extends Model
         return $this->hasMany(Entity::class);
     }
 
+    public function warehouses()
+    {
+        return $this->hasMany(Warehouse::class);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
