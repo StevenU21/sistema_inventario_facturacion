@@ -27,7 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (AuthenticationException $e, $request) {
-            return back()->with('error', 'No estás autenticado, por favor regístrate o inicia sesión.');
+            return redirect()->route('login');
         });
 
         $exceptions->render(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, $request) {
