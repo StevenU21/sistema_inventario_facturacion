@@ -58,23 +58,21 @@
                                             aria-label="Ver">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        @if (!in_array($role->name, ['admin', 'cashier']))
-                                            <a href="{{ route('roles.edit', $role) }}"
+                                        <a href="{{ route('roles.edit', $role) }}"
+                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                            aria-label="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('roles.destroy', $role) }}" method="POST"
+                                            onsubmit="return confirm('¿Estás seguro de eliminar este rol?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
                                                 class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                aria-label="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('roles.destroy', $role) }}" method="POST"
-                                                onsubmit="return confirm('¿Estás seguro de eliminar este rol?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                    aria-label="Eliminar">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        @endif
+                                                aria-label="Eliminar">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
