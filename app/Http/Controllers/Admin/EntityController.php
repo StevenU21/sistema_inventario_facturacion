@@ -17,7 +17,7 @@ class EntityController extends Controller
     {
     $this->authorize('viewAny', Entity::class);
     $user = auth()->user();
-    $entities = Entity::visibleFor($user)->latest()->paginate(10);
+    $entities = Entity::with('municipality')->visibleFor($user)->latest()->paginate(10);
     return view('admin.entities.index', compact('entities'));
     }
 
