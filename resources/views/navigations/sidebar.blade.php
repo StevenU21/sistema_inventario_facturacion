@@ -198,17 +198,17 @@
                     x-transition:leave-end="opacity-0 transform scale-95"
                     class="mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 dark:text-gray-400">
                     <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('roles.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('roles.index') }}">
+                            <i class="fas fa-user-shield w-5 h-5"></i>
+                            <span class="ml-4">Roles & Permisos</span>
+                        </a>
+                    </li>
+                    <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('audits.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('audits.index') }}">
                             <i class="fas fa-clipboard-list w-5 h-5"></i>
                             <span class="ml-4">Auditoría</span>
-                        </a>
-                    </li>
-                    <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('roles.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('roles.index') }}">
-                            <i class="fas fa-user-shield w-5 h-5"></i>
-                            <span class="ml-4">Roles</span>
                         </a>
                     </li>
                     <li class="px-6 py-2">

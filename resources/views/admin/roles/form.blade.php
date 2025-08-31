@@ -15,6 +15,44 @@
         @enderror
     </label>
 
+
+    <!-- Permisos (diseño tipo tabla, 4 por fila) -->
+    <div class="mt-4">
+        <span class="text-gray-700 dark:text-gray-400 font-semibold">Permisos</span>
+        <div class="overflow-x-auto mt-2">
+            <table class="w-full table-fixed">
+                <tbody>
+                    @foreach ($permissions->chunk(4) as $row)
+                        <tr>
+                            @foreach ($row as $permission)
+                                <td class="px-2 py-2 align-middle">
+                                    <label
+                                        class="flex items-center space-x-2 font-semibold text-gray-700 dark:text-gray-300">
+                                        <input type="checkbox" name="permissions[]" value="{{ $permission->id }}"
+                                            class="form-checkbox text-purple-600"
+                                            @if(is_array(old('permissions')))
+                                                {{ in_array($permission->id, old('permissions')) ? 'checked' : '' }}
+                                            @elseif(isset($rolePermissions) && in_array($permission->id, $rolePermissions))
+                                                checked
+                                            @endif
+                                        >
+                                        <span class="uppercase">{{ $permission->name }}</span>
+                                    </label>
+                                </td>
+                            @endforeach
+                            @for ($i = $row->count(); $i < 4; $i++)
+                                <td></td>
+                            @endfor
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @error('permissions')
+            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+        @enderror
+    </div>
+
     <!-- Submit Button -->
     <div class="mt-6">
         <button type="submit"

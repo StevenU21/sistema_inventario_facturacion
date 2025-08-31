@@ -15,7 +15,6 @@ trait HasPermissionCheck
         }
     }
 
-
     public function checkPermission(User $user, string $permission, ?Model $model = null): bool
     {
         if (!$user->hasPermissionTo($permission)) {

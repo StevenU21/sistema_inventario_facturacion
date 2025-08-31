@@ -25,9 +25,6 @@
                     <thead>
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            {{-- <th class="px-4 py-3">
-                                <i class="fas fa-hashtag mr-2"></i>ID
-                            </th> --}}
                             <th class="px-4 py-3">
                                 <i class="fas fa-tag mr-2"></i>Nombre
                             </th>
@@ -45,12 +42,6 @@
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
                         @forelse($roles as $role)
                             <tr class="text-gray-700 dark:text-gray-400">
-                                {{-- <td class="px-4 py-3 text-xs">
-                                    <span
-                                        class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
-                                        {{ $role->id }}
-                                    </span>
-                                </td> --}}
                                 <td class="px-4 py-3 text-sm">
                                     {{ $role->name }}
                                 </td>
@@ -67,21 +58,23 @@
                                             aria-label="Ver">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('roles.edit', $role) }}"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('roles.destroy', $role) }}" method="POST"
-                                            onsubmit="return confirm('¿Estás seguro de eliminar este rol?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
+                                        @if (!in_array($role->name, ['admin', 'cashier']))
+                                            <a href="{{ route('roles.edit', $role) }}"
                                                 class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                aria-label="Eliminar">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                                aria-label="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('roles.destroy', $role) }}" method="POST"
+                                                onsubmit="return confirm('¿Estás seguro de eliminar este rol?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    aria-label="Eliminar">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

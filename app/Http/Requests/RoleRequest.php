@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Tax;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Role;
 
-class TaxRequest extends FormRequest
+class RoleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,11 +14,11 @@ class TaxRequest extends FormRequest
     public function authorize(): bool
     {
         if ($this->isMethod('post')) {
-            return $this->user()->can('create', Tax::class);
+            return $this->user()->can('create', Role::class);
         }
 
         if ($this->isMethod('put') || $this->isMethod('patch')) {
-            return $this->user()->can('update', $this->route('tax'));
+            return $this->user()->can('update', $this->route('role'));
         }
 
         return false;
@@ -32,9 +32,9 @@ class TaxRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', Rule::unique('taxes')->ignore($this->tax)],
-            'percentage' => ['required', 'numeric', 'min:0', 'max:100'],
-            'is_default' => ['nullable', 'boolean']
+            'name' => ['required', 'string', 'min:3', 'max:60', Rule::unique('roles')->ignore($this->role)],
+            'permissions' => ['required', 'array', 'min:1'],
+            'permissions.*' => ['exists:permissions,id'],
         ];
     }
 }

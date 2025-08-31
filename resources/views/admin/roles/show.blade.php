@@ -22,34 +22,56 @@
                     Información del Rol
                 </h3>
                 <div class="mt-4">
-                    <p
-                        class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 flex items-center">
                         <i class="fas fa-tag text-purple-600 dark:text-purple-400 mr-2"></i>
-                        <strong
-                            class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Nombre:</strong>
+                        <strong class="text-gray-700 dark:text-gray-200 mr-1">Nombre:</strong>
                         {{ $role->name }}
                     </p>
-                    <p
-                        class="text-sm text-gray-600 dark:text-gray-400 mt-2 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 flex items-center">
                         <i class="fas fa-align-left text-purple-600 dark:text-purple-400 mr-2"></i>
-                        <strong
-                            class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Descripción:</strong>
+                        <strong class="text-gray-700 dark:text-gray-200 mr-1">Descripción:</strong>
                         {{ $role->guard_name }}
                     </p>
-                    <p
-                        class="text-sm text-gray-600 dark:text-gray-400 mt-2 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 flex items-center">
                         <i class="fas fa-calendar-alt text-purple-600 dark:text-purple-400 mr-2"></i>
-                        <strong
-                            class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Fecha
-                            de creación:</strong> {{ $role->created_at ? $role->created_at->format('d-m-Y H:i:s') : '-' }}
+                        <strong class="text-gray-700 dark:text-gray-200 mr-1">Fecha de creación:</strong>
+                        {{ $role->created_at ? $role->created_at->format('d-m-Y H:i:s') : '-' }}
                     </p>
-                    <p
-                        class="text-sm text-gray-600 dark:text-gray-400 mt-2 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 flex items-center">
                         <i class="fas fa-clock text-purple-600 dark:text-purple-400 mr-2"></i>
-                        <strong
-                            class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Última
-                            actualización:</strong> {{ $role->updated_at ? $role->updated_at->format('d-m-Y H:i:s') : '-' }}
+                        <strong class="text-gray-700 dark:text-gray-200 mr-1">Última actualización:</strong>
+                        {{ $role->updated_at ? $role->updated_at->format('d-m-Y H:i:s') : '-' }}
                     </p>
+                </div>
+
+                <!-- Permisos asignados -->
+                <div class="mt-6">
+                    <span class="text-gray-700 dark:text-gray-400 font-semibold">Permisos asignados</span>
+                    @if ($permissions->count())
+                        <div class="overflow-x-auto mt-2">
+                            <table class="w-full table-fixed">
+                                <tbody>
+                                    @foreach ($permissions->chunk(4) as $row)
+                                        <tr>
+                                            @foreach ($row as $permission)
+                                                <td class="px-2 py-2 align-middle">
+                                                    <span
+                                                        class="inline-block bg-purple-200 text-purple-900 dark:bg-purple-500 dark:text-white rounded px-2 py-1 text-xs font-semibold uppercase">
+                                                        {{ $permission->name }}
+                                                    </span>
+                                                </td>
+                                            @endforeach
+                                            @for ($i = $row->count(); $i < 4; $i++)
+                                                <td></td>
+                                            @endfor
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-gray-400 dark:text-gray-500 italic mt-2">Sin permisos asignados</div>
+                    @endif
                 </div>
             </div>
         </div>
