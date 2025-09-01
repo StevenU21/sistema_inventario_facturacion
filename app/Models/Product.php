@@ -16,6 +16,7 @@ class Product extends Model
         'description',
         'barcode',
         'image',
+        'status',
         'brand_id',
         'category_id',
         'tax_id',
@@ -32,6 +33,7 @@ class Product extends Model
                 'description',
                 'barcode',
                 'image',
+                'status',
                 'brand_id',
                 'category_id',
                 'tax_id',
@@ -82,10 +84,5 @@ class Product extends Model
     public function entity()
     {
         return $this->belongsTo(Entity::class);
-    }
-
-    public function productStatus()
-    {
-        return $this->belongsTo(ProductStatus::class);
     }
 }

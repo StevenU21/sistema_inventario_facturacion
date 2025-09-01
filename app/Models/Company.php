@@ -20,13 +20,6 @@ class Company extends Model
         'email'
     ];
 
-    public function getAvatarUrlAttribute(): ?string
-    {
-        return $this->logo
-            ? asset('storage/' . $this->logo)
-            : asset('img/image03.png');
-    }
-
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -41,5 +34,12 @@ class Company extends Model
     public function getFormattedUpdatedAtAttribute(): ?string
     {
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->logo
+            ? asset('storage/' . $this->logo)
+            : asset('img/image03.png');
     }
 }

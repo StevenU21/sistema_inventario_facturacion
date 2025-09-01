@@ -56,7 +56,6 @@ class DatabaseSeeder extends Seeder
         Municipality::factory()->count(50)->create();
         PaymentMethod::factory()->count(10)->create();
         Tax::factory()->count(10)->create();
-        ProductStatus::factory()->count(10)->create();
         Entity::factory()->count(50)->create();
     }
 }

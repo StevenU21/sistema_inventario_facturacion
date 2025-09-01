@@ -26,16 +26,6 @@ class Entity extends Model
         'municipality_id'
     ];
 
-    public function municipality()
-    {
-        return $this->belongsTo(Municipality::class);
-    }
-
-    public function products()
-    {
-        return $this->hasMany(Product::class);
-    }
-
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -72,5 +62,15 @@ class Entity extends Model
         }
 
         return $query;
+    }
+
+    public function municipality()
+    {
+        return $this->belongsTo(Municipality::class);
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
     }
 }

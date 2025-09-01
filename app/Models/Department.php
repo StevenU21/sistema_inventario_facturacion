@@ -16,11 +16,6 @@ class Department extends Model
         'description',
     ];
 
-    public function municipalities()
-    {
-        return $this->hasMany(Municipality::class);
-    }
-
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -35,5 +30,10 @@ class Department extends Model
     public function getFormattedUpdatedAtAttribute(): ?string
     {
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
+    }
+
+    public function municipalities()
+    {
+        return $this->hasMany(Municipality::class);
     }
 }

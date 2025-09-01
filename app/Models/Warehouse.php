@@ -14,8 +14,7 @@ class Warehouse extends Model
     protected $fillable = [
         'name',
         'address',
-        'description',
-        'municipality_id'
+        'description'
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -24,8 +23,7 @@ class Warehouse extends Model
             ->logOnly([
                 'name',
                 'address',
-                'description',
-                'municipality_id'
+                'description'
             ]);
     }
 
@@ -39,8 +37,8 @@ class Warehouse extends Model
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
     }
 
-    public function municipality()
+    public function inventories()
     {
-        return $this->belongsTo(Municipality::class);
+        return $this->hasMany(Inventory::class);
     }
 }

@@ -15,9 +15,6 @@ return new class extends Migration {
             $table->string('name');
             $table->string('address')->nullable();
             $table->text('description')->nullable();
-
-            $table->integer('municipality_id')->unsigned();
-            $table->foreign('municipality_id')->references('id')->on('municipalities')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

@@ -17,21 +17,6 @@ class Municipality extends Model
         'department_id',
     ];
 
-    public function department()
-    {
-        return $this->belongsTo(Department::class);
-    }
-
-    public function entities()
-    {
-        return $this->hasMany(Entity::class);
-    }
-
-    public function warehouses()
-    {
-        return $this->hasMany(Warehouse::class);
-    }
-
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -46,5 +31,15 @@ class Municipality extends Model
     public function getFormattedUpdatedAtAttribute(): ?string
     {
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function entities()
+    {
+        return $this->hasMany(Entity::class);
     }
 }

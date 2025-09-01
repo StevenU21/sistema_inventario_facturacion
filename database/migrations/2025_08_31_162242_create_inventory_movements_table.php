@@ -24,7 +24,6 @@ return new class extends Migration {
 
             $table->integer('inventory_id')->unsigned();
             $table->foreign('inventory_id')->references('id')->on('inventories')->onDelete('cascade')->onUpdate('cascade');
-
             $table->timestamps();
         });
     }

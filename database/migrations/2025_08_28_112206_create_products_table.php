@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->string('barcode')->unique();
             $table->string('image')->nullable();
+            $table->enum('status', ['available', 'discontinued', 'out_of_stock', 'reserved', 'returned'])->default('available');
 
             $table->integer('brand_id')->unsigned();
             $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade')->onUpdate('cascade');
@@ -31,9 +32,6 @@ return new class extends Migration {
 
             $table->integer('entity_id')->unsigned();
             $table->foreign('entity_id')->references('id')->on('entities')->onDelete('cascade')->onUpdate('cascade');
-
-            $table->integer('product_status_id')->unsigned();
-            $table->foreign('product_status_id')->references('id')->on('product_statuses')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
