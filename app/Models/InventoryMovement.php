@@ -38,6 +38,18 @@ class InventoryMovement extends Model
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
     }
 
+    public function getMovementTypeAttribute(): string
+    {
+        return match ($this->attributes['type'] ?? null) {
+            'in' => 'Entrada',
+            'out' => 'Salida',
+            'adjustment' => 'Ajuste',
+            'transfer' => 'Transferencia',
+            'return' => 'Devolución',
+            default => ucfirst($this->attributes['type'] ?? ''),
+        };
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

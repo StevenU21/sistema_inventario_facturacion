@@ -61,6 +61,18 @@
                 </a>
             </li>
 
+            <!-- Movimientos del Inventario -->
+            <li class="relative px-6 py-3">
+                <span
+                    class="{{ Route::is('inventory_movements.*') ? 'absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg' : '' }}"
+                    aria-hidden="true"></span>
+                <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 {{ Route::is('inventory_movements.*') ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}"
+                    href="{{ route('inventory_movements.index') }}">
+                    <i class="fas fa-exchange-alt w-5 h-5"></i>
+                    <span class="ml-4">Movimientos</span>
+                </a>
+            </li>
+
             <!-- Clientes & Proveedores -->
             <li class="relative px-6 py-3">
                 <span
@@ -186,22 +198,22 @@
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('backups.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('backups.index') }}">
                             <i class="fas fa-database w-5 h-5"></i>
-                            <span class="ml-4">Backups</span>
+                            <span class="ml-4">Respaldos</span>
+                        </a>
+                    </li>
+                    <!-- Empresa -->
+                    <li class="px-6 py-2">
+                        @php $company = \App\Models\Company::first(); @endphp
+                        <span
+                            class="{{ Route::is('companies.*') ? 'absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg' : '' }}"
+                            aria-hidden="true"></span>
+                        <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 {{ Route::is('companies.*') ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}"
+                            href="{{ $company ? route('companies.show', $company) : route('companies.create') }}">
+                            <i class="fas fa-building w-5 h-5"></i>
+                            <span class="ml-4">Empresa</span>
                         </a>
                     </li>
                 </ul>
-            </li>
-            <!-- Empresa -->
-            <li class="relative px-6 py-3">
-                @php $company = \App\Models\Company::first(); @endphp
-                <span
-                    class="{{ Route::is('companies.*') ? 'absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg' : '' }}"
-                    aria-hidden="true"></span>
-                <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 {{ Route::is('companies.*') ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}"
-                    href="{{ $company ? route('companies.show', $company) : route('companies.create') }}">
-                    <i class="fas fa-building w-5 h-5"></i>
-                    <span class="ml-4">Empresa</span>
-                </a>
             </li>
         </ul>
     </div>

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\EntityController;
 use App\Http\Controllers\Admin\InactiveUserController;
 use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\Admin\InventoryMovementController;
 use App\Http\Controllers\Admin\MunicipalityController;
 use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -63,6 +64,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('roles', RoleController::class);
     Route::resource('warehouses', WarehouseController::class);
     Route::resource('inventories', InventoryController::class);
+    Route::resource('inventory_movements', InventoryMovementController::class);
 
     Route::get('/dashboard', function () {
         return view('dashboard');
