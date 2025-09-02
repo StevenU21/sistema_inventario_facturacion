@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InventoryRequest;
 use App\Models\Inventory;
+use App\Models\Product;
+use App\Models\Warehouse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class InventoryController extends Controller
@@ -21,14 +23,16 @@ class InventoryController extends Controller
     public function create()
     {
         $this->authorize('create', Inventory::class);
-        return view('admin.inventories.create');
+        $products = Product::where('status', 'available')->pluck('name', 'id');
+        $warehouses = Warehouse::pluck('name', 'id');
+        return view('admin.inventories.create', compact('products', 'warehouses'));
     }
 
     public function store(InventoryRequest $request)
     {
         $this->authorize('create', Inventory::class);
         $data = $request->validated();
-        $inventory = Inventory::create($data);
+        Inventory::create($data);
         return redirect()->route('inventories.index')->with('success', 'Inventario creado correctamente.');
     }
 
@@ -41,7 +45,9 @@ class InventoryController extends Controller
     public function edit(Inventory $inventory)
     {
         $this->authorize('update', $inventory);
-        return view('admin.inventories.edit', compact('inventory'));
+        $products = Product::where('status', 'available')->pluck('name', 'id');
+        $warehouses = Warehouse::pluck('name', 'id');
+        return view('admin.inventories.edit', compact('inventory', 'products', 'warehouses'));
     }
 
     public function update(InventoryRequest $request, Inventory $inventory)

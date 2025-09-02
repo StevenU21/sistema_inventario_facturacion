@@ -7,8 +7,8 @@
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('product_id') border-red-600 @enderror"
                     required>
                     <option value="">Seleccione</option>
-                    @foreach (App\Models\Product::all() as $product)
-                        <option value="{{ $product->id }}" {{ old('product_id', $inventory->product_id ?? '') == $product->id ? 'selected' : '' }}>{{ $product->name }}</option>
+                    @foreach ($products as $id => $name)
+                        <option value="{{ $id }}" {{ old('product_id', $inventory->product_id ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
@@ -26,8 +26,8 @@
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('warehouse_id') border-red-600 @enderror"
                     required>
                     <option value="">Seleccione</option>
-                    @foreach (App\Models\Warehouse::all() as $warehouse)
-                        <option value="{{ $warehouse->id }}" {{ old('warehouse_id', $inventory->warehouse_id ?? '') == $warehouse->id ? 'selected' : '' }}>{{ $warehouse->name }}</option>
+                        @foreach ($warehouses as $id => $name)
+                            <option value="{{ $id }}" {{ old('warehouse_id', $inventory->warehouse_id ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">

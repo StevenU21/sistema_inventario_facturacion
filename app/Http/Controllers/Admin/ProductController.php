@@ -26,11 +26,16 @@ class ProductController extends Controller
     public function create()
     {
         $this->authorize("create", Product::class);
-        $categories = Category::all();
-        $brands = Brand::all();
-        $units = UnitMeasure::all();
-        $entities = Entity::where('is_active', true)->where('is_supplier', true)->get();
-        $taxes = Tax::all();
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $units = UnitMeasure::pluck('name', 'id');
+        $entities = Entity::where('is_active', true)
+            ->where('is_supplier', true)
+            ->get()
+            ->pluck(function ($entity) {
+                return $entity->first_name . ' ' . $entity->last_name;
+            }, 'id');
+        $taxes = Tax::pluck('name', 'id');
         return view('admin.products.create', compact('categories', 'brands', 'units', 'entities', 'taxes'));
     }
 
@@ -55,11 +60,16 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $this->authorize("update", $product);
-        $categories = Category::all();
-        $brands = Brand::all();
-        $units = UnitMeasure::all();
-        $entities = Entity::where('is_active', true)->where('is_supplier', true)->get();
-        $taxes = Tax::all();
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $units = UnitMeasure::pluck('name', 'id');
+        $entities = Entity::where('is_active', true)
+            ->where('is_supplier', true)
+            ->get()
+            ->pluck(function ($entity) {
+                return $entity->first_name . ' ' . $entity->last_name;
+            }, 'id');
+        $taxes = Tax::pluck('name', 'id');
         return view('admin.products.edit', compact('product', 'categories', 'brands', 'units', 'entities', 'taxes'));
     }
 

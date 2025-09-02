@@ -70,10 +70,8 @@
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('category_id') border-red-600 @enderror"
                     required>
                     <option value="">Seleccione</option>
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}"
-                            {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}</option>
+                    @foreach ($categories as $id => $name)
+                        <option value="{{ $id }}" {{ old('category_id', $product->category_id ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
@@ -91,10 +89,8 @@
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('brand_id') border-red-600 @enderror"
                     required>
                     <option value="">Seleccione</option>
-                    @foreach ($brands as $brand)
-                        <option value="{{ $brand->id }}"
-                            {{ old('brand_id', $product->brand_id ?? '') == $brand->id ? 'selected' : '' }}>
-                            {{ $brand->name }}</option>
+                    @foreach ($brands as $id => $name)
+                        <option value="{{ $id }}" {{ old('brand_id', $product->brand_id ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
@@ -112,10 +108,8 @@
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('unit_measure_id') border-red-600 @enderror"
                     required>
                     <option value="">Seleccione</option>
-                    @foreach ($units as $unit)
-                        <option value="{{ $unit->id }}"
-                            {{ old('unit_measure_id', $product->unit_measure_id ?? '') == $unit->id ? 'selected' : '' }}>
-                            {{ $unit->name }}</option>
+                    @foreach ($units as $id => $name)
+                        <option value="{{ $id }}" {{ old('unit_measure_id', $product->unit_measure_id ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
@@ -137,10 +131,8 @@
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('entity_id') border-red-600 @enderror"
                     required>
                     <option value="">Seleccione</option>
-                    @foreach ($entities as $supplier)
-                        <option value="{{ $supplier->id }}"
-                            {{ old('entity_id', $product->entity_id ?? '') == $supplier->id ? 'selected' : '' }}>
-                            {{ $supplier->first_name }} {{ $supplier->last_name }}</option>
+                    @foreach ($entities as $id => $name)
+                        <option value="{{ $id }}" {{ old('entity_id', $product->entity_id ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
@@ -158,10 +150,8 @@
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('tax_id') border-red-600 @enderror"
                     required>
                     <option value="">Seleccione</option>
-                    @foreach ($taxes as $tax)
-                        <option value="{{ $tax->id }}"
-                            {{ old('tax_id', $product->tax_id ?? '') == $tax->id ? 'selected' : '' }}>
-                            {{ $tax->name }} ({{ $tax->percentage }}%)</option>
+                    @foreach ($taxes as $id => $name)
+                        <option value="{{ $id }}" {{ old('tax_id', $product->tax_id ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
@@ -190,8 +180,6 @@
                     </option>
                     <option value="reserved"
                         {{ old('status', $product->status ?? '') == 'reserved' ? 'selected' : '' }}>Reservado</option>
-                    <option value="returned"
-                        {{ old('status', $product->status ?? '') == 'returned' ? 'selected' : '' }}>Devuelto</option>
                 </select>
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                     <i class="fas fa-check w-5 h-5"></i>

@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->string('barcode')->nullable()->unique();
             $table->string('image')->nullable();
-            $table->enum('status', ['available', 'discontinued', 'out_of_stock', 'reserved', 'returned'])->default('available');
+            $table->enum('status', ['available', 'discontinued', 'out_of_stock', 'reserved'])->default('available');
 
             $table->integer('brand_id')->unsigned();
             $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade')->onUpdate('cascade');
