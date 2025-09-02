@@ -35,10 +35,10 @@
                                 <i class="fas fa-tag mr-2"></i>Departamento
                             </th>
                             <th class="px-4 py-3">
-                                <i class="fas fa-align-left mr-2"></i>Descripción
+                                <i class="fas fa-calendar-alt mr-2"></i>Fecha de Registro
                             </th>
                             <th class="px-4 py-3">
-                                <i class="fas fa-calendar-alt mr-2"></i>Fecha de Registro
+                                <i class="fas fa-calendar-alt mr-2"></i>Fecha de Actualización
                             </th>
                             <th class="px-4 py-3">
                                 <i class="fas fa-tools mr-2"></i>Acciones
@@ -61,10 +61,10 @@
                                     {{ $municipality->department->name ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $municipality->description }}
+                                    {{ $municipality->formatted_created_at ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $municipality->formatted_created_at ?? '-' }}
+                                    {{ $municipality->formatted_updated_at ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">

@@ -15,6 +15,7 @@ class Inventory extends Model
         'min_stock',
         'purchase_price',
         'sale_price',
+        'warehouse_id'
     ];
 
     public function getActivitylogOptions(): LogOptions

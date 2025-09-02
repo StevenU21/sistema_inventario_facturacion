@@ -103,111 +103,26 @@
             </label>
         </div>
 
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-400">Entidad</span>
-            <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                <select name="entity_id"
-                    class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('entity_id') border-red-600 @enderror"
-                    required>
-                    <option value="">Seleccione</option>
-                    @foreach (App\Models\Entity::all() as $entity)
-                        <option value="{{ $entity->id }}"
-                            {{ old('entity_id', $product->entity_id ?? '') == $entity->id ? 'selected' : '' }}>
-                            {{ $entity->name }}</option>
-                    @endforeach
-                </select>
-                <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                    <i class="fas fa-building w-5 h-5"></i>
-                </div>
-            </div>
-            @error('entity_id')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-
-        <!-- Precios y Stock -->
+        <!-- Unidad de Medida, Proveedor, Estado -->
         <div class="flex flex-col md:flex-row gap-4 mt-4">
             <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-400">Precio Compra</span>
+                <span class="text-gray-700 dark:text-gray-400">Proveedor</span>
                 <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                    <input name="purchase_price" type="number" min="0" step="0.01"
-                        class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('purchase_price') border-red-600 @enderror"
-                        placeholder="Precio de compra..."
-                        value="{{ old('purchase_price', $product->purchase_price ?? '') }}" required />
-                    <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                        <i class="fas fa-dollar-sign w-5 h-5"></i>
-                    </div>
-                </div>
-                @error('purchase_price')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
-            </label>
-            <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-400">Precio Venta</span>
-                <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                    <input name="sale_price" type="number" min="0" step="0.01"
-                        class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('sale_price') border-red-600 @enderror"
-                        placeholder="Precio de venta..." value="{{ old('sale_price', $product->sale_price ?? '') }}"
-                        required />
-                    <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                        <i class="fas fa-dollar-sign w-5 h-5"></i>
-                    </div>
-                </div>
-                @error('sale_price')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
-            </label>
-            <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-400">Stock</span>
-                <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                    <input name="stock" type="number" min="0"
-                        class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('stock') border-red-600 @enderror"
-                        placeholder="Stock..." value="{{ old('stock', $product->stock ?? '') }}" required />
-                    <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                        <i class="fas fa-cubes w-5 h-5"></i>
-                    </div>
-                </div>
-                @error('stock')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
-            </label>
-            <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-400">Stock Mínimo</span>
-                <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                    <input name="min_stock" type="number" min="0"
-                        class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('min_stock') border-red-600 @enderror"
-                        placeholder="Stock mínimo..." value="{{ old('min_stock', $product->min_stock ?? '') }}"
-                        required />
-                    <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                        <i class="fas fa-sort-numeric-down w-5 h-5"></i>
-                    </div>
-                </div>
-                @error('min_stock')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
-            </label>
-        </div>
-
-        <!-- Unidad de Medida, Entidad, Estado -->
-        <div class="flex flex-col md:flex-row gap-4 mt-4">
-            <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-400">Unidad de Medida</span>
-                <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                    <select name="unit_measure_id"
-                        class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('unit_measure_id') border-red-600 @enderror"
+                    <select name="entity_id"
+                        class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('entity_id') border-red-600 @enderror"
                         required>
                         <option value="">Seleccione</option>
-                        @foreach (App\Models\UnitMeasure::all() as $unit)
-                            <option value="{{ $unit->id }}"
-                                {{ old('unit_measure_id', $product->unit_measure_id ?? '') == $unit->id ? 'selected' : '' }}>
-                                {{ $unit->name }}</option>
+                        @foreach (App\Models\Entity::all() as $supplier)
+                            <option value="{{ $supplier->id }}"
+                                {{ old('entity_id', $product->entity_id ?? '') == $supplier->id ? 'selected' : '' }}>
+                                {{ $supplier->first_name }} {{ $supplier->last_name }}</option>
                         @endforeach
                     </select>
                     <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                         <i class="fas fa-ruler w-5 h-5"></i>
                     </div>
                 </div>
-                @error('unit_measure_id')
+                @error('entity_id')
                     <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
                 @enderror
             </label>
@@ -221,7 +136,7 @@
                         @foreach (App\Models\Tax::all() as $tax)
                             <option value="{{ $tax->id }}"
                                 {{ old('tax_id', $product->tax_id ?? '') == $tax->id ? 'selected' : '' }}>
-                                {{ $tax->name }}</option>
+                                {{ $tax->name }} ({{ $tax->percentage }}%)</option>
                         @endforeach
                     </select>
                     <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
@@ -235,20 +150,21 @@
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-400">Estado</span>
                 <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                    <select name="product_status_id"
-                        class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('product_status_id') border-red-600 @enderror">
+                    <select name="status"
+                        class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('status') border-red-600 @enderror"
+                        required>
                         <option value="">Seleccione</option>
-                        @foreach (App\Models\ProductStatus::all() as $status)
-                            <option value="{{ $status->id }}"
-                                {{ old('product_status_id', $product->product_status_id ?? '') == $status->id ? 'selected' : '' }}>
-                                {{ $status->name }}</option>
-                        @endforeach
+                        <option value="available" {{ old('status', $product->status ?? '') == 'available' ? 'selected' : '' }}>Disponible</option>
+                        <option value="discontinued" {{ old('status', $product->status ?? '') == 'discontinued' ? 'selected' : '' }}>Descontinuado</option>
+                        <option value="out_of_stock" {{ old('status', $product->status ?? '') == 'out_of_stock' ? 'selected' : '' }}>Sin stock</option>
+                        <option value="reserved" {{ old('status', $product->status ?? '') == 'reserved' ? 'selected' : '' }}>Reservado</option>
+                        <option value="returned" {{ old('status', $product->status ?? '') == 'returned' ? 'selected' : '' }}>Devuelto</option>
                     </select>
                     <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                         <i class="fas fa-check w-5 h-5"></i>
                     </div>
                 </div>
-                @error('product_status_id')
+                @error('status')
                     <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
                 @enderror
             </label>

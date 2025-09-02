@@ -26,16 +26,12 @@ class ProductFactory extends Factory
             'name' => fake()->words(3, true),
             'image' => null,
             'description' => fake()->sentence(10),
-            'purchase_price' => fake()->randomFloat(2, 10, 500),
-            'sale_price' => fake()->randomFloat(2, 20, 1000),
-            'stock' => fake()->numberBetween(0, 200),
-            'min_stock' => fake()->numberBetween(0, 20),
+            'status' => fake()->randomElement(['active', 'inactive']),
             'brand_id' => Brand::inRandomOrder()->first()?->id,
             'category_id' => Category::inRandomOrder()->first()?->id,
             'tax_id' => Tax::inRandomOrder()->first()?->id,
             'unit_measure_id' => UnitMeasure::inRandomOrder()->first()?->id,
-            'entity_id' => Entity::inRandomOrder()->first()?->id,
-            'product_status_id' => ProductStatus::inRandomOrder()->first()?->id,
+            'entity_id' => Entity::inRandomOrder()->first()?->id
         ];
     }
 }

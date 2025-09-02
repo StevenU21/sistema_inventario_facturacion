@@ -33,7 +33,6 @@ class MunicipalityRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:3', 'max:60', Rule::unique('municipalities')->ignore($this->municipality)],
-            'description' => ['nullable', 'string', 'max:120'],
             'department_id' => ['required', 'exists:departments,id'],
         ];
     }

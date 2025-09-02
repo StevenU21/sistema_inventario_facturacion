@@ -12,14 +12,13 @@ class Department extends Model
     use HasFactory, LogsActivity;
 
     protected $fillable = [
-        'name',
-        'description',
+        'name'
     ];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'description']);
+            ->logOnly(['name']);
     }
 
     public function getFormattedCreatedAtAttribute(): ?string

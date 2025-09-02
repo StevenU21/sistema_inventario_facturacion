@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Brand;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,30 @@ class BrandSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $brands = [
+            'Genérica',
+            'Nike',
+            'Adidas',
+            'Samsung',
+            'LG',
+            'Sony',
+            'Apple',
+            'Colgate',
+            'Nestlé',
+            'Pepsi',
+            'Coca-Cola',
+            'Puma',
+            'Dell',
+            'HP',
+            'Lenovo',
+            'Procter & Gamble',
+            'Unilever',
+            'Bimbo',
+            'Frito Lay'
+        ];
+
+        foreach ($brands as $brand) {
+            Brand::firstOrCreate(['name' => $brand]);
+        }
     }
 }

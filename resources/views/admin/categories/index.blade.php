@@ -38,6 +38,9 @@
                                 <i class="fas fa-calendar-alt mr-2"></i>Fecha de Registro
                             </th>
                             <th class="px-4 py-3">
+                                <i class="fas fa-calendar-alt mr-2"></i>Fecha de Actualización
+                            </th>
+                            <th class="px-4 py-3">
                                 <i class="fas fa-tools mr-2"></i>Acciones
                             </th>
                         </tr>
@@ -55,10 +58,13 @@
                                     {{ $category->name }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $category->description }}
+                                    {{ $category->description ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $category->formatted_created_at ?? '-' }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $category->formatted_updated_at ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">

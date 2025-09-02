@@ -48,14 +48,25 @@ class DatabaseSeeder extends Seeder
         ]);
         $cashierUser->assignRole('cashier');
 
-        Category::factory()->count(26)->create();
-        Brand::factory()->count(33)->create();
-        Company::factory()->count(1)->create();
-        UnitMeasure::factory()->count(12)->create();
-        Department::factory()->count(15)->create();
-        Municipality::factory()->count(50)->create();
-        PaymentMethod::factory()->count(10)->create();
-        Tax::factory()->count(10)->create();
-        Entity::factory()->count(50)->create();
+        // Category::factory()->count(26)->create();
+        // Brand::factory()->count(33)->create();
+        // Company::factory()->count(1)->create();
+        // UnitMeasure::factory()->count(12)->create();
+        // Department::factory()->count(15)->create();
+        // Municipality::factory()->count(50)->create();
+        // PaymentMethod::factory()->count(10)->create();
+        // Tax::factory()->count(10)->create();
+        // Entity::factory()->count(50)->create();
+
+        $this->call(CategorySeeder::class);
+        $this->call(BrandSeeder::class);
+        $this->call(CompanySeeder::class);
+        $this->call(UnitMeasureSeeder::class);
+        $this->call(DepartmentSeeder::class);
+        $this->call(PaymentMethodSeeder::class);
+        $this->call(TaxSeeder::class);
+        $this->call(EntitySeeder::class);
+        $this->call(WarehouseSeeder::class);
+        $this->call(ProductSeeder::class);
     }
 }

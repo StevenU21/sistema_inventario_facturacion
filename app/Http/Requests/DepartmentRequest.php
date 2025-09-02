@@ -32,8 +32,7 @@ class DepartmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'min:3', 'max:60', Rule::unique('departments')->ignore($this->department)],
-            'description' => ['nullable', 'string', 'max:120'],
+            'name' => ['required', 'string', 'min:3', 'max:60', Rule::unique('departments')->ignore($this->department)]
         ];
     }
 }

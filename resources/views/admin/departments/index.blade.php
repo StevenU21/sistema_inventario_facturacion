@@ -32,10 +32,10 @@
                                 <i class="fas fa-tag mr-2"></i>Nombre
                             </th>
                             <th class="px-4 py-3">
-                                <i class="fas fa-align-left mr-2"></i>Descripción
+                                <i class="fas fa-calendar-alt mr-2"></i>Fecha de Registro
                             </th>
                             <th class="px-4 py-3">
-                                <i class="fas fa-calendar-alt mr-2"></i>Fecha de Registro
+                                <i class="fas fa-calendar-alt mr-2"></i>Fecha de Actualización
                             </th>
                             <th class="px-4 py-3">
                                 <i class="fas fa-tools mr-2"></i>Acciones
@@ -55,10 +55,10 @@
                                     {{ $department->name }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $department->description }}
+                                    {{ $department->formatted_created_at ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $department->formatted_created_at ?? '-' }}
+                                    {{ $department->formatted_updated_at ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">

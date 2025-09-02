@@ -13,14 +13,13 @@ class Municipality extends Model
 
     protected $fillable = [
         'name',
-        'description',
         'department_id',
     ];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'description', 'department_id']);
+            ->logOnly(['name', 'department_id']);
     }
 
     public function getFormattedCreatedAtAttribute(): ?string

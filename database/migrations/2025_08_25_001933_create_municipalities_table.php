@@ -13,7 +13,6 @@ return new class extends Migration {
         Schema::create('municipalities', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('description');
             $table->integer('department_id')->unsigned();
             $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();

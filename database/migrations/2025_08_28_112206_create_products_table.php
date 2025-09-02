@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->increments('id');
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('barcode')->unique();
+            $table->string('barcode')->nullable()->unique();
             $table->string('image')->nullable();
             $table->enum('status', ['available', 'discontinued', 'out_of_stock', 'reserved', 'returned'])->default('available');
 

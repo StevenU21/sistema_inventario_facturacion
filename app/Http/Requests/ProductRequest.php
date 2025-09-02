@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ProductRequest extends FormRequest
 {
@@ -39,16 +40,17 @@ class ProductRequest extends FormRequest
                 'mimes:jpeg,png,jpg,webp',
             ],
             'description' => ['nullable', 'string', 'max:255'],
-            'purchase_price' => ['required', 'numeric', 'min:0'],
-            'sale_price' => ['required', 'numeric', 'min:0'],
-            'stock' => ['required', 'integer', 'min:0'],
-            'min_stock' => ['required', 'integer', 'min:0'],
+            'status' => [
+                'required',
+                'string',
+                'in:available,discontinued,out_of_stock,reserved,returned'
+            ],
+            'barcode' => ['nullable', 'string', 'max:255', 'unique:products,barcode,' . Rule::unique('products')->ignore($this->route('product'))],
             'brand_id' => ['required', 'exists:brands,id'],
             'category_id' => ['required', 'exists:categories,id'],
             'tax_id' => ['required', 'exists:taxes,id'],
             'unit_measure_id' => ['required', 'exists:unit_measures,id'],
             'entity_id' => ['required', 'exists:entities,id'],
-            'product_status_id' => ['nullable', 'exists:product_statuses,id'],
         ];
     }
 }

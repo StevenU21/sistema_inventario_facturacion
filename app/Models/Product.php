@@ -22,7 +22,6 @@ class Product extends Model
         'tax_id',
         'unit_measure_id',
         'entity_id',
-        'product_status_id'
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -39,7 +38,6 @@ class Product extends Model
                 'tax_id',
                 'unit_measure_id',
                 'entity_id',
-                'product_status_id'
             ]);
     }
 
