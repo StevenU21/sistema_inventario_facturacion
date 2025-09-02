@@ -23,8 +23,8 @@ class ProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['nullable', 'string', 'max:20', Rule::unique('users')->ignore($this->user()->id)],
-            'identity_card' => ['nullable', 'string', 'max:20', Rule::unique('users')->ignore($this->user()->id)],
+            'phone' => ['nullable', 'string', 'max:20', Rule::unique('profiles')->ignore($this->user()->id)],
+            'identity_card' => ['nullable', 'string', 'max:20', Rule::unique('profiles')->ignore($this->user()->id)],
             'gender' => ['nullable', 'in:male,female'],
             'address' => ['nullable', 'string', 'max:255'],
             'avatar' => ['nullable', 'image', 'max:2048'],
