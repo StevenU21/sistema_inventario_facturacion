@@ -15,13 +15,14 @@ class Inventory extends Model
         'min_stock',
         'purchase_price',
         'sale_price',
+        'product_id',
         'warehouse_id'
     ];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['stock', 'min_stock', 'purchase_price', 'sale_price']);
+            ->logOnly(['stock', 'min_stock', 'purchase_price', 'sale_price', 'product_id', 'warehouse_id']);
     }
 
     public function getFormattedCreatedAtAttribute(): ?string

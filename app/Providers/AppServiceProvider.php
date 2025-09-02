@@ -14,6 +14,7 @@ use App\Models\Backup;
 use App\Models\Company;
 use App\Models\UnitMeasure;
 use App\Models\Category;
+use App\Models\Warehouse;
 use App\Policies\BackupPolicy;
 use App\Policies\CompanyPolicy;
 use App\Policies\DepartmentPolicy;
@@ -29,6 +30,7 @@ use App\Policies\AuditPolicy;
 use App\Policies\BrandPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\PermissionPolicy;
+use App\Policies\WarehousePolicy;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -67,5 +69,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Entity::class, EntityPolicy::class);
         Gate::policy(Product::class, ProductPolicy::class);
         Gate::policy(Role::class, RolePolicy::class);
+        Gate::policy(Warehouse::class, WarehousePolicy::class);
     }
 }

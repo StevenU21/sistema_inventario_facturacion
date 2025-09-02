@@ -18,9 +18,9 @@ class UserController extends Controller
 
     public function index()
     {
-    $this->authorize('viewAny', User::class);
-    $users = User::with(['roles.permissions', 'profile'])->where('is_active', true)->latest()->paginate(10);
-    return view('admin.users.index', compact('users'));
+        $this->authorize('viewAny', User::class);
+        $users = User::with(['roles.permissions', 'profile'])->where('is_active', true)->latest()->paginate(10);
+        return view('admin.users.index', compact('users'));
     }
 
     public function show(User $user)
@@ -49,7 +49,7 @@ class UserController extends Controller
         $profileData['user_id'] = $user->id;
 
         if ($profileRequest->hasFile('avatar')) {
-            $profileData['avatar'] = $fileService->storeLocal($user, 'avatar', $profileRequest->file('avatar'), 'user_avatar');
+            $profileData['avatar'] = $fileService->storeLocal($user, $profileRequest->file('avatar'));
         } else if ($profileRequest->filled('avatar')) {
             $profileData['avatar'] = $profileRequest->input('avatar');
         }
@@ -89,10 +89,10 @@ class UserController extends Controller
             $profileData = $request->only(['phone', 'identity_card', 'gender', 'address']);
             $fileService = new FileService();
             if ($user->profile && $request->hasFile('avatar')) {
-                $fileService->updateLocal($user->profile, 'avatar', $request->file('avatar'), 'user_avatar');
+                $fileService->updateLocal($user->profile, 'avatar', $request);
                 $profileData['avatar'] = $user->profile->avatar;
             } else if ($request->hasFile('avatar')) {
-                $profileData['avatar'] = $fileService->storeLocal($user, 'avatar', $request->file('avatar'), 'user_avatar');
+                $profileData['avatar'] = $fileService->storeLocal($user, $request->file('avatar'));
             } else if ($request->filled('avatar')) {
                 $profileData['avatar'] = $request->input('avatar');
             }
@@ -102,7 +102,7 @@ class UserController extends Controller
             } else {
                 $profileData['user_id'] = $user->id;
                 if ($request->hasFile('avatar')) {
-                    $profileData['avatar'] = $fileService->storeLocal($user, 'avatar', $request->file('avatar'), 'user_avatar');
+                    $profileData['avatar'] = $fileService->storeLocal($user, $request->file('avatar'));
                 } else if ($request->filled('avatar')) {
                     $profileData['avatar'] = $request->input('avatar');
                 }
