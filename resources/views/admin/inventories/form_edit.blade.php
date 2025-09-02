@@ -7,7 +7,6 @@
                 <select name="movement_type" id="movement_type"
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray">
                     <option value="">Seleccionar</option>
-                    <option value="out">Salida</option>
                     <option value="adjustment">Ajuste</option>
                     <option value="transfer">Transferencia de Almacén</option>
                 </select>
