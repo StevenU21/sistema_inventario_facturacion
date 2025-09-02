@@ -53,8 +53,28 @@ class InventoryRequest extends FormRequest
         if ($type === 'transfer') {
             return [
                 'movement_type' => ['required'],
-                'destination_warehouse_id' => ['required', 'exists:warehouses,id'],
-                'quantity' => ['nullable', 'integer', 'min:1'],
+                'destination_warehouse_id' => [
+                    'required',
+                    'exists:warehouses,id',
+                    function ($attribute, $value, $fail) {
+                        // No permitir transferir al mismo almacén
+                        $inventory = $this->route('inventory');
+                        if ($inventory && $inventory->warehouse_id == $value) {
+                            $fail('No se puede transferir al mismo almacén de origen.');
+                        }
+                    }
+                ],
+                'quantity' => [
+                    'nullable',
+                    'integer',
+                    'min:1',
+                    function ($attribute, $value, $fail) {
+                        $inventory = $this->route('inventory');
+                        if ($inventory && $value !== null && $value > $inventory->stock) {
+                            $fail('No puedes transferir más de lo que hay en el stock actual.');
+                        }
+                    }
+                ],
             ];
         }
         // Si no hay movimiento, no validar nada extra

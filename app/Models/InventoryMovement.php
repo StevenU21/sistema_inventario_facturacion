@@ -13,6 +13,7 @@ class InventoryMovement extends Model
 
     protected $fillable = [
         'type',
+        'adjustment_reason',
         'quantity',
         'unit_price',
         'total_price',
@@ -25,7 +26,7 @@ class InventoryMovement extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['type', 'quantity', 'unit_price', 'total_price', 'reference', 'notes', 'user_id', 'inventory_id']);
+            ->logOnly(['type', 'adjustment_reason', 'quantity', 'unit_price', 'total_price', 'reference', 'notes', 'user_id', 'inventory_id']);
     }
 
     public function getFormattedCreatedAtAttribute(): ?string
