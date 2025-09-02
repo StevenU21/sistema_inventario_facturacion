@@ -44,16 +44,29 @@
             const adjustmentFields = document.getElementById('adjustment_fields');
             const transferFields = document.getElementById('transfer_fields');
 
+            function setDisabledAll(container, disabled) {
+                if (!container) return;
+                container.querySelectorAll('input, select, textarea').forEach(el => {
+                    el.disabled = disabled;
+                });
+            }
+
             function toggleFields() {
                 if (movementType.value === 'transfer') {
                     adjustmentFields.style.display = 'none';
                     transferFields.style.display = 'block';
+                    setDisabledAll(adjustmentFields, true);
+                    setDisabledAll(transferFields, false);
                 } else if (movementType.value === 'adjustment') {
                     adjustmentFields.style.display = 'block';
                     transferFields.style.display = 'none';
+                    setDisabledAll(adjustmentFields, false);
+                    setDisabledAll(transferFields, true);
                 } else {
                     adjustmentFields.style.display = 'none';
                     transferFields.style.display = 'none';
+                    setDisabledAll(adjustmentFields, true);
+                    setDisabledAll(transferFields, true);
                 }
             }
 
