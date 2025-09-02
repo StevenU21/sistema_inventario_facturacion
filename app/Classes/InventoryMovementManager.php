@@ -71,44 +71,62 @@ class InventoryMovementManager
 
     public static function adjust(Inventory $inventory, Request $request)
     {
+        // ...existing code...
         $reason = $request->input('adjustment_reason');
         $quantity = $request->filled('quantity') ? (int) $request->input('quantity') : null;
         $notes = $request->input('notes');
         $reference = $request->input('reference');
-    $unit_price = $request->filled('purchase_price') && $request->input('purchase_price') !== null ? $request->input('purchase_price') : $inventory->purchase_price;
-    $sale_price = $request->filled('sale_price') && $request->input('sale_price') !== null ? $request->input('sale_price') : $inventory->sale_price;
+        $unit_price = $request->filled('purchase_price') && $request->input('purchase_price') !== null ? $request->input('purchase_price') : $inventory->purchase_price;
+        $sale_price = $request->filled('sale_price') && $request->input('sale_price') !== null ? $request->input('sale_price') : $inventory->sale_price;
         $oldStock = $inventory->stock;
         $oldPurchase = $inventory->purchase_price;
         $oldSale = $inventory->sale_price;
 
-        // Actualizar precios si se envían
+        // ...existing code...
+
+        $stockChanged = false;
         $priceChanged = false;
-        // purchase_price nunca debe ser null
-        if ($request->filled('purchase_price') && $unit_price != $oldPurchase) {
-            $inventory->purchase_price = $unit_price;
-            $priceChanged = true;
-        } elseif ($inventory->purchase_price === null) {
-            $inventory->purchase_price = $oldPurchase ?? 0;
-        }
-        // sale_price nunca debe ser null
-        if ($request->filled('sale_price') && $sale_price != $oldSale) {
-            $inventory->sale_price = $sale_price;
-            $priceChanged = true;
-        } elseif ($inventory->sale_price === null) {
-            $inventory->sale_price = $oldSale ?? 0;
+
+        switch ($reason) {
+            case 'correction':
+            case 'physical_count':
+            case 'damage':
+            case 'theft':
+                // Solo actualizar stock
+                if ($quantity !== null) {
+                    $subtractReasons = ['damage', 'theft'];
+                    if (in_array($reason, $subtractReasons)) {
+                        // ...existing code...
+                        $inventory->stock -= $quantity;
+                    } else {
+                        // ...existing code...
+                        $inventory->stock += $quantity;
+                    }
+                    $stockChanged = true;
+                }
+                break;
+            case 'purchase_price':
+                // Solo actualizar precio de compra
+                if ($request->filled('purchase_price') && $unit_price != $oldPurchase) {
+                    // ...existing code...
+                    $inventory->purchase_price = $unit_price;
+                    $priceChanged = true;
+                }
+                break;
+            case 'sale_price':
+                // Solo actualizar precio de venta
+                if ($request->filled('sale_price') && $sale_price != $oldSale) {
+                    // ...existing code...
+                    $inventory->sale_price = $sale_price;
+                    $priceChanged = true;
+                }
+                break;
+            default:
+                // ...existing code...
+                // No hacer nada si la razón no es válida
+                break;
         }
 
-        // Determinar si el ajuste es suma o resta
-        $stockChanged = false;
-        if ($quantity !== null) {
-            $subtractReasons = ['damage', 'theft'];
-            if (in_array($reason, $subtractReasons)) {
-                $inventory->stock -= $quantity;
-            } else {
-                $inventory->stock += $quantity;
-            }
-            $stockChanged = true;
-        }
         // Asegurar que nunca sean null antes de guardar
         if ($inventory->purchase_price === null) {
             $inventory->purchase_price = 0;
@@ -116,6 +134,7 @@ class InventoryMovementManager
         if ($inventory->sale_price === null) {
             $inventory->sale_price = 0;
         }
+        // ...existing code...
         $inventory->save();
 
         // Generar notes y reference automáticamente
@@ -128,8 +147,16 @@ class InventoryMovementManager
             $autoReference = 'Ajuste de cantidad';
             $autoNotes = "Cantidad ajustada de $oldStock a {$inventory->stock}.";
         } elseif ($priceChanged) {
-            $autoReference = 'Ajuste de precios';
-            $autoNotes = "Precio compra de $oldPurchase a $unit_price. Precio venta de $oldSale a $sale_price.";
+            if ($reason === 'purchase_price') {
+                $autoReference = 'Ajuste de precio de compra';
+                $autoNotes = "Precio compra de $oldPurchase a $unit_price.";
+            } else if ($reason === 'sale_price') {
+                $autoReference = 'Ajuste de precio de venta';
+                $autoNotes = "Precio venta de $oldSale a $sale_price.";
+            } else {
+                $autoReference = 'Ajuste de precios';
+                $autoNotes = "Precio compra de $oldPurchase a $unit_price. Precio venta de $oldSale a $sale_price.";
+            }
         }
         // Si el usuario envía notes/reference, se usan, si no, se generan
         $finalReference = $reference ?: $autoReference;
@@ -149,3 +176,4 @@ class InventoryMovementManager
         return $movement;
     }
 }
+

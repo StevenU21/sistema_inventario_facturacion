@@ -86,6 +86,8 @@ class InventoryController extends Controller
                 $result = null;
                 if ($type === 'transfer') {
                     $result = InventoryMovementManager::transfer($inventory, $request);
+                } else if ($type === 'adjustment') {
+                    $result = InventoryMovementManager::adjust($inventory, $request);
                 }
                 if (is_array($result) && isset($result['error'])) {
                     \DB::rollBack();
