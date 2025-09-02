@@ -19,22 +19,44 @@
         <div class="mb-4">
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-400">Imagen</span>
-                <div
-                    class="relative flex items-center text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400 mt-1">
+                <div class="relative flex items-center text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400 mt-1">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <i class="fas fa-image w-5 h-5"></i>
                     </div>
                     <input name="image" type="file" accept="image/*"
-                        class="block w-full pl-10 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('image') border-red-600 @enderror" />
+                        class="block w-full pl-10 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('image') border-red-600 @enderror"
+                        id="imageInput" />
                 </div>
-                @if (isset($product) && $product->image)
-                    <img src="{{ $product->image_url }}" alt="Imagen actual" width="80" class="mt-2 rounded">
-                @endif
+                <div class="mt-2">
+                    <img id="imagePreview" src="{{ isset($product) && $product->image ? $product->image_url : '' }}" alt="Vista previa" width="80" class="rounded" style="display: {{ isset($product) && $product->image ? 'block' : 'none' }};">
+                </div>
                 @error('image')
                     <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
                 @enderror
             </label>
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const input = document.getElementById('imageInput');
+                const preview = document.getElementById('imagePreview');
+                if (input) {
+                    input.addEventListener('change', function (e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function (ev) {
+                                preview.src = ev.target.result;
+                                preview.style.display = 'block';
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            preview.src = '';
+                            preview.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        </script>
 
         <!-- Marca, Categoría, Impuesto -->
         <div class="flex flex-col md:flex-row gap-4 mt-4">
