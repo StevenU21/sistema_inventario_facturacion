@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Inventory;
 use App\Models\InventoryMovement;
+
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Http\Requests\Admin\InventoryMovementRequest;
 
 class InventoryMovementController extends Controller
 {

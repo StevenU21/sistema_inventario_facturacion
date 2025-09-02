@@ -30,14 +30,43 @@ class InventoryRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'stock' => ['required', 'integer', 'min:0'],
-            'min_stock' => ['required', 'integer', 'min:0', 'lte:stock'],
-            'purchase_price' => ['required', 'numeric', 'min:0'],
-            'sale_price' => ['required', 'numeric', 'min:0', 'gte:purchase_price'],
-            'product_id' => ['required', 'exists:products,id'],
-            'warehouse_id' => ['required', 'exists:warehouses,id'],
-        ];
+        // Si es creación de inventario, validar todos los campos
+        if ($this->isMethod('post')) {
+            return [
+                'stock' => ['required', 'integer', 'min:0'],
+                'min_stock' => ['required', 'integer', 'min:0', 'lte:stock'],
+                'purchase_price' => ['required', 'numeric', 'min:0'],
+                'sale_price' => ['required', 'numeric', 'min:0', 'gte:purchase_price'],
+                'product_id' => ['required', 'exists:products,id'],
+                'warehouse_id' => ['required', 'exists:warehouses,id'],
+            ];
+        }
+
+        // Si es movimiento, validar según el tipo
+        $type = $this->input('movement_type');
+        if ($type === 'transfer') {
+            return [
+                'movement_type' => ['required'],
+                'quantity' => ['required', 'integer', 'min:1'],
+                'destination_warehouse_id' => ['required', 'exists:warehouses,id'],
+            ];
+        } elseif ($type === 'adjustment' || $type === 'in') {
+            return [
+                'movement_type' => ['required'],
+                'stock' => ['required', 'integer', 'min:0'],
+                'min_stock' => ['required', 'integer', 'min:0', 'lte:stock'],
+                'unit_price' => ['required', 'numeric', 'min:0'],
+                'sale_price' => ['required', 'numeric', 'min:0', 'gte:unit_price'],
+            ];
+        } elseif ($type === 'out') {
+            return [
+                'movement_type' => ['required'],
+                'quantity' => ['required', 'integer', 'min:1'],
+            ];
+        }
+
+        // Si no hay movimiento, no validar nada extra
+        return [];
     }
 
     public function withValidator($validator)

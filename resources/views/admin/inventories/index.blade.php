@@ -51,15 +51,15 @@
                                 <td class="px-4 py-3 text-sm">{{ $inventory->formatted_updated_at ?? '-' }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
+                                        <a href="{{ route('inventories.edit', $inventory) }}"
+                                            class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green"
+                                            aria-label="Realizar Movimiento">
+                                            <i class="fas fa-exchange-alt mr-2"></i> Movimiento
+                                        </a>
                                         <a href="{{ route('inventories.show', $inventory) }}"
                                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                             aria-label="Ver">
                                             <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('inventories.edit', $inventory) }}"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Editar">
-                                            <i class="fas fa-edit"></i>
                                         </a>
                                         <form action="{{ route('inventories.destroy', $inventory) }}" method="POST"
                                             onsubmit="return confirm('¿Seguro de eliminar este inventario?');">

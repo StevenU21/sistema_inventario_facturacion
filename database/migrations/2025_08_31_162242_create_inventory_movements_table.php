@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('inventory_movements', function (Blueprint $table) {
             $table->increments('id');
-            $table->enum('type', ['in', 'out', 'adjustment', 'transfer', 'return']);
+            $table->enum('type', ['in', 'out', 'adjustment', 'transfer']);
             $table->unsignedInteger('quantity');
             $table->decimal('unit_price', 10, 2);
             $table->decimal('total_price', 10, 2);
