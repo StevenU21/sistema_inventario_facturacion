@@ -6,32 +6,32 @@ use App\Models\User;
 use App\Traits\HasPermissionCheck;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class MunicipalityPolicy
+class InventoryPolicy
 {
     use HandlesAuthorization, HasPermissionCheck;
 
     public function viewAny(User $user): bool
     {
-        return $this->checkPermission($user, 'read municipalities');
+        return $this->checkPermission($user, 'read inventories');
     }
 
     public function view(User $user): bool
     {
-        return $this->checkPermission($user, 'read municipalities');
+        return $this->checkPermission($user, 'read inventories');
     }
 
     public function create(User $user): bool
     {
-        return $this->checkPermission($user, 'create municipalities');
+        return $this->checkPermission($user, 'create inventories');
     }
 
     public function update(User $user): bool
     {
-        return $this->checkPermission($user, 'update municipalities');
+        return $this->checkPermission($user, 'update inventories');
     }
 
     public function destroy(User $user): bool
     {
-        return $this->checkPermission($user, 'destroy municipalities');
+        return $this->checkPermission($user, 'destroy inventories');
     }
 }

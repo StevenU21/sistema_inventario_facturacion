@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\EntityController;
 use App\Http\Controllers\Admin\InactiveUserController;
+use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\MunicipalityController;
 use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -55,14 +56,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('brands', BrandController::class);
     Route::resource('companies', CompanyController::class)->except(['destroy']);
     Route::resource('unit_measures', UnitMeasureController::class);
-    Route::resource('departments', DepartmentController::class);
-    Route::resource('municipalities', MunicipalityController::class);
     Route::resource('payment_methods', PaymentMethodController::class);
     Route::resource('taxes', TaxController::class);
     Route::resource('entities', EntityController::class);
     Route::resource('products', ProductController::class);
     Route::resource('roles', RoleController::class);
     Route::resource('warehouses', WarehouseController::class);
+    Route::resource('inventories', InventoryController::class);
 
     Route::get('/dashboard', function () {
         return view('dashboard');

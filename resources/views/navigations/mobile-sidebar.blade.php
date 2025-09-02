@@ -83,20 +83,6 @@
                         </a>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('departments.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('departments.index') }}">
-                            <i class="fas fa-map-marked-alt w-5 h-5"></i>
-                            <span class="ml-4">Departamentos</span>
-                        </a>
-                    </li>
-                    <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('municipalities.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('municipalities.index') }}">
-                            <i class="fas fa-city w-5 h-5"></i>
-                            <span class="ml-4">Municipios</span>
-                        </a>
-                    </li>
-                    <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('payment_methods.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
                             href="{{ route('payment_methods.index') }}">
                             <i class="fas fa-credit-card w-5 h-5"></i>

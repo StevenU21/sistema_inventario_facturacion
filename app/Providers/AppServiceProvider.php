@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Department;
 use App\Models\Entity;
+use App\Models\Inventory;
 use App\Models\Municipality;
 use App\Models\PaymentMethod;
 use App\Models\Product;
@@ -19,6 +20,7 @@ use App\Policies\BackupPolicy;
 use App\Policies\CompanyPolicy;
 use App\Policies\DepartmentPolicy;
 use App\Policies\EntityPolicy;
+use App\Policies\InventoryPolicy;
 use App\Policies\MunicipalityPolicy;
 use App\Policies\PaymentMethodPolicy;
 use App\Policies\ProductPolicy;
@@ -62,13 +64,12 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Company::class, CompanyPolicy::class);
         Gate::policy(Backup::class, BackupPolicy::class);
         Gate::policy(UnitMeasure::class, UnitMeasurePolicy::class);
-        Gate::policy(Department::class, DepartmentPolicy::class);
-        Gate::policy(Municipality::class, MunicipalityPolicy::class);
         Gate::policy(PaymentMethod::class, PaymentMethodPolicy::class);
         Gate::policy(Tax::class, TaxPolicy::class);
         Gate::policy(Entity::class, EntityPolicy::class);
         Gate::policy(Product::class, ProductPolicy::class);
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(Warehouse::class, WarehousePolicy::class);
+        Gate::policy(Inventory::class, InventoryPolicy::class);
     }
 }

@@ -2,11 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Municipality;
+use App\Models\Inventory;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class MunicipalityRequest extends FormRequest
+class InventoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,11 +13,11 @@ class MunicipalityRequest extends FormRequest
     public function authorize(): bool
     {
         if ($this->isMethod('post')) {
-            return $this->user()->can('create', Municipality::class);
+            return $this->user()->can('create', Inventory::class);
         }
 
         if ($this->isMethod('put') || $this->isMethod('patch')) {
-            return $this->user()->can('update', $this->route('municipality'));
+            return $this->user()->can('update', $this->route('inventory'));
         }
 
         return false;
@@ -32,8 +31,12 @@ class MunicipalityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'min:3', 'max:60', Rule::unique('municipalities')->ignore($this->municipality)],
-            'department_id' => ['required', 'exists:departments,id'],
+            'stock' => ['required', 'integer', 'min:0'],
+            'min_stock' => ['required', 'integer', 'min:0'],
+            'purchase_price' => ['required', 'numeric', 'min:0'],
+            'sale_price' => ['required', 'numeric', 'min:0'],
+            'product_id' => ['required', 'exists:products,id'],
+            'warehouse_id' => ['required', 'exists:warehouses,id'],
         ];
     }
 }
