@@ -77,6 +77,52 @@ class InventoryRequest extends FormRequest
                 ],
             ];
         }
+
+        // Si es ajuste, validar los campos del form
+        if ($type === 'adjustment') {
+            $reason = $this->input('adjustment_reason');
+            $rules = [
+                'movement_type' => ['required'],
+                'adjustment_reason' => ['required'],
+            ];
+            // Validar según la razón
+            switch ($reason) {
+                case 'correction':
+                case 'physical_count':
+                    // Permitir solo cantidad
+                    $rules['quantity'] = ['required', 'integer', 'min:1'];
+                    $rules['purchase_price'] = ['nullable', 'prohibited'];
+                    $rules['sale_price'] = ['nullable', 'prohibited'];
+                    break;
+                case 'damage':
+                case 'theft':
+                    // Permitir solo cantidad
+                    $rules['quantity'] = ['required', 'integer', 'min:1'];
+                    $rules['purchase_price'] = ['nullable', 'prohibited'];
+                    $rules['sale_price'] = ['nullable', 'prohibited'];
+                    break;
+                case 'price_update':
+                    // Permitir solo precios
+                    $rules['quantity'] = ['nullable', 'prohibited'];
+                    $rules['purchase_price'] = ['required', 'numeric', 'min:0'];
+                    $rules['sale_price'] = ['required', 'numeric', 'min:0', 'gte:purchase_price'];
+                    break;
+                case 'other':
+                    // Permitir todo
+                    $rules['quantity'] = ['nullable', 'integer', 'min:1'];
+                    $rules['purchase_price'] = ['nullable', 'numeric', 'min:0'];
+                    $rules['sale_price'] = ['nullable', 'numeric', 'min:0', 'gte:purchase_price'];
+                    break;
+                default:
+                    // Si no hay razón, prohibir cambios
+                    $rules['quantity'] = ['nullable', 'prohibited'];
+                    $rules['purchase_price'] = ['nullable', 'prohibited'];
+                    $rules['sale_price'] = ['nullable', 'prohibited'];
+                    break;
+            }
+            return $rules;
+        }
+
         // Si no hay movimiento, no validar nada extra
         return [];
     }
