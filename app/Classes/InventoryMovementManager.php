@@ -21,12 +21,10 @@ class InventoryMovementManager
                 ->where('warehouse_id', $destWarehouseId)
                 ->first();
 
-
             if ($destInventory && $destInventory->id == $inventory->id) {
                 \DB::rollBack();
                 return ['error' => ['destination_warehouse_id' => 'El producto ya existe en el almacén seleccionado.']];
             }
-
 
             $inventory->stock -= $quantity;
             $inventory->save();
