@@ -45,8 +45,8 @@
                                 <td class="px-4 py-3 text-sm">{{ $inventory->warehouse->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $inventory->stock }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $inventory->min_stock }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $inventory->purchase_price }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $inventory->sale_price }}</td>
+                                <td class="px-4 py-3 text-sm">C$ {{ number_format($inventory->purchase_price, 2) }}</td>
+                                <td class="px-4 py-3 text-sm">C$ {{ number_format($inventory->sale_price, 2) }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $inventory->formatted_created_at ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $inventory->formatted_updated_at ?? '-' }}</td>
                                 <td class="px-4 py-3">

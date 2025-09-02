@@ -45,7 +45,7 @@ class ProductRequest extends FormRequest
                 'string',
                 'in:available,discontinued,out_of_stock,reserved,returned'
             ],
-            'barcode' => ['nullable', 'string', 'max:255', 'unique:products,barcode,' . Rule::unique('products')->ignore($this->route('product'))],
+            'barcode' => ['nullable', 'string', 'max:255', Rule::unique('products')->ignore($this->route('product'))],
             'brand_id' => ['required', 'exists:brands,id'],
             'category_id' => ['required', 'exists:categories,id'],
             'tax_id' => ['required', 'exists:taxes,id'],
