@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Entity;
 use App\Models\Product;
 use App\Http\Requests\ProductRequest;
+use App\Models\Tax;
+use App\Models\UnitMeasure;
 use App\Services\FileService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -21,7 +26,12 @@ class ProductController extends Controller
     public function create()
     {
         $this->authorize("create", Product::class);
-        return view('admin.products.create');
+        $categories = Category::all();
+        $brands = Brand::all();
+        $units = UnitMeasure::all();
+        $entities = Entity::where('is_active', true)->where('is_supplier', true)->get();
+        $taxes = Tax::all();
+        return view('admin.products.create', compact('categories', 'brands', 'units', 'entities', 'taxes'));
     }
 
     public function store(ProductRequest $request, FileService $fileService)
@@ -45,7 +55,12 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $this->authorize("update", $product);
-        return view('admin.products.edit', compact('product'));
+        $categories = Category::all();
+        $brands = Brand::all();
+        $units = UnitMeasure::all();
+        $entities = Entity::where('is_active', true)->where('is_supplier', true)->get();
+        $taxes = Tax::all();
+        return view('admin.products.edit', compact('product', 'categories', 'brands', 'units', 'entities', 'taxes'));
     }
 
     public function update(ProductRequest $request, Product $product, FileService $fileService)
