@@ -11,57 +11,53 @@ class InventoryMovementManager
     {
         $quantity = $request->filled('quantity') ? (int) $request->input('quantity') : $inventory->stock;
         $destWarehouseId = $request->input('destination_warehouse_id');
-        $unit_price = $request->input('unit_price', null);
-        $reference = $request->input('reference');
-        $notes = $request->input('notes');
 
         \DB::beginTransaction();
         try {
+            // Buscar inventario destino
             $destInventory = Inventory::where('product_id', $inventory->product_id)
                 ->where('warehouse_id', $destWarehouseId)
                 ->first();
 
-            if ($destInventory && $destInventory->id == $inventory->id) {
-                \DB::rollBack();
-                return ['error' => ['destination_warehouse_id' => 'El producto ya existe en el almacén seleccionado.']];
-            }
-
+            // Actualizar inventario origen
             $inventory->stock -= $quantity;
             $inventory->save();
             $transferMovement = $inventory->inventoryMovements()->create([
                 'type' => 'transfer',
                 'quantity' => $quantity,
-                'unit_price' => $unit_price !== null ? $unit_price : $inventory->purchase_price,
-                'total_price' => ($unit_price !== null ? $unit_price : $inventory->purchase_price) * $quantity,
-                'reference' => $reference,
-                'notes' => $notes ?? 'Transferencia a almacén destino',
+                'unit_price' => $inventory->purchase_price,
+                'total_price' => $inventory->purchase_price * $quantity,
+                // Comentario de referencia
+                'reference' => 'Transferencia a almacén destino',
+                // Comentario de notas
+                'notes' => 'Movimiento generado por transferencia',
                 'user_id' => auth()->id(),
             ]);
 
+            // Actualizar o crear inventario destino
             if (!$destInventory) {
                 $destInventory = Inventory::create([
                     'product_id' => $inventory->product_id,
                     'warehouse_id' => $destWarehouseId,
                     'stock' => $quantity,
                     'min_stock' => $inventory->min_stock,
-                    'purchase_price' => $unit_price !== null ? $unit_price : $inventory->purchase_price,
+                    'purchase_price' => $inventory->purchase_price,
                     'sale_price' => $inventory->sale_price,
                 ]);
             } else {
                 $destInventory->stock += $quantity;
-                if ($unit_price !== null) {
-                    $destInventory->purchase_price = $unit_price;
-                }
                 $destInventory->save();
             }
 
-            $destInventory->inventoryMovements()->create([
+            $destMovement = $destInventory->inventoryMovements()->create([
                 'type' => 'in',
                 'quantity' => $quantity,
-                'unit_price' => $unit_price !== null ? $unit_price : $destInventory->purchase_price,
-                'total_price' => ($unit_price !== null ? $unit_price : $destInventory->purchase_price) * $quantity,
-                'reference' => $reference,
-                'notes' => $notes ? $notes : 'Transferido desde almacén origen',
+                'unit_price' => $inventory->purchase_price,
+                'total_price' => $inventory->purchase_price * $quantity,
+                // Comentario de referencia
+                'reference' => 'Transferido desde almacén origen',
+                // Comentario de notas
+                'notes' => 'Movimiento generado por transferencia',
                 'user_id' => auth()->id(),
             ]);
 
