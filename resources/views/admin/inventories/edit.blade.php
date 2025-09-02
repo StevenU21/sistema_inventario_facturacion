@@ -15,7 +15,7 @@
         <form action="{{ route('inventories.update', $inventory) }}" method="POST">
             @csrf
             @method('PUT')
-            @include('admin.inventories.form')
+            @include('admin.inventories.form_edit')
         </form>
     </div>
 @endsection

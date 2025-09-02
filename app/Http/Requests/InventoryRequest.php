@@ -7,6 +7,12 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class InventoryRequest extends FormRequest
 {
+    protected function prepareForValidation()
+    {
+        if ($this->has('quantity') && $this->input('quantity') === '') {
+            $this->merge(['quantity' => null]);
+        }
+    }
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -47,24 +53,56 @@ class InventoryRequest extends FormRequest
         if ($type === 'transfer') {
             return [
                 'movement_type' => ['required'],
-                'quantity' => ['required', 'integer', 'min:1'],
                 'destination_warehouse_id' => ['required', 'exists:warehouses,id'],
-            ];
-        } elseif ($type === 'adjustment' || $type === 'in') {
-            return [
-                'movement_type' => ['required'],
-                'stock' => ['required', 'integer', 'min:0'],
-                'min_stock' => ['required', 'integer', 'min:0', 'lte:stock'],
-                'unit_price' => ['required', 'numeric', 'min:0'],
-                'sale_price' => ['required', 'numeric', 'min:0', 'gte:unit_price'],
-            ];
-        } elseif ($type === 'out') {
-            return [
-                'movement_type' => ['required'],
-                'quantity' => ['required', 'integer', 'min:1'],
+                'quantity' => [
+                    'nullable',
+                    function ($attribute, $value, $fail) {
+                        $inventory = $this->route('inventory');
+                        $stock = $inventory ? $inventory->stock : 0;
+                        $destWarehouseId = $this->input('destination_warehouse_id');
+                        $productId = $inventory ? $inventory->product_id : null;
+                        $destInventory = null;
+                        if ($productId && $destWarehouseId) {
+                            $destInventory = \App\Models\Inventory::where('product_id', $productId)
+                                ->where('warehouse_id', $destWarehouseId)
+                                ->first();
+                        }
+                        // Si el producto ya existe en el almacén destino, no permitir transferir si ya está todo transferido
+                        if ($destInventory && $destInventory->id != $inventory->id) {
+                            // Si se envía cantidad, verificar que no exceda el stock origen y que no duplique el stock destino
+                            $transferQty = ($value !== null && $value !== '') ? intval($value) : $stock;
+                            if ($transferQty < 1) {
+                                $fail('La cantidad debe ser un número entero mayor a 0.');
+                            }
+                            if ($transferQty > $stock) {
+                                $fail('Stock insuficiente para transferir la cantidad solicitada.');
+                            }
+                            // Si ya está todo transferido
+                            if ($stock < 1) {
+                                $fail('No hay stock disponible para transferir.');
+                            }
+                            // Si el destino ya tiene el mismo stock que el origen, no permitir
+                            if ($destInventory->stock >= $stock) {
+                                $fail('El almacén destino ya tiene el stock máximo posible para este producto.');
+                            }
+                        } else {
+                            // Si se envía cantidad, debe ser entero y mayor a 0 y no exceder el stock
+                            if ($value !== null && $value !== '') {
+                                if (!is_numeric($value) || intval($value) < 1) {
+                                    $fail('La cantidad debe ser un número entero mayor a 0.');
+                                } elseif (intval($value) > $stock) {
+                                    $fail('Stock insuficiente para transferir la cantidad solicitada.');
+                                }
+                            } else {
+                                if ($stock < 1) {
+                                    $fail('No hay stock disponible para transferir.');
+                                }
+                            }
+                        }
+                    }
+                ],
             ];
         }
-
         // Si no hay movimiento, no validar nada extra
         return [];
     }
