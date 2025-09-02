@@ -30,6 +30,9 @@
                             <th class="px-4 py-3"><i class="fas fa-box mr-2"></i>Nombre</th>
                             <th class="px-4 py-3"><i class="fas fa-tags mr-2"></i>Marca</th>
                             <th class="px-4 py-3"><i class="fas fa-list-alt mr-2"></i>Categoría</th>
+                            <th class="px-4 py-3"><i class="fas fa-money-bill-wave mr-2"></i>Impuesto</th>
+                            <th class="px-4 py-3"><i class="fas fa-balance-scale mr-2"></i>Unidad de Medida</th>
+                            <th class="px-4 py-3"><i class="fas fa-user-tie mr-2"></i>Proveedor</th>
                             <th class="px-4 py-3"><i class="fas fa-align-left mr-2"></i>Descripción</th>
                             <th class="px-4 py-3">
                                 <i class="fas fa-calendar-alt mr-2"></i>Fecha de Registro
@@ -44,8 +47,7 @@
                         @forelse($products as $product)
                             <tr class="text-gray-700 dark:text-gray-400">
                                 <td class="px-4 py-3 text-xs">
-                                    <span
-                                        class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
+                                    <span class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
                                         {{ $product->id }}
                                     </span>
                                 </td>
@@ -55,6 +57,9 @@
                                 <td class="px-4 py-3 text-sm">{{ $product->name }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $product->brand->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $product->category->name ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $product->tax->name . ' ' . $product->tax->percentage . '%' ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $product->unitMeasure->name ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $product->entity->first_name . ' ' . $product->entity->last_name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $product->description }}</td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $product->formatted_created_at ?? '-' }}
