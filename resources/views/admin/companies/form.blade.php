@@ -75,12 +75,38 @@
                 <i class="fas fa-image w-5 h-5"></i>
             </div>
             <input name="logo" type="file" accept="image/*"
-                class="block w-full pl-10 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('logo') border-red-600 @enderror" />
+                class="block w-full pl-10 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('logo') border-red-600 @enderror"
+                id="logoInput" />
+        </div>
+        <div class="mt-2">
+            <img id="logoPreview" src="{{ isset($company) && $company->logo ? asset('storage/' . $company->logo) : '' }}" alt="Vista previa" width="80" class="rounded" style="display: {{ isset($company) && $company->logo ? 'block' : 'none' }};">
         </div>
         @error('logo')
             <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
         @enderror
     </label>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const input = document.getElementById('logoInput');
+            const preview = document.getElementById('logoPreview');
+            if (input) {
+                input.addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (ev) {
+                            preview.src = ev.target.result;
+                            preview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        preview.src = '';
+                        preview.style.display = 'none';
+                    }
+                });
+            }
+        });
+    </script>
 
     <!-- Dirección -->
     <label class="block mt-4 text-sm w-full">
