@@ -30,7 +30,7 @@ class ProductController extends Controller
         $data = $request->validated();
         $product = new Product($data);
         if ($request->hasFile('image')) {
-            $product->image = $fileService->storeLocal($product, 'image', $request->file('image'));
+            $product->image = $fileService->storeLocal($product, $request->file('image'));
         }
         $product->save();
         return redirect()->route('products.index')->with('success', 'Producto creado correctamente.');
@@ -52,8 +52,9 @@ class ProductController extends Controller
     {
         $this->authorize("update", $product);
         $data = $request->validated();
-        if ($request->hasFile('image')) {
-            $fileService->updateLocal($product, 'image', $request->file('image'));
+        $imagePath = $fileService->updateLocal($product, 'image', $request);
+        if ($imagePath) {
+            $data['image'] = $imagePath;
         }
         $product->update($data);
         return redirect()->route('products.index')->with('success', 'Producto actualizado correctamente.');
@@ -61,7 +62,7 @@ class ProductController extends Controller
 
     public function destroy(Product $product, FileService $fileService)
     {
-        $this->authorize("delete", $product);
+        $this->authorize("destroy", $product);
         $fileService->deleteLocal($product, 'image');
         $product->delete();
         return redirect()->route('products.index')->with('success', 'Producto eliminado correctamente.');

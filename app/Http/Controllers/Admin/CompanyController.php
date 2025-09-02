@@ -32,17 +32,14 @@ class CompanyController extends Controller
     {
         $data = $request->validated();
         $company = Company::create($data);
-
-        // Manejo de logo
+        $fileService = new FileService();
         if ($request->hasFile('logo')) {
-            $fileService = new FileService();
-            $logoPath = $fileService->storeLocal($company, 'logo', $request->file('logo'));
+            $logoPath = $fileService->storeLocal($company, $request->file('logo'));
             if ($logoPath) {
                 $company->logo = $logoPath;
                 $company->save();
             }
         }
-
         return redirect()->route('companies.index')->with('success', 'Compañía creada correctamente.');
     }
 
@@ -61,17 +58,12 @@ class CompanyController extends Controller
     {
         $data = $request->validated();
         $company->update($data);
-
-        // Manejo de logo
-        if ($request->hasFile('logo')) {
-            $fileService = new FileService();
-            $logoPath = $fileService->storeLocal($company, 'logo', $request->file('logo'));
-            if ($logoPath) {
-                $company->logo = $logoPath;
-                $company->save();
-            }
+        $fileService = new FileService();
+        $logoPath = $fileService->updateLocal($company, 'logo', $request);
+        if ($logoPath) {
+            $company->logo = $logoPath;
+            $company->save();
         }
-
         return redirect()->route('companies.index')->with('success', 'Compañía actualizada correctamente.');
     }
 }
