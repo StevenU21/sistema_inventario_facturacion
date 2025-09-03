@@ -59,15 +59,32 @@ class UsersExport implements FromCollection, WithHeadings
         return $users->map(function ($user) {
             $profile = $user->profile;
             $role = $user->roles->pluck('name')->first();
+            $gender = null;
+            if ($profile) {
+                if ($profile->gender === 'male') {
+                    $gender = 'MASCULINO';
+                } elseif ($profile->gender === 'female') {
+                    $gender = 'FEMENINO';
+                }
+            }
+            $roleTranslated = null;
+            if ($role === 'admin') {
+                $roleTranslated = 'ADMINISTRADOR';
+            } elseif ($role === 'cashier') {
+                $roleTranslated = 'CAJERO';
+            } elseif ($role) {
+                $roleTranslated = mb_strtoupper($role);
+            }
             return [
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
                 'email' => $user->email,
                 'identity_card' => $profile ? ($profile->formatted_identity_card ?? $profile->identity_card) : null,
                 'phone' => $profile ? $profile->phone : null,
-                'gender' => $profile ? $profile->gender : null,
-                'role' => $role ? mb_strtoupper($role) : null,
+                'gender' => $gender,
+                'role' => $roleTranslated,
                 'address' => $profile ? $profile->address : null,
+                'is_active' => $user->is_active ? 'ACTIVO' : 'INACTIVO',
             ];
         });
     }
@@ -83,6 +100,7 @@ class UsersExport implements FromCollection, WithHeadings
             'Género',
             'Rol',
             'Dirección',
+            'Estado',
         ];
     }
 }
