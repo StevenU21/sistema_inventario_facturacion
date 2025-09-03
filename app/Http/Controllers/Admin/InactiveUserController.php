@@ -10,13 +10,6 @@ class InactiveUserController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index()
-    {
-        $this->authorize('viewAny', User::class);
-        $users = User::with(['roles.permissions', 'profile'])->where('is_active', false)->latest()->paginate(10);
-        return view('admin.users.inactive', compact('users'));
-    }
-
     public function reactivate($id)
     {
         $this->authorize('reactivate', User::class);
@@ -24,6 +17,6 @@ class InactiveUserController extends Controller
         $this->authorize('update', $user);
         $user->is_active = true;
         $user->save();
-        return redirect()->route('users.inactive')->with('success', 'Usuario reactivado correctamente.');
+        return redirect()->route('users.index')->with('success', 'Usuario reactivado correctamente.');
     }
 }

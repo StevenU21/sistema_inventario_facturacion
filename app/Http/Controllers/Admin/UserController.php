@@ -22,7 +22,7 @@ class UserController extends Controller
     public function index()
     {
         $this->authorize('viewAny', User::class);
-        $users = User::with(['roles', 'profile'])->latest()->paginate(10);
+        $users = User::with(['roles', 'profile'])->where('is_active', true)->latest()->paginate(10);
         $roles = Role::all();
         return view('admin.users.index', compact('users', 'roles'));
     }
@@ -35,7 +35,8 @@ class UserController extends Controller
             'search' => request('search'),
             'per_page' => request('per_page', 10),
             'role' => request('role'),
-            'status' => request('status'),
+            // Si no se especifica status, por defecto 'activo', pero si es vacío mostrar todos
+            'status' => request()->has('status') ? request('status') : 'activo',
             'gender' => request('gender'),
         ];
         $users = $service->search(
@@ -53,9 +54,12 @@ class UserController extends Controller
             function ($query, $params) {
                 // Estado: activo/inactivo
                 if (isset($params['status']) && $params['status'] !== null && $params['status'] !== '') {
-                    $isActive = $params['status'] === 'activo' ? true : false;
-                    $query->where('is_active', $isActive);
-                } // Si no hay filtro, no aplicar where('is_active', true), mostrar todos
+                    if ($params['status'] === 'activo') {
+                        $query->where('is_active', true);
+                    } elseif ($params['status'] === 'inactivo') {
+                        $query->where('is_active', false);
+                    }
+                }
                 // Género
                 if (isset($params['gender']) && $params['gender']) {
                     $query->whereHas('profile', function ($q) use ($params) {
