@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileRequest;
 use App\Models\User;
+use App\Services\ModelSearchService;
 use App\Models\Profile;
 use App\Services\FileService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -19,7 +20,33 @@ class UserController extends Controller
     public function index()
     {
         $this->authorize('viewAny', User::class);
-        $users = User::with(['roles.permissions', 'profile'])->where('is_active', true)->latest()->paginate(10);
+        $users = User::with(['roles', 'profile'])->where('is_active', true)->latest()->paginate(10);
+        return view('admin.users.index', compact('users'));
+    }
+
+    public function search()
+    {
+        $this->authorize('viewAny', User::class);
+        $service = new ModelSearchService();
+        $users = $service->search(
+            User::class,
+            [
+                'search' => request('search'),
+                'per_page' => request('per_page', 10),
+            ],
+            [
+                'first_name',
+                'last_name',
+                'email',
+                'roles.name',
+                'roles.display_name',
+                'roles.description',
+            ],
+            ['roles', 'profile'],
+            function ($query) {
+                $query->where('is_active', true);
+            }
+        );
         return view('admin.users.index', compact('users'));
     }
 
@@ -42,22 +69,15 @@ class UserController extends Controller
     {
         $data = $request->validated();
         $data['password'] = Hash::make($request->password);
-
         $user = User::create($data);
-
         $profileData = $profileRequest->validated();
         $profileData['user_id'] = $user->id;
-
         if ($profileRequest->hasFile('avatar')) {
             $profileData['avatar'] = $fileService->storeLocal($user, $profileRequest->file('avatar'));
-        } else if ($profileRequest->filled('avatar')) {
+        } elseif ($profileRequest->filled('avatar')) {
             $profileData['avatar'] = $profileRequest->input('avatar');
         }
-
-        // Eliminar nulos para evitar errores de mass assignment
-        $profileData = array_filter($profileData, fn($v) => !is_null($v));
         Profile::create($profileData);
-
         $role = $request->input('role');
         $user->assignRole($role);
         return redirect()->route('users.index')->with('success', 'Usuario creado correctamente');
@@ -85,30 +105,21 @@ class UserController extends Controller
         $user->update($data);
 
         // Actualizar datos de perfil y avatar
-        if ($request->has(['phone', 'identity_card', 'gender', 'address']) || $request->hasFile('avatar')) {
-            $profileData = $request->only(['phone', 'identity_card', 'gender', 'address']);
-            $fileService = new FileService();
-            if ($user->profile && $request->hasFile('avatar')) {
-                $fileService->updateLocal($user->profile, 'avatar', $request);
-                $profileData['avatar'] = $user->profile->avatar;
-            } else if ($request->hasFile('avatar')) {
-                $profileData['avatar'] = $fileService->storeLocal($user, $request->file('avatar'));
-            } else if ($request->filled('avatar')) {
-                $profileData['avatar'] = $request->input('avatar');
-            }
-            $profileData = array_filter($profileData, fn($v) => !is_null($v));
-            if ($user->profile) {
-                $user->profile->update($profileData);
-            } else {
-                $profileData['user_id'] = $user->id;
-                if ($request->hasFile('avatar')) {
-                    $profileData['avatar'] = $fileService->storeLocal($user, $request->file('avatar'));
-                } else if ($request->filled('avatar')) {
-                    $profileData['avatar'] = $request->input('avatar');
-                }
-                $profileData = array_filter($profileData, fn($v) => !is_null($v));
-                Profile::create($profileData);
-            }
+        $profileData = $request->only(['phone', 'identity_card', 'gender', 'address']);
+        $fileService = new FileService();
+        if ($user->profile && $request->hasFile('avatar')) {
+            $fileService->updateLocal($user->profile, 'avatar', $request);
+            $profileData['avatar'] = $user->profile->avatar;
+        } elseif ($request->hasFile('avatar')) {
+            $profileData['avatar'] = $fileService->storeLocal($user, $request->file('avatar'));
+        } elseif ($request->filled('avatar')) {
+            $profileData['avatar'] = $request->input('avatar');
+        }
+        if ($user->profile) {
+            $user->profile->update($profileData);
+        } else {
+            $profileData['user_id'] = $user->id;
+            Profile::create($profileData);
         }
 
         $role = $request->input('role');

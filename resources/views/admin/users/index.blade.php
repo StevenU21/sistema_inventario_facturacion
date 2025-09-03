@@ -11,12 +11,42 @@
         <x-session-message />
         <!-- End Success Messages -->
 
-        <div class="flex justify-end mb-4">
-            <a href="{{ route('users.create') }}"
-                class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                <span>Crear Usuario</span>
-                <i class="fas fa-user-plus ml-2"></i>
-            </a>
+        <!-- Filtros, búsqueda -->
+        <div class="flex flex-wrap gap-x-8 gap-y-4 items-end justify-between mb-4">
+            <form method="GET" action="{{ route('users.search') }}"
+                class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
+                <div class="flex flex-col p-1">
+                    <select name="per_page" id="per_page"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-16 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                    </select>
+                </div>
+                <div class="flex flex-col p-1">
+                    <input type="text" name="search" id="search" value="{{ request('search') }}"
+                        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
+                        placeholder="Nombre, email o rol...">
+                </div>
+                <div class="flex flex-col p-1">
+                    <label class="invisible block text-sm font-medium">.</label>
+                    <button type="submit"
+                        class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
+                        Buscar
+                    </button>
+                </div>
+            </form>
+            <div class="flex flex-col p-1">
+                <label class="invisible block text-sm font-medium">.</label>
+                <a href="{{ route('users.create') }}"
+                    class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600">
+                    <span>Crear Usuario</span>
+                    <i class="fas fa-user-plus ml-2"></i>
+                </a>
+            </div>
         </div>
 
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
@@ -60,10 +90,12 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    @if($user->is_active)
-                                        <span class="px-2 py-1 font-semibold leading-tight text-white bg-green-600 rounded-full dark:bg-green-700 dark:text-white">Activo</span>
+                                    @if ($user->is_active)
+                                        <span
+                                            class="px-2 py-1 font-semibold leading-tight text-white bg-green-600 rounded-full dark:bg-green-700 dark:text-white">Activo</span>
                                     @else
-                                        <span class="px-2 py-1 font-semibold leading-tight text-white bg-red-600 rounded-full dark:bg-red-700 dark:text-white">Inactivo</span>
+                                        <span
+                                            class="px-2 py-1 font-semibold leading-tight text-white bg-red-600 rounded-full dark:bg-red-700 dark:text-white">Inactivo</span>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">

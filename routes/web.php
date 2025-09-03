@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin Routes
     Route::get('users/inactive', [InactiveUserController::class, 'index'])->name('users.inactive');
     Route::post('users/inactive/{id}/reactivate', [InactiveUserController::class, 'reactivate'])->name('inactive-users.reactivate');
+    Route::get('users/search', [UserController::class, 'search'])->name('users.search');
     Route::resource('users', UserController::class);
 
     // User Permissions
