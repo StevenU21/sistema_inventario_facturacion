@@ -35,8 +35,18 @@ class CategoryController extends Controller
             $query->where('name', request('name'));
         }
 
+        // Ordenamiento
+        $sort = request('sort', 'id');
+        $direction = request('direction', 'desc');
+        $allowedSorts = ['id', 'name', 'description', 'created_at', 'updated_at'];
+        if (in_array($sort, $allowedSorts)) {
+            $query->orderBy($sort, $direction);
+        } else {
+            $query->latest();
+        }
+
         $perPage = request('per_page', 10);
-        $categories = $query->latest()->paginate($perPage)->withQueryString();
+        $categories = $query->paginate($perPage)->withQueryString();
         return view('admin.categories.index', compact('categories'));
     }
 

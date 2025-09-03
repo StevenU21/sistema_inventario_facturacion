@@ -13,7 +13,8 @@
 
         <!-- Filtros, búsqueda -->
         <div class="flex flex-wrap gap-x-8 gap-y-4 items-end justify-between mb-4">
-            <form method="GET" action="{{ route('categories.search') }}" class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
+            <form method="GET" action="{{ route('categories.search') }}"
+                class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
                 <div class="flex flex-col p-1">
                     <select name="per_page" id="per_page"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-16 text-sm font-medium"
@@ -54,21 +55,16 @@
                     <thead>
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3">
-                                <i class="fas fa-hashtag mr-2"></i>ID
-                            </th>
-                            <th class="px-4 py-3">
-                                <i class="fas fa-tag mr-2"></i>Nombre
-                            </th>
-                            <th class="px-4 py-3">
-                                <i class="fas fa-align-left mr-2"></i>Descripción
-                            </th>
-                            <th class="px-4 py-3">
-                                <i class="fas fa-calendar-alt mr-2"></i>Fecha de Registro
-                            </th>
-                            <th class="px-4 py-3">
-                                <i class="fas fa-calendar-alt mr-2"></i>Fecha de Actualización
-                            </th>
+                            <th class="px-4 py-3"><x-table-sort-header field="id" label="ID"
+                                    icon="<i class='fas fa-hashtag mr-2'></i>" /></th>
+                            <th class="px-4 py-3"><x-table-sort-header field="name" label="Nombre"
+                                    icon="<i class='fas fa-tag mr-2'></i>" /></th>
+                            <th class="px-4 py-3"><x-table-sort-header field="description" label="Descripción"
+                                    icon="<i class='fas fa-align-left mr-2'></i>" /></th>
+                            <th class="px-4 py-3"><x-table-sort-header field="created_at" label="Fecha de Registro"
+                                    icon="<i class='fas fa-calendar-alt mr-2'></i>" /></th>
+                            <th class="px-4 py-3"><x-table-sort-header field="updated_at" label="Fecha de Actualización"
+                                    icon="<i class='fas fa-calendar-alt mr-2'></i>" /></th>
                             <th class="px-4 py-3">
                                 <i class="fas fa-tools mr-2"></i>Acciones
                             </th>
