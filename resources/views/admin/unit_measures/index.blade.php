@@ -9,8 +9,8 @@
         isShowModalOpen: false,
         editId: null,
         editAction: '',
-        showUnitMeasure: { id: '', name: '', description: '', formatted_created_at: '', formatted_updated_at: '' },
-        editUnitMeasure: { id: '', name: '', description: '' },
+        showUnitMeasure: { id: '', name: '', abbreviation: '', description: '', formatted_created_at: '', formatted_updated_at: '' },
+        editUnitMeasure: { id: '', name: '', abbreviation: '', description: '' },
         closeModal() { this.isModalOpen = false },
         closeEditModal() { this.isEditModalOpen = false },
         closeShowModal() { this.isShowModalOpen = false }
@@ -89,9 +89,10 @@
                     <i class="fas fa-tag text-purple-600 dark:text-purple-400"></i>
                     <strong>Nombre:</strong> <span x-text="showUnitMeasure.name"></span>
                 </p>
+
                 <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 mt-2">
-                    <i class="fas fa-align-left text-purple-600 dark:text-purple-400"></i>
-                    <strong>Descripción:</strong> <span x-text="showUnitMeasure.description"></span>
+                    <i class="fas fa-abbreviation text-purple-600 dark:text-purple-400"></i>
+                    <strong>Abreviatura:</strong> <span x-text="showUnitMeasure.abbreviation"></span>
                 </p>
                 <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 mt-2">
                     <i class="fas fa-calendar-alt text-purple-600 dark:text-purple-400"></i>
