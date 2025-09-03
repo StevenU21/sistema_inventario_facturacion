@@ -4,7 +4,13 @@
     <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
         <input name="name"
             class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-            placeholder="Escribe un nombre..." value="{{ old('name', isset($category) ? $category->name : '') }}"
+            placeholder="Escribe un nombre..."
+            @if(isset($alpine) && $alpine)
+                x-model="editCategory.name"
+                :value="editCategory.name"
+            @else
+                value="{{ old('name', isset($category) ? $category->name : '') }}"
+            @endif
             required />
         <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
             <i class="fas fa-user w-5 h-5"></i>
@@ -21,7 +27,11 @@
     <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
         <textarea name="description"
             class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-            rows="3" placeholder="Escribe una descripción...">{{ old('description', isset($category) ? $category->description : '') }}</textarea>
+            rows="3" placeholder="Escribe una descripción..."
+            @if(isset($alpine) && $alpine)
+                x-model="editCategory.description"
+            @endif
+        >@if(!isset($alpine) || !$alpine){{ old('description', isset($category) ? $category->description : '') }}@endif</textarea>
         <div class="absolute inset-y-0 left-0 flex items-center ml-3 pointer-events-none">
             <i class="fas fa-comment w-5 h-5"></i>
         </div>
@@ -36,9 +46,5 @@
     <button type="submit"
         class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple active:bg-purple-600">
         <i class="fas fa-paper-plane mr-2"></i> {{ isset($category) ? 'Actualizar' : 'Guardar' }}
-    </button>
-    <button @click="closeModal" type="button"
-        class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 bg-white hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray">
-        <i class="fas fa-times mr-2"></i> Cancelar
     </button>
 </div>

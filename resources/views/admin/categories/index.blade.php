@@ -2,7 +2,18 @@
 @section('title', 'Categorías')
 
 @section('content')
-    <div class="container grid px-6 mx-auto">
+    <div class="container grid px-6 mx-auto" x-data="{
+        isModalOpen: false,
+        isEditModalOpen: false,
+        isShowModalOpen: false,
+        editId: null,
+        editAction: '',
+        showCategory: { id: '', name: '', description: '', formatted_created_at: '', formatted_updated_at: '' },
+        editCategory: { id: '', name: '', description: '' },
+        closeModal() { this.isModalOpen = false },
+        closeEditModal() { this.isEditModalOpen = false },
+        closeShowModal() { this.isShowModalOpen = false }
+    }">
         <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
             Categorías
         </h2>
@@ -49,13 +60,34 @@
             </div>
         </div>
 
+        <!-- Edit Modal Trigger and Component -->
+            <x-edit-modal :title="'Editar Categoría'" :description="'Modifica los datos de la categoría seleccionada.'">
+                <form :action="editAction" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="id" :value="editCategory.id">
+                    @include('admin.categories.form', ['alpine' => true])
+                </form>
+            </x-edit-modal>
+
         <x-modal :title="'Crear Categoría'" :description="'Agrega una nueva categoría al sistema.'">
             <form action="{{ route('categories.store') }}" method="POST">
                 @csrf
-                @include('admin.categories.form')
+                @include('admin.categories.form', ['alpine' => false])
             </form>
         </x-modal>
-        
+
+        <!-- Show Modal Trigger and Component -->
+        <x-show-modal :title="'Detalle de Categoría'" :description="'Consulta los datos de la categoría seleccionada.'">
+            <div x-ref="showContent">
+                <p><strong>ID:</strong> <span x-text="showCategory.id"></span></p>
+                <p><strong>Nombre:</strong> <span x-text="showCategory.name"></span></p>
+                <p><strong>Descripción:</strong> <span x-text="showCategory.description"></span></p>
+                <p><strong>Fecha de Registro:</strong> <span x-text="showCategory.formatted_created_at"></span></p>
+                <p><strong>Fecha de Actualización:</strong> <span x-text="showCategory.formatted_updated_at"></span></p>
+            </div>
+        </x-show-modal>
+
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
                 <table class="w-full whitespace-no-wrap">
@@ -100,16 +132,18 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
-                                        <a href="{{ route('categories.show', $category) }}"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Ver">
+                                        <button type="button"
+                                            @click="showCategory = { id: {{ $category->id }}, name: '{{ $category->name }}', description: '{{ $category->description }}', formatted_created_at: '{{ $category->formatted_created_at }}', formatted_updated_at: '{{ $category->formatted_updated_at }}' }; isShowModalOpen = true;"
+                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-blue-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                            aria-label="Ver Modal">
                                             <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('categories.edit', $category) }}"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Editar">
+                                        </button>
+                                        <button type="button"
+                                                @click="editCategory = { id: {{ $category->id }}, name: '{{ addslashes($category->name) }}', description: '{{ addslashes($category->description) }}' }; editAction = '{{ route('categories.update', $category) }}'; isEditModalOpen = true;"
+                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                            aria-label="Editar Modal">
                                             <i class="fas fa-edit"></i>
-                                        </a>
+                                        </button>
                                         <form action="{{ route('categories.destroy', $category) }}" method="POST"
                                             onsubmit="return confirm('¿Estás seguro de eliminar esta categoría?');">
                                             @csrf
