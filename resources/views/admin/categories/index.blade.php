@@ -41,14 +41,21 @@
             </form>
             <div class="flex flex-col p-1">
                 <label class="invisible block text-sm font-medium">.</label>
-                <a href="{{ route('categories.create') }}"
+                <button @click="isModalOpen = true" type="button"
                     class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600">
                     <span>Crear Categoría</span>
                     <i class="fas fa-plus ml-2"></i>
-                </a>
+                </button>
             </div>
         </div>
 
+        <x-modal :title="'Crear Categoría'" :description="'Agrega una nueva categoría al sistema.'">
+            <form action="{{ route('categories.store') }}" method="POST">
+                @csrf
+                @include('admin.categories.form')
+            </form>
+        </x-modal>
+        
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
                 <table class="w-full whitespace-no-wrap">
