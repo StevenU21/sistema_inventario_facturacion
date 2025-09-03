@@ -62,6 +62,7 @@ class UsersExport implements FromCollection, WithHeadings
             return [
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
+                'email' => $user->email,
                 'identity_card' => $profile ? ($profile->formatted_identity_card ?? $profile->identity_card) : null,
                 'phone' => $profile ? $profile->phone : null,
                 'gender' => $profile ? $profile->gender : null,
@@ -76,6 +77,7 @@ class UsersExport implements FromCollection, WithHeadings
         return [
             'Nombre',
             'Apellido',
+            'Correo',
             'Cédula',
             'Teléfono',
             'Género',

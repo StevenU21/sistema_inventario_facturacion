@@ -13,6 +13,7 @@ use App\Http\Requests\UserRequest;
 use Spatie\Permission\Models\Role;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UsersExport;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -108,7 +109,9 @@ class UserController extends Controller
             'status' => request('status'),
             'gender' => request('gender'),
         ];
-        return Excel::download(new UsersExport($filters), 'usuarios.xlsx');
+        $now = Carbon::now()->format('Ymd_His');
+        $filename = "users_{$now}.xlsx";
+        return Excel::download(new UsersExport($filters), $filename);
     }
 
     public function show(User $user)
