@@ -52,11 +52,13 @@
             </form>
             <div class="flex flex-col p-1">
                 <label class="invisible block text-sm font-medium">.</label>
-                <button @click="isModalOpen = true" type="button"
-                    class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600">
-                    <span>Crear Categoría</span>
-                    <i class="fas fa-plus ml-2"></i>
-                </button>
+                @can('create categories')
+                    <button @click="isModalOpen = true" type="button"
+                        class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600">
+                        <span>Crear Categoría</span>
+                        <i class="fas fa-plus ml-2"></i>
+                    </button>
+                @endcan
             </div>
         </div>
 
@@ -147,28 +149,34 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
-                                        <button type="button"
-                                            @click="showCategory = { id: {{ $category->id }}, name: '{{ $category->name }}', description: '{{ $category->description }}', formatted_created_at: '{{ $category->formatted_created_at }}', formatted_updated_at: '{{ $category->formatted_updated_at }}' }; isShowModalOpen = true;"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-blue-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Ver Modal">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button type="button"
-                                            @click="editCategory = { id: {{ $category->id }}, name: '{{ addslashes($category->name) }}', description: '{{ addslashes($category->description) }}' }; editAction = '{{ route('categories.update', $category) }}'; isEditModalOpen = true;"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Editar Modal">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <form action="{{ route('categories.destroy', $category) }}" method="POST"
-                                            onsubmit="return confirm('¿Estás seguro de eliminar esta categoría?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                aria-label="Eliminar">
-                                                <i class="fas fa-trash"></i>
+                                        @can('read categories')
+                                            <button type="button"
+                                                @click="showCategory = { id: {{ $category->id }}, name: '{{ $category->name }}', description: '{{ $category->description }}', formatted_created_at: '{{ $category->formatted_created_at }}', formatted_updated_at: '{{ $category->formatted_updated_at }}' }; isShowModalOpen = true;"
+                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-blue-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                aria-label="Ver Modal">
+                                                <i class="fas fa-eye"></i>
                                             </button>
-                                        </form>
+                                        @endcan
+                                        @can('update categories')
+                                            <button type="button"
+                                                @click="editCategory = { id: {{ $category->id }}, name: '{{ addslashes($category->name) }}', description: '{{ addslashes($category->description) }}' }; editAction = '{{ route('categories.update', $category) }}'; isEditModalOpen = true;"
+                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                aria-label="Editar Modal">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        @endcan
+                                        @can('destroy categories')
+                                            <form action="{{ route('categories.destroy', $category) }}" method="POST"
+                                                onsubmit="return confirm('¿Estás seguro de eliminar esta categoría?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    aria-label="Eliminar">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

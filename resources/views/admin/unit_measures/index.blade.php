@@ -51,6 +51,7 @@
                     </button>
                 </div>
             </form>
+            @can('create unit_measures')
             <div class="flex flex-col p-1">
                 <label class="invisible block text-sm font-medium">.</label>
                 <button @click="isModalOpen = true" type="button"
@@ -59,6 +60,7 @@
                     <i class="fas fa-plus ml-2"></i>
                 </button>
             </div>
+            @endcan
         </div>
 
         <!-- Edit Modal Trigger and Component -->
@@ -149,18 +151,23 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
+                                        @can('read unit_measures')
                                         <button type="button"
                                             @click="showUnitMeasure = { id: {{ $unitMeasure->id }}, name: '{{ $unitMeasure->name }}', description: '{{ $unitMeasure->description }}', formatted_created_at: '{{ $unitMeasure->formatted_created_at }}', formatted_updated_at: '{{ $unitMeasure->formatted_updated_at }}' }; isShowModalOpen = true;"
                                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-blue-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                             aria-label="Ver Modal">
                                             <i class="fas fa-eye"></i>
                                         </button>
+                                        @endcan
+                                        @can('update unit_measures')
                                         <button type="button"
                                             @click="editUnitMeasure = { id: {{ $unitMeasure->id }}, name: '{{ addslashes($unitMeasure->name) }}', description: '{{ addslashes($unitMeasure->description) }}' }; editAction = '{{ route('unit_measures.update', $unitMeasure) }}'; isEditModalOpen = true;"
                                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                             aria-label="Editar Modal">
                                             <i class="fas fa-edit"></i>
                                         </button>
+                                        @endcan
+                                        @can('destroy unit_measures')
                                         <form action="{{ route('unit_measures.destroy', $unitMeasure) }}" method="POST"
                                             onsubmit="return confirm('¿Estás seguro de eliminar esta unidad de medida?');">
                                             @csrf
@@ -171,6 +178,7 @@
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

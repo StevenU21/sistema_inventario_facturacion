@@ -51,6 +51,7 @@
                     </button>
                 </div>
             </form>
+            @can('create taxes')
             <div class="flex flex-col p-1">
                 <label class="invisible block text-sm font-medium">.</label>
                 <button @click="isModalOpen = true" type="button"
@@ -59,6 +60,7 @@
                     <i class="fas fa-plus ml-2"></i>
                 </button>
             </div>
+            @endcan
         </div>
 
         <!-- Edit Modal Trigger and Component -->
@@ -148,18 +150,23 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
+                                        @can('read taxes')
                                         <button type="button"
                                             @click="showTax = { id: {{ $tax->id }}, name: '{{ $tax->name }}', percentage: '{{ $tax->percentage }}', formatted_created_at: '{{ $tax->formatted_created_at }}', formatted_updated_at: '{{ $tax->formatted_updated_at }}' }; isShowModalOpen = true;"
                                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-blue-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                             aria-label="Ver Modal">
                                             <i class="fas fa-eye"></i>
                                         </button>
+                                        @endcan
+                                        @can('update taxes')
                                         <button type="button"
                                             @click="editTax = { id: {{ $tax->id }}, name: '{{ addslashes($tax->name) }}', percentage: '{{ $tax->percentage }}' }; editAction = '{{ route('taxes.update', $tax) }}'; isEditModalOpen = true;"
                                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                             aria-label="Editar Modal">
                                             <i class="fas fa-edit"></i>
                                         </button>
+                                        @endcan
+                                        @can('destroy taxes')
                                         <form action="{{ route('taxes.destroy', $tax) }}" method="POST"
                                             onsubmit="return confirm('¿Estás seguro de eliminar este impuesto?');">
                                             @csrf
@@ -170,6 +177,7 @@
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

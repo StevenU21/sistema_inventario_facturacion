@@ -53,11 +53,13 @@
             </form>
             <div class="flex flex-col p-1">
                 <label class="invisible block text-sm font-medium">.</label>
+                @can('create brands')
                 <button @click="isModalOpen = true" type="button"
                     class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600">
                     <span>Crear Marca</span>
                     <i class="fas fa-plus ml-2"></i>
                 </button>
+                @endcan
             </div>
         </div>
 
@@ -148,18 +150,23 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
+                                        @can('read brands')
                                         <button type="button"
                                             @click="showBrand = { id: {{ $brand->id }}, name: '{{ $brand->name }}', description: '{{ $brand->description }}', formatted_created_at: '{{ $brand->formatted_created_at }}', formatted_updated_at: '{{ $brand->formatted_updated_at }}' }; isShowModalOpen = true;"
                                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-blue-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                             aria-label="Ver Modal">
                                             <i class="fas fa-eye"></i>
                                         </button>
+                                        @endcan
+                                        @can('update brands')
                                         <button type="button"
                                             @click="editBrand = { id: {{ $brand->id }}, name: '{{ addslashes($brand->name) }}', description: '{{ addslashes($brand->description) }}' }; editAction = '{{ route('brands.update', $brand) }}'; isEditModalOpen = true;"
                                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                             aria-label="Editar Modal">
                                             <i class="fas fa-edit"></i>
                                         </button>
+                                        @endcan
+                                        @can('destroy brands')
                                         <form action="{{ route('brands.destroy', $brand) }}" method="POST"
                                             onsubmit="return confirm('¿Estás seguro de eliminar esta marca?');">
                                             @csrf
@@ -170,6 +177,7 @@
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>
