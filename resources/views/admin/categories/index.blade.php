@@ -61,14 +61,14 @@
         </div>
 
         <!-- Edit Modal Trigger and Component -->
-            <x-edit-modal :title="'Editar Categoría'" :description="'Modifica los datos de la categoría seleccionada.'">
-                <form :action="editAction" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" name="id" :value="editCategory.id">
-                    @include('admin.categories.form', ['alpine' => true])
-                </form>
-            </x-edit-modal>
+        <x-edit-modal :title="'Editar Categoría'" :description="'Modifica los datos de la categoría seleccionada.'">
+            <form :action="editAction" method="POST">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="id" :value="editCategory.id">
+                @include('admin.categories.form', ['alpine' => true])
+            </form>
+        </x-edit-modal>
 
         <x-modal :title="'Crear Categoría'" :description="'Agrega una nueva categoría al sistema.'">
             <form action="{{ route('categories.store') }}" method="POST">
@@ -79,12 +79,27 @@
 
         <!-- Show Modal Trigger and Component -->
         <x-show-modal :title="'Detalle de Categoría'" :description="'Consulta los datos de la categoría seleccionada.'">
-            <div x-ref="showContent">
-                <p><strong>ID:</strong> <span x-text="showCategory.id"></span></p>
-                <p><strong>Nombre:</strong> <span x-text="showCategory.name"></span></p>
-                <p><strong>Descripción:</strong> <span x-text="showCategory.description"></span></p>
-                <p><strong>Fecha de Registro:</strong> <span x-text="showCategory.formatted_created_at"></span></p>
-                <p><strong>Fecha de Actualización:</strong> <span x-text="showCategory.formatted_updated_at"></span></p>
+            <div class="mt-4">
+                <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                    <i class="fas fa-hashtag text-purple-600 dark:text-purple-400"></i>
+                    <strong>ID:</strong> <span x-text="showCategory.id"></span>
+                </p>
+                <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 mt-2">
+                    <i class="fas fa-tag text-purple-600 dark:text-purple-400"></i>
+                    <strong>Nombre:</strong> <span x-text="showCategory.name"></span>
+                </p>
+                <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 mt-2">
+                    <i class="fas fa-align-left text-purple-600 dark:text-purple-400"></i>
+                    <strong>Descripción:</strong> <span x-text="showCategory.description"></span>
+                </p>
+                <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 mt-2">
+                    <i class="fas fa-calendar-alt text-purple-600 dark:text-purple-400"></i>
+                    <strong>Fecha de Registro:</strong> <span x-text="showCategory.formatted_created_at"></span>
+                </p>
+                <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 mt-2">
+                    <i class="fas fa-clock text-purple-600 dark:text-purple-400"></i>
+                    <strong>Fecha de Actualización:</strong> <span x-text="showCategory.formatted_updated_at"></span>
+                </p>
             </div>
         </x-show-modal>
 
@@ -139,7 +154,7 @@
                                             <i class="fas fa-eye"></i>
                                         </button>
                                         <button type="button"
-                                                @click="editCategory = { id: {{ $category->id }}, name: '{{ addslashes($category->name) }}', description: '{{ addslashes($category->description) }}' }; editAction = '{{ route('categories.update', $category) }}'; isEditModalOpen = true;"
+                                            @click="editCategory = { id: {{ $category->id }}, name: '{{ addslashes($category->name) }}', description: '{{ addslashes($category->description) }}' }; editAction = '{{ route('categories.update', $category) }}'; isEditModalOpen = true;"
                                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                             aria-label="Editar Modal">
                                             <i class="fas fa-edit"></i>

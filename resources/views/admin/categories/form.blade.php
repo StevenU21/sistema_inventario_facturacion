@@ -5,12 +5,10 @@
         <input name="name"
             class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray"
             placeholder="Escribe un nombre..."
-            @if(isset($alpine) && $alpine)
-                x-model="editCategory.name"
+            @if (isset($alpine) && $alpine) x-model="editCategory.name"
                 :value="editCategory.name"
             @else
-                value="{{ old('name', isset($category) ? $category->name : '') }}"
-            @endif
+                value="{{ old('name', isset($category) ? $category->name : '') }}" @endif
             required />
         <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
             <i class="fas fa-user w-5 h-5"></i>
@@ -28,10 +26,11 @@
         <textarea name="description"
             class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray"
             rows="3" placeholder="Escribe una descripción..."
-            @if(isset($alpine) && $alpine)
-                x-model="editCategory.description"
-            @endif
-        >@if(!isset($alpine) || !$alpine){{ old('description', isset($category) ? $category->description : '') }}@endif</textarea>
+            @if (isset($alpine) && $alpine) x-model="editCategory.description" @endif>
+@if (!isset($alpine) || !$alpine)
+{{ old('description', isset($category) ? $category->description : '') }}
+@endif
+</textarea>
         <div class="absolute inset-y-0 left-0 flex items-center ml-3 pointer-events-none">
             <i class="fas fa-comment w-5 h-5"></i>
         </div>
