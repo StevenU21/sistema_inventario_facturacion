@@ -43,7 +43,7 @@
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
                         onchange="this.form.submit()">
                         <option value="">Todos los roles</option>
-                        @foreach (\Spatie\Permission\Models\Role::all() as $role)
+                        @foreach ($roles as $role)
                             <option value="{{ $role->name }}" {{ request('role') == $role->name ? 'selected' : '' }}>
                                 {{ mb_strtoupper($role->name) }}</option>
                         @endforeach
@@ -161,31 +161,42 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
-                                        <a href="{{ route('users.permissions.edit', $user) }}"
-                                            class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green"
-                                            aria-label="Asignar Permisos">
-                                            <i class="fas fa-user-shield mr-2"></i> Permisos
-                                        </a>
-                                        <a href="{{ route('users.show', $user) }}"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Show">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('users.edit', $user) }}"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('users.destroy', $user) }}" method="POST"
-                                            onsubmit="return confirm('¿Estás seguro de eliminar este usuario?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
+                                        @if (!$user->is_active)
+                                            <form action="{{ route('inactive-users.reactivate', $user->id) }}"
+                                                method="POST" onsubmit="return confirm('¿Reactivar este usuario?');">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green">
+                                                    <i class="fas fa-user-check mr-2"></i> Activar
+                                                </button>
+                                            </form>
+                                        @else
+                                            <a href="{{ route('users.permissions.edit', $user) }}"
+                                                class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green"
+                                                aria-label="Asignar Permisos">
+                                                <i class="fas fa-user-shield mr-2"></i> Permisos
+                                            </a>
+                                            <a href="{{ route('users.show', $user) }}"
                                                 class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                aria-label="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                                aria-label="Show">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('users.edit', $user) }}"
+                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                aria-label="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('users.destroy', $user) }}" method="POST"
+                                                onsubmit="return confirm('¿Estás seguro de eliminar este usuario?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    aria-label="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

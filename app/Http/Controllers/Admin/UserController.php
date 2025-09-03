@@ -22,8 +22,9 @@ class UserController extends Controller
     public function index()
     {
         $this->authorize('viewAny', User::class);
-        $users = User::with(['roles', 'profile'])->where('is_active', true)->latest()->paginate(10);
-        return view('admin.users.index', compact('users'));
+        $users = User::with(['roles', 'profile'])->latest()->paginate(10);
+        $roles = Role::all();
+        return view('admin.users.index', compact('users', 'roles'));
     }
 
     public function search()
@@ -54,9 +55,7 @@ class UserController extends Controller
                 if (isset($params['status']) && $params['status'] !== null && $params['status'] !== '') {
                     $isActive = $params['status'] === 'activo' ? true : false;
                     $query->where('is_active', $isActive);
-                } else {
-                    $query->where('is_active', true);
-                }
+                } // Si no hay filtro, no aplicar where('is_active', true), mostrar todos
                 // Género
                 if (isset($params['gender']) && $params['gender']) {
                     $query->whereHas('profile', function ($q) use ($params) {
@@ -97,7 +96,8 @@ class UserController extends Controller
                 }
             }
         );
-        return view('admin.users.index', compact('users'));
+        $roles = Role::all();
+        return view('admin.users.index', compact('users', 'roles'));
     }
 
     public function export()
