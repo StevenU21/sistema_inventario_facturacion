@@ -5,12 +5,10 @@ use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CompanyController;
-use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\EntityController;
 use App\Http\Controllers\Admin\InactiveUserController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\InventoryMovementController;
-use App\Http\Controllers\Admin\MunicipalityController;
 use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProductController;
@@ -55,6 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('categories/search', [CategoryController::class, 'search'])->name('categories.search');
     Route::resource('categories', CategoryController::class);
+    Route::get('brands/search', [BrandController::class, 'search'])->name('brands.search');
     Route::resource('brands', BrandController::class);
     Route::resource('companies', CompanyController::class)->except(['destroy']);
     Route::resource('unit_measures', UnitMeasureController::class);
