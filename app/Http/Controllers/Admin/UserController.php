@@ -28,12 +28,16 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
         $service = new ModelSearchService();
+        $params = [
+            'search' => request('search'),
+            'per_page' => request('per_page', 10),
+            'role' => request('role'),
+            'status' => request('status'),
+            'gender' => request('gender'),
+        ];
         $users = $service->search(
             User::class,
-            [
-                'search' => request('search'),
-                'per_page' => request('per_page', 10),
-            ],
+            $params,
             [
                 'first_name',
                 'last_name',
@@ -43,8 +47,26 @@ class UserController extends Controller
                 'roles.description',
             ],
             ['roles', 'profile'],
-            function ($query) {
-                $query->where('is_active', true);
+            function ($query, $params) {
+                // Estado: activo/inactivo
+                if (isset($params['status']) && $params['status'] !== null && $params['status'] !== '') {
+                    $isActive = $params['status'] === 'activo' ? true : false;
+                    $query->where('is_active', $isActive);
+                } else {
+                    $query->where('is_active', true);
+                }
+                // Género
+                if (isset($params['gender']) && $params['gender']) {
+                    $query->whereHas('profile', function ($q) use ($params) {
+                        $q->where('gender', $params['gender']);
+                    });
+                }
+                // Rol
+                if (isset($params['role']) && $params['role']) {
+                    $query->whereHas('roles', function ($q) use ($params) {
+                        $q->where('name', $params['role']);
+                    });
+                }
             }
         );
         return view('admin.users.index', compact('users'));

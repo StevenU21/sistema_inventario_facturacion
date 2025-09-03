@@ -38,6 +38,35 @@
                         Buscar
                     </button>
                 </div>
+                <div class="flex flex-col p-1">
+                    <select name="role" id="role"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="">Todos los roles</option>
+                        @foreach (\Spatie\Permission\Models\Role::all() as $role)
+                            <option value="{{ $role->name }}" {{ request('role') == $role->name ? 'selected' : '' }}>
+                                {{ mb_strtoupper($role->name) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="flex flex-col p-1">
+                    <select name="status" id="status"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="">Todos los estados</option>
+                        <option value="activo" {{ request('status') == 'activo' ? 'selected' : '' }}>Activo</option>
+                        <option value="inactivo" {{ request('status') == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
+                    </select>
+                </div>
+                <div class="flex flex-col p-1">
+                    <select name="gender" id="gender"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="">Todos los géneros</option>
+                        <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Masculino</option>
+                        <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>Femenino</option>
+                    </select>
+                </div>
             </form>
             <div class="flex flex-col p-1">
                 <label class="invisible block text-sm font-medium">.</label>
