@@ -29,6 +29,7 @@ class UnitMeasureController extends Controller
             $search = request('search');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%")
+                    ->orWhere('abbreviation', 'like', "%$search%")
                     ->orWhere('description', 'like', "%$search%");
             });
         }
@@ -40,7 +41,7 @@ class UnitMeasureController extends Controller
         // Ordenamiento
         $sort = request('sort', 'id');
         $direction = request('direction', 'desc');
-        $allowedSorts = ['id', 'name', 'description', 'created_at', 'updated_at'];
+    $allowedSorts = ['id', 'name', 'abbreviation', 'description', 'created_at', 'updated_at'];
         if (in_array($sort, $allowedSorts)) {
             $query->orderBy($sort, $direction);
         } else {

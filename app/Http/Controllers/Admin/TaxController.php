@@ -14,7 +14,42 @@ class TaxController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Tax::class);
-        $taxes = Tax::latest()->paginate(10);
+        $perPage = request('per_page', 10);
+        $perPage = request('per_page', 10);
+        $taxes = Tax::latest()->paginate($perPage);
+        return view('admin.taxes.index', compact('taxes'));
+    }
+
+    public function search()
+    {
+        $this->authorize('viewAny', Tax::class);
+        $query = Tax::query();
+
+
+        if (request('search')) {
+            $search = request('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhere('percentage', 'like', "%$search%");
+            });
+        }
+
+        if (request('name')) {
+            $query->where('name', request('name'));
+        }
+
+        // Ordenamiento
+        $sort = request('sort', 'id');
+        $direction = request('direction', 'desc');
+        $allowedSorts = ['id', 'name', 'percentage', 'created_at', 'updated_at'];
+        if (in_array($sort, $allowedSorts)) {
+            $query->orderBy($sort, $direction);
+        } else {
+            $query->latest();
+        }
+
+        $perPage = request('per_page', 10);
+        $taxes = $query->paginate($perPage)->withQueryString();
         return view('admin.taxes.index', compact('taxes'));
     }
 

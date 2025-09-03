@@ -60,6 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('unit_measures', UnitMeasureController::class);
     Route::get('payment_methods/search', [PaymentMethodController::class, 'search'])->name('payment_methods.search');
     Route::resource('payment_methods', PaymentMethodController::class);
+    Route::get('taxes/search', [TaxController::class, 'search'])->name('taxes.search');
     Route::resource('taxes', TaxController::class);
     Route::resource('entities', EntityController::class);
     Route::resource('products', ProductController::class);

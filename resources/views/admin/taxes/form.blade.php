@@ -5,7 +5,10 @@
         <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
             <input name="name"
                 class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                placeholder="Escribe un nombre..." value="{{ old('name', isset($tax) ? $tax->name : '') }}" required />
+                placeholder="Escribe un nombre..."
+                @if (isset($alpine) && $alpine) x-model="editTax.name" :value="editTax.name"
+                @else value="{{ old('name', isset($tax) ? $tax->name : '') }}" @endif
+                required />
             <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                 <i class="fas fa-user w-5 h-5"></i>
             </div>
@@ -22,7 +25,9 @@
             <input name="percentage" type="number" min="0" max="100"
                 class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray"
                 placeholder="Escribe un porcentaje..."
-                value="{{ old('percentage', isset($tax) ? $tax->percentage : '') }}" required step="0.01"
+                @if (isset($alpine) && $alpine) x-model="editTax.percentage" :value="editTax.percentage"
+                @else value="{{ old('percentage', isset($tax) ? $tax->percentage : '') }}" @endif
+                required step="0.01"
                 inputmode="decimal" pattern="[0-9]+([\.,][0-9]{1,2})?" />
             <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                 <i class="fas fa-percent w-5 h-5"></i>
