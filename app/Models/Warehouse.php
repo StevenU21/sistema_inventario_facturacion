@@ -10,6 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Warehouse extends Model
 {
     use HasFactory, LogsActivity;
+
     protected $fillable = [
         'name',
         'address',
