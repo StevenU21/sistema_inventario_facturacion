@@ -56,15 +56,15 @@
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                             <th class="px-4 py-3"><x-table-sort-header field="id" label="ID"
-                                    icon="<i class='fas fa-hashtag mr-2'></i>" /></th>
+                                    route="categories.search" icon="<i class='fas fa-hashtag mr-2'></i>" /></th>
                             <th class="px-4 py-3"><x-table-sort-header field="name" label="Nombre"
-                                    icon="<i class='fas fa-tag mr-2'></i>" /></th>
+                                    route="categories.search" icon="<i class='fas fa-tag mr-2'></i>" /></th>
                             <th class="px-4 py-3"><x-table-sort-header field="description" label="Descripción"
-                                    icon="<i class='fas fa-align-left mr-2'></i>" /></th>
+                                    route="categories.search" icon="<i class='fas fa-align-left mr-2'></i>" /></th>
                             <th class="px-4 py-3"><x-table-sort-header field="created_at" label="Fecha de Registro"
-                                    icon="<i class='fas fa-calendar-alt mr-2'></i>" /></th>
+                                    route="categories.search" icon="<i class='fas fa-calendar-alt mr-2'></i>" /></th>
                             <th class="px-4 py-3"><x-table-sort-header field="updated_at" label="Fecha de Actualización"
-                                    icon="<i class='fas fa-calendar-alt mr-2'></i>" /></th>
+                                    route="categories.search" icon="<i class='fas fa-calendar-alt mr-2'></i>" /></th>
                             <th class="px-4 py-3">
                                 <i class="fas fa-tools mr-2"></i>Acciones
                             </th>

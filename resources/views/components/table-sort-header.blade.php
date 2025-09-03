@@ -3,7 +3,8 @@
     $currentDirection = request('direction', 'desc');
     $newDirection = ($currentSort === $field && $currentDirection === 'asc') ? 'desc' : 'asc';
     $params = array_merge(request()->except(['sort','direction']), ['sort' => $field, 'direction' => $newDirection]);
-    $url = route('categories.search', $params);
+    $routeName = $route ?? 'categories.search';
+    $url = route($routeName, $params);
     $arrow = '';
     if ($currentSort === $field) {
         $arrow = $currentDirection === 'asc' ? '▲' : '▼';
