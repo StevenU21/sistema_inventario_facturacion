@@ -11,10 +11,44 @@ class UnitMeasureController extends Controller
 {
     use AuthorizesRequests;
 
+
     public function index()
     {
         $this->authorize('viewAny', UnitMeasure::class);
-        $unitMeasures = UnitMeasure::latest()->paginate(10);
+        $perPage = request('per_page', 10);
+        $unitMeasures = UnitMeasure::latest()->paginate($perPage);
+        return view('admin.unit_measures.index', compact('unitMeasures'));
+    }
+
+    public function search()
+    {
+        $this->authorize('viewAny', UnitMeasure::class);
+        $query = UnitMeasure::query();
+
+        if (request('search')) {
+            $search = request('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhere('description', 'like', "%$search%");
+            });
+        }
+
+        if (request('name')) {
+            $query->where('name', request('name'));
+        }
+
+        // Ordenamiento
+        $sort = request('sort', 'id');
+        $direction = request('direction', 'desc');
+        $allowedSorts = ['id', 'name', 'description', 'created_at', 'updated_at'];
+        if (in_array($sort, $allowedSorts)) {
+            $query->orderBy($sort, $direction);
+        } else {
+            $query->latest();
+        }
+
+        $perPage = request('per_page', 10);
+        $unitMeasures = $query->paginate($perPage)->withQueryString();
         return view('admin.unit_measures.index', compact('unitMeasures'));
     }
 

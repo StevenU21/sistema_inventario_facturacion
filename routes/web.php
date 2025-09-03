@@ -56,6 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('brands/search', [BrandController::class, 'search'])->name('brands.search');
     Route::resource('brands', BrandController::class);
     Route::resource('companies', CompanyController::class)->except(['destroy']);
+    Route::get('unit_measures/search', [UnitMeasureController::class, 'search'])->name('unit_measures.search');
     Route::resource('unit_measures', UnitMeasureController::class);
     Route::resource('payment_methods', PaymentMethodController::class);
     Route::resource('taxes', TaxController::class);
