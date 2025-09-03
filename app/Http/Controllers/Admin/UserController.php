@@ -11,6 +11,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
 use Spatie\Permission\Models\Role;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\UsersExport;
 
 class UserController extends Controller
 {
@@ -95,6 +97,18 @@ class UserController extends Controller
             }
         );
         return view('admin.users.index', compact('users'));
+    }
+
+    public function export()
+    {
+        $this->authorize('viewAny', User::class);
+        $filters = [
+            'search' => request('search'),
+            'role' => request('role'),
+            'status' => request('status'),
+            'gender' => request('gender'),
+        ];
+        return Excel::download(new UsersExport($filters), 'usuarios.xlsx');
     }
 
     public function show(User $user)

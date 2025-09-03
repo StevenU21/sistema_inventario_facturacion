@@ -37,6 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('users/inactive', [InactiveUserController::class, 'index'])->name('users.inactive');
     Route::post('users/inactive/{id}/reactivate', [InactiveUserController::class, 'reactivate'])->name('inactive-users.reactivate');
     Route::get('users/search', [UserController::class, 'search'])->name('users.search');
+    Route::get('users/export', [UserController::class, 'export'])->name('users.export');
     Route::resource('users', UserController::class);
 
     // User Permissions

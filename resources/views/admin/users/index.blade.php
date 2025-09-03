@@ -68,10 +68,21 @@
                     </select>
                 </div>
             </form>
-            <div class="flex flex-col p-1">
+            <div class="flex flex-row p-1 gap-x-4 items-end">
                 <label class="invisible block text-sm font-medium">.</label>
+                <form method="GET" action="{{ route('users.export') }}">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="role" value="{{ request('role') }}">
+                    <input type="hidden" name="status" value="{{ request('status') }}">
+                    <input type="hidden" name="gender" value="{{ request('gender') }}">
+                    <button type="submit"
+                        class="flex items-center justify-between px-4 py-2 w-36 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
+                        <span>Exportar Excel</span>
+                        <i class="fas fa-file-excel ml-2"></i>
+                    </button>
+                </form>
                 <a href="{{ route('users.create') }}"
-                    class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600">
+                    class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600 ml-2">
                     <span>Crear Usuario</span>
                     <i class="fas fa-user-plus ml-2"></i>
                 </a>
@@ -85,22 +96,28 @@
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="id" label="ID" route="users.search" icon="<i class='fas fa-hashtag mr-2'></i>" />
+                                <x-table-sort-header field="id" label="ID" route="users.search"
+                                    icon="<i class='fas fa-hashtag mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="first_name" label="Nombre" route="users.search" icon="<i class='fas fa-user mr-2'></i>" />
+                                <x-table-sort-header field="first_name" label="Nombre" route="users.search"
+                                    icon="<i class='fas fa-user mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="email" label="Email" route="users.search" icon="<i class='fas fa-envelope mr-2'></i>" />
+                                <x-table-sort-header field="email" label="Email" route="users.search"
+                                    icon="<i class='fas fa-envelope mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="role" label="Rol" route="users.search" icon="<i class='fas fa-user-tag mr-2'></i>" />
+                                <x-table-sort-header field="role" label="Rol" route="users.search"
+                                    icon="<i class='fas fa-user-tag mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="is_active" label="Estado" route="users.search" icon="<i class='fas fa-toggle-on mr-2'></i>" />
+                                <x-table-sort-header field="is_active" label="Estado" route="users.search"
+                                    icon="<i class='fas fa-toggle-on mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="created_at" label="Fecha de registro" route="users.search" icon="<i class='fas fa-calendar-alt mr-2'></i>" />
+                                <x-table-sort-header field="created_at" label="Fecha de registro" route="users.search"
+                                    icon="<i class='fas fa-calendar-alt mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                         </tr>
