@@ -53,6 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('admin/backups', [BackupController::class, 'index'])->name('backups.index');
     Route::post('admin/backups/restore', [BackupController::class, 'restore'])->name('backups.restore');
 
+    Route::get('categories/search', [CategoryController::class, 'search'])->name('categories.search');
     Route::resource('categories', CategoryController::class);
     Route::resource('brands', BrandController::class);
     Route::resource('companies', CompanyController::class)->except(['destroy']);
