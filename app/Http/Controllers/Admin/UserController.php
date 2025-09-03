@@ -67,6 +67,32 @@ class UserController extends Controller
                         $q->where('name', $params['role']);
                     });
                 }
+
+                // Ordenamiento
+                $sort = request('sort', 'id');
+                $direction = request('direction', 'desc');
+                $allowedSorts = [
+                    'id',
+                    'first_name',
+                    'last_name',
+                    'email',
+                    'is_active',
+                    'created_at',
+                    'role',
+                ];
+                if (in_array($sort, $allowedSorts)) {
+                    if ($sort === 'role') {
+                        // Ordenar por el primer rol (alfabético)
+                        $query->leftJoin('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+                            ->leftJoin('roles', 'model_has_roles.role_id', '=', 'roles.id')
+                            ->orderBy('roles.name', $direction)
+                            ->select('users.*');
+                    } else {
+                        $query->orderBy($sort, $direction);
+                    }
+                } else {
+                    $query->latest();
+                }
             }
         );
         return view('admin.users.index', compact('users'));
