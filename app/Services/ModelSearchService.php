@@ -48,7 +48,32 @@ class ModelSearchService
                 }
             });
         }
+
+        // Ordenamiento genérico
+        $sort = $params['sort'] ?? 'id';
+        $direction = $params['direction'] ?? 'desc';
+        if (!empty($sort)) {
+            // Permitir ordenar por relación: roles.name, profile.gender, etc.
+            if ($sort === 'role') {
+                // Ordenar por el primer rol (alfabético)
+                $query->leftJoin('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+                      ->leftJoin('roles', 'model_has_roles.role_id', '=', 'roles.id')
+                      ->orderBy('roles.name', $direction)
+                      ->select('users.*');
+            } elseif (str_contains($sort, '.')) {
+                [$relation, $relField] = explode('.', $sort, 2);
+                $query->orderBy(
+                    $relation . '.' . $relField,
+                    $direction
+                );
+            } else {
+                $query->orderBy($sort, $direction);
+            }
+        } else {
+            $query->latest();
+        }
+
         $perPage = $params['per_page'] ?? 10;
-        return $query->latest()->paginate($perPage)->withQueryString();
+        return $query->paginate($perPage)->withQueryString();
     }
 }
