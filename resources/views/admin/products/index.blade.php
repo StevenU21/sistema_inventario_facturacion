@@ -12,9 +12,25 @@
         <!-- Fin mensajes de éxito -->
 
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
-            <div class="flex flex-wrap gap-x-8 gap-y-4 items-end justify-between mb-4">
+            <div class="flex flex-row flex-wrap gap-x-4 gap-y-4 items-end justify-between mb-2">
+                <form method="GET" action="{{ route('products.search') }}" class="flex flex-row gap-x-4 items-end w-full">
+                    <div class="flex flex-col p-1 flex-1">
+                        <input type="text" name="search" id="search" value="{{ request('search') }}"
+                            class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-full text-sm font-medium"
+                            placeholder="Nombre, descripción, código de barras...">
+                    </div>
+                    <div class="flex flex-col p-1">
+                        <label class="invisible block text-sm font-medium">.</label>
+                        <button type="submit"
+                            class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
+                            Buscar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="flex flex-row flex-wrap gap-x-4 gap-y-4 items-end justify-between mb-4">
                 <form method="GET" action="{{ route('products.search') }}"
-                    class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
+                    class="flex flex-row flex-wrap gap-x-4 gap-y-4 items-end self-end">
                     <div class="flex flex-col p-1">
                         <select name="per_page" id="per_page"
                             class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-16 text-sm font-medium"
@@ -25,18 +41,6 @@
                             <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
                             <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                         </select>
-                    </div>
-                    <div class="flex flex-col p-1">
-                        <input type="text" name="search" id="search" value="{{ request('search') }}"
-                            class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
-                            placeholder="Nombre, descripción, código de barras...">
-                    </div>
-                    <div class="flex flex-col p-1">
-                        <label class="invisible block text-sm font-medium">.</label>
-                        <button type="submit"
-                            class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
-                            Buscar
-                        </button>
                     </div>
                     <div class="flex flex-col p-1">
                         <select name="category_id" id="category_id"
@@ -76,8 +80,7 @@
                         </select>
                     </div>
                 </form>
-                {{-- <div class="flex flex-row p-1 gap-x-4 items-end">
-                    <label class="invisible block text-sm font-medium">.</label>
+                <div class="flex flex-row gap-x-2 items-end">
                     <form method="GET" action="{{ route('products.export') }}">
                         <input type="hidden" name="search" value="{{ request('search') }}">
                         <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
@@ -96,7 +99,7 @@
                         <span>Crear Producto</span>
                         <i class="fas fa-plus ml-2"></i>
                     </a>
-                </div> --}}
+                </div>
             </div>
             <div class="w-full overflow-hidden rounded-lg shadow-xs">
                 <div class="w-full overflow-x-auto">
@@ -125,7 +128,8 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-xs">
-                                        <img src="{{ $product->image_url }}" alt="Imagen" width="50" class="rounded">
+                                        <img src="{{ $product->image_url }}" alt="Imagen" width="50"
+                                            class="rounded">
                                     </td>
                                     <td class="px-4 py-3 text-sm">{{ $product->name }}</td>
                                     <td class="px-4 py-3 text-sm">{{ $product->category->name ?? '-' }}</td>

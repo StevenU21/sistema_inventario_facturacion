@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Controllers\Controller;
+use App\Models\Tax;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Entity;
 use App\Models\Product;
-use App\Http\Requests\ProductRequest;
-use App\Models\Tax;
 use App\Models\UnitMeasure;
-
 use App\Services\FileService;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
-
 
 class ProductController extends Controller
 {
@@ -60,13 +58,14 @@ class ProductController extends Controller
             $query->where('status', $status);
         }
         if (!empty($search)) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%")
-                  ->orWhere('description', 'like', "%$search%")
-                  ->orWhere('barcode', 'like', "%$search%")
-                  ->orWhereHas('brand', function($b) use ($search) {
-                      $b->where('name', 'like', "%$search%")
-                  ;});
+                    ->orWhere('description', 'like', "%$search%")
+                    ->orWhere('barcode', 'like', "%$search%")
+                    ->orWhereHas('brand', function ($b) use ($search) {
+                        $b->where('name', 'like', "%$search%")
+                        ;
+                    });
             });
         }
         $allowedSorts = ['id', 'name', 'brand_id', 'category_id', 'tax_id', 'unit_measure_id', 'status', 'created_at'];
@@ -111,13 +110,14 @@ class ProductController extends Controller
             $query->where('status', $status);
         }
         if (!empty($search)) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%")
-                  ->orWhere('description', 'like', "%$search%")
-                  ->orWhere('barcode', 'like', "%$search%")
-                  ->orWhereHas('brand', function($b) use ($search) {
-                      $b->where('name', 'like', "%$search%")
-                  ;});
+                    ->orWhere('description', 'like', "%$search%")
+                    ->orWhere('barcode', 'like', "%$search%")
+                    ->orWhereHas('brand', function ($b) use ($search) {
+                        $b->where('name', 'like', "%$search%")
+                        ;
+                    });
             });
         }
         $allowedSorts = ['id', 'name', 'brand_id', 'category_id', 'tax_id', 'unit_measure_id', 'status', 'created_at'];
