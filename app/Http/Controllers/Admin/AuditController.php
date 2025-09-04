@@ -53,6 +53,7 @@ class AuditController extends Controller
         $model = $request->input('model');
         $sort = $request->input('sort', 'id');
         $direction = $request->input('direction', 'desc');
+        $range = $request->input('range');
 
         $query = Activity::with(['causer', 'subject']);
         if (!empty($causerId)) {
@@ -63,6 +64,23 @@ class AuditController extends Controller
         }
         if (!empty($model)) {
             $query->where('subject_type', $model);
+        }
+        if (!empty($range)) {
+            if ($range === 'hoy') {
+                $query->whereDate('created_at', now()->toDateString());
+            } elseif ($range === 'semana') {
+                $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+            } elseif ($range === 'mes') {
+                $query->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+            }
+        } else {
+            if (!empty($startDate) && !empty($endDate)) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            } elseif (!empty($startDate)) {
+                $query->whereDate('created_at', '>=', $startDate);
+            } elseif (!empty($endDate)) {
+                $query->whereDate('created_at', '<=', $endDate);
+            }
         }
         // Ordenamiento seguro solo por columnas válidas
         $allowedSorts = ['id', 'causer_id', 'event', 'subject_type', 'subject_id', 'created_at'];
@@ -107,6 +125,7 @@ class AuditController extends Controller
         $model = $request->input('model');
         $sort = $request->input('sort', 'id');
         $direction = $request->input('direction', 'desc');
+        $range = $request->input('range');
 
         $query = Activity::with(['causer', 'subject']);
         if (!empty($causerId)) {
@@ -117,6 +136,23 @@ class AuditController extends Controller
         }
         if (!empty($model)) {
             $query->where('subject_type', $model);
+        }
+        if (!empty($range)) {
+            if ($range === 'hoy') {
+                $query->whereDate('created_at', now()->toDateString());
+            } elseif ($range === 'semana') {
+                $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+            } elseif ($range === 'mes') {
+                $query->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+            }
+        } else {
+            if (!empty($startDate) && !empty($endDate)) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            } elseif (!empty($startDate)) {
+                $query->whereDate('created_at', '>=', $startDate);
+            } elseif (!empty($endDate)) {
+                $query->whereDate('created_at', '<=', $endDate);
+            }
         }
         $allowedSorts = ['id', 'causer_id', 'event', 'subject_type', 'subject_id', 'created_at'];
         if (in_array($sort, $allowedSorts)) {
