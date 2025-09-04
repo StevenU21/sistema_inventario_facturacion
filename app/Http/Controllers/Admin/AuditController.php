@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Classes\AuditTranslation;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Spatie\Activitylog\Models\Activity;
@@ -20,6 +21,8 @@ class AuditController extends Controller
         $activities = Activity::with(['causer', 'subject'])->latest()->paginate(10);
         $allCausers = Activity::with('causer')->get()->pluck('causer')->filter()->unique('id')->values();
         $allModels = Activity::select('subject_type')->distinct()->pluck('subject_type');
+        // Obtener traducciones de modelos
+        $modelTranslations = AuditTranslation::modelMap();
         foreach ($activities as $activity) {
             $presented = AuditPresenter::present($activity);
             $activity->old = $presented['Antes'];
@@ -41,7 +44,7 @@ class AuditController extends Controller
             }
         }
 
-        return view('admin.audits.index', compact('activities', 'allCausers', 'allModels'));
+        return view('admin.audits.index', compact('activities', 'allCausers', 'allModels', 'modelTranslations'));
     }
 
     public function search(Request $request, ModelSearchService $searchService)
@@ -92,6 +95,8 @@ class AuditController extends Controller
         $activities = $query->paginate($perPage)->appends($request->all());
         $allCausers = Activity::with('causer')->get()->pluck('causer')->filter()->unique('id')->values();
         $allModels = Activity::select('subject_type')->distinct()->pluck('subject_type');
+        // Obtener traducciones de modelos
+        $modelTranslations = AuditTranslation::modelMap();
         foreach ($activities as $activity) {
             $presented = AuditPresenter::present($activity);
             $activity->old = $presented['Antes'];
@@ -113,7 +118,7 @@ class AuditController extends Controller
             }
         }
 
-        return view('admin.audits.index', compact('activities', 'allCausers', 'allModels'));
+        return view('admin.audits.index', compact('activities', 'allCausers', 'allModels', 'modelTranslations'));
     }
 
     public function export(Request $request)

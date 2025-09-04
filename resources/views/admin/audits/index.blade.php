@@ -48,9 +48,12 @@
                         <option value="">Todos los modelos</option>
                         @foreach ($allModels as $modelType)
                             @if ($modelType)
-                                <option value="{{ $modelType }}"
-                                    {{ request('model') == $modelType ? 'selected' : '' }}>
-                                    {{ class_basename($modelType) }}
+                                @php
+                                    $base = class_basename($modelType);
+                                    $translation = $modelTranslations[$base] ?? $base;
+                                @endphp
+                                <option value="{{ $modelType }}" {{ request('model') == $modelType ? 'selected' : '' }}>
+                                    {{ $translation }}
                                 </option>
                             @endif
                         @endforeach
