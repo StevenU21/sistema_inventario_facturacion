@@ -16,7 +16,7 @@ class AuditController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Activity::class);
-        $activities = Activity::latest()->paginate(10);
+        $activities = Activity::with('causer')->latest()->paginate(10);
 
         foreach ($activities as $activity) {
             $presented = AuditPresenter::present($activity);
