@@ -11,6 +11,12 @@ class Product extends Model
 {
     use HasFactory, LogsActivity;
 
+    public function inventory()
+    {
+        return $this->hasMany(\App\Models\Inventory::class);
+    }
+    use HasFactory, LogsActivity;
+
     protected $fillable = [
         'name',
         'description',
