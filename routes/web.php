@@ -67,6 +67,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('taxes/search', [TaxController::class, 'search'])->name('taxes.search');
     Route::resource('taxes', TaxController::class);
     Route::resource('entities', EntityController::class);
+    Route::get('products/search', [ProductController::class, 'search'])->name('products.search');
+    Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
     Route::resource('products', ProductController::class);
     Route::get('roles/search', [RoleController::class, 'search'])->name('roles.search');
     Route::resource('roles', RoleController::class);

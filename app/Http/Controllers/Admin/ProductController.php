@@ -10,17 +10,125 @@ use App\Models\Product;
 use App\Http\Requests\ProductRequest;
 use App\Models\Tax;
 use App\Models\UnitMeasure;
+
 use App\Services\FileService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
+
 
 class ProductController extends Controller
 {
     use AuthorizesRequests;
+
     public function index()
     {
         $this->authorize("viewAny", Product::class);
         $products = Product::with(['brand', 'category', 'tax', 'unitMeasure', 'entity'])->latest()->paginate(10);
-        return view('admin.products.index', compact('products'));
+        $brands = Brand::pluck('name', 'id');
+        $categories = Category::pluck('name', 'id');
+        $units = UnitMeasure::pluck('name', 'id');
+        $taxes = Tax::pluck('name', 'id');
+        return view('admin.products.index', compact('products', 'brands', 'categories', 'units', 'taxes'));
+    }
+
+    public function search(Request $request)
+    {
+        $this->authorize('viewAny', Product::class);
+        $perPage = $request->input('per_page', 10);
+        $brandId = $request->input('brand_id');
+        $categoryId = $request->input('category_id');
+        $unitId = $request->input('unit_measure_id');
+        $taxId = $request->input('tax_id');
+        $status = $request->input('status');
+        $search = $request->input('search');
+        $sort = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'desc');
+        $query = Product::with(['brand', 'category', 'tax', 'unitMeasure', 'entity']);
+        if (!empty($brandId)) {
+            $query->where('brand_id', $brandId);
+        }
+        if (!empty($categoryId)) {
+            $query->where('category_id', $categoryId);
+        }
+        if (!empty($unitId)) {
+            $query->where('unit_measure_id', $unitId);
+        }
+        if (!empty($taxId)) {
+            $query->where('tax_id', $taxId);
+        }
+        if (!empty($status)) {
+            $query->where('status', $status);
+        }
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('description', 'like', "%$search%")
+                  ->orWhere('barcode', 'like', "%$search%")
+                  ->orWhereHas('brand', function($b) use ($search) {
+                      $b->where('name', 'like', "%$search%")
+                  ;});
+            });
+        }
+        $allowedSorts = ['id', 'name', 'brand_id', 'category_id', 'tax_id', 'unit_measure_id', 'status', 'created_at'];
+        if (in_array($sort, $allowedSorts)) {
+            $query->orderBy($sort, $direction);
+        } else {
+            $query->latest();
+        }
+        $products = $query->paginate($perPage)->appends($request->all());
+        $brands = Brand::pluck('name', 'id');
+        $categories = Category::pluck('name', 'id');
+        $units = UnitMeasure::pluck('name', 'id');
+        $taxes = Tax::pluck('name', 'id');
+        return view('admin.products.index', compact('products', 'brands', 'categories', 'units', 'taxes'));
+    }
+
+    public function export(Request $request)
+    {
+        $this->authorize('viewAny', Product::class);
+        $brandId = $request->input('brand_id');
+        $categoryId = $request->input('category_id');
+        $unitId = $request->input('unit_measure_id');
+        $taxId = $request->input('tax_id');
+        $status = $request->input('status');
+        $search = $request->input('search');
+        $sort = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'desc');
+        $query = Product::with(['brand', 'category', 'tax', 'unitMeasure', 'entity']);
+        if (!empty($brandId)) {
+            $query->where('brand_id', $brandId);
+        }
+        if (!empty($categoryId)) {
+            $query->where('category_id', $categoryId);
+        }
+        if (!empty($unitId)) {
+            $query->where('unit_measure_id', $unitId);
+        }
+        if (!empty($taxId)) {
+            $query->where('tax_id', $taxId);
+        }
+        if (!empty($status)) {
+            $query->where('status', $status);
+        }
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('description', 'like', "%$search%")
+                  ->orWhere('barcode', 'like', "%$search%")
+                  ->orWhereHas('brand', function($b) use ($search) {
+                      $b->where('name', 'like', "%$search%")
+                  ;});
+            });
+        }
+        $allowedSorts = ['id', 'name', 'brand_id', 'category_id', 'tax_id', 'unit_measure_id', 'status', 'created_at'];
+        if (in_array($sort, $allowedSorts)) {
+            $query->orderBy($sort, $direction);
+        } else {
+            $query->latest();
+        }
+        $timestamp = now()->format('Ymd_His');
+        $filename = "productos_filtrados_{$timestamp}.xlsx";
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\UsersExport($query), $filename);
     }
 
     public function create()
