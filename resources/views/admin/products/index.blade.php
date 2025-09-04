@@ -39,17 +39,6 @@
                         </button>
                     </div>
                     <div class="flex flex-col p-1">
-                        <select name="brand_id" id="brand_id"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
-                            onchange="this.form.submit()">
-                            <option value="">Todas las marcas</option>
-                            @foreach ($brands as $id => $name)
-                                <option value="{{ $id }}" {{ request('brand_id') == $id ? 'selected' : '' }}>
-                                    {{ $name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="flex flex-col p-1">
                         <select name="category_id" id="category_id"
                             class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
                             onchange="this.form.submit()">
@@ -82,7 +71,7 @@
                         </select>
                     </div>
                 </form>
-                <div class="flex flex-row p-1 gap-x-4 items-end">
+                {{-- <div class="flex flex-row p-1 gap-x-4 items-end">
                     <label class="invisible block text-sm font-medium">.</label>
                     <form method="GET" action="{{ route('products.export') }}">
                         <input type="hidden" name="search" value="{{ request('search') }}">
@@ -102,7 +91,7 @@
                         <span>Crear Producto</span>
                         <i class="fas fa-plus ml-2"></i>
                     </a>
-                </div>
+                </div> --}}
             </div>
             <div class="w-full overflow-hidden rounded-lg shadow-xs">
                 <div class="w-full overflow-x-auto">
