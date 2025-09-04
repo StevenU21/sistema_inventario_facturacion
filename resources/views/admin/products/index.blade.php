@@ -102,14 +102,10 @@
                                 <th class="px-4 py-3"><i class="fas fa-hashtag mr-2"></i>ID</th>
                                 <th class="px-4 py-3"><i class="fas fa-image mr-2"></i>Imagen</th>
                                 <th class="px-4 py-3"><i class="fas fa-box mr-2"></i>Nombre</th>
-                                <th class="px-4 py-3"><i class="fas fa-tags mr-2"></i>Marca</th>
                                 <th class="px-4 py-3"><i class="fas fa-list-alt mr-2"></i>Categoría</th>
-                                <th class="px-4 py-3"><i class="fas fa-money-bill-wave mr-2"></i>Impuesto</th>
-                                <th class="px-4 py-3"><i class="fas fa-balance-scale mr-2"></i>Unidad de Medida</th>
+                                <th class="px-4 py-3"><i class="fas fa-tags mr-2"></i>Marca</th>
                                 <th class="px-4 py-3"><i class="fas fa-user-tie mr-2"></i>Proveedor</th>
-                                <th class="px-4 py-3"><i class="fas fa-align-left mr-2"></i>Descripción</th>
-                                <th class="px-4 py-3"><i class="fas fa-calendar-alt mr-2"></i>Fecha de Registro</th>
-                                <th class="px-4 py-3"><i class="fas fa-calendar-alt mr-2"></i>Fecha de Actualización</th>
+                                <th class="px-4 py-3"><i class="fas fa-money-bill-wave mr-2"></i>Estado</th>
                                 <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                             </tr>
                         </thead>
@@ -123,22 +119,23 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-xs">
-                                        <img src="{{ $product->image_url }}" alt="Imagen" width="50"
-                                            class="rounded">
+                                        <img src="{{ $product->image_url }}" alt="Imagen" width="50" class="rounded">
                                     </td>
                                     <td class="px-4 py-3 text-sm">{{ $product->name }}</td>
-                                    <td class="px-4 py-3 text-sm">{{ $product->brand->name ?? '-' }}</td>
                                     <td class="px-4 py-3 text-sm">{{ $product->category->name ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-sm">
-                                        {{ $product->tax ? $product->tax->name . ' ' . $product->tax->percentage . '%' : '-' }}
-                                    </td>
-                                    <td class="px-4 py-3 text-sm">{{ $product->unitMeasure->name ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-sm">{{ $product->brand->name ?? '-' }}</td>
                                     <td class="px-4 py-3 text-sm">
                                         {{ $product->entity ? $product->entity->first_name . ' ' . $product->entity->last_name : '-' }}
                                     </td>
-                                    <td class="px-4 py-3 text-sm">{{ $product->description }}</td>
-                                    <td class="px-4 py-3 text-sm">{{ $product->formatted_created_at ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-sm">{{ $product->formatted_updated_at ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        @if ($product->status)
+                                            <span
+                                                class="px-2 py-1 font-semibold leading-tight text-white bg-green-600 rounded-full dark:bg-green-700 dark:text-white">Activo</span>
+                                        @else
+                                            <span
+                                                class="px-2 py-1 font-semibold leading-tight text-white bg-red-600 rounded-full dark:bg-red-700 dark:text-white">Inactivo</span>
+                                        @endif
+                                    </td>
                                     <td class="px-4 py-3">
                                         <div class="flex items-center space-x-4 text-sm">
                                             <a href="{{ route('products.show', $product) }}"

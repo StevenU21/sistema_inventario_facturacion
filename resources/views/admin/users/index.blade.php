@@ -148,7 +148,7 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    @if ($user->is_active)
+                                    @if ($user->status)
                                         <span
                                             class="px-2 py-1 font-semibold leading-tight text-white bg-green-600 rounded-full dark:bg-green-700 dark:text-white">Activo</span>
                                     @else
