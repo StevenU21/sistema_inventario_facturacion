@@ -15,7 +15,7 @@
             </div>
             <div class="flex flex-col items-center justify-center p-6 sm:p-12 md:w-1/2">
                 <div class="mb-4 text-lg text-gray-700 dark:text-gray-200">Ya has iniciado sesión.</div>
-                <a href="{{ route('dashboard') }}"
+                <a href="{{ route('dashboard.index') }}"
                     class="inline-flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                     Ir al dashboard
                     <i class="fas fa-arrow-right ml-2"></i>
