@@ -29,7 +29,7 @@ class Profile extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['avatar', 'phone', 'identity_card', 'gender', 'address']);
+            ->logOnly(['phone', 'identity_card', 'gender', 'address']);
     }
 
     public function getAvatarUrlAttribute(): ?string

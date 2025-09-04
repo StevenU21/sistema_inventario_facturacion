@@ -33,20 +33,20 @@
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                             <th class="px-4 py-3">ID</th>
-                            <th class="px-4 py-3">Fecha</th>
                             <th class="px-4 py-3">Usuario</th>
                             <th class="px-4 py-3">Evento</th>
                             <th class="px-4 py-3">Modelo</th>
-                            <th class="px-4 py-3">ID Modelo</th>
+                            <th class="px-4 py-3">Nombre Modelo</th>
                             <th class="px-4 py-3">Antes</th>
                             <th class="px-4 py-3">Después</th>
+                            <th class="px-4 py-3">Fecha</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
                         @forelse ($activities as $activity)
                             <tr class="text-gray-700 dark:text-gray-400">
                                 <td class="px-4 py-3 text-xs">{{ $activity->id }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $activity->created_at->format('d/m/Y H:i:s') }}</td>
+
                                 <td class="px-4 py-3 text-sm">
                                     @if ($activity->causer)
                                         {{ $activity->causer->first_name ?? '' }} {{ $activity->causer->last_name ?? '' }}
@@ -56,9 +56,10 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm">{{ $activity->evento_es ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $activity->modelo_es ?? '-' }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $activity->subject_id ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $activity->model_display ?? '-' }}</td>
                                 <td class="px-4 py-3 text-xs">{{ Str::limit($activity->old, 12) }}</td>
                                 <td class="px-4 py-3 text-xs">{{ Str::limit($activity->new, 12) }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $activity->created_at->format('d/m/Y H:i:s') }}</td>
                             </tr>
                         @empty
                             <tr>

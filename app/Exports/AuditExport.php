@@ -17,14 +17,41 @@ class AuditExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        $activities = $this->query->get();
+        $activities = $this->query->with('subject')->get();
         return $activities->map(function ($activity) {
-            return AuditPresenter::present($activity);
+            $presented = AuditPresenter::present($activity);
+            // Nombre del modelo relacionado si existe: name, title, o first_name+last_name
+            $modelDisplay = '-';
+            if ($activity->subject) {
+                if (isset($activity->subject->name)) {
+                    $modelDisplay = $activity->subject->name;
+                } elseif (isset($activity->subject->title)) {
+                    $modelDisplay = $activity->subject->title;
+                } elseif (isset($activity->subject->first_name) || isset($activity->subject->last_name)) {
+                    $modelDisplay = trim(($activity->subject->first_name ?? '') . ' ' . ($activity->subject->last_name ?? ''));
+                } else {
+                    $modelDisplay = $activity->subject_id ?? '-';
+                }
+            } else {
+                $modelDisplay = $activity->subject_id ?? '-';
+            }
+            // Insertar el campo después de 'Modelo'
+            $row = [
+                $presented['ID'],
+                $presented['Fecha'],
+                $presented['Usuario'],
+                $presented['Evento'],
+                $presented['Modelo'],
+                $modelDisplay,
+                $presented['Antes'],
+                $presented['Después'],
+            ];
+            return $row;
         });
     }
 
     public function headings(): array
     {
-        return ['ID', 'Fecha', 'Usuario', 'Evento', 'Modelo', 'ID Modelo', 'Antes', 'Después'];
+        return ['ID', 'Fecha', 'Usuario', 'Evento', 'Modelo', 'Nombre Modelo', 'Antes', 'Después'];
     }
 }
