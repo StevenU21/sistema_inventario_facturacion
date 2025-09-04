@@ -211,7 +211,6 @@
                                 Descontinuado</option>
                             <option value="out_of_stock" {{ request('status') == 'out_of_stock' ? 'selected' : '' }}>Sin
                                 stock</option>
-                            <option value="reserved" {{ request('status') == 'reserved' ? 'selected' : '' }}>Reservado
                             </option>
                         </select>
                     </div>
@@ -273,8 +272,7 @@
                                                 $statusLabels = [
                                                     'available' => 'Disponible',
                                                     'discontinued' => 'Descontinuado',
-                                                    'out_of_stock' => 'Sin stock',
-                                                    'reserved' => 'Reservado',
+                                                    'out_of_stock' => 'Sin stock'
                                                 ];
                                                 $color = $statusColors[$product->status] ?? 'bg-gray-400';
                                                 $label = $statusLabels[$product->status] ?? $product->status;
@@ -346,12 +344,12 @@
                                                     <i class="fas fa-edit"></i>
                                                 </button>
                                                 <form action="{{ route('products.destroy', $product) }}" method="POST"
-                                                    onsubmit="return confirm('¿Seguro de eliminar este producto?');">
+                                                    onsubmit="return confirm('¿Seguro de descontinuar este producto?');">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
                                                         class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                        aria-label="Eliminar">
+                                                        aria-label="Descontinuar">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>

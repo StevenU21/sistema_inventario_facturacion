@@ -203,11 +203,14 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Producto actualizado correctamente.');
     }
 
-    public function destroy(Product $product, FileService $fileService)
+    public function destroy(Product $product)
     {
         $this->authorize("destroy", $product);
-        $fileService->deleteLocal($product, 'image');
-        $product->delete();
-        return redirect()->route('products.index')->with('success', 'Producto eliminado correctamente.');
+
+        if ($product->status !== 'discontinued') {
+            $product->status = 'discontinued';
+            $product->save();
+        }
+        return redirect()->route('products.index')->with('success', 'Producto descontinuado correctamente.');
     }
 }

@@ -218,9 +218,6 @@
                     @if (!isset($alpine) || !$alpine) {{ old('status', $product->status ?? '') == 'out_of_stock' ? 'selected' : '' }} @endif>
                     Sin stock
                 </option>
-                <option value="reserved"
-                    @if (!isset($alpine) || !$alpine) {{ old('status', $product->status ?? '') == 'reserved' ? 'selected' : '' }} @endif>
-                    Reservado</option>
             </select>
             <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                 <i class="fas fa-check w-5 h-5"></i>

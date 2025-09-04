@@ -43,7 +43,7 @@ class ProductRequest extends FormRequest
             'status' => [
                 'required',
                 'string',
-                'in:available,discontinued,out_of_stock,reserved'
+                'in:available,discontinued,out_of_stock'
             ],
             'barcode' => ['nullable', 'string', 'max:255', Rule::unique('products')->ignore($this->route('product'))],
             'brand_id' => ['required', 'exists:brands,id'],

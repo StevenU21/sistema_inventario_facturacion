@@ -37,7 +37,6 @@ class Product extends Model
                 'name',
                 'description',
                 'barcode',
-                'image',
                 'status',
                 'brand_id',
                 'category_id',
