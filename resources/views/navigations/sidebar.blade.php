@@ -35,43 +35,6 @@
                     <span class="ml-4">Inicio</span>
                 </a>
             </li>
-        </ul>
-        <ul>
-            <!-- Productos -->
-            <li class="relative px-6 py-3">
-                <span
-                    class="{{ Route::is('products.*') ? 'absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg' : '' }}"
-                    aria-hidden="true"></span>
-                <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 {{ Route::is('products.*') ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}"
-                    href="{{ route('products.index') }}">
-                    <i class="fas fa-tags w-5 h-5"></i>
-                    <span class="ml-4">Productos</span>
-                </a>
-            </li>
-
-            <!-- Inventarios -->
-            <li class="relative px-6 py-3">
-                <span
-                    class="{{ Route::is('inventories.*') ? 'absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg' : '' }}"
-                    aria-hidden="true"></span>
-                <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 {{ Route::is('inventories.*') ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}"
-                    href="{{ route('inventories.index') }}">
-                    <i class="fas fa-warehouse w-5 h-5"></i>
-                    <span class="ml-4">Inventarios</span>
-                </a>
-            </li>
-
-            <!-- Movimientos del Inventario -->
-            <li class="relative px-6 py-3">
-                <span
-                    class="{{ Route::is('inventory_movements.*') ? 'absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg' : '' }}"
-                    aria-hidden="true"></span>
-                <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 {{ Route::is('inventory_movements.*') ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}"
-                    href="{{ route('inventory_movements.index') }}">
-                    <i class="fas fa-exchange-alt w-5 h-5"></i>
-                    <span class="ml-4">Movimientos</span>
-                </a>
-            </li>
 
             <!-- Clientes & Proveedores -->
             <li class="relative px-6 py-3">
@@ -84,17 +47,55 @@
                     <span class="ml-4">Clientes & Proveedores</span>
                 </a>
             </li>
-
-            <!-- Almacenes -->
-            <li class="relative px-6 py-3">
-                <span
-                    class="{{ Route::is('warehouses.*') ? 'absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg' : '' }}"
-                    aria-hidden="true"></span>
-                <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 {{ Route::is('warehouses.*') ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}"
-                    href="{{ route('warehouses.index') }}">
-                    <i class="fas fa-warehouse w-5 h-5"></i>
-                    <span class="ml-4">Almacenes</span>
-                </a>
+        </ul>
+        <ul>
+            <!-- Dropdown Gestión de Inventario -->
+            <li class="relative px-6 py-3" x-data="inventoryDropdownMenu()" x-init="initInventoryDropdown()">
+                <button
+                    class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none"
+                    @click="toggleInventoryDropdown" aria-haspopup="true">
+                    <span class="inline-flex items-center">
+                        <i class="fas fa-boxes w-5 h-5"></i>
+                        <span class="ml-4">Gestión de Inventario</span>
+                    </span>
+                    <i class="fas" :class="{ 'fa-chevron-down': !isOpen, 'fa-chevron-up': isOpen }"></i>
+                </button>
+                <ul x-show="isOpen" x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-300"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95"
+                    class="mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('products.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('products.index') }}">
+                            <i class="fas fa-tags w-5 h-5"></i>
+                            <span class="ml-4">Productos</span>
+                        </a>
+                    </li>
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('inventories.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('inventories.index') }}">
+                            <i class="fas fa-warehouse w-5 h-5"></i>
+                            <span class="ml-4">Inventarios</span>
+                        </a>
+                    </li>
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('inventory_movements.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('inventory_movements.index') }}">
+                            <i class="fas fa-exchange-alt w-5 h-5"></i>
+                            <span class="ml-4">Movimientos</span>
+                        </a>
+                    </li>
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('warehouses.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('warehouses.index') }}">
+                            <i class="fas fa-warehouse w-5 h-5"></i>
+                            <span class="ml-4">Almacenes</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
 
             <!-- Catálogo Dropdown -->
@@ -239,6 +240,19 @@
             },
             initUsuariosDropdown() {
                 this.isOpen = localStorage.getItem('usuariosDropdownOpen') === 'true';
+            }
+        }
+    }
+
+    function inventoryDropdownMenu() {
+        return {
+            isOpen: localStorage.getItem('inventoryDropdownOpen') === 'true',
+            toggleInventoryDropdown() {
+                this.isOpen = !this.isOpen;
+                localStorage.setItem('inventoryDropdownOpen', this.isOpen);
+            },
+            initInventoryDropdown() {
+                this.isOpen = localStorage.getItem('inventoryDropdownOpen') === 'true';
             }
         }
     }
