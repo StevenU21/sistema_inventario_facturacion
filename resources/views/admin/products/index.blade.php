@@ -141,14 +141,14 @@
                             <thead>
                                 <tr
                                     class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                                    <th class="px-4 py-3"><i class="fas fa-hashtag mr-2"></i>ID</th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="id" label="ID" route="products.search" icon="<i class='fas fa-hashtag mr-2'></i>" /></th>
                                     <th class="px-4 py-3"><i class="fas fa-image mr-2"></i>Imagen</th>
-                                    <th class="px-4 py-3"><i class="fas fa-box mr-2"></i>Nombre</th>
-                                    <th class="px-4 py-3"><i class="fas fa-list-alt mr-2"></i>Categoría</th>
-                                    <th class="px-4 py-3"><i class="fas fa-tags mr-2"></i>Marca</th>
-                                    <th class="px-4 py-3"><i class="fas fa-balance-scale mr-2"></i>Medida</th>
-                                    <th class="px-4 py-3"><i class="fas fa-user-tie mr-2"></i>Proveedor</th>
-                                    <th class="px-4 py-3"><i class="fas fa-money-bill-wave mr-2"></i>Estado</th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="name" label="Nombre" route="products.search" icon="<i class='fas fa-box mr-2'></i>" /></th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="category_id" label="Categoría" route="products.search" icon="<i class='fas fa-list-alt mr-2'></i>" /></th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="brand_id" label="Marca" route="products.search" icon="<i class='fas fa-tags mr-2'></i>" /></th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="unit_measure_id" label="Medida" route="products.search" icon="<i class='fas fa-balance-scale mr-2'></i>" /></th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="entity_id" label="Proveedor" route="products.search" icon="<i class='fas fa-user-tie mr-2'></i>" /></th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="status" label="Estado" route="products.search" icon="<i class='fas fa-money-bill-wave mr-2'></i>" /></th>
                                     <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                                 </tr>
                             </thead>
