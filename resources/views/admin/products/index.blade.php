@@ -65,6 +65,27 @@
                         </select>
                     </div>
                     <div class="flex flex-col p-1">
+                        <select name="entity_id" id="entity_id"
+                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                            onchange="this.form.submit()">
+                            <option value="">Todos los proveedores</option>
+                            @foreach ($entities as $id => $name)
+                                <option value="{{ $id }}" {{ request('entity_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex flex-col p-1">
+                        <select name="tax_id" id="tax_id"
+                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                            onchange="this.form.submit()">
+                            <option value="">Todos los impuestos</option>
+                            @foreach ($taxes as $id => $name)
+                                <option value="{{ $id }}" {{ request('tax_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex flex-col p-1">
                         <select name="unit_measure_id" id="unit_measure_id"
                             class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
                             onchange="this.form.submit()">
