@@ -21,11 +21,12 @@
                     </select>
                 </div>
                 <div class="flex flex-col p-1">
-                    <select name="search" id="search"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium">
+                    <select name="causer_id" id="causer_id"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
+                        onchange="this.form.submit()">
                         <option value="">Todos los usuarios</option>
                         @foreach ($allCausers as $causer)
-                            <option value="{{ $causer->id }}" {{ request('search') == $causer->id ? 'selected' : '' }}>
+                            <option value="{{ $causer->id }}" {{ request('causer_id') == $causer->id ? 'selected' : '' }}>
                                 {{ $causer->first_name }} {{ $causer->last_name }}
                             </option>
                         @endforeach

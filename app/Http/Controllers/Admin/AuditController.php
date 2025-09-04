@@ -50,8 +50,8 @@ class AuditController extends Controller
     public function search(Request $request, ModelSearchService $searchService)
     {
         $this->authorize('viewAny', Activity::class);
-        $perPage = $request->input('per_page', 10);
-        $causerId = $request->input('search');
+    $perPage = $request->input('per_page', 10);
+    $causerId = $request->input('causer_id');
         $event = $request->input('event');
         $model = $request->input('model');
         $sort = $request->input('sort', 'id');
@@ -125,7 +125,7 @@ class AuditController extends Controller
     {
         $this->authorize('export', Activity::class);
 
-        $causerId = $request->input('search');
+    $causerId = $request->input('causer_id');
         $event = $request->input('event');
         $model = $request->input('model');
         $sort = $request->input('sort', 'id');
