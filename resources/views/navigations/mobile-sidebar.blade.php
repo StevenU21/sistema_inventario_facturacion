@@ -36,7 +36,7 @@
                 </a>
             </li>
 
-            <!-- Dropdown Entradas -->
+            <!-- Dropdown Catálogo -->
             <li class="relative px-6 py-3" x-data="{ isOpen: false }">
                 <button
                     class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none"
@@ -101,6 +101,55 @@
                             href="{{ route('entities.index') }}">
                             <i class="fas fa-cube w-5 h-5"></i>
                             <span class="ml-4">Entidades</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- Dropdown Gestión de Inventario -->
+            <li class="relative px-6 py-3" x-data="{ isOpen: false }">
+                <button
+                    class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none"
+                    @click="isOpen = !isOpen" aria-haspopup="true">
+                    <span class="inline-flex items-center">
+                        <i class="fas fa-boxes w-5 h-5"></i>
+                        <span class="ml-4">Gestión de Inventario</span>
+                    </span>
+                    <i class="fas" :class="{ 'fa-chevron-down': !isOpen, 'fa-chevron-up': isOpen }"></i>
+                </button>
+                <ul x-show="isOpen" x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-300"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95"
+                    class="mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('products.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('products.index') }}">
+                            <i class="fas fa-tags w-5 h-5"></i>
+                            <span class="ml-4">Productos</span>
+                        </a>
+                    </li>
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('inventories.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('inventories.index') }}">
+                            <i class="fas fa-warehouse w-5 h-5"></i>
+                            <span class="ml-4">Inventarios</span>
+                        </a>
+                    </li>
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('inventory_movements.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('inventory_movements.index') }}">
+                            <i class="fas fa-exchange-alt w-5 h-5"></i>
+                            <span class="ml-4">Movimientos</span>
+                        </a>
+                    </li>
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('warehouses.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('warehouses.index') }}">
+                            <i class="fas fa-warehouse w-5 h-5"></i>
+                            <span class="ml-4">Almacenes</span>
                         </a>
                     </li>
                 </ul>
