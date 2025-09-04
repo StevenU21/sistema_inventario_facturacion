@@ -11,6 +11,7 @@ use App\Models\Entity;
 use App\Models\Product;
 use App\Models\UnitMeasure;
 use App\Services\FileService;
+use App\Services\ModelSearchService;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
 
@@ -35,56 +36,45 @@ class ProductController extends Controller
         return view('admin.products.index', compact('products', 'brands', 'categories', 'units', 'taxes', 'entities'));
     }
 
-    public function search(Request $request)
+    public function search(Request $request, ModelSearchService $searchService)
     {
         $this->authorize('viewAny', Product::class);
-        $perPage = $request->input('per_page', 10);
-        $brandId = $request->input('brand_id');
-        $categoryId = $request->input('category_id');
-        $unitId = $request->input('unit_measure_id');
-        $taxId = $request->input('tax_id');
-        $entityId = $request->input('entity_id');
-        $status = $request->input('status');
-        $search = $request->input('search');
-        $sort = $request->input('sort', 'id');
-        $direction = $request->input('direction', 'desc');
-        $query = Product::with(['brand', 'category', 'tax', 'unitMeasure', 'entity']);
-        if (!empty($brandId)) {
-            $query->where('brand_id', $brandId);
-        }
-        if (!empty($categoryId)) {
-            $query->where('category_id', $categoryId);
-        }
-        if (!empty($unitId)) {
-            $query->where('unit_measure_id', $unitId);
-        }
-        if (!empty($taxId)) {
-            $query->where('tax_id', $taxId);
-        }
-        if (!empty($entityId)) {
-            $query->where('entity_id', $entityId);
-        }
-        if (!empty($status)) {
-            $query->where('status', $status);
-        }
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                    ->orWhere('description', 'like', "%$search%")
-                    ->orWhere('barcode', 'like', "%$search%")
-                    ->orWhereHas('brand', function ($b) use ($search) {
-                        $b->where('name', 'like', "%$search%")
-                        ;
-                    });
-            });
-        }
+        $params = $request->all();
+        // Sanitizar ordenamientos permitidos para evitar errores
         $allowedSorts = ['id', 'name', 'brand_id', 'category_id', 'tax_id', 'unit_measure_id', 'entity_id', 'status', 'created_at'];
-        if (in_array($sort, $allowedSorts)) {
-            $query->orderBy($sort, $direction);
-        } else {
-            $query->latest();
+        if (!empty($params['sort']) && !in_array($params['sort'], $allowedSorts)) {
+            unset($params['sort']); // Dejar que el servicio use el default
         }
-        $products = $query->paginate($perPage)->appends($request->all());
+
+        $products = $searchService->search(
+            Product::class,
+            $params,
+            // Campos de búsqueda (incluye relación)
+            ['name', 'description', 'barcode', 'brand.name'],
+            // Relaciones a cargar
+            ['brand', 'category', 'tax', 'unitMeasure', 'entity'],
+            // Filtros personalizados
+            function ($query, $p) {
+                if (!empty($p['brand_id'])) {
+                    $query->where('brand_id', $p['brand_id']);
+                }
+                if (!empty($p['category_id'])) {
+                    $query->where('category_id', $p['category_id']);
+                }
+                if (!empty($p['unit_measure_id'])) {
+                    $query->where('unit_measure_id', $p['unit_measure_id']);
+                }
+                if (!empty($p['tax_id'])) {
+                    $query->where('tax_id', $p['tax_id']);
+                }
+                if (!empty($p['entity_id'])) {
+                    $query->where('entity_id', $p['entity_id']);
+                }
+                if (!empty($p['status'])) {
+                    $query->where('status', $p['status']);
+                }
+            }
+        );
         $brands = Brand::pluck('name', 'id');
         $categories = Category::pluck('name', 'id');
         $units = UnitMeasure::pluck('name', 'id');
@@ -148,7 +138,7 @@ class ProductController extends Controller
         }
         $timestamp = now()->format('Ymd_His');
         $filename = "productos_filtrados_{$timestamp}.xlsx";
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\UsersExport($query), $filename);
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\ProductsExport($query), $filename);
     }
 
     public function create()
