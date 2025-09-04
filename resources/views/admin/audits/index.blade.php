@@ -58,16 +58,8 @@
             </form>
             <form method="GET" action="{{ route('audits.export') }}"
                 class="flex flex-wrap items-center gap-4 p-4 bg-white dark:bg-gray-900 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-                <label for="range" class="font-semibold text-gray-700 dark:text-gray-200 mr-2">Exportar:</label>
-                <select name="range" id="range"
-                    class="form-select rounded-lg border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-red-400 focus:border-red-400 transition w-40 text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-800">
-                    <option value="hoy">Hoy</option>
-                    <option value="semana">Esta semana</option>
-                    <option value="mes">Este mes</option>
-                    <option value="completo">Histórico</option>
-                </select>
                 <button type="submit"
-                    class="ml-2 px-5 py-2 bg-red-600 text-white font-semibold rounded-lg shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition flex items-center gap-2">
+                    class="px-5 py-2 bg-red-600 text-white font-semibold rounded-lg shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />

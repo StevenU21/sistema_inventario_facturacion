@@ -102,19 +102,31 @@ class AuditController extends Controller
     {
         $this->authorize('export', Activity::class);
 
-        $range = $request->input('range', 'completo');
-        $query = Activity::query();
+        $causerId = $request->input('search');
+        $event = $request->input('event');
+        $model = $request->input('model');
+        $sort = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'desc');
 
-        if ($range === 'hoy') {
-            $query->whereDate('created_at', now()->toDateString());
-        } elseif ($range === 'semana') {
-            $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-        } elseif ($range === 'mes') {
-            $query->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+        $query = Activity::with(['causer', 'subject']);
+        if (!empty($causerId)) {
+            $query->where('causer_id', $causerId);
+        }
+        if (!empty($event)) {
+            $query->where('event', $event);
+        }
+        if (!empty($model)) {
+            $query->where('subject_type', $model);
+        }
+        $allowedSorts = ['id', 'causer_id', 'event', 'subject_type', 'subject_id', 'created_at'];
+        if (in_array($sort, $allowedSorts)) {
+            $query->orderBy($sort, $direction);
+        } else {
+            $query->latest();
         }
 
         $timestamp = now()->format('Ymd_His');
-        $filename = "auditoria_{$range}_{$timestamp}.xlsx";
+        $filename = "auditoria_filtrada_{$timestamp}.xlsx";
         return Excel::download(new AuditExport($query), $filename);
     }
 }
