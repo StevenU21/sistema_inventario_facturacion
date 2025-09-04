@@ -9,6 +9,7 @@ use \App\Classes\AuditPresenter;
 use Illuminate\Http\Request;
 use App\Exports\AuditExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Services\ModelSearchService;
 
 class AuditController extends Controller
 {
@@ -16,7 +17,29 @@ class AuditController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Activity::class);
-        $activities = Activity::with(['causer', 'subject'])->latest()->paginate(10);
+        return view('admin.audits.index');
+    }
+
+    public function search(Request $request, ModelSearchService $searchService)
+    {
+        $this->authorize('viewAny', Activity::class);
+        $params = $request->all();
+        $activities = $searchService->search(
+            Activity::class,
+            $params,
+            [
+                'event',
+                'subject_type',
+                'subject_id',
+                'properties',
+                'causer.first_name',
+                'causer.last_name',
+                'causer.name',
+                'causer.email',
+                'causer.username'
+            ],
+            ['causer', 'subject']
+        );
 
         foreach ($activities as $activity) {
             $presented = AuditPresenter::present($activity);
@@ -24,7 +47,6 @@ class AuditController extends Controller
             $activity->new = $presented['Después'];
             $activity->evento_es = $presented['Evento'];
             $activity->modelo_es = $presented['Modelo'];
-            // Si el modelo relacionado tiene 'name', mostrarlo, si no, mostrar el id
             if ($activity->subject) {
                 if (isset($activity->subject->name)) {
                     $activity->model_display = $activity->subject->name;

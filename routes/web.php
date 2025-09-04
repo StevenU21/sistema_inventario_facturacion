@@ -45,6 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('users/{user}/permissions/revoke', [PermissionController::class, 'revokePermission'])->name('users.permissions.revoke');
 
     // Audit Logs
+    Route::get('audits/search', [AuditController::class, 'search'])->name('audits.search');
     Route::get('audits', [AuditController::class, 'index'])->name('audits.index');
     Route::get('audits/export', [AuditController::class, 'export'])->name('audits.export');
 

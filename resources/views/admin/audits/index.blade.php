@@ -6,25 +6,53 @@
         <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
             Auditoría
         </h2>
-        <form method="GET" action="{{ route('audits.export') }}"
-            class="mb-6 flex flex-wrap items-center gap-4 p-4 bg-white dark:bg-gray-900 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-            <label for="range" class="font-semibold text-gray-700 dark:text-gray-200 mr-2">Exportar:</label>
-            <select name="range" id="range"
-                class="form-select rounded-lg border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-red-400 focus:border-red-400 transition w-40 text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-800">
-                <option value="hoy">Hoy</option>
-                <option value="semana">Esta semana</option>
-                <option value="mes">Este mes</option>
-                <option value="completo">Histórico</option>
-            </select>
-            <button type="submit"
-                class="ml-2 px-5 py-2 bg-red-600 text-white font-semibold rounded-lg shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Exportar Excel
-            </button>
-        </form>
+        <div class="flex flex-wrap gap-x-8 gap-y-4 items-end justify-between mb-4">
+            <form method="GET" action="{{ route('audits.search') }}"
+                class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
+                <div class="flex flex-col p-1">
+                    <select name="per_page" id="per_page"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-16 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                    </select>
+                </div>
+                <div class="flex flex-col p-1">
+                    <input type="text" name="search" id="search" value="{{ request('search') }}"
+                        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
+                        placeholder="Usuario, evento, modelo, antes, después...">
+                </div>
+                <div class="flex flex-col p-1">
+                    <label class="invisible block text-sm font-medium">.</label>
+                    <button type="submit"
+                        class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
+                        Buscar
+                    </button>
+                </div>
+            </form>
+            <form method="GET" action="{{ route('audits.export') }}"
+                class="flex flex-wrap items-center gap-4 p-4 bg-white dark:bg-gray-900 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <label for="range" class="font-semibold text-gray-700 dark:text-gray-200 mr-2">Exportar:</label>
+                <select name="range" id="range"
+                    class="form-select rounded-lg border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-red-400 focus:border-red-400 transition w-40 text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-800">
+                    <option value="hoy">Hoy</option>
+                    <option value="semana">Esta semana</option>
+                    <option value="mes">Este mes</option>
+                    <option value="completo">Histórico</option>
+                </select>
+                <button type="submit"
+                    class="ml-2 px-5 py-2 bg-red-600 text-white font-semibold rounded-lg shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Exportar Excel
+                </button>
+            </form>
+        </div>
         <x-session-message />
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
@@ -32,14 +60,20 @@
                     <thead>
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3">ID</th>
-                            <th class="px-4 py-3">Usuario</th>
-                            <th class="px-4 py-3">Evento</th>
-                            <th class="px-4 py-3">Modelo</th>
-                            <th class="px-4 py-3">Nombre Modelo</th>
+                            <th class="px-4 py-3"><x-table-sort-header field="id" label="ID" route="audits.search"
+                                    icon="<i class='fas fa-hashtag mr-2'></i>" /></th>
+                            <th class="px-4 py-3"><x-table-sort-header field="causer_id" label="Usuario"
+                                    route="audits.search" icon="<i class='fas fa-user mr-2'></i>" /></th>
+                            <th class="px-4 py-3"><x-table-sort-header field="event" label="Evento" route="audits.search"
+                                    icon="<i class='fas fa-bolt mr-2'></i>" /></th>
+                            <th class="px-4 py-3"><x-table-sort-header field="subject_type" label="Modelo"
+                                    route="audits.search" icon="<i class='fas fa-cube mr-2'></i>" /></th>
+                            <th class="px-4 py-3"><x-table-sort-header field="subject_id" label="Nombre Modelo"
+                                    route="audits.search" icon="<i class='fas fa-id-card mr-2'></i>" /></th>
                             <th class="px-4 py-3">Antes</th>
                             <th class="px-4 py-3">Después</th>
-                            <th class="px-4 py-3">Fecha</th>
+                            <th class="px-4 py-3"><x-table-sort-header field="created_at" label="Fecha"
+                                    route="audits.search" icon="<i class='fas fa-calendar-alt mr-2'></i>" /></th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
