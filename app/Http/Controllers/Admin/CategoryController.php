@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
+use App\Services\ModelSearchService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CategoryController extends Controller
@@ -18,35 +19,15 @@ class CategoryController extends Controller
         return view('admin.categories.index', compact('categories'));
     }
 
-    public function search()
+    public function search(ModelSearchService $searchService)
     {
         $this->authorize('viewAny', Category::class);
-        $query = Category::query();
-
-        if (request('search')) {
-            $search = request('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                    ->orWhere('description', 'like', "%$search%");
-            });
-        }
-
-        if (request('name')) {
-            $query->where('name', request('name'));
-        }
-
-        // Ordenamiento
-        $sort = request('sort', 'id');
-        $direction = request('direction', 'desc');
-        $allowedSorts = ['id', 'name', 'description', 'created_at', 'updated_at'];
-        if (in_array($sort, $allowedSorts)) {
-            $query->orderBy($sort, $direction);
-        } else {
-            $query->latest();
-        }
-
-        $perPage = request('per_page', 10);
-        $categories = $query->paginate($perPage)->withQueryString();
+        $params = request()->all();
+        $categories = $searchService->search(
+            Category::class,
+            $params,
+            ['name', 'description']
+        );
         return view('admin.categories.index', compact('categories'));
     }
 

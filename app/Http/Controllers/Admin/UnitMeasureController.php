@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\UnitMeasure;
+use App\Services\ModelSearchService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\UnitMeasureRequest;
 
@@ -20,36 +21,15 @@ class UnitMeasureController extends Controller
         return view('admin.unit_measures.index', compact('unitMeasures'));
     }
 
-    public function search()
+    public function search(ModelSearchService $searchService)
     {
         $this->authorize('viewAny', UnitMeasure::class);
-        $query = UnitMeasure::query();
-
-        if (request('search')) {
-            $search = request('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                    ->orWhere('abbreviation', 'like', "%$search%")
-                    ->orWhere('description', 'like', "%$search%");
-            });
-        }
-
-        if (request('name')) {
-            $query->where('name', request('name'));
-        }
-
-        // Ordenamiento
-        $sort = request('sort', 'id');
-        $direction = request('direction', 'desc');
-    $allowedSorts = ['id', 'name', 'abbreviation', 'description', 'created_at', 'updated_at'];
-        if (in_array($sort, $allowedSorts)) {
-            $query->orderBy($sort, $direction);
-        } else {
-            $query->latest();
-        }
-
-        $perPage = request('per_page', 10);
-        $unitMeasures = $query->paginate($perPage)->withQueryString();
+        $params = request()->all();
+        $unitMeasures = $searchService->search(
+            UnitMeasure::class,
+            $params,
+            ['name', 'abbreviation', 'description']
+        );
         return view('admin.unit_measures.index', compact('unitMeasures'));
     }
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentMethodRequest;
 use App\Models\Department;
 use App\Models\PaymentMethod;
+use App\Services\ModelSearchService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PaymentMethodController extends Controller
@@ -22,35 +23,15 @@ class PaymentMethodController extends Controller
         return view('admin.payment_methods.index', compact('paymentMethods'));
     }
 
-    public function search()
+    public function search(ModelSearchService $searchService)
     {
         $this->authorize('viewAny', PaymentMethod::class);
-        $query = PaymentMethod::query();
-
-        if (request('search')) {
-            $search = request('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                    ->orWhere('description', 'like', "%$search%");
-            });
-        }
-
-        if (request('name')) {
-            $query->where('name', request('name'));
-        }
-
-        // Ordenamiento
-        $sort = request('sort', 'id');
-        $direction = request('direction', 'desc');
-        $allowedSorts = ['id', 'name', 'description', 'created_at', 'updated_at'];
-        if (in_array($sort, $allowedSorts)) {
-            $query->orderBy($sort, $direction);
-        } else {
-            $query->latest();
-        }
-
-        $perPage = request('per_page', 10);
-        $paymentMethods = $query->paginate($perPage)->withQueryString();
+        $params = request()->all();
+        $paymentMethods = $searchService->search(
+            PaymentMethod::class,
+            $params,
+            ['name', 'description']
+        );
         return view('admin.payment_methods.index', compact('paymentMethods'));
     }
 

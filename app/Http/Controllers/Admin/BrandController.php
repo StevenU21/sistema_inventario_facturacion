@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BrandRequest;
 use App\Models\Brand;
+use App\Services\ModelSearchService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BrandController extends Controller
@@ -19,35 +20,15 @@ class BrandController extends Controller
         return view('admin.brands.index', compact('brands'));
     }
 
-    public function search()
+    public function search(ModelSearchService $searchService)
     {
         $this->authorize('viewAny', Brand::class);
-        $query = Brand::query();
-
-        if (request('search')) {
-            $search = request('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                    ->orWhere('description', 'like', "%$search%");
-            });
-        }
-
-        if (request('name')) {
-            $query->where('name', request('name'));
-        }
-
-        // Ordenamiento
-        $sort = request('sort', 'id');
-        $direction = request('direction', 'desc');
-        $allowedSorts = ['id', 'name', 'description', 'created_at', 'updated_at'];
-        if (in_array($sort, $allowedSorts)) {
-            $query->orderBy($sort, $direction);
-        } else {
-            $query->latest();
-        }
-
-        $perPage = request('per_page', 10);
-        $brands = $query->paginate($perPage)->withQueryString();
+        $params = request()->all();
+        $brands = $searchService->search(
+            Brand::class,
+            $params,
+            ['name', 'description']
+        );
         return view('admin.brands.index', compact('brands'));
     }
 

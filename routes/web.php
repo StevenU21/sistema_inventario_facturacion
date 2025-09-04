@@ -65,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('taxes', TaxController::class);
     Route::resource('entities', EntityController::class);
     Route::resource('products', ProductController::class);
+    Route::get('roles/search', [RoleController::class, 'search'])->name('roles.search');
     Route::resource('roles', RoleController::class);
     Route::resource('warehouses', WarehouseController::class);
     Route::resource('inventories', InventoryController::class);

@@ -7,6 +7,7 @@ use App\Http\Requests\RoleRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use App\Services\ModelSearchService;
 
 class RoleController extends Controller
 {
@@ -15,25 +16,20 @@ class RoleController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Role::class);
-        $query = Role::query();
-
-        if (request('search')) {
-            $search = request('search');
-            $query->where('name', 'like', "%$search%");
-        }
-
-        // Ordenamiento
-        $sort = request('sort', 'id');
-        $direction = request('direction', 'desc');
-        $allowedSorts = ['id', 'name', 'created_at', 'updated_at'];
-        if (in_array($sort, $allowedSorts)) {
-            $query->orderBy($sort, $direction);
-        } else {
-            $query->latest();
-        }
-
         $perPage = request('per_page', 10);
-        $roles = $query->paginate($perPage)->withQueryString();
+        $roles = Role::latest()->paginate($perPage);
+        return view('admin.roles.index', compact('roles'));
+    }
+
+    public function search(ModelSearchService $searchService)
+    {
+        $this->authorize('viewAny', Role::class);
+        $params = request()->all();
+        $roles = $searchService->search(
+            Role::class,
+            $params,
+            ['name']
+        );
         return view('admin.roles.index', compact('roles'));
     }
 

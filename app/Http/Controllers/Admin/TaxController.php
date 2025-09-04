@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TaxRequest;
 use App\Models\Tax;
+use App\Services\ModelSearchService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TaxController extends Controller
@@ -20,36 +21,15 @@ class TaxController extends Controller
         return view('admin.taxes.index', compact('taxes'));
     }
 
-    public function search()
+    public function search(ModelSearchService $searchService)
     {
         $this->authorize('viewAny', Tax::class);
-        $query = Tax::query();
-
-
-        if (request('search')) {
-            $search = request('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                    ->orWhere('percentage', 'like', "%$search%");
-            });
-        }
-
-        if (request('name')) {
-            $query->where('name', request('name'));
-        }
-
-        // Ordenamiento
-        $sort = request('sort', 'id');
-        $direction = request('direction', 'desc');
-        $allowedSorts = ['id', 'name', 'percentage', 'created_at', 'updated_at'];
-        if (in_array($sort, $allowedSorts)) {
-            $query->orderBy($sort, $direction);
-        } else {
-            $query->latest();
-        }
-
-        $perPage = request('per_page', 10);
-        $taxes = $query->paginate($perPage)->withQueryString();
+        $params = request()->all();
+        $taxes = $searchService->search(
+            Tax::class,
+            $params,
+            ['name', 'percentage']
+        );
         return view('admin.taxes.index', compact('taxes'));
     }
 
