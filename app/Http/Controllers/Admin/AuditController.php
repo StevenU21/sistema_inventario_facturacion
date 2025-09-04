@@ -17,7 +17,29 @@ class AuditController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Activity::class);
-        return view('admin.audits.index');
+        $activities = Activity::with(['causer', 'subject'])->latest()->paginate(10);
+        foreach ($activities as $activity) {
+            $presented = AuditPresenter::present($activity);
+            $activity->old = $presented['Antes'];
+            $activity->new = $presented['Después'];
+            $activity->evento_es = $presented['Evento'];
+            $activity->modelo_es = $presented['Modelo'];
+            if ($activity->subject) {
+                if (isset($activity->subject->name)) {
+                    $activity->model_display = $activity->subject->name;
+                } elseif (isset($activity->subject->title)) {
+                    $activity->model_display = $activity->subject->title;
+                } elseif (isset($activity->subject->first_name) || isset($activity->subject->last_name)) {
+                    $activity->model_display = trim(($activity->subject->first_name ?? '') . ' ' . ($activity->subject->last_name ?? ''));
+                } else {
+                    $activity->model_display = $activity->subject_id ?? '-';
+                }
+            } else {
+                $activity->model_display = $activity->subject_id ?? '-';
+            }
+        }
+
+        return view('admin.audits.index', compact('activities'));
     }
 
     public function search(Request $request, ModelSearchService $searchService)
