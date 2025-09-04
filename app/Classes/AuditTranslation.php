@@ -74,6 +74,45 @@ class AuditTranslation
                 'name' => 'Nombre',
                 'description' => 'Descripción',
             ],
+            // Traducción para Product
+            'Product' => [
+                'name' => 'Nombre',
+                'description' => 'Descripción',
+                'barcode' => 'Código de Barras',
+                'image' => 'Imagen',
+                'status' => 'Estado',
+                'brand_id' => 'Marca',
+                'category_id' => 'Categoría',
+                'tax_id' => 'Impuesto',
+                'unit_measure_id' => 'Unidad de Medida',
+                'entity_id' => 'Entidad',
+            ],
+            // Traducción para Inventory
+            'Inventory' => [
+                'stock' => 'Existencia',
+                'min_stock' => 'Stock Mínimo',
+                'purchase_price' => 'Precio de Compra',
+                'sale_price' => 'Precio de Venta',
+                'product_id' => 'Producto',
+                'warehouse_id' => 'Almacén',
+            ],
+            // Traducción para InventoryMovement
+            'InventoryMovement' => [
+                'type' => 'Tipo',
+                'adjustment_reason' => 'Motivo de Ajuste',
+                'quantity' => 'Cantidad',
+                'unit_price' => 'Precio Unitario',
+                'total_price' => 'Precio Total',
+                'reference' => 'Referencia',
+                'notes' => 'Notas',
+                'user_id' => 'Usuario',
+                'inventory_id' => 'Inventario',
+            ],
+            'Warehouse' => [
+                'name' => 'Nombre',
+                'address' => 'Dirección',
+                'description' => 'Descripción',
+            ],
         ];
     }
 
@@ -105,7 +144,11 @@ class AuditTranslation
             'PaymentMethod' => 'Método de Pago',
             'Tax' => 'Impuesto',
             'Entity' => 'Cliente & Proveedor',
-            'UnitMeasure' => 'Unidad de Medida'
+            'UnitMeasure' => 'Unidad de Medida',
+            'Product' => 'Producto',
+            'Inventory' => 'Inventario',
+            'InventoryMovement' => 'Movimiento de Inventario',
+            'Warehouse' => 'Almacén',
         ];
     }
     /**
