@@ -57,7 +57,7 @@
                         <select name="unit_measure_id" id="unit_measure_id"
                             class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
                             onchange="this.form.submit()">
-                            <option value="">Todas las unidades</option>
+                            <option value="">Todas las medidas</option>
                             @foreach ($units as $id => $name)
                                 <option value="{{ $id }}"
                                     {{ request('unit_measure_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
