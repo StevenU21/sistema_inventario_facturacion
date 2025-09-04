@@ -2,7 +2,17 @@
 @section('title', 'Productos')
 
 @section('content')
-    <div class="container grid px-6 mx-auto">
+    <div class="container grid px-6 mx-auto" x-data="{
+        isModalOpen: false,
+        isEditModalOpen: false,
+        isShowModalOpen: false,
+        editAction: '',
+        showProduct: { id: '', name: '', description: '', barcode: '', category: '', brand: '', unit: '', provider: '', tax: '', status: '', formatted_created_at: '', formatted_updated_at: '' },
+        editProduct: { id: '', name: '', description: '', barcode: '', category_id: null, brand_id: null, unit_measure_id: null, entity_id: null, tax_id: null, status: '', image_url: '' },
+        closeModal() { this.isModalOpen = false },
+        closeEditModal() { this.isEditModalOpen = false },
+        closeShowModal() { this.isShowModalOpen = false }
+    }">
         <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
             Productos
         </h2>
@@ -42,13 +52,83 @@
                             <i class="fas fa-file-excel ml-2"></i>
                         </button>
                     </form>
-                    <a href="{{ route('products.create') }}"
+                    <button type="button" @click="isModalOpen = true"
                         class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600 ml-2">
                         <span>Crear Producto</span>
                         <i class="fas fa-plus ml-2"></i>
-                    </a>
+                    </button>
                 </div>
             </div>
+
+            <!-- Modales: Editar, Crear, Ver -->
+            <x-edit-modal :title="'Editar Producto'" :description="'Modifica los datos del producto seleccionado.'">
+                <form :action="editAction" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="id" :value="editProduct.id">
+                    @include('admin.products.form', ['alpine' => true])
+                </form>
+            </x-edit-modal>
+
+            <x-modal :title="'Crear Producto'" :description="'Agrega un nuevo producto al sistema.'">
+                <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @include('admin.products.form', ['alpine' => false])
+                </form>
+            </x-modal>
+
+            <x-show-modal :title="'Detalle de Producto'" :description="'Consulta los datos del producto seleccionado.'">
+                <div class="mt-4 space-y-2">
+                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-hashtag text-purple-600 dark:text-purple-400"></i>
+                        <strong>ID:</strong> <span x-text="editProduct.id"></span>
+                    </p>
+                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-box text-purple-600 dark:text-purple-400"></i>
+                        <strong>Nombre:</strong> <span x-text="editProduct.name"></span>
+                    </p>
+                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-align-left text-purple-600 dark:text-purple-400"></i>
+                        <strong>Descripción:</strong> <span x-text="editProduct.description"></span>
+                    </p>
+                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-barcode text-purple-600 dark:text-purple-400"></i>
+                        <strong>Código:</strong> <span x-text="editProduct.barcode"></span>
+                    </p>
+                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-list-alt text-purple-600 dark:text-purple-400"></i>
+                        <strong>Categoría:</strong> <span x-text="showProduct.category"></span>
+                    </p>
+                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-tags text-purple-600 dark:text-purple-400"></i>
+                        <strong>Marca:</strong> <span x-text="showProduct.brand"></span>
+                    </p>
+                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-balance-scale text-purple-600 dark:text-purple-400"></i>
+                        <strong>Medida:</strong> <span x-text="showProduct.unit"></span>
+                    </p>
+                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-user-tie text-purple-600 dark:text-purple-400"></i>
+                        <strong>Proveedor:</strong> <span x-text="showProduct.provider"></span>
+                    </p>
+                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-percent text-purple-600 dark:text-purple-400"></i>
+                        <strong>Impuesto:</strong> <span x-text="showProduct.tax"></span>
+                    </p>
+                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-money-bill-wave text-purple-600 dark:text-purple-400"></i>
+                        <strong>Estado:</strong> <span x-text="showProduct.status"></span>
+                    </p>
+                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-calendar-alt text-purple-600 dark:text-purple-400"></i>
+                        <strong>Registro:</strong> <span x-text="showProduct.formatted_created_at"></span>
+                    </p>
+                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-clock text-purple-600 dark:text-purple-400"></i>
+                        <strong>Actualización:</strong> <span x-text="showProduct.formatted_updated_at"></span>
+                    </p>
+                </div>
+            </x-show-modal>
 
             <div class="flex flex-row flex-wrap gap-x-4 gap-y-4 items-end justify-between mb-4">
                 <form method="GET" action="{{ route('products.search') }}"
@@ -70,7 +150,8 @@
                             onchange="this.form.submit()">
                             <option value="">Todas las categorías</option>
                             @foreach ($categories as $id => $name)
-                                <option value="{{ $id }}" {{ request('category_id') == $id ? 'selected' : '' }}>
+                                <option value="{{ $id }}"
+                                    {{ request('category_id') == $id ? 'selected' : '' }}>
                                     {{ $name }}</option>
                             @endforeach
                         </select>
@@ -141,14 +222,23 @@
                             <thead>
                                 <tr
                                     class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                                    <th class="px-4 py-3"><x-table-sort-header field="id" label="ID" route="products.search" icon="<i class='fas fa-hashtag mr-2'></i>" /></th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="id" label="ID"
+                                            route="products.search" icon="<i class='fas fa-hashtag mr-2'></i>" /></th>
                                     <th class="px-4 py-3"><i class="fas fa-image mr-2"></i>Imagen</th>
-                                    <th class="px-4 py-3"><x-table-sort-header field="name" label="Nombre" route="products.search" icon="<i class='fas fa-box mr-2'></i>" /></th>
-                                    <th class="px-4 py-3"><x-table-sort-header field="category_id" label="Categoría" route="products.search" icon="<i class='fas fa-list-alt mr-2'></i>" /></th>
-                                    <th class="px-4 py-3"><x-table-sort-header field="brand_id" label="Marca" route="products.search" icon="<i class='fas fa-tags mr-2'></i>" /></th>
-                                    <th class="px-4 py-3"><x-table-sort-header field="unit_measure_id" label="Medida" route="products.search" icon="<i class='fas fa-balance-scale mr-2'></i>" /></th>
-                                    <th class="px-4 py-3"><x-table-sort-header field="entity_id" label="Proveedor" route="products.search" icon="<i class='fas fa-user-tie mr-2'></i>" /></th>
-                                    <th class="px-4 py-3"><x-table-sort-header field="status" label="Estado" route="products.search" icon="<i class='fas fa-money-bill-wave mr-2'></i>" /></th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="name" label="Nombre"
+                                            route="products.search" icon="<i class='fas fa-box mr-2'></i>" /></th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="category_id" label="Categoría"
+                                            route="products.search" icon="<i class='fas fa-list-alt mr-2'></i>" /></th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="brand_id" label="Marca"
+                                            route="products.search" icon="<i class='fas fa-tags mr-2'></i>" /></th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="unit_measure_id" label="Medida"
+                                            route="products.search" icon="<i class='fas fa-balance-scale mr-2'></i>" />
+                                    </th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="entity_id" label="Proveedor"
+                                            route="products.search" icon="<i class='fas fa-user-tie mr-2'></i>" /></th>
+                                    <th class="px-4 py-3"><x-table-sort-header field="status" label="Estado"
+                                            route="products.search" icon="<i class='fas fa-money-bill-wave mr-2'></i>" />
+                                    </th>
                                     <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                                 </tr>
                             </thead>
@@ -196,16 +286,65 @@
                                         </td>
                                         <td class="px-4 py-3">
                                             <div class="flex items-center space-x-4 text-sm">
-                                                <a href="{{ route('products.show', $product) }}"
-                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                    aria-label="Ver">
+                                                <button type="button"
+                                                    @click="
+                                                        // Datos para ver
+                                                        showProduct = {
+                                                            id: {{ $product->id }},
+                                                            name: '{{ addslashes($product->name) }}',
+                                                            description: '{{ addslashes($product->description) }}',
+                                                            barcode: '{{ addslashes($product->barcode) }}',
+                                                            category: '{{ addslashes($product->category->name ?? '-') }}',
+                                                            brand: '{{ addslashes($product->brand->name ?? '-') }}',
+                                                            unit: '{{ addslashes($product->unitMeasure->name ?? '-') }}',
+                                                            provider: '{{ addslashes(optional($product->entity)->first_name . ' ' . optional($product->entity)->last_name) }}',
+                                                            tax: '{{ addslashes($product->tax->name ?? '-') }}',
+                                                            status: '{{ addslashes($product->status) }}',
+                                                            formatted_created_at: '{{ addslashes($product->formatted_created_at ?? '-') }}',
+                                                            formatted_updated_at: '{{ addslashes($product->formatted_updated_at ?? '-') }}'
+                                                        };
+                                                        // También setear editProduct para reutilizar campos visibles
+                                                        editProduct = {
+                                                            id: {{ $product->id }},
+                                                            name: '{{ addslashes($product->name) }}',
+                                                            description: '{{ addslashes($product->description) }}',
+                                                            barcode: '{{ addslashes($product->barcode) }}',
+                                                            category_id: {{ $product->category_id ?? 'null' }},
+                                                            brand_id: {{ $product->brand_id ?? 'null' }},
+                                                            unit_measure_id: {{ $product->unit_measure_id ?? 'null' }},
+                                                            entity_id: {{ $product->entity_id ?? 'null' }},
+                                                            tax_id: {{ $product->tax_id ?? 'null' }},
+                                                            status: '{{ addslashes($product->status) }}',
+                                                            image_url: '{{ addslashes($product->image_url) }}'
+                                                        };
+                                                        isShowModalOpen = true;
+                                                    "
+                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-blue-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    aria-label="Ver Modal">
                                                     <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('products.edit', $product) }}"
-                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                    aria-label="Editar">
+                                                </button>
+                                                <button type="button"
+                                                    @click="
+                                                        editProduct = {
+                                                            id: {{ $product->id }},
+                                                            name: '{{ addslashes($product->name) }}',
+                                                            description: '{{ addslashes($product->description) }}',
+                                                            barcode: '{{ addslashes($product->barcode) }}',
+                                                            category_id: {{ $product->category_id ?? 'null' }},
+                                                            brand_id: {{ $product->brand_id ?? 'null' }},
+                                                            unit_measure_id: {{ $product->unit_measure_id ?? 'null' }},
+                                                            entity_id: {{ $product->entity_id ?? 'null' }},
+                                                            tax_id: {{ $product->tax_id ?? 'null' }},
+                                                            status: '{{ addslashes($product->status) }}',
+                                                            image_url: '{{ addslashes($product->image_url) }}'
+                                                        };
+                                                        editAction = '{{ route('products.update', $product) }}';
+                                                        isEditModalOpen = true;
+                                                    "
+                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    aria-label="Editar Modal">
                                                     <i class="fas fa-edit"></i>
-                                                </a>
+                                                </button>
                                                 <form action="{{ route('products.destroy', $product) }}" method="POST"
                                                     onsubmit="return confirm('¿Seguro de eliminar este producto?');">
                                                     @csrf

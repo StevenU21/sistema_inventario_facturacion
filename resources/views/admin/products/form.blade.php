@@ -1,217 +1,262 @@
-<div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
-    <!-- Nombre y Imagen -->
-    <div class="mb-4">
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-400">Nombre</span>
-            <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                <input name="name" type="text"
-                    class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('name') border-red-600 @enderror"
-                    placeholder="Nombre..." value="{{ old('name', $product->name ?? '') }}" required />
-                <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                    <i class="fas fa-box w-5 h-5"></i>
-                </div>
+<!-- Nombre y Imagen -->
+<div class="mb-4">
+    <label class="block text-sm w-full">
+        <span class="text-gray-700 dark:text-gray-400">Nombre</span>
+        <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+            <input name="name" type="text"
+                class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('name') border-red-600 @enderror"
+                placeholder="Nombre..."
+                @if (isset($alpine) && $alpine) x-model="editProduct.name" :value="editProduct.name"
+                    @else
+                        value="{{ old('name', $product->name ?? '') }}" @endif
+                required />
+            <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
+                <i class="fas fa-box w-5 h-5"></i>
             </div>
-            @error('name')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-    </div>
-    <div class="mb-4">
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-400">Imagen</span>
-            <div
-                class="relative flex items-center text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400 mt-1">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <i class="fas fa-image w-5 h-5"></i>
-                </div>
-                <input name="image" type="file" accept="image/*"
-                    class="block w-full pl-10 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('image') border-red-600 @enderror"
-                    id="imageInput" />
+        </div>
+        @error('name')
+            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+        @enderror
+    </label>
+</div>
+<div class="mb-4">
+    <label class="block text-sm w-full">
+        <span class="text-gray-700 dark:text-gray-400">Imagen</span>
+        <div
+            class="relative flex items-center text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400 mt-1">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <i class="fas fa-image w-5 h-5"></i>
             </div>
-            <div class="mt-2">
-                <img id="imagePreview" src="{{ isset($product) && $product->image ? $product->image_url : '' }}"
-                    alt="Vista previa" width="80" class="rounded"
-                    style="display: {{ isset($product) && $product->image ? 'block' : 'none' }};">
-            </div>
-            @error('image')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const input = document.getElementById('imageInput');
-            const preview = document.getElementById('imagePreview');
-            if (input) {
+            <input name="image" type="file" accept="image/*"
+                class="block w-full pl-10 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('image') border-red-600 @enderror"
+                id="{{ isset($alpine) && $alpine ? 'imageInputEdit' : 'imageInputCreate' }}" />
+        </div>
+        <div class="mt-2">
+            <img id="{{ isset($alpine) && $alpine ? 'imagePreviewEdit' : 'imagePreviewCreate' }}"
+                @if (isset($alpine) && $alpine) :src="editProduct.image_url"
+                        x-show="editProduct.image_url"
+                    @else
+                        src="{{ isset($product) && $product->image ? $product->image_url : '' }}"
+                        style="display: {{ isset($product) && $product->image ? 'block' : 'none' }};" @endif
+                alt="Vista previa" width="80" class="rounded">
+        </div>
+        @error('image')
+            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+        @enderror
+    </label>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const pairs = [{
+                inputId: 'imageInputCreate',
+                previewId: 'imagePreviewCreate'
+            },
+            {
+                inputId: 'imageInputEdit',
+                previewId: 'imagePreviewEdit'
+            },
+        ];
+        pairs.forEach(({
+            inputId,
+            previewId
+        }) => {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            if (input && preview) {
                 input.addEventListener('change', function(e) {
                     const file = e.target.files[0];
                     if (file) {
                         const reader = new FileReader();
                         reader.onload = function(ev) {
                             preview.src = ev.target.result;
-                            preview.style.display = 'block';
+                            if (preview.hasAttribute('x-show')) {
+                                // Alpine will handle visibility; just set src
+                            } else {
+                                preview.style.display = 'block';
+                            }
                         };
                         reader.readAsDataURL(file);
                     } else {
                         preview.src = '';
-                        preview.style.display = 'none';
+                        if (!preview.hasAttribute('x-show')) {
+                            preview.style.display = 'none';
+                        }
                     }
                 });
             }
         });
-    </script>
+    });
+</script>
 
-    <!-- Marca, Categoría, Impuesto -->
-    <div class="flex flex-col md:flex-row gap-4 mt-4">
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-400">Categoría</span>
-            <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                <select name="category_id"
-                    class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('category_id') border-red-600 @enderror"
-                    required>
-                    <option value="">Seleccione</option>
-                    @foreach ($categories as $id => $name)
-                        <option value="{{ $id }}" {{ old('category_id', $product->category_id ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                    @endforeach
-                </select>
-                <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                    <i class="fas fa-list-alt w-5 h-5"></i>
-                </div>
-            </div>
-            @error('category_id')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-400">Marca</span>
-            <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                <select name="brand_id"
-                    class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('brand_id') border-red-600 @enderror"
-                    required>
-                    <option value="">Seleccione</option>
-                    @foreach ($brands as $id => $name)
-                        <option value="{{ $id }}" {{ old('brand_id', $product->brand_id ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                    @endforeach
-                </select>
-                <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                    <i class="fas fa-tags w-5 h-5"></i>
-                </div>
-            </div>
-            @error('brand_id')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-400">Unidad de Medida</span>
-            <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                <select name="unit_measure_id"
-                    class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('unit_measure_id') border-red-600 @enderror"
-                    required>
-                    <option value="">Seleccione</option>
-                    @foreach ($units as $id => $name)
-                        <option value="{{ $id }}" {{ old('unit_measure_id', $product->unit_measure_id ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                    @endforeach
-                </select>
-                <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                    <i class="fas fa-ruler w-5 h-5"></i>
-                </div>
-            </div>
-            @error('unit_measure_id')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-    </div>
-
-    <!-- Unidad de Medida, Proveedor, Estado -->
-    <div class="flex flex-col md:flex-row gap-4 mt-4">
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-400">Proveedor</span>
-            <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                <select name="entity_id"
-                    class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('entity_id') border-red-600 @enderror"
-                    required>
-                    <option value="">Seleccione</option>
-                    @foreach ($entities as $id => $name)
-                        <option value="{{ $id }}" {{ old('entity_id', $product->entity_id ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                    @endforeach
-                </select>
-                <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                    <i class="fas fa-ruler w-5 h-5"></i>
-                </div>
-            </div>
-            @error('entity_id')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-400">Impuesto</span>
-            <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                <select name="tax_id"
-                    class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('tax_id') border-red-600 @enderror"
-                    required>
-                    <option value="">Seleccione</option>
-                    @foreach ($taxes as $id => $name)
-                        <option value="{{ $id }}" {{ old('tax_id', $product->tax_id ?? '') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                    @endforeach
-                </select>
-                <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                    <i class="fas fa-percent w-5 h-5"></i>
-                </div>
-            </div>
-            @error('tax_id')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-400">Estado</span>
-            <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                <select name="status"
-                    class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('status') border-red-600 @enderror"
-                    required>
-                    <option value="">Seleccione</option>
-                    <option value="available"
-                        {{ old('status', $product->status ?? '') == 'available' ? 'selected' : '' }}>Disponible
-                    </option>
-                    <option value="discontinued"
-                        {{ old('status', $product->status ?? '') == 'discontinued' ? 'selected' : '' }}>Descontinuado
-                    </option>
-                    <option value="out_of_stock"
-                        {{ old('status', $product->status ?? '') == 'out_of_stock' ? 'selected' : '' }}>Sin stock
-                    </option>
-                    <option value="reserved"
-                        {{ old('status', $product->status ?? '') == 'reserved' ? 'selected' : '' }}>Reservado</option>
-                </select>
-                <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                    <i class="fas fa-check w-5 h-5"></i>
-                </div>
-            </div>
-            @error('status')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-    </div>
-
-    <!-- Descripción -->
-    <label class="block mt-4 text-sm w-full">
-        <span class="text-gray-700 dark:text-gray-400">Descripción</span>
+<!-- Marca, Categoría, Impuesto -->
+<div class="flex flex-col md:flex-row gap-4 mt-4">
+    <label class="block text-sm w-full">
+        <span class="text-gray-700 dark:text-gray-400">Categoría</span>
         <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-            <textarea name="description"
-                class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('description') border-red-600 @enderror"
-                rows="2" maxlength="255" placeholder="Descripción...">{{ old('description', $product->description ?? '') }}</textarea>
-            <div class="absolute inset-y-0 left-0 flex items-center ml-3 pointer-events-none">
-                <i class="fas fa-align-left w-5 h-5"></i>
+            <select name="category_id"
+                class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('category_id') border-red-600 @enderror"
+                @if (isset($alpine) && $alpine) x-model="editProduct.category_id" @endif required>
+                <option value="">Seleccione</option>
+                @foreach ($categories as $id => $name)
+                    <option value="{{ $id }}"
+                        @if (!isset($alpine) || !$alpine) {{ old('category_id', $product->category_id ?? '') == $id ? 'selected' : '' }} @endif>
+                        {{ $name }}</option>
+                @endforeach
+            </select>
+            <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
+                <i class="fas fa-list-alt w-5 h-5"></i>
             </div>
         </div>
-        @error('description')
+        @error('category_id')
             <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
         @enderror
     </label>
+    <label class="block text-sm w-full">
+        <span class="text-gray-700 dark:text-gray-400">Marca</span>
+        <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+            <select name="brand_id"
+                class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('brand_id') border-red-600 @enderror"
+                @if (isset($alpine) && $alpine) x-model="editProduct.brand_id" @endif required>
+                <option value="">Seleccione</option>
+                @foreach ($brands as $id => $name)
+                    <option value="{{ $id }}"
+                        @if (!isset($alpine) || !$alpine) {{ old('brand_id', $product->brand_id ?? '') == $id ? 'selected' : '' }} @endif>
+                        {{ $name }}</option>
+                @endforeach
+            </select>
+            <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
+                <i class="fas fa-tags w-5 h-5"></i>
+            </div>
+        </div>
+        @error('brand_id')
+            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+        @enderror
+    </label>
+    <label class="block text-sm w-full">
+        <span class="text-gray-700 dark:text-gray-400">Unidad de Medida</span>
+        <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+            <select name="unit_measure_id"
+                class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('unit_measure_id') border-red-600 @enderror"
+                @if (isset($alpine) && $alpine) x-model="editProduct.unit_measure_id" @endif required>
+                <option value="">Seleccione</option>
+                @foreach ($units as $id => $name)
+                    <option value="{{ $id }}"
+                        @if (!isset($alpine) || !$alpine) {{ old('unit_measure_id', $product->unit_measure_id ?? '') == $id ? 'selected' : '' }} @endif>
+                        {{ $name }}</option>
+                @endforeach
+            </select>
+            <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
+                <i class="fas fa-ruler w-5 h-5"></i>
+            </div>
+        </div>
+        @error('unit_measure_id')
+            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+        @enderror
+    </label>
+</div>
 
-    <!-- Submit Button -->
-    <div class="mt-6">
-        <button type="submit"
-            class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple active:bg-purple-600">
-            <i class="fas fa-paper-plane mr-2"></i> {{ isset($municipality) ? 'Actualizar' : 'Guardar' }}
-        </button>
+<!-- Unidad de Medida, Proveedor, Estado -->
+<div class="flex flex-col md:flex-row gap-4 mt-4">
+    <label class="block text-sm w-full">
+        <span class="text-gray-700 dark:text-gray-400">Proveedor</span>
+        <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+            <select name="entity_id"
+                class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('entity_id') border-red-600 @enderror"
+                @if (isset($alpine) && $alpine) x-model="editProduct.entity_id" @endif required>
+                <option value="">Seleccione</option>
+                @foreach ($entities as $id => $name)
+                    <option value="{{ $id }}"
+                        @if (!isset($alpine) || !$alpine) {{ old('entity_id', $product->entity_id ?? '') == $id ? 'selected' : '' }} @endif>
+                        {{ $name }}</option>
+                @endforeach
+            </select>
+            <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
+                <i class="fas fa-ruler w-5 h-5"></i>
+            </div>
+        </div>
+        @error('entity_id')
+            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+        @enderror
+    </label>
+    <label class="block text-sm w-full">
+        <span class="text-gray-700 dark:text-gray-400">Impuesto</span>
+        <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+            <select name="tax_id"
+                class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('tax_id') border-red-600 @enderror"
+                @if (isset($alpine) && $alpine) x-model="editProduct.tax_id" @endif required>
+                <option value="">Seleccione</option>
+                @foreach ($taxes as $id => $name)
+                    <option value="{{ $id }}"
+                        @if (!isset($alpine) || !$alpine) {{ old('tax_id', $product->tax_id ?? '') == $id ? 'selected' : '' }} @endif>
+                        {{ $name }}</option>
+                @endforeach
+            </select>
+            <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
+                <i class="fas fa-percent w-5 h-5"></i>
+            </div>
+        </div>
+        @error('tax_id')
+            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+        @enderror
+    </label>
+    <label class="block text-sm w-full">
+        <span class="text-gray-700 dark:text-gray-400">Estado</span>
+        <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+            <select name="status"
+                class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('status') border-red-600 @enderror"
+                @if (isset($alpine) && $alpine) x-model="editProduct.status" @endif required>
+                <option value="">Seleccione</option>
+                <option value="available"
+                    @if (!isset($alpine) || !$alpine) {{ old('status', $product->status ?? '') == 'available' ? 'selected' : '' }} @endif>
+                    Disponible
+                </option>
+                <option value="discontinued"
+                    @if (!isset($alpine) || !$alpine) {{ old('status', $product->status ?? '') == 'discontinued' ? 'selected' : '' }} @endif>
+                    Descontinuado
+                </option>
+                <option value="out_of_stock"
+                    @if (!isset($alpine) || !$alpine) {{ old('status', $product->status ?? '') == 'out_of_stock' ? 'selected' : '' }} @endif>
+                    Sin stock
+                </option>
+                <option value="reserved"
+                    @if (!isset($alpine) || !$alpine) {{ old('status', $product->status ?? '') == 'reserved' ? 'selected' : '' }} @endif>
+                    Reservado</option>
+            </select>
+            <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
+                <i class="fas fa-check w-5 h-5"></i>
+            </div>
+        </div>
+        @error('status')
+            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+        @enderror
+    </label>
+</div>
+
+<!-- Descripción -->
+<label class="block mt-4 text-sm w-full">
+    <span class="text-gray-700 dark:text-gray-400">Descripción</span>
+    <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+        <textarea name="description"
+            class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('description') border-red-600 @enderror"
+            rows="2" maxlength="255" placeholder="Descripción..."
+            @if (isset($alpine) && $alpine) x-model="editProduct.description" @endif>
+@if (!isset($alpine) || !$alpine)
+{{ old('description', $product->description ?? '') }}
+@endif
+</textarea>
+        <div class="absolute inset-y-0 left-0 flex items-center ml-3 pointer-events-none">
+            <i class="fas fa-align-left w-5 h-5"></i>
+        </div>
     </div>
+    @error('description')
+        <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+    @enderror
+</label>
+
+<!-- Submit Button -->
+<div class="mt-6">
+    <button type="submit"
+        class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple active:bg-purple-600">
+        <i class="fas fa-paper-plane mr-2"></i> {{ isset($product) ? 'Actualizar' : 'Guardar' }}
+    </button>
 </div>
