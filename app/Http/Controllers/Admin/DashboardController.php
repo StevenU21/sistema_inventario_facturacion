@@ -16,10 +16,9 @@ class DashboardController extends Controller
     {
         $products = Product::count();
         $entities = Entity::where("is_client", 1)->count();
-        $users = User::count();
         $inventoryTotal = Inventory::sum('stock');
         $movementsToday = InventoryMovement::whereDate('created_at', now()->toDateString())->count();
 
-        return view('dashboard', compact('products', 'entities', 'users', 'inventoryTotal', 'movementsToday'));
+        return view('dashboard', compact('products', 'entities', 'inventoryTotal', 'movementsToday'));
     }
 }
