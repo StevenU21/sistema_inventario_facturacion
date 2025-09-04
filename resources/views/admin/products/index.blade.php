@@ -12,22 +12,44 @@
         <!-- Fin mensajes de éxito -->
 
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
-            <div class="flex flex-row flex-wrap gap-x-4 gap-y-4 items-end justify-between mb-2">
-                <form method="GET" action="{{ route('products.search') }}" class="flex flex-row gap-x-4 items-end w-full">
+            <div class="flex flex-row flex-wrap items-center gap-x-4 gap-y-4 mb-2">
+                <form method="GET" action="{{ route('products.search') }}"
+                    class="flex flex-row gap-x-4 items-center flex-1 min-w-[280px]">
                     <div class="flex flex-col p-1 flex-1">
                         <input type="text" name="search" id="search" value="{{ request('search') }}"
                             class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-full text-sm font-medium"
-                            placeholder="Nombre, descripción, código de barras...">
+                            placeholder="Nombre...">
                     </div>
                     <div class="flex flex-col p-1">
-                        <label class="invisible block text-sm font-medium">.</label>
                         <button type="submit"
-                            class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
+                            class="flex items-center justify-center px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
                             Buscar
                         </button>
                     </div>
                 </form>
+
+                <div class="flex items-center gap-2 ml-auto shrink-0">
+                    <form method="GET" action="{{ route('products.export') }}">
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                        <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
+                        <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                        <input type="hidden" name="unit_measure_id" value="{{ request('unit_measure_id') }}">
+                        <input type="hidden" name="tax_id" value="{{ request('tax_id') }}">
+                        <input type="hidden" name="status" value="{{ request('status') }}">
+                        <button type="submit"
+                            class="flex items-center justify-between px-4 py-2 w-36 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
+                            <span>Exportar Excel</span>
+                            <i class="fas fa-file-excel ml-2"></i>
+                        </button>
+                    </form>
+                    <a href="{{ route('products.create') }}"
+                        class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600 ml-2">
+                        <span>Crear Producto</span>
+                        <i class="fas fa-plus ml-2"></i>
+                    </a>
+                </div>
             </div>
+
             <div class="flex flex-row flex-wrap gap-x-4 gap-y-4 items-end justify-between mb-4">
                 <form method="GET" action="{{ route('products.search') }}"
                     class="flex flex-row flex-wrap gap-x-4 gap-y-4 items-end self-end">
@@ -81,7 +103,8 @@
                             onchange="this.form.submit()">
                             <option value="">Todos los impuestos</option>
                             @foreach ($taxes as $id => $name)
-                                <option value="{{ $id }}" {{ request('tax_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                                <option value="{{ $id }}" {{ request('tax_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -112,26 +135,6 @@
                         </select>
                     </div>
                 </form>
-                <div class="flex flex-row gap-x-2 items-end">
-                    <form method="GET" action="{{ route('products.export') }}">
-                        <input type="hidden" name="search" value="{{ request('search') }}">
-                        <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
-                        <input type="hidden" name="category_id" value="{{ request('category_id') }}">
-                        <input type="hidden" name="unit_measure_id" value="{{ request('unit_measure_id') }}">
-                        <input type="hidden" name="tax_id" value="{{ request('tax_id') }}">
-                        <input type="hidden" name="status" value="{{ request('status') }}">
-                        <button type="submit"
-                            class="flex items-center justify-between px-4 py-2 w-36 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
-                            <span>Exportar Excel</span>
-                            <i class="fas fa-file-excel ml-2"></i>
-                        </button>
-                    </form>
-                    <a href="{{ route('products.create') }}"
-                        class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600 ml-2">
-                        <span>Crear Producto</span>
-                        <i class="fas fa-plus ml-2"></i>
-                    </a>
-                </div>
                 <div class="w-full overflow-hidden rounded-lg shadow-xs">
                     <div class="w-full overflow-x-auto">
                         <table class="w-full whitespace-no-wrap">
