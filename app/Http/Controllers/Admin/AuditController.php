@@ -18,6 +18,8 @@ class AuditController extends Controller
     {
         $this->authorize('viewAny', Activity::class);
         $activities = Activity::with(['causer', 'subject'])->latest()->paginate(10);
+        $allCausers = Activity::with('causer')->get()->pluck('causer')->filter()->unique('id')->values();
+        $allModels = Activity::select('subject_type')->distinct()->pluck('subject_type');
         foreach ($activities as $activity) {
             $presented = AuditPresenter::present($activity);
             $activity->old = $presented['Antes'];
@@ -39,30 +41,39 @@ class AuditController extends Controller
             }
         }
 
-        return view('admin.audits.index', compact('activities'));
+        return view('admin.audits.index', compact('activities', 'allCausers', 'allModels'));
     }
 
     public function search(Request $request, ModelSearchService $searchService)
     {
         $this->authorize('viewAny', Activity::class);
-        $params = $request->all();
-        $activities = $searchService->search(
-            Activity::class,
-            $params,
-            [
-                'event',
-                'subject_type',
-                'subject_id',
-                'properties',
-                'causer.first_name',
-                'causer.last_name',
-                'causer.name',
-                'causer.email',
-                'causer.username'
-            ],
-            ['causer', 'subject']
-        );
+        $perPage = $request->input('per_page', 10);
+        $causerId = $request->input('search');
+        $event = $request->input('event');
+        $model = $request->input('model');
+        $sort = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'desc');
 
+        $query = Activity::with(['causer', 'subject']);
+        if (!empty($causerId)) {
+            $query->where('causer_id', $causerId);
+        }
+        if (!empty($event)) {
+            $query->where('event', $event);
+        }
+        if (!empty($model)) {
+            $query->where('subject_type', $model);
+        }
+        // Ordenamiento seguro solo por columnas válidas
+        $allowedSorts = ['id', 'causer_id', 'event', 'subject_type', 'subject_id', 'created_at'];
+        if (in_array($sort, $allowedSorts)) {
+            $query->orderBy($sort, $direction);
+        } else {
+            $query->latest();
+        }
+        $activities = $query->paginate($perPage)->appends($request->all());
+        $allCausers = Activity::with('causer')->get()->pluck('causer')->filter()->unique('id')->values();
+        $allModels = Activity::select('subject_type')->distinct()->pluck('subject_type');
         foreach ($activities as $activity) {
             $presented = AuditPresenter::present($activity);
             $activity->old = $presented['Antes'];
@@ -84,7 +95,7 @@ class AuditController extends Controller
             }
         }
 
-        return view('admin.audits.index', compact('activities'));
+        return view('admin.audits.index', compact('activities', 'allCausers', 'allModels'));
     }
 
     public function export(Request $request)

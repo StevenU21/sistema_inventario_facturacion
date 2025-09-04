@@ -21,16 +21,39 @@
                     </select>
                 </div>
                 <div class="flex flex-col p-1">
-                    <input type="text" name="search" id="search" value="{{ request('search') }}"
-                        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
-                        placeholder="Usuario, evento, modelo, antes, después...">
+                    <select name="search" id="search"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium">
+                        <option value="">Todos los usuarios</option>
+                        @foreach ($allCausers as $causer)
+                            <option value="{{ $causer->id }}" {{ request('search') == $causer->id ? 'selected' : '' }}>
+                                {{ $causer->first_name }} {{ $causer->last_name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="flex flex-col p-1">
-                    <label class="invisible block text-sm font-medium">.</label>
-                    <button type="submit"
-                        class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
-                        Buscar
-                    </button>
+                    <select name="event" id="event"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="">Todos los eventos</option>
+                        <option value="created" {{ request('event') == 'created' ? 'selected' : '' }}>Creado</option>
+                        <option value="updated" {{ request('event') == 'updated' ? 'selected' : '' }}>Actualizado</option>
+                        <option value="deleted" {{ request('event') == 'deleted' ? 'selected' : '' }}>Eliminado</option>
+                    </select>
+                </div>
+                <div class="flex flex-col p-1">
+                    <select name="model" id="model"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="">Todos los modelos</option>
+                        @foreach ($allModels as $modelType)
+                            @if ($modelType)
+                                <option value="{{ $modelType }}" {{ request('model') == $modelType ? 'selected' : '' }}>
+                                    {{ class_basename($modelType) }}
+                                </option>
+                            @endif
+                        @endforeach
+                    </select>
                 </div>
             </form>
             <form method="GET" action="{{ route('audits.export') }}"
@@ -60,20 +83,32 @@
                     <thead>
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3"><x-table-sort-header field="id" label="ID" route="audits.search"
-                                    icon="<i class='fas fa-hashtag mr-2'></i>" /></th>
-                            <th class="px-4 py-3"><x-table-sort-header field="causer_id" label="Usuario"
-                                    route="audits.search" icon="<i class='fas fa-user mr-2'></i>" /></th>
-                            <th class="px-4 py-3"><x-table-sort-header field="event" label="Evento" route="audits.search"
-                                    icon="<i class='fas fa-bolt mr-2'></i>" /></th>
-                            <th class="px-4 py-3"><x-table-sort-header field="subject_type" label="Modelo"
-                                    route="audits.search" icon="<i class='fas fa-cube mr-2'></i>" /></th>
-                            <th class="px-4 py-3"><x-table-sort-header field="subject_id" label="Nombre Modelo"
-                                    route="audits.search" icon="<i class='fas fa-id-card mr-2'></i>" /></th>
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="id" label="ID" route="audits.search"
+                                    :params="request()->except(['sort','direction'])" icon="<i class='fas fa-hashtag mr-2'></i>" />
+                            </th>
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="causer_id" label="Usuario" route="audits.search"
+                                    :params="request()->except(['sort','direction'])" icon="<i class='fas fa-user mr-2'></i>" />
+                            </th>
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="event" label="Evento" route="audits.search"
+                                    :params="request()->except(['sort','direction'])" icon="<i class='fas fa-bolt mr-2'></i>" />
+                            </th>
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="subject_type" label="Modelo" route="audits.search"
+                                    :params="request()->except(['sort','direction'])" icon="<i class='fas fa-cube mr-2'></i>" />
+                            </th>
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="subject_id" label="Nombre Modelo" route="audits.search"
+                                    :params="request()->except(['sort','direction'])" icon="<i class='fas fa-id-card mr-2'></i>" />
+                            </th>
                             <th class="px-4 py-3">Antes</th>
                             <th class="px-4 py-3">Después</th>
-                            <th class="px-4 py-3"><x-table-sort-header field="created_at" label="Fecha"
-                                    route="audits.search" icon="<i class='fas fa-calendar-alt mr-2'></i>" /></th>
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="created_at" label="Fecha" route="audits.search"
+                                    :params="request()->except(['sort','direction'])" icon="<i class='fas fa-calendar-alt mr-2'></i>" />
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
