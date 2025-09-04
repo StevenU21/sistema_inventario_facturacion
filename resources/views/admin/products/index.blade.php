@@ -109,6 +109,7 @@
                                 <th class="px-4 py-3"><i class="fas fa-box mr-2"></i>Nombre</th>
                                 <th class="px-4 py-3"><i class="fas fa-list-alt mr-2"></i>Categoría</th>
                                 <th class="px-4 py-3"><i class="fas fa-tags mr-2"></i>Marca</th>
+                                <th class="px-4 py-3"><i class="fas fa-balance-scale mr-2"></i>Medida</th>
                                 <th class="px-4 py-3"><i class="fas fa-user-tie mr-2"></i>Proveedor</th>
                                 <th class="px-4 py-3"><i class="fas fa-money-bill-wave mr-2"></i>Estado</th>
                                 <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
@@ -129,6 +130,7 @@
                                     <td class="px-4 py-3 text-sm">{{ $product->name }}</td>
                                     <td class="px-4 py-3 text-sm">{{ $product->category->name ?? '-' }}</td>
                                     <td class="px-4 py-3 text-sm">{{ $product->brand->name ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-sm">{{ $product->unitMeasure->name ?? '-' }}</td>
                                     <td class="px-4 py-3 text-sm">
                                         {{ $product->entity ? $product->entity->first_name . ' ' . $product->entity->last_name : '-' }}
                                     </td>
