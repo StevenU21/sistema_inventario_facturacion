@@ -62,13 +62,13 @@ class PaymentMethodController extends Controller
     public function update(PaymentMethodRequest $request, PaymentMethod $paymentMethod)
     {
         $paymentMethod->update($request->validated());
-        return redirect()->route('payment_methods.index')->with('success', 'Método de pago actualizado correctamente.');
+        return redirect()->route('payment_methods.index')->with('updated', 'Método de pago actualizado correctamente.');
     }
 
     public function destroy(PaymentMethod $paymentMethod)
     {
         $this->authorize('destroy', $paymentMethod);
         $paymentMethod->delete();
-        return redirect()->route('payment_methods.index')->with('success', 'Método de pago eliminado correctamente.');
+        return redirect()->route('payment_methods.index')->with('deleted', 'Método de pago eliminado correctamente.');
     }
 }

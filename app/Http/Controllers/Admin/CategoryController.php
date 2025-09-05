@@ -40,7 +40,7 @@ class CategoryController extends Controller
     public function store(CategoryRequest $request)
     {
         Category::create($request->validated());
-        return redirect()->route('categories.index')->with('success', 'Category created successfully.');
+        return redirect()->route('categories.index')->with('success', 'Categoria creada correctamente.');
     }
 
     public function show(Category $category)
@@ -58,13 +58,13 @@ class CategoryController extends Controller
     public function update(CategoryRequest $request, Category $category)
     {
         $category->update($request->validated());
-        return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
+        return redirect()->route('categories.index')->with('updated', 'Categoria actualizada correctamente.');
     }
 
     public function destroy(Category $category)
     {
         $this->authorize('destroy', $category);
         $category->delete();
-        return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
+        return redirect()->route('categories.index')->with('deleted', 'Categoria eliminada correctamente.');
     }
 }

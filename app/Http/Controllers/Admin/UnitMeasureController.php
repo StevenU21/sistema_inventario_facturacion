@@ -62,13 +62,13 @@ class UnitMeasureController extends Controller
     {
         $data = $request->validated();
         $unitMeasure->update($data);
-        return redirect()->route('unit_measures.index')->with('success', 'Unidad de medida actualizada correctamente.');
+        return redirect()->route('unit_measures.index')->with('updated', 'Unidad de medida actualizada correctamente.');
     }
 
     public function destroy(UnitMeasure $unitMeasure)
     {
         $this->authorize('destroy', $unitMeasure);
         $unitMeasure->delete();
-        return redirect()->route('unit_measures.index')->with('success', 'Unidad de medida eliminada correctamente.');
+        return redirect()->route('unit_measures.index')->with('deleted', 'Unidad de medida eliminada correctamente.');
     }
 }

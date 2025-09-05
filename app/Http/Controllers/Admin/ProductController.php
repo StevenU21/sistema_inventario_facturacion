@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\ProductsExport;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Controllers\Controller;
 use App\Models\Tax;
@@ -14,6 +15,7 @@ use App\Services\FileService;
 use App\Services\ModelSearchService;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Excel;
 
 class ProductController extends Controller
 {
@@ -138,7 +140,7 @@ class ProductController extends Controller
         }
         $timestamp = now()->format('Ymd_His');
         $filename = "productos_filtrados_{$timestamp}.xlsx";
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\ProductsExport($query), $filename);
+        return Excel::download(new ProductsExport($query), $filename);
     }
 
     public function create()
@@ -200,7 +202,7 @@ class ProductController extends Controller
             $data['image'] = $imagePath;
         }
         $product->update($data);
-        return redirect()->route('products.index')->with('success', 'Producto actualizado correctamente.');
+        return redirect()->route('products.index')->with('updated', 'Producto actualizado correctamente.');
     }
 
     public function destroy(Product $product)
@@ -210,11 +212,11 @@ class ProductController extends Controller
         if ($product->status === 'discontinued') {
             $product->status = 'available';
             $product->save();
-            return redirect()->route('products.index')->with('success', 'Producto rehabilitado correctamente.');
+            return redirect()->route('products.index')->with('deleted', 'Producto rehabilitado correctamente.');
         } else {
             $product->status = 'discontinued';
             $product->save();
-            return redirect()->route('products.index')->with('success', 'Producto descontinuado correctamente.');
+            return redirect()->route('products.index')->with('deleted', 'Producto descontinuado correctamente.');
         }
     }
 }

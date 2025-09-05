@@ -2,7 +2,7 @@
 @section('title', 'Detalles de la Categoría')
 
 @section('content')
-    @if(isset($alpine) && $alpine)
+    @if (isset($alpine) && $alpine)
         <div x-ref="showContent">
             <p><strong>ID:</strong> <span x-text="showCategory.id"></span></p>
             <p><strong>Nombre:</strong> <span x-text="showCategory.name"></span></p>
@@ -23,27 +23,43 @@
                 </a>
             </div>
 
-            <div class="w-full overflow-hidden rounded-lg shadow-md bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow duration-150">
+            <div
+                class="w-full overflow-hidden rounded-lg shadow-md bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow duration-150">
                 <div class="p-4">
-                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
+                    <h3
+                        class="text-lg font-semibold text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
                         Información de la Categoría
                     </h3>
                     <div class="mt-4">
-                        <p class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
                             <i class="fas fa-tag text-purple-600 dark:text-purple-400 mr-2"></i>
-                            <strong class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Nombre:</strong> {{ $category->name }}
+                            <strong
+                                class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Nombre:</strong>
+                            {{ $category->name }}
                         </p>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mt-2 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
                             <i class="fas fa-align-left text-purple-600 dark:text-purple-400 mr-2"></i>
-                            <strong class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Descripción:</strong> {{ $category->description }}
+                            <strong
+                                class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Descripción:</strong>
+                            {{ $category->description }}
                         </p>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mt-2 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
                             <i class="fas fa-calendar-alt text-purple-600 dark:text-purple-400 mr-2"></i>
-                            <strong class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Fecha de creación:</strong> {{ $category->created_at ? $category->created_at->format('Y-m-d') : '-' }}
+                            <strong
+                                class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Fecha
+                                de creación:</strong>
+                            {{ $category->created_at ? $category->created_at->format('Y-m-d') : '-' }}
                         </p>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
+                        <p
+                            class="text-sm text-gray-600 dark:text-gray-400 mt-2 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
                             <i class="fas fa-clock text-purple-600 dark:text-purple-400 mr-2"></i>
-                            <strong class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Última actualización:</strong> {{ $category->updated_at ? $category->updated_at->format('Y-m-d') : '-' }}
+                            <strong
+                                class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Última
+                                actualización:</strong>
+                            {{ $category->updated_at ? $category->updated_at->format('Y-m-d') : '-' }}
                         </p>
                     </div>
                 </div>
