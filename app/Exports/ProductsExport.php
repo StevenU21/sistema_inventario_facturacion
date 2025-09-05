@@ -38,7 +38,7 @@ class ProductsExport implements FromCollection, WithHeadings
             $brand = $product->brand->name ?? '-';
             $category = $product->category->name ?? '-';
             $unit = $product->unitMeasure->name ?? '-';
-            $tax = $product->tax->name ?? '-';
+            $tax = $product->tax->name . ' ' . ($product->tax->percentage ?? '-') . '%';
             $provider = $product->entity
                 ? trim(($product->entity->first_name ?? '') . ' ' . ($product->entity->last_name ?? ''))
                 : '-';
