@@ -22,11 +22,12 @@
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                             <th class="px-4 py-3"><i class="fas fa-hashtag mr-2"></i>ID</th>
                             <th class="px-4 py-3"><i class="fas fa-box mr-2"></i>Producto</th>
+                            <th class="px-4 py-3"><i class="fas fa-image mr-2"></i>Imagen</th>
                             <th class="px-4 py-3"><i class="fas fa-warehouse mr-2"></i>Almacén</th>
                             <th class="px-4 py-3"><i class="fas fa-cubes mr-2"></i>Stock</th>
-                            <th class="px-4 py-3"><i class="fas fa-exclamation-triangle mr-2"></i>Stock Mínimo</th>
-                            <th class="px-4 py-3"><i class="fas fa-money-bill-wave mr-2"></i>Precio Compra</th>
-                            <th class="px-4 py-3"><i class="fas fa-dollar-sign mr-2"></i>Precio Venta</th>
+                            <th class="px-4 py-3"><i class="fas fa-exclamation-triangle mr-2"></i>Mínimo</th>
+                            <th class="px-4 py-3"><i class="fas fa-money-bill-wave mr-2"></i>Compra</th>
+                            <th class="px-4 py-3"><i class="fas fa-dollar-sign mr-2"></i>Venta</th>
                             <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                         </tr>
                     </thead>
@@ -40,6 +41,14 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-sm">{{ $inventory->product->name ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm">
+                                    @if ($inventory->product && $inventory->product->image_url)
+                                        <img src="{{ $inventory->product->image_url }}" alt="Imagen del producto"
+                                            class="w-12 h-12 object-cover rounded">
+                                    @else
+                                        <span class="text-gray-400 dark:text-gray-500">No disponible</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3 text-sm">{{ $inventory->warehouse->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $inventory->stock }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $inventory->min_stock }}</td>

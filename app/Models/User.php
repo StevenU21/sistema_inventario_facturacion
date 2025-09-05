@@ -82,6 +82,24 @@ class User extends Authenticatable
         return null;
     }
 
+    /**
+     * Nombre completo: nombre y apellido(s) completos.
+     */
+    public function getFullNameAttribute(): string
+    {
+        return trim($this->first_name . ' ' . $this->last_name);
+    }
+
+    /**
+     * Solo primer nombre y primer apellido.
+     */
+    public function getShortNameAttribute(): string
+    {
+        $first = explode(' ', trim($this->first_name))[0] ?? '';
+        $last = explode(' ', trim($this->last_name))[0] ?? '';
+        return trim($first . ' ' . $last);
+    }
+
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);

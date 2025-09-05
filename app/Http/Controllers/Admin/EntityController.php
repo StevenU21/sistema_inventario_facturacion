@@ -72,7 +72,7 @@ class EntityController extends Controller
         } else {
             $entity->is_active = true;
             $entity->save();
-            return redirect()->route('entities.index')->with('deleted', 'Entidad habilitada correctamente.');
+            return redirect()->route('entities.index')->with('success', 'Entidad habilitada correctamente.');
         }
     }
 }

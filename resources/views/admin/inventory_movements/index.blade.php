@@ -36,7 +36,7 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $movement->user->first_name ?? '-' }} {{ $movement->user->last_name ?? '' }}
+                                    {{ $movement->user->short_name ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     @if ($movement->inventory)

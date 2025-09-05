@@ -18,7 +18,7 @@
                     </span>
                     @auth
                         <span class="ml-4 font-bold text-xl text-gray-800 dark:text-gray-100">
-                            {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+                            {{ Auth::user()->short_name }}
                             @if (Auth::user()->formatted_role_name)
                                 - {{ Auth::user()->formatted_role_name }}
                             @endif
@@ -75,7 +75,7 @@
                     aria-haspopup="true">
                     @auth
                         <img class="object-cover w-8 h-8 rounded-full"
-                            src="{{ Auth::user()->profile && Auth::user()->profile->avatar_url ? Auth::user()->profile->avatar_url : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->first_name . ' ' . Auth::user()->last_name) . '&background=6D28D9&color=fff&size=128' }}"
+                            src="{{ Auth::user()->profile && Auth::user()->profile->avatar_url ? Auth::user()->profile->avatar_url : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->short_name . ' ' . Auth::user()->last_name) . '&background=6D28D9&color=fff&size=128' }}"
                             alt="Avatar de {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}" />
                     @else
                         <img class="object-cover w-8 h-8 rounded-full"
