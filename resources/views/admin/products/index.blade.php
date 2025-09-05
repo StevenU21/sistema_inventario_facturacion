@@ -94,20 +94,20 @@
                         <div class="border-b pb-3">
                             <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                 <i class="fas fa-box text-purple-600 dark:text-purple-400"></i>
-                                <span x-text="editProduct.name"></span>
+                                <span x-text="showProduct.name"></span>
                             </h2>
-                            <p class="text-gray-600 dark:text-gray-300 text-sm" x-text="editProduct.description"></p>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm" x-text="showProduct.description"></p>
                         </div>
 
                         <!-- Datos en 2 columnas -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
                                 <i class="fas fa-hashtag text-purple-600 dark:text-purple-400"></i>
-                                <strong>ID:</strong> <span x-text="editProduct.id"></span>
+                                <strong>ID:</strong> <span x-text="showProduct.id"></span>
                             </div>
                             <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
                                 <i class="fas fa-barcode text-purple-600 dark:text-purple-400"></i>
-                                <strong>Código:</strong> <span x-text="editProduct.barcode"></span>
+                                <strong>Código:</strong> <span x-text="showProduct.barcode"></span>
                             </div>
                             <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
                                 <i class="fas fa-list-alt text-purple-600 dark:text-purple-400"></i>
@@ -395,7 +395,7 @@
                                                     @method('DELETE')
                                                     <button type="submit"
                                                         class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                        :aria-label="$product->status === 'discontinued' ? 'Rehabilitar' : 'Descontinuar'">
+                                                        aria-label="{{ $product->status === 'discontinued' ? 'Rehabilitar' : 'Descontinuar' }}">
                                                         @if($product->status === 'discontinued')
                                                             <i class="fas fa-undo"></i>
                                                         @else
