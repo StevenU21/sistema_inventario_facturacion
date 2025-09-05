@@ -201,9 +201,15 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $this->authorize('destroy', $user);
-        // En vez de eliminar, desactivar el usuario
-        $user->is_active = false;
-        $user->save();
-        return redirect()->route('users.index')->with('success', 'Usuario desactivado correctamente');
+        if ($user->is_active) {
+            $user->is_active = false;
+            $user->save();
+            return redirect()->route('users.index')->with('success', 'Usuario desactivado correctamente');
+        } else {
+            $this->authorize('update', $user);
+            $user->is_active = true;
+            $user->save();
+            return redirect()->route('users.index')->with('success', 'Usuario reactivado correctamente.');
+        }
     }
 }

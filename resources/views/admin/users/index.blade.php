@@ -148,7 +148,7 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    @if ($user->status)
+                                    @if ($user->is_active === true)
                                         <span
                                             class="px-2 py-1 font-semibold leading-tight text-white bg-green-600 rounded-full dark:bg-green-700 dark:text-white">Activo</span>
                                     @else
@@ -161,42 +161,35 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
-                                        @if (!$user->is_active)
-                                            <form action="{{ route('inactive-users.reactivate', $user->id) }}"
-                                                method="POST" onsubmit="return confirm('¿Reactivar este usuario?');">
-                                                @csrf
-                                                <button type="submit"
-                                                    class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green">
-                                                    <i class="fas fa-user-check mr-2"></i> Activar
-                                                </button>
-                                            </form>
-                                        @else
-                                            <a href="{{ route('users.permissions.edit', $user) }}"
-                                                class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green"
-                                                aria-label="Asignar Permisos">
-                                                <i class="fas fa-user-shield mr-2"></i> Permisos
-                                            </a>
-                                            <a href="{{ route('users.show', $user) }}"
-                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                aria-label="Show">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('users.edit', $user) }}"
-                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                aria-label="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('users.destroy', $user) }}" method="POST"
-                                                onsubmit="return confirm('¿Estás seguro de eliminar este usuario?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                    aria-label="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        @endif
+                                        <a href="{{ route('users.permissions.edit', $user) }}"
+                                            class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green"
+                                            aria-label="Asignar Permisos">
+                                            <i class="fas fa-user-shield mr-2"></i> Permisos
+                                        </a>
+                                        <a href="{{ route('users.show', $user) }}"
+                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                            aria-label="Show">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ route('users.edit', $user) }}"
+                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                            aria-label="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('users.destroy', $user) }}" method="POST"
+                                            onsubmit="return confirm('{{ $user->is_active ? '¿Estás seguro de desactivar este usuario?' : '¿Estás seguro de reactivar este usuario?' }}');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 rounded-lg focus:outline-none focus:shadow-outline-gray {{ $user->is_active ? 'text-purple-600 dark:text-gray-400' : 'text-white bg-green-600 hover:bg-green-700 active:bg-green-600' }}"
+                                                aria-label="{{ $user->is_active ? 'Desactivar' : 'Reactivar' }}">
+                                                @if ($user->is_active)
+                                                    <i class="fas fa-user-slash"></i>
+                                                @else
+                                                    <i class="fas fa-user-check"></i>
+                                                @endif
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
