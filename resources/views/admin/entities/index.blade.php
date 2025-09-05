@@ -47,7 +47,7 @@
                                         {{ $entity->id }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-sm">{{ $entity->first_name . ' ' . $entity->last_name }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $entity->full_name }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $entity->formatted_identity_card }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $entity->formatted_phone }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $entity->municipality->name ?? '-' }}</td>

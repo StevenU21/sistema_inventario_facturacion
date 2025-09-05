@@ -103,10 +103,22 @@
                                 <x-table-sort-header field="first_name" label="Nombre" route="users.search"
                                     icon="<i class='fas fa-user mr-2'></i>" />
                             </th>
+
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="identity_card" label="Cédula" route="users.search"
+                                    icon="<i class='fas fa-envelope mr-2'></i>" />
+                            </th>
+
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="phone" label="Teléfono" route="users.search"
+                                    icon="<i class='fas fa-envelope mr-2'></i>" />
+                            </th>
+
                             <th class="px-4 py-3">
                                 <x-table-sort-header field="email" label="Email" route="users.search"
                                     icon="<i class='fas fa-envelope mr-2'></i>" />
                             </th>
+
                             <th class="px-4 py-3">
                                 <x-table-sort-header field="role" label="Rol" route="users.search"
                                     icon="<i class='fas fa-user-tag mr-2'></i>" />
@@ -114,10 +126,6 @@
                             <th class="px-4 py-3">
                                 <x-table-sort-header field="is_active" label="Estado" route="users.search"
                                     icon="<i class='fas fa-toggle-on mr-2'></i>" />
-                            </th>
-                            <th class="px-4 py-3">
-                                <x-table-sort-header field="created_at" label="Fecha de registro" route="users.search"
-                                    icon="<i class='fas fa-calendar-alt mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                         </tr>
@@ -132,11 +140,20 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $user->first_name }} {{ $user->last_name }}
+                                    {{ $user->short_name }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $user->email }}
+                                    {{ $user->profile->formatted_identity_card ?? '-' }}
                                 </td>
+
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $user->profile->formatted_phone ?? '-' }}
+                                </td>
+
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $user->email ?? '-' }}
+                                </td>
+
                                 <td class="px-4 py-3 text-sm">
                                     @if ($user->roles->count())
                                         <span
@@ -156,12 +173,9 @@
                                             class="px-2 py-1 font-semibold leading-tight text-white bg-red-600 rounded-full dark:bg-red-700 dark:text-white">Inactivo</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3 text-sm">
-                                    {{ $user->formatted_created_at ?? '-' }}
-                                </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
-                                        @if($user->is_active)
+                                        @if ($user->is_active)
                                             <a href="{{ route('users.permissions.edit', $user) }}"
                                                 class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green"
                                                 aria-label="Asignar Permisos">

@@ -129,7 +129,8 @@
                                 <i class="fas fa-percent text-purple-600 dark:text-purple-400"></i>
                                 <strong>Impuesto:</strong>
                                 <span x-text="showProduct.tax"></span>
-                                <template x-if="showProduct.tax_percentage !== undefined && showProduct.tax_percentage !== null && showProduct.tax_percentage !== ''">
+                                <template
+                                    x-if="showProduct.tax_percentage !== undefined && showProduct.tax_percentage !== null && showProduct.tax_percentage !== ''">
                                     <span>(<span x-text="showProduct.tax_percentage"></span>%)</span>
                                 </template>
                             </div>
@@ -306,7 +307,7 @@
                                         <td class="px-4 py-3 text-sm">{{ $product->brand->name ?? '-' }}</td>
                                         <td class="px-4 py-3 text-sm">{{ $product->unitMeasure->name ?? '-' }}</td>
                                         <td class="px-4 py-3 text-sm">
-                                            {{ $product->entity ? $product->entity->first_name . ' ' . $product->entity->last_name : '-' }}
+                                            {{ $product->entity ? $product->entity->short_name : '-' }}
                                         </td>
                                         <td class="px-4 py-3 text-sm">
                                             @php
@@ -331,7 +332,7 @@
                                         </td>
                                         <td class="px-4 py-3">
                                             <div class="flex items-center space-x-4 text-sm">
-                                                @if(in_array($product->status, ['available', 'out_of_stock']))
+                                                @if (in_array($product->status, ['available', 'out_of_stock']))
                                                     <button type="button"
                                                         @click="
                                                             // Datos para ver
@@ -401,11 +402,11 @@
                                                     <button type="submit"
                                                         class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                                         aria-label="{{ $product->status === 'discontinued' ? 'Rehabilitar' : 'Descontinuar' }}">
-                                                        @if($product->status === 'discontinued')
+                                                        @if ($product->status === 'discontinued')
                                                             <i class="fas fa-undo"></i>
                                                         @else
-                                                            <i class="fas fa-trash"></i>
-                                                        @endif
+                                                            <i class="fas fa-ban"></i>
+                                                        @endif  
                                                     </button>
                                                 </form>
                                             </div>
@@ -414,8 +415,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="12" class="px-4 py-3 text-center text-gray-400 dark:text-gray-500">
-                                            No
-                                            hay productos registrados.</td>
+                                            No hay productos registrados.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -428,3 +428,4 @@
             </div>
         </div>
     @endsection
+ 
