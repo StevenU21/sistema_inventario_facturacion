@@ -29,18 +29,12 @@
                                 <i class="fas fa-hashtag mr-2"></i>ID
                             </th>
                             <th class="px-4 py-3"><i class="fas fa-user mr-2"></i>Nombres</th>
-                            <th class="px-4 py-3"><i class="fas fa-user mr-2"></i>Apellidos</th>
                             <th class="px-4 py-3"><i class="fas fa-id-card mr-2"></i>Cédula</th>
                             <th class="px-4 py-3"><i class="fas fa-phone mr-2"></i>Teléfono</th>
-                            <th class="px-4 py-3"><i class="fas fa-envelope mr-2"></i>Email</th>
-                            <th class="px-4 py-3"><i class="fas fa-id-card mr-2"></i>RUC</th>
                             <th class="px-4 py-3"><i class="fas fa-map-marked-alt mr-2"></i>Municipio</th>
-                            <th class="px-4 py-3"><i class="fas fa-map-marker-alt mr-2"></i>Dirección</th>
-                            <th class="px-4 py-3"><i class="fas fa-align-left mr-2"></i>Descripción</th>
-                            <th class="px-4 py-3"><i class="fas fa-user-check mr-2"></i>Cliente</th>
-                            <th class="px-4 py-3"><i class="fas fa-truck mr-2"></i>Proveedor</th>
-                            <th class="px-4 py-3"><i class="fas fa-check mr-2"></i>Activo</th>
-                            <th class="px-4 py-3"><i class="fas fa-calendar-alt mr-2"></i>Fecha de Registro</th>
+                            <th class="px-4 py-3"><i class="fas fa-user-check mr-2"></i></th>
+                            <th class="px-4 py-3"><i class="fas fa-truck mr-2"></i></th>
+                            <th class="px-4 py-3"><i class="fas fa-check mr-2"></i></th>
                             <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                         </tr>
                     </thead>
@@ -53,15 +47,10 @@
                                         {{ $entity->id }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-sm">{{ $entity->first_name }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $entity->last_name }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $entity->identity_card }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $entity->phone }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $entity->email }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $entity->ruc }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $entity->first_name . ' ' . $entity->last_name }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $entity->formatted_identity_card }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $entity->formatted_phone }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $entity->municipality->name ?? '-' }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $entity->address }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $entity->description }}</td>
                                 <td class="px-4 py-3 text-sm">
                                     @if ($entity->is_client)
                                         <span
@@ -89,7 +78,6 @@
                                             class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:bg-red-700 dark:text-red-100">No</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3 text-sm">{{ $entity->formatted_created_at ?? '-' }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
                                         <a href="{{ route('entities.show', $entity) }}"

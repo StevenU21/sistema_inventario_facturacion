@@ -23,7 +23,6 @@
                             <th class="px-4 py-3">Precio Unitario</th>
                             <th class="px-4 py-3">Total</th>
                             <th class="px-4 py-3">Referencia</th>
-                            <th class="px-4 py-3">Notas</th>
                             <th class="px-4 py-3">Fecha</th>
                         </tr>
                     </thead>
@@ -51,7 +50,6 @@
                                 <td class="px-4 py-3 text-sm">C$ {{ number_format($movement->unit_price, 2) }}</td>
                                 <td class="px-4 py-3 text-sm">C$ {{ number_format($movement->total_price, 2) }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $movement->reference }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $movement->notes }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $movement->formatted_created_at }}</td>
                             </tr>
                         @empty
