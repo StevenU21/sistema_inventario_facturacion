@@ -95,6 +95,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('warehouses', WarehouseController::class);
 
     // Inventories
+    Route::get('inventories/search', [InventoryController::class, 'search'])->name('inventories.search');
+    Route::get('inventories/export', [InventoryController::class, 'export'])->name('inventories.export');
     Route::resource('inventories', InventoryController::class);
 
     // Inventory Movements

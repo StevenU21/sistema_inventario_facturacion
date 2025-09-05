@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InventoryRequest;
 use App\Models\Inventory;
-use App\Classes\InventoryMovementManager;
 use App\Models\Product;
 use App\Models\Warehouse;
+use App\Classes\InventoryMovementManager;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\InventoriesExport;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class InventoryController extends Controller
@@ -17,8 +20,73 @@ class InventoryController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Inventory::class);
-        $inventories = Inventory::with(['product', 'warehouse'])->latest()->paginate(10);
-        return view('admin.inventories.index', compact('inventories'));
+        $perPage = request('per_page', 10);
+        $inventories = Inventory::with(['product', 'warehouse'])->latest()->paginate($perPage);
+        $products = Product::pluck('name', 'id');
+        $warehouses = Warehouse::pluck('name', 'id');
+        return view('admin.inventories.index', compact('inventories', 'products', 'warehouses'));
+    }
+
+    public function search(Request $request)
+    {
+        $this->authorize('viewAny', Inventory::class);
+        $query = Inventory::with(['product', 'warehouse']);
+        if ($request->filled('product_id')) {
+            $query->where('product_id', $request->input('product_id'));
+        }
+        if ($request->filled('warehouse_id')) {
+            $query->where('warehouse_id', $request->input('warehouse_id'));
+        }
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->whereHas('product', function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%");
+            });
+        }
+        $perPage = $request->input('per_page', 10);
+        $inventories = $query->latest()->paginate($perPage)->appends($request->all());
+        $products = Product::pluck('name', 'id');
+        $warehouses = Warehouse::pluck('name', 'id');
+        return view('admin.inventories.index', compact('inventories', 'products', 'warehouses'));
+    }
+
+    public function export(Request $request)
+    {
+        $this->authorize('viewAny', Inventory::class);
+        $productId = $request->input('product_id');
+        $warehouseId = $request->input('warehouse_id');
+        $stock = $request->input('stock');
+        $minStock = $request->input('min_stock');
+        $search = $request->input('search');
+        $sort = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'desc');
+        $query = Inventory::with(['product', 'warehouse']);
+        if (!empty($productId)) {
+            $query->where('product_id', $productId);
+        }
+        if (!empty($warehouseId)) {
+            $query->where('warehouse_id', $warehouseId);
+        }
+        if (!empty($stock)) {
+            $query->where('stock', $stock);
+        }
+        if (!empty($minStock)) {
+            $query->where('min_stock', $minStock);
+        }
+        if (!empty($search)) {
+            $query->whereHas('product', function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%");
+            });
+        }
+        $allowedSorts = ['id', 'product_id', 'warehouse_id', 'stock', 'min_stock', 'purchase_price', 'sale_price', 'created_at'];
+        if (in_array($sort, $allowedSorts)) {
+            $query->orderBy($sort, $direction);
+        } else {
+            $query->latest();
+        }
+        $timestamp = now()->format('Ymd_His');
+        $filename = "inventarios_filtrados_{$timestamp}.xlsx";
+        return Excel::download(new InventoriesExport($query), $filename);
     }
 
     public function create()
