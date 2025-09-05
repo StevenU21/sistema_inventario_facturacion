@@ -14,7 +14,8 @@ class Warehouse extends Model
     protected $fillable = [
         'name',
         'address',
-        'description'
+        'description',
+        'is_active'
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -23,7 +24,8 @@ class Warehouse extends Model
             ->logOnly([
                 'name',
                 'address',
-                'description'
+                'description',
+                'is_active'
             ]);
     }
 
