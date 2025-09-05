@@ -17,7 +17,7 @@ class EntityController extends Controller
     {
         $this->authorize('viewAny', Entity::class);
         $user = auth()->user();
-        $entities = Entity::with('municipality')->visibleFor($user)->latest()->paginate(10);
+        $entities = Entity::with('municipality')->latest()->paginate(10);
         return view('admin.entities.index', compact('entities'));
     }
 
@@ -60,19 +60,19 @@ class EntityController extends Controller
         $entity->update($request->validated());
         return redirect()->route('entities.index')->with('updated', 'Entidad actualizada correctamente.');
     }
-    
+
     public function destroy(Entity $entity)
     {
         $this->authorize('destroy', $entity);
 
-        if ($entity->is_active === true) {
+        if ($entity->is_active) {
             $entity->is_active = false;
             $entity->save();
-            return redirect()->back()->with('deleted', 'Entidad deshabilitada correctamente.');
-        } elseif ($entity->is_inactive === false) {
-            $entity->is_inactive = true;
+            return redirect()->route('entities.index')->with('deleted', 'Entidad deshabilitada correctamente.');
+        } else {
+            $entity->is_active = true;
             $entity->save();
-            return redirect()->back()->with('deleted', 'Entidad habilitada correctamente.');
+            return redirect()->route('entities.index')->with('deleted', 'Entidad habilitada correctamente.');
         }
     }
 }

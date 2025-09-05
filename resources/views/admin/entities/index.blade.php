@@ -80,26 +80,39 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
-                                        <a href="{{ route('entities.show', $entity) }}"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Ver">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('entities.edit', $entity) }}"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('entities.destroy', $entity) }}" method="POST"
-                                            onsubmit="return confirm('¿Estás seguro de eliminar esta entidad?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
+                                        @if ($entity->is_active)
+                                            <a href="{{ route('entities.show', $entity) }}"
                                                 class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                aria-label="Eliminar">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                                aria-label="Ver">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('entities.edit', $entity) }}"
+                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                aria-label="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('entities.destroy', $entity) }}" method="POST"
+                                                onsubmit="return confirm('¿Estás seguro de desactivar esta entidad?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    aria-label="Desactivar">
+                                                    <i class="fas fa-user-slash"></i>
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form action="{{ route('entities.destroy', $entity) }}" method="POST"
+                                                onsubmit="return confirm('¿Estás seguro de activar esta entidad?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    aria-label="Activar">
+                                                    <i class="fas fa-user-check"></i>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
