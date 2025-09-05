@@ -19,10 +19,10 @@
                             <th class="px-4 py-3">Usuario</th>
                             <th class="px-4 py-3">Producto</th>
                             <th class="px-4 py-3">Tipo</th>
+                            <th class="px-4 py-3">Notas</th>
                             <th class="px-4 py-3">Cantidad</th>
                             <th class="px-4 py-3">Precio Unitario</th>
                             <th class="px-4 py-3">Total</th>
-                            <th class="px-4 py-3">Referencia</th>
                             <th class="px-4 py-3">Fecha</th>
                         </tr>
                     </thead>
@@ -46,10 +46,10 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">{{ $movement->movement_type }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $movement->reference }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $movement->quantity }}</td>
                                 <td class="px-4 py-3 text-sm">C$ {{ number_format($movement->unit_price, 2) }}</td>
                                 <td class="px-4 py-3 text-sm">C$ {{ number_format($movement->total_price, 2) }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $movement->reference }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $movement->formatted_created_at }}</td>
                             </tr>
                         @empty

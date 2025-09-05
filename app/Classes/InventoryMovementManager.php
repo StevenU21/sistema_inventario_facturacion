@@ -115,17 +115,28 @@ class InventoryMovementManager
                 $inventory->sale_price = 0;
             $inventory->save();
 
+            // Traducción de reason a español
+            $reasonEs = [
+                'correction' => 'corrección',
+                'physical_count' => 'conteo físico',
+                'damage' => 'daño',
+                'theft' => 'robo',
+                'purchase_price' => 'precio de compra',
+                'sale_price' => 'precio de venta',
+            ];
+            $reasonLabel = $reasonEs[$reason] ?? $reason;
+
             // Generar referencia y notas automáticas según el tipo de ajuste
-            $autoReference = "Ajuste manual ({$reason})";
+            $autoReference = "Ajuste manual ({$reasonLabel})";
             $autoNotes = '';
             if (in_array($reason, ['correction', 'physical_count', 'damage', 'theft']) && $quantity !== null) {
-                $autoReference = "Ajuste de cantidad ({$reason})";
+                $autoReference = "Ajuste de cantidad ({$reasonLabel})";
                 $autoNotes = "Cantidad ajustada en inventario. Nuevo stock: {$inventory->stock}.";
             } else if ($reason === 'purchase_price' && $request->filled('purchase_price')) {
-                $autoReference = "Ajuste de precio de compra ({$reason})";
+                $autoReference = "Ajuste de precio de compra ({$reasonLabel})";
                 $autoNotes = "Precio de compra actualizado a {$inventory->purchase_price}.";
             } else if ($reason === 'sale_price' && $request->filled('sale_price')) {
-                $autoReference = "Ajuste de precio de venta ({$reason})";
+                $autoReference = "Ajuste de precio de venta ({$reasonLabel})";
                 $autoNotes = "Precio de venta actualizado a {$inventory->sale_price}.";
             }
 
