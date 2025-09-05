@@ -127,7 +127,11 @@
                             </div>
                             <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
                                 <i class="fas fa-percent text-purple-600 dark:text-purple-400"></i>
-                                <strong>Impuesto:</strong> <span x-text="showProduct.tax"></span>
+                                <strong>Impuesto:</strong>
+                                <span x-text="showProduct.tax"></span>
+                                <template x-if="showProduct.tax_percentage !== undefined && showProduct.tax_percentage !== null && showProduct.tax_percentage !== ''">
+                                    <span>(<span x-text="showProduct.tax_percentage"></span>%)</span>
+                                </template>
                             </div>
                             <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
                                 <i class="fas fa-money-bill-wave text-purple-600 dark:text-purple-400"></i>
@@ -341,6 +345,7 @@
                                                                 unit: '{{ addslashes($product->unitMeasure->name ?? '-') }}',
                                                                 provider: '{{ addslashes(optional($product->entity)->first_name . ' ' . optional($product->entity)->last_name) }}',
                                                                 tax: '{{ addslashes($product->tax->name ?? '-') }}',
+                                                                tax_percentage: '{{ $product->tax ? $product->tax->percentage : '' }}',
                                                                 status: '{{ addslashes($product->status) }}',
                                                                 formatted_created_at: '{{ addslashes($product->formatted_created_at ?? '-') }}',
                                                                 formatted_updated_at: '{{ addslashes($product->formatted_updated_at ?? '-') }}',
