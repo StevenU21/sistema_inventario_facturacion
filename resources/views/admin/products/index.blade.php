@@ -390,7 +390,7 @@
                                                     </button>
                                                 @endif
                                                 <form action="{{ route('products.destroy', $product) }}" method="POST"
-                                                    onsubmit="return confirm($product->status === 'discontinued' ? '¿Seguro de rehabilitar este producto?' : '¿Seguro de descontinuar este producto?');">
+                                                    onsubmit="return confirm('{{ $product->status === 'discontinued' ? '¿Seguro de rehabilitar este producto?' : '¿Seguro de descontinuar este producto?' }}\n\n¿Está seguro que desea realizar esta acción?');">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
