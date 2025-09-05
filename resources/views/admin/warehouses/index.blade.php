@@ -18,13 +18,13 @@
             <div class="w-full overflow-x-auto">
                 <table class="w-full whitespace-no-wrap">
                     <thead>
-                        <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                        <tr
+                            class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                             <th class="px-4 py-3"><i class="fas fa-hashtag mr-2"></i>ID</th>
                             <th class="px-4 py-3"><i class="fas fa-warehouse mr-2"></i>Nombre</th>
                             <th class="px-4 py-3"><i class="fas fa-map-marker-alt mr-2"></i>Dirección</th>
                             <th class="px-4 py-3"><i class="fas fa-align-left mr-2"></i>Descripción</th>
-                            <th class="px-4 py-3"><i class="fas fa-calendar-alt mr-2"></i>Creado</th>
-                            <th class="px-4 py-3"><i class="fas fa-calendar-alt mr-2"></i>Actualizado</th>
+                            <th class="px-4 py-3"><i class="fas fa-align-left mr-2"></i>Estado</th>
                             <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                         </tr>
                     </thead>
@@ -32,15 +32,26 @@
                         @forelse($warehouses as $warehouse)
                             <tr class="text-gray-700 dark:text-gray-400">
                                 <td class="px-4 py-3 text-xs">
-                                    <span class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
+                                    <span
+                                        class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
                                         {{ $warehouse->id }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-sm">{{ $warehouse->name }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $warehouse->address }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $warehouse->description }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $warehouse->formatted_created_at ?? '-' }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $warehouse->formatted_updated_at ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm">
+                                    @if ($warehouse->is_active)
+                                        <span
+                                            class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
+                                            Activo
+                                        </span>
+                                    @else
+                                        <span
+                                            class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:bg-red-700 dark:text-red-100">
+                                            Inactivo
+                                        </span>
+                                    @endif
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
                                         <a href="{{ route('warehouses.show', $warehouse) }}"
@@ -53,7 +64,8 @@
                                             aria-label="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ route('warehouses.destroy', $warehouse) }}" method="POST" onsubmit="return confirm('¿Seguro de eliminar este almacén?');">
+                                        <form action="{{ route('warehouses.destroy', $warehouse) }}" method="POST"
+                                            onsubmit="return confirm('¿Seguro de eliminar este almacén?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -67,7 +79,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-4 py-3 text-center text-gray-400 dark:text-gray-500">No hay almacenes registrados.</td>
+                                <td colspan="7" class="px-4 py-3 text-center text-gray-400 dark:text-gray-500">No hay
+                                    almacenes registrados.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -79,4 +92,3 @@
         </div>
     </div>
 @endsection
-

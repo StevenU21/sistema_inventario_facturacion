@@ -96,7 +96,7 @@ class InventoryController extends Controller
             }
 
             \DB::commit();
-            return redirect()->route('inventories.index')->with('success', 'Inventario actualizado correctamente.');
+            return redirect()->route('inventories.index')->with('updated', 'Inventario actualizado correctamente.');
         } catch (\Exception $e) {
             \DB::rollBack();
             return back()->withErrors(['error' => 'Error al actualizar el inventario: ' . $e->getMessage()]);
@@ -107,6 +107,6 @@ class InventoryController extends Controller
     {
         $this->authorize('destroy', $inventory);
         $inventory->delete();
-        return redirect()->route('inventories.index')->with('success', 'Inventario eliminado correctamente.');
+        return redirect()->route('inventories.index')->with('deleted', 'Inventario eliminado correctamente.');
     }
 }

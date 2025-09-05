@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->string('name');
             $table->string('address')->nullable();
             $table->text('description')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

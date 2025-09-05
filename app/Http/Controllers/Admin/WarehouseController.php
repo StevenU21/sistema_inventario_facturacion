@@ -53,7 +53,8 @@ class WarehouseController extends Controller
     public function destroy(Warehouse $warehouse)
     {
         $this->authorize('destroy', $warehouse);
-        $warehouse->delete();
-        return redirect()->route('warehouses.index')->with('deleted', 'Warehouse eliminado correctamente');
+        $warehouse->is_active = false;
+        $warehouse->save();
+        return redirect()->route('warehouses.index')->with('deleted', 'Warehouse desactivado correctamente');
     }
 }

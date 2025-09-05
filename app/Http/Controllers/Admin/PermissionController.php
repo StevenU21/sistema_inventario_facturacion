@@ -58,6 +58,6 @@ class PermissionController extends Controller
         if (!empty($rolePermissions)) {
             $message .= '. Los siguientes permisos son heredados de roles y no pueden ser revocados: ' . implode(', ', $rolePermissions);
         }
-        return back()->with('success', $message);
+        return back()->with('updated', $message);
     }
 }

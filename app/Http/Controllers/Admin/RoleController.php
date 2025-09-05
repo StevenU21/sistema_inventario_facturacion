@@ -71,13 +71,13 @@ class RoleController extends Controller
         $permissionIds = $request->input('permissions');
         $permissionNames = Permission::whereIn('id', $permissionIds)->pluck('name')->toArray();
         $role->syncPermissions($permissionNames);
-        return redirect()->route('roles.index')->with('success', 'Rol actualizado exitosamente.');
+        return redirect()->route('roles.index')->with('updated', 'Rol actualizado exitosamente.');
     }
 
     public function destroy(Role $role)
     {
         $this->authorize('destroy', $role);
         $role->delete();
-        return redirect()->route('roles.index')->with('success', 'Rol eliminado exitosamente.');
+        return redirect()->route('roles.index')->with('deleted', 'Rol eliminado exitosamente.');
     }
 }

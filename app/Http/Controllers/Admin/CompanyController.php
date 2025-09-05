@@ -40,7 +40,7 @@ class CompanyController extends Controller
                 $company->save();
             }
         }
-        return redirect()->route('companies.index')->with('success', 'Compañía creada correctamente.');
+        return redirect()->route('companies.index')->with('success', 'Empresa creada correctamente.');
     }
 
     public function show(Company $company)
@@ -64,6 +64,6 @@ class CompanyController extends Controller
             $company->logo = $logoPath;
             $company->save();
         }
-        return redirect()->route('companies.index')->with('success', 'Compañía actualizada correctamente.');
+        return redirect()->route('companies.index')->with('updated', 'Compañía actualizada correctamente.');
     }
 }

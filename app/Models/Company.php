@@ -23,7 +23,7 @@ class Company extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'ruc', 'logo', 'description', 'address', 'phone', 'email']);
+            ->logOnly(['name', 'ruc', 'description', 'address', 'phone', 'email']);
     }
 
     public function getFormattedCreatedAtAttribute(): ?string

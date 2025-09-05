@@ -60,13 +60,13 @@ class TaxController extends Controller
     public function update(TaxRequest $request, Tax $tax)
     {
         $tax->update($request->validated());
-        return redirect()->route('taxes.index')->with('success', 'Impuesto actualizado correctamente.');
+        return redirect()->route('taxes.index')->with('updated', 'Impuesto actualizado correctamente.');
     }
 
     public function destroy(Tax $tax)
     {
         $this->authorize('destroy', $tax);
         $tax->delete();
-        return redirect()->route('taxes.index')->with('success', 'Impuesto eliminado correctamente.');
+        return redirect()->route('taxes.index')->with('deleted', 'Impuesto eliminado correctamente.');
     }
 }

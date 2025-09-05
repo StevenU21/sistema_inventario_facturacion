@@ -15,10 +15,10 @@ class EntityController extends Controller
 
     public function index()
     {
-    $this->authorize('viewAny', Entity::class);
-    $user = auth()->user();
-    $entities = Entity::with('municipality')->visibleFor($user)->latest()->paginate(10);
-    return view('admin.entities.index', compact('entities'));
+        $this->authorize('viewAny', Entity::class);
+        $user = auth()->user();
+        $entities = Entity::with('municipality')->visibleFor($user)->latest()->paginate(10);
+        return view('admin.entities.index', compact('entities'));
     }
 
     public function create()
@@ -58,14 +58,21 @@ class EntityController extends Controller
     {
         $this->authorize('update', $entity);
         $entity->update($request->validated());
-        return redirect()->route('entities.index')->with('success', 'Entidad actualizada correctamente.');
+        return redirect()->route('entities.index')->with('updated', 'Entidad actualizada correctamente.');
     }
-
+    
     public function destroy(Entity $entity)
     {
         $this->authorize('destroy', $entity);
-        $entity->is_active = false;
-        $entity->save();
-        return redirect()->route('entities.index')->with('success', 'Entidad desactivada correctamente.');
+
+        if ($entity->is_active === true) {
+            $entity->is_active = false;
+            $entity->save();
+            return redirect()->back()->with('deleted', 'Entidad deshabilitada correctamente.');
+        } elseif ($entity->is_inactive === false) {
+            $entity->is_inactive = true;
+            $entity->save();
+            return redirect()->back()->with('deleted', 'Entidad habilitada correctamente.');
+        }
     }
 }

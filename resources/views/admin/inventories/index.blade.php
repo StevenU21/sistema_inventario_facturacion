@@ -27,8 +27,6 @@
                             <th class="px-4 py-3"><i class="fas fa-exclamation-triangle mr-2"></i>Stock Mínimo</th>
                             <th class="px-4 py-3"><i class="fas fa-money-bill-wave mr-2"></i>Precio Compra</th>
                             <th class="px-4 py-3"><i class="fas fa-dollar-sign mr-2"></i>Precio Venta</th>
-                            <th class="px-4 py-3"><i class="fas fa-calendar-alt mr-2"></i>Creado</th>
-                            <th class="px-4 py-3"><i class="fas fa-calendar-alt mr-2"></i>Actualizado</th>
                             <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                         </tr>
                     </thead>
@@ -47,8 +45,6 @@
                                 <td class="px-4 py-3 text-sm">{{ $inventory->min_stock }}</td>
                                 <td class="px-4 py-3 text-sm">C$ {{ number_format($inventory->purchase_price, 2) }}</td>
                                 <td class="px-4 py-3 text-sm">C$ {{ number_format($inventory->sale_price, 2) }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $inventory->formatted_created_at ?? '-' }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $inventory->formatted_updated_at ?? '-' }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
                                         <a href="{{ route('inventories.edit', $inventory) }}"
