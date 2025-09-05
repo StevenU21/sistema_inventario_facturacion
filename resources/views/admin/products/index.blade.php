@@ -78,55 +78,76 @@
             </x-modal>
 
             <x-show-modal :title="'Detalle de Producto'" :description="'Consulta los datos del producto seleccionado.'">
-                <div class="mt-4 space-y-2">
-                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                        <i class="fas fa-hashtag text-purple-600 dark:text-purple-400"></i>
-                        <strong>ID:</strong> <span x-text="editProduct.id"></span>
-                    </p>
-                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                        <i class="fas fa-box text-purple-600 dark:text-purple-400"></i>
-                        <strong>Nombre:</strong> <span x-text="editProduct.name"></span>
-                    </p>
-                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                        <i class="fas fa-align-left text-purple-600 dark:text-purple-400"></i>
-                        <strong>Descripción:</strong> <span x-text="editProduct.description"></span>
-                    </p>
-                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                        <i class="fas fa-barcode text-purple-600 dark:text-purple-400"></i>
-                        <strong>Código:</strong> <span x-text="editProduct.barcode"></span>
-                    </p>
-                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                        <i class="fas fa-list-alt text-purple-600 dark:text-purple-400"></i>
-                        <strong>Categoría:</strong> <span x-text="showProduct.category"></span>
-                    </p>
-                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                        <i class="fas fa-tags text-purple-600 dark:text-purple-400"></i>
-                        <strong>Marca:</strong> <span x-text="showProduct.brand"></span>
-                    </p>
-                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                        <i class="fas fa-balance-scale text-purple-600 dark:text-purple-400"></i>
-                        <strong>Medida:</strong> <span x-text="showProduct.unit"></span>
-                    </p>
-                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                        <i class="fas fa-user-tie text-purple-600 dark:text-purple-400"></i>
-                        <strong>Proveedor:</strong> <span x-text="showProduct.provider"></span>
-                    </p>
-                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                        <i class="fas fa-percent text-purple-600 dark:text-purple-400"></i>
-                        <strong>Impuesto:</strong> <span x-text="showProduct.tax"></span>
-                    </p>
-                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                        <i class="fas fa-money-bill-wave text-purple-600 dark:text-purple-400"></i>
-                        <strong>Estado:</strong> <span x-text="showProduct.status"></span>
-                    </p>
-                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                        <i class="fas fa-calendar-alt text-purple-600 dark:text-purple-400"></i>
-                        <strong>Registro:</strong> <span x-text="showProduct.formatted_created_at"></span>
-                    </p>
-                    <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                        <i class="fas fa-clock text-purple-600 dark:text-purple-400"></i>
-                        <strong>Actualización:</strong> <span x-text="showProduct.formatted_updated_at"></span>
-                    </p>
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Imagen del producto -->
+                    <div class="flex justify-center items-start">
+                        <div class="rounded-xl overflow-hidden shadow-md border bg-white dark:bg-gray-800 flex items-center justify-center"
+                            style="width:200px; height:200px;">
+                            <img :src="showProduct.image_url ? showProduct.image_url : '/img/image03.png'"
+                                alt="Imagen del producto" class="object-contain mx-auto"
+                                style="width:200px; height:auto; max-height:200px;">
+                        </div>
+                    </div>
+
+                    <!-- Información principal -->
+                    <div class="md:col-span-2 space-y-4">
+                        <div class="border-b pb-3">
+                            <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                <i class="fas fa-box text-purple-600 dark:text-purple-400"></i>
+                                <span x-text="editProduct.name"></span>
+                            </h2>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm" x-text="editProduct.description"></p>
+                        </div>
+
+                        <!-- Datos en 2 columnas -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                                <i class="fas fa-hashtag text-purple-600 dark:text-purple-400"></i>
+                                <strong>ID:</strong> <span x-text="editProduct.id"></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                                <i class="fas fa-barcode text-purple-600 dark:text-purple-400"></i>
+                                <strong>Código:</strong> <span x-text="editProduct.barcode"></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                                <i class="fas fa-list-alt text-purple-600 dark:text-purple-400"></i>
+                                <strong>Categoría:</strong> <span x-text="showProduct.category"></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                                <i class="fas fa-tags text-purple-600 dark:text-purple-400"></i>
+                                <strong>Marca:</strong> <span x-text="showProduct.brand"></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                                <i class="fas fa-balance-scale text-purple-600 dark:text-purple-400"></i>
+                                <strong>Medida:</strong> <span x-text="showProduct.unit"></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                                <i class="fas fa-user-tie text-purple-600 dark:text-purple-400"></i>
+                                <strong>Proveedor:</strong> <span x-text="showProduct.provider"></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                                <i class="fas fa-percent text-purple-600 dark:text-purple-400"></i>
+                                <strong>Impuesto:</strong> <span x-text="showProduct.tax"></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                                <i class="fas fa-money-bill-wave text-purple-600 dark:text-purple-400"></i>
+                                <strong>Estado:</strong> <span x-text="showProduct.status"></span>
+                            </div>
+                        </div>
+
+                        <!-- Fechas -->
+                        <div
+                            class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t pt-3 text-xs text-gray-500 dark:text-gray-400">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-calendar-alt text-purple-500"></i>
+                                <strong>Registro:</strong> <span x-text="showProduct.formatted_created_at"></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-clock text-purple-500"></i>
+                                <strong>Actualización:</strong> <span x-text="showProduct.formatted_updated_at"></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </x-show-modal>
 
@@ -272,7 +293,7 @@
                                                 $statusLabels = [
                                                     'available' => 'Disponible',
                                                     'discontinued' => 'Descontinuado',
-                                                    'out_of_stock' => 'Sin stock'
+                                                    'out_of_stock' => 'Sin stock',
                                                 ];
                                                 $color = $statusColors[$product->status] ?? 'bg-gray-400';
                                                 $label = $statusLabels[$product->status] ?? $product->status;
@@ -299,7 +320,8 @@
                                                             tax: '{{ addslashes($product->tax->name ?? '-') }}',
                                                             status: '{{ addslashes($product->status) }}',
                                                             formatted_created_at: '{{ addslashes($product->formatted_created_at ?? '-') }}',
-                                                            formatted_updated_at: '{{ addslashes($product->formatted_updated_at ?? '-') }}'
+                                                            formatted_updated_at: '{{ addslashes($product->formatted_updated_at ?? '-') }}',
+                                                            image_url: '{{ addslashes($product->image_url) }}'
                                                         };
                                                         // También setear editProduct para reutilizar campos visibles
                                                         editProduct = {
