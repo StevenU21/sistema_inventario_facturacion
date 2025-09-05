@@ -207,10 +207,14 @@ class ProductController extends Controller
     {
         $this->authorize("destroy", $product);
 
-        if ($product->status !== 'discontinued') {
+        if ($product->status === 'discontinued') {
+            $product->status = 'available';
+            $product->save();
+            return redirect()->route('products.index')->with('success', 'Producto rehabilitado correctamente.');
+        } else {
             $product->status = 'discontinued';
             $product->save();
+            return redirect()->route('products.index')->with('success', 'Producto descontinuado correctamente.');
         }
-        return redirect()->route('products.index')->with('success', 'Producto descontinuado correctamente.');
     }
 }
