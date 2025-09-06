@@ -31,8 +31,8 @@ class WarehouseController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%")
-                  ->orWhere('address', 'like', "%$search%")
-                  ->orWhere('description', 'like', "%$search%");
+                    ->orWhere('address', 'like', "%$search%")
+                    ->orWhere('description', 'like', "%$search%");
             });
         }
         // Filtro estado
@@ -64,8 +64,8 @@ class WarehouseController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%")
-                  ->orWhere('address', 'like', "%$search%")
-                  ->orWhere('description', 'like', "%$search%");
+                    ->orWhere('address', 'like', "%$search%")
+                    ->orWhere('description', 'like', "%$search%");
             });
         }
         if ($request->filled('is_active')) {
@@ -122,8 +122,15 @@ class WarehouseController extends Controller
     public function destroy(Warehouse $warehouse)
     {
         $this->authorize('destroy', $warehouse);
-        $warehouse->is_active = false;
-        $warehouse->save();
-        return redirect()->route('warehouses.index')->with('deleted', 'Warehouse desactivado correctamente');
+        if ($warehouse->is_active) {
+            $warehouse->is_active = false;
+            $warehouse->save();
+            return redirect()->route('warehouses.index')->with('updated', 'Almacén desactivado correctamente');
+        } else {
+            $this->authorize('update', $warehouse);
+            $warehouse->is_active = true;
+            $warehouse->save();
+            return redirect()->route('warehouses.index')->with('deleted', 'Almacén reactivado correctamente.');
+        }
     }
 }

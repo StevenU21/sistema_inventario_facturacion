@@ -140,34 +140,49 @@
                                     @endif
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
-                                        @can('read warehouses')
-                                            <button type="button"
-                                                @click="showWarehouse = { id: {{ $warehouse->id }}, name: '{{ addslashes($warehouse->name) }}', address: '{{ addslashes($warehouse->address) }}', description: '{{ addslashes($warehouse->description) }}', is_active: {{ $warehouse->is_active ? 'true' : 'false' }}, formatted_created_at: '{{ $warehouse->formatted_created_at }}', formatted_updated_at: '{{ $warehouse->formatted_updated_at }}' }; isShowModalOpen = true;"
-                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-blue-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                aria-label="Ver Modal">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                        @endcan
-                                        @can('update warehouses')
-                                            <button type="button"
-                                                @click="editWarehouse = { id: {{ $warehouse->id }}, name: '{{ addslashes($warehouse->name) }}', address: '{{ addslashes($warehouse->address) }}', description: '{{ addslashes($warehouse->description) }}', is_active: {{ $warehouse->is_active ? 'true' : 'false' }} }; editAction = '{{ route('warehouses.update', $warehouse) }}'; isEditModalOpen = true;"
-                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                aria-label="Editar Modal">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        @endcan
-                                        @can('destroy warehouses')
-                                            <form action="{{ route('warehouses.destroy', $warehouse) }}" method="POST"
-                                                onsubmit="return confirm('¿Seguro de eliminar este almacén?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                    aria-label="Eliminar">
-                                                    <i class="fas fa-trash"></i>
+                                        @if($warehouse->is_active)
+                                            @can('read warehouses')
+                                                <button type="button"
+                                                    @click="showWarehouse = { id: {{ $warehouse->id }}, name: '{{ addslashes($warehouse->name) }}', address: '{{ addslashes($warehouse->address) }}', description: '{{ addslashes($warehouse->description) }}', is_active: {{ $warehouse->is_active ? 'true' : 'false' }}, formatted_created_at: '{{ $warehouse->formatted_created_at }}', formatted_updated_at: '{{ $warehouse->formatted_updated_at }}' }; isShowModalOpen = true;"
+                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-blue-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    aria-label="Ver Modal">
+                                                    <i class="fas fa-eye"></i>
                                                 </button>
-                                            </form>
-                                        @endcan
+                                            @endcan
+                                            @can('update warehouses')
+                                                <button type="button"
+                                                    @click="editWarehouse = { id: {{ $warehouse->id }}, name: '{{ addslashes($warehouse->name) }}', address: '{{ addslashes($warehouse->address) }}', description: '{{ addslashes($warehouse->description) }}', is_active: {{ $warehouse->is_active ? 'true' : 'false' }} }; editAction = '{{ route('warehouses.update', $warehouse) }}'; isEditModalOpen = true;"
+                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    aria-label="Editar Modal">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            @endcan
+                                            @can('destroy warehouses')
+                                                <form action="{{ route('warehouses.destroy', $warehouse) }}" method="POST"
+                                                    onsubmit="return confirm('¿Seguro de desactivar este almacén?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-red-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-red"
+                                                        aria-label="Desactivar">
+                                                        <i class="fas fa-toggle-off"></i>
+                                                    </button>
+                                                </form>
+                                            @endcan
+                                        @else
+                                            @can('destroy warehouses')
+                                                <form action="{{ route('warehouses.destroy', $warehouse) }}" method="POST"
+                                                    onsubmit="return confirm('¿Seguro de activar este almacén?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-green"
+                                                        aria-label="Activar">
+                                                        <i class="fas fa-toggle-on"></i>
+                                                    </button>
+                                                </form>
+                                            @endcan
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
