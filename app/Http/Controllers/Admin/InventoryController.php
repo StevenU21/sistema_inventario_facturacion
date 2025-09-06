@@ -31,6 +31,7 @@ class InventoryController extends Controller
     {
         $this->authorize('viewAny', Inventory::class);
         $query = Inventory::with(['product', 'warehouse']);
+        // Filtros
         if ($request->filled('product_id')) {
             $query->where('product_id', $request->input('product_id'));
         }
@@ -43,8 +44,20 @@ class InventoryController extends Controller
                 $q->where('name', 'like', "%$search%");
             });
         }
+        // Ordenamiento desde los <th>
+        $sort = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'desc');
+        $allowedSorts = [
+            'id', 'product_id', 'warehouse_id', 'stock', 'min_stock', 'purchase_price', 'sale_price', 'created_at', 'updated_at'
+        ];
+        if (in_array($sort, $allowedSorts, true)) {
+            $query->orderBy($sort, $direction);
+        } else {
+            $query->latest();
+        }
+
         $perPage = $request->input('per_page', 10);
-        $inventories = $query->latest()->paginate($perPage)->appends($request->all());
+        $inventories = $query->paginate($perPage)->appends($request->all());
         $products = Product::pluck('name', 'id');
         $warehouses = Warehouse::pluck('name', 'id');
         return view('admin.inventories.index', compact('inventories', 'products', 'warehouses'));
