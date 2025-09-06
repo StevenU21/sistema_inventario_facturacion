@@ -14,6 +14,6 @@
             </a>
         </div>
 
-    @include('admin.entities.partials.show_card')
+        @include('admin.entities.partials.show_card')
     </div>
 @endsection
