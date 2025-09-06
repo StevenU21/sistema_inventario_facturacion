@@ -2,29 +2,119 @@
 @section('title', 'Almacenes')
 
 @section('content')
-    <div class="container grid px-6 mx-auto">
+    <div class="container grid px-6 mx-auto" x-data="{
+        isModalOpen: false,
+        isEditModalOpen: false,
+        isShowModalOpen: false,
+        editId: null,
+        editAction: '',
+        showWarehouse: { id: '', name: '', address: '', description: '', is_active: true, formatted_created_at: '', formatted_updated_at: '' },
+        editWarehouse: { id: '', name: '', address: '', description: '', is_active: true },
+        closeModal() { this.isModalOpen = false },
+        closeEditModal() { this.isEditModalOpen = false },
+        closeShowModal() { this.isShowModalOpen = false }
+    }">
         <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
             Almacenes
         </h2>
         <x-session-message />
-        <div class="flex justify-end mb-4">
-            <a href="{{ route('warehouses.create') }}"
-                class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                <span>Nuevo Almacén</span>
-                <i class="fas fa-plus ml-2"></i>
-            </a>
+
+        <!-- Filtros, búsqueda -->
+        <div class="flex flex-wrap gap-x-8 gap-y-4 items-end justify-between mb-4">
+            <form method="GET" action="{{ route('warehouses.search') }}"
+                class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
+                <div class="flex flex-col p-1">
+                    <select name="per_page" id="per_page"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-16 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                    </select>
+                </div>
+                <div class="flex flex-col p-1">
+                    <input type="text" name="search" id="search" value="{{ request('search') }}"
+                        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
+                        placeholder="Nombre, dirección o descripción...">
+                </div>
+                <div class="flex flex-col p-1">
+                    <label class="invisible block text-sm font-medium">.</label>
+                    <button type="submit"
+                        class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
+                        Buscar
+                    </button>
+                </div>
+                <div class="flex flex-col p-1">
+                    <select name="is_active" id="is_active"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="">Todos los estados</option>
+                        <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Activos</option>
+                        <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Inactivos</option>
+                    </select>
+                </div>
+            </form>
+            <div class="flex flex-col p-1">
+                <label class="invisible block text-sm font-medium">.</label>
+                @can('create warehouses')
+                    <button @click="isModalOpen = true" type="button"
+                        class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600">
+                        <span>Nuevo Almacén</span>
+                        <i class="fas fa-plus ml-2"></i>
+                    </button>
+                @endcan
+            </div>
+            <div class="flex flex-col p-1">
+                <label class="invisible block text-sm font-medium">.</label>
+                <form method="GET" action="{{ route('warehouses.export') }}">
+                    <input type="hidden" name="per_page" value="{{ request('per_page') }}">
+                    <input type="hidden" name="is_active" value="{{ request('is_active') }}">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="sort" value="{{ request('sort', 'id') }}">
+                    <input type="hidden" name="direction" value="{{ request('direction', 'desc') }}">
+                    <button type="submit"
+                        class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
+                        <span>Exportar Excel</span>
+                        <i class="fas fa-file-excel ml-2"></i>
+                    </button>
+                </form>
+            </div>
         </div>
+
+        <!-- Edit Modal and Create Modal -->
+        <x-edit-modal :title="'Editar Almacén'" :description="'Modifica los datos del almacén seleccionado.'">
+            <form :action="editAction" method="POST">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="id" :value="editWarehouse.id">
+                @include('admin.warehouses.form', ['alpine' => true])
+            </form>
+        </x-edit-modal>
+
+        <x-modal :title="'Crear Almacén'" :description="'Agrega un nuevo almacén al sistema.'">
+            <form action="{{ route('warehouses.store') }}" method="POST">
+                @csrf
+                @include('admin.warehouses.form', ['alpine' => false])
+            </form>
+        </x-modal>
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
                 <table class="w-full whitespace-no-wrap">
                     <thead>
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3"><i class="fas fa-hashtag mr-2"></i>ID</th>
-                            <th class="px-4 py-3"><i class="fas fa-warehouse mr-2"></i>Nombre</th>
-                            <th class="px-4 py-3"><i class="fas fa-map-marker-alt mr-2"></i>Dirección</th>
-                            <th class="px-4 py-3"><i class="fas fa-align-left mr-2"></i>Descripción</th>
-                            <th class="px-4 py-3"><i class="fas fa-align-left mr-2"></i>Estado</th>
+                            <th class="px-4 py-3"><x-table-sort-header field="id" label="ID"
+                                    route="warehouses.search" icon="<i class='fas fa-hashtag mr-2'></i>" /></th>
+                            <th class="px-4 py-3"><x-table-sort-header field="name" label="Nombre"
+                                    route="warehouses.search" icon="<i class='fas fa-warehouse mr-2'></i>" /></th>
+                            <th class="px-4 py-3"><x-table-sort-header field="address" label="Dirección"
+                                    route="warehouses.search" icon="<i class='fas fa-map-marker-alt mr-2'></i>" /></th>
+                            <th class="px-4 py-3"><x-table-sort-header field="description" label="Descripción"
+                                    route="warehouses.search" icon="<i class='fas fa-align-left mr-2'></i>" /></th>
+                            <th class="px-4 py-3"><x-table-sort-header field="is_active" label="Estado"
+                                    route="warehouses.search" icon="<i class='fas fa-toggle-on mr-2'></i>" /></th>
                             <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                         </tr>
                     </thead>
@@ -54,26 +144,34 @@
                                     @endif
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
-                                        <a href="{{ route('warehouses.show', $warehouse) }}"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Ver">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('warehouses.edit', $warehouse) }}"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('warehouses.destroy', $warehouse) }}" method="POST"
-                                            onsubmit="return confirm('¿Seguro de eliminar este almacén?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                aria-label="Eliminar">
-                                                <i class="fas fa-trash"></i>
+                                        @can('read warehouses')
+                                            <button type="button"
+                                                @click="showWarehouse = { id: {{ $warehouse->id }}, name: '{{ addslashes($warehouse->name) }}', address: '{{ addslashes($warehouse->address) }}', description: '{{ addslashes($warehouse->description) }}', is_active: {{ $warehouse->is_active ? 'true' : 'false' }}, formatted_created_at: '{{ $warehouse->formatted_created_at }}', formatted_updated_at: '{{ $warehouse->formatted_updated_at }}' }; isShowModalOpen = true;"
+                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-blue-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                aria-label="Ver Modal">
+                                                <i class="fas fa-eye"></i>
                                             </button>
-                                        </form>
+                                        @endcan
+                                        @can('update warehouses')
+                                            <button type="button"
+                                                @click="editWarehouse = { id: {{ $warehouse->id }}, name: '{{ addslashes($warehouse->name) }}', address: '{{ addslashes($warehouse->address) }}', description: '{{ addslashes($warehouse->description) }}', is_active: {{ $warehouse->is_active ? 'true' : 'false' }} }; editAction = '{{ route('warehouses.update', $warehouse) }}'; isEditModalOpen = true;"
+                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                aria-label="Editar Modal">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        @endcan
+                                        @can('destroy warehouses')
+                                            <form action="{{ route('warehouses.destroy', $warehouse) }}" method="POST"
+                                                onsubmit="return confirm('¿Seguro de eliminar este almacén?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    aria-label="Eliminar">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>
@@ -90,5 +188,29 @@
                 {{ $warehouses->links() }}
             </div>
         </div>
+
+        <!-- Show Modal -->
+        <x-show-modal :title="'Detalle de Almacén'" :description="'Consulta los datos del almacén seleccionado.'">
+            <div class="mt-4 space-y-2 text-sm text-gray-700 dark:text-gray-200">
+                <p class="flex items-center gap-2"><i class="fas fa-hashtag text-purple-600"></i><strong>ID:</strong>
+                    <span x-text="showWarehouse.id"></span></p>
+                <p class="flex items-center gap-2"><i
+                        class="fas fa-warehouse text-purple-600"></i><strong>Nombre:</strong> <span
+                        x-text="showWarehouse.name"></span></p>
+                <p class="flex items-center gap-2"><i
+                        class="fas fa-map-marker-alt text-purple-600"></i><strong>Dirección:</strong> <span
+                        x-text="showWarehouse.address"></span></p>
+                <p class="flex items-center gap-2"><i
+                        class="fas fa-align-left text-purple-600"></i><strong>Descripción:</strong> <span
+                        x-text="showWarehouse.description"></span></p>
+                <p class="flex items-center gap-2"><i
+                        class="fas fa-toggle-on text-purple-600"></i><strong>Estado:</strong> <span
+                        x-text="showWarehouse.is_active ? 'Activo' : 'Inactivo'"></span></p>
+                <p class="flex items-center gap-2"><i class="fas fa-calendar-alt text-purple-600"></i><strong>Fecha de
+                        Registro:</strong> <span x-text="showWarehouse.formatted_created_at"></span></p>
+                <p class="flex items-center gap-2"><i class="fas fa-clock text-purple-600"></i><strong>Fecha de
+                        Actualización:</strong> <span x-text="showWarehouse.formatted_updated_at"></span></p>
+            </div>
+        </x-show-modal>
     </div>
 @endsection
