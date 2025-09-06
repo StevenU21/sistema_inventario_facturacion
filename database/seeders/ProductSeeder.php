@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Inventory;
 use App\Models\InventoryMovement;
 use App\Models\Product;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder

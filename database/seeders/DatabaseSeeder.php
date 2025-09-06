@@ -2,18 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Brand;
-use App\Models\Category;
-use App\Models\Company;
-use App\Models\Department;
-use App\Models\Entity;
-use App\Models\Municipality;
-use App\Models\PaymentMethod;
-use App\Models\Product;
-use App\Models\ProductStatus;
 use App\Models\Profile;
-use App\Models\Tax;
-use App\Models\UnitMeasure;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 

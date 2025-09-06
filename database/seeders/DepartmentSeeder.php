@@ -202,6 +202,18 @@ class DepartmentSeeder extends Seeder
                 'Bocana de Paiwas',
                 'El Ayote'
             ],
+            'Internacional' => [
+                'USA - Miami',
+                'USA - Los Angeles',
+                'USA - New York',
+                'USA - Chicago',
+                'USA - Houston',
+                'USA - San Francisco',
+                'USA - Seattle',
+                'USA - Washington D.C.',
+                'USA - Boston',
+                'USA - Dallas',
+            ]
         ];
 
         foreach ($departmentsWithMunicipalities as $departmentName => $municipalities) {
