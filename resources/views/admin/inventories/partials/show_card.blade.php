@@ -3,15 +3,15 @@
         <!-- Header -->
         <div class="flex items-start gap-2">
             <div class="flex-shrink-0">
-                @if ($inventory->product && $inventory->product->image_url)
-                    <img src="{{ $inventory->product->image_url }}" alt="Imagen del producto"
-                        class="w-12 h-12 object-cover rounded" />
-                @else
-                    <div
-                        class="w-16 h-16 rounded bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400">
-                        <i class="fas fa-image"></i>
-                    </div>
-                @endif
+                <div
+                    class="w-[100px] h-[80px] rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-center overflow-hidden p-0">
+                    @if ($inventory->product && $inventory->product->image_url)
+                        <img src="{{ $inventory->product->image_url }}" alt="Imagen del producto"
+                            style="width:260px!important;height:180px!important;object-fit:contain;display:block;margin:auto;" />
+                    @else
+                        <i class="fas fa-image text-gray-400 text-xl mx-auto my-auto"></i>
+                    @endif
+                </div>
             </div>
             <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-1">
