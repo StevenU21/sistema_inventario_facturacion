@@ -13,7 +13,7 @@ class RolesAndPermissionSeeder extends Seeder
         'users' => [],
         'permissions' => ['read'],
         'audits' => ['read'],
-        'brands' => ['read'],
+        'brands' => [],
         'categories' => [],
         'backups' => ['read'],
         'companies' => ['read', 'create', 'update'],
@@ -32,9 +32,10 @@ class RolesAndPermissionSeeder extends Seeder
 
     const SPECIAL_PERMISSIONS = [
         'permissions' => ['assign permissions', 'revoke permissions'],
-        'users' => ['reactivate users'],
+        'products' => ['export products'],
+        'users' => ['reactivate users', 'export users'],
         'audits' => ['export audits'],
-        'entities' => ['read suppliers', 'create suppliers', 'update suppliers', 'read clients', 'create clients', 'update clients'],
+        'entities' => ['read suppliers', 'create suppliers', 'update suppliers', 'read clients', 'create clients', 'update clients', 'export clients', 'export suppliers'],
         'inventory_movements' => ['export inventory_movements']
     ];
 
