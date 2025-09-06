@@ -7,14 +7,52 @@
             Inventarios
         </h2>
         <x-session-message />
-        <div class="flex flex-row flex-wrap items-center gap-x-4 gap-y-4 mb-2">
-            <div class="flex items-center gap-2 ml-auto shrink-0">
+
+        <div class="flex flex-wrap gap-x-8 gap-y-4 items-end justify-between mb-4">
+            <form method="GET" action="{{ route('inventories.search') }}" class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
+                <div class="flex flex-col p-1">
+                    <select name="per_page" id="per_page"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-16 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                    </select>
+                </div>
+                <div class="flex flex-col p-1">
+                    <select name="product_id" id="product_id"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="">Todos los productos</option>
+                        @isset($products)
+                            @foreach ($products as $id => $name)
+                                <option value="{{ $id }}" {{ request('product_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        @endisset
+                    </select>
+                </div>
+                <div class="flex flex-col p-1">
+                    <select name="warehouse_id" id="warehouse_id"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="">Todos los almacenes</option>
+                        @isset($warehouses)
+                            @foreach ($warehouses as $id => $name)
+                                <option value="{{ $id }}" {{ request('warehouse_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        @endisset
+                    </select>
+                </div>
+            </form>
+            <div class="flex flex-row p-1 gap-x-4 items-end">
+                <label class="invisible block text-sm font-medium">.</label>
                 <form method="GET" action="{{ route('inventories.export') }}">
-                    <input type="hidden" name="search" value="{{ request('search') }}">
                     <input type="hidden" name="product_id" value="{{ request('product_id') }}">
                     <input type="hidden" name="warehouse_id" value="{{ request('warehouse_id') }}">
-                    <input type="hidden" name="stock" value="{{ request('stock') }}">
-                    <input type="hidden" name="min_stock" value="{{ request('min_stock') }}">
                     <button type="submit"
                         class="flex items-center justify-between px-4 py-2 w-36 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
                         <span>Exportar Excel</span>
@@ -28,46 +66,7 @@
                 </a>
             </div>
         </div>
-        <form method="GET" action="{{ route('inventories.search') }}"
-            class="flex flex-row flex-wrap gap-x-4 gap-y-2 items-end self-end mb-4">
-            <div class="flex flex-col p-1">
-                <select name="per_page" id="per_page"
-                    class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-16 text-sm font-medium"
-                    onchange="this.form.submit()">
-                    <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
-                    <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
-                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
-                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
-                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
-                </select>
-            </div>
-            <div class="flex flex-col p-1">
-                <select name="product_id" id="product_id"
-                    class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
-                    onchange="this.form.submit()">
-                    <option value="">Todos los productos</option>
-                    @isset($products)
-                        @foreach ($products as $id => $name)
-                            <option value="{{ $id }}" {{ request('product_id') == $id ? 'selected' : '' }}>
-                                {{ $name }}</option>
-                        @endforeach
-                    @endisset
-                </select>
-            </div>
-            <div class="flex flex-col p-1">
-                <select name="warehouse_id" id="warehouse_id"
-                    class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
-                    onchange="this.form.submit()">
-                    <option value="">Todos los almacenes</option>
-                    @isset($warehouses)
-                        @foreach ($warehouses as $id => $name)
-                            <option value="{{ $id }}" {{ request('warehouse_id') == $id ? 'selected' : '' }}>
-                                {{ $name }}</option>
-                        @endforeach
-                    @endisset
-                </select>
-            </div>
-        </form>
+
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
                 <table class="w-full whitespace-no-wrap">
