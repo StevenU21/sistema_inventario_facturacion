@@ -73,14 +73,28 @@
                     <thead>
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3"><i class="fas fa-hashtag mr-2"></i>ID</th>
-                            <th class="px-4 py-3"><i class="fas fa-box mr-2"></i>Producto</th>
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="id" label="ID" route="inventories.search" icon="<i class='fas fa-hashtag mr-2'></i>" />
+                            </th>
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="product_id" label="Producto" route="inventories.search" icon="<i class='fas fa-box mr-2'></i>" />
+                            </th>
                             <th class="px-4 py-3"><i class="fas fa-image mr-2"></i>Imagen</th>
-                            <th class="px-4 py-3"><i class="fas fa-warehouse mr-2"></i>Almacén</th>
-                            <th class="px-4 py-3"><i class="fas fa-cubes mr-2"></i>Stock</th>
-                            <th class="px-4 py-3"><i class="fas fa-exclamation-triangle mr-2"></i>Mínimo</th>
-                            <th class="px-4 py-3"><i class="fas fa-money-bill-wave mr-2"></i>Compra</th>
-                            <th class="px-4 py-3"><i class="fas fa-dollar-sign mr-2"></i>Venta</th>
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="warehouse_id" label="Almacén" route="inventories.search" icon="<i class='fas fa-warehouse mr-2'></i>" />
+                            </th>
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="stock" label="Stock" route="inventories.search" icon="<i class='fas fa-cubes mr-2'></i>" />
+                            </th>
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="min_stock" label="Mínimo" route="inventories.search" icon="<i class='fas fa-exclamation-triangle mr-2'></i>" />
+                            </th>
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="purchase_price" label="Compra" route="inventories.search" icon="<i class='fas fa-money-bill-wave mr-2'></i>" />
+                            </th>
+                            <th class="px-4 py-3">
+                                <x-table-sort-header field="sale_price" label="Venta" route="inventories.search" icon="<i class='fas fa-dollar-sign mr-2'></i>" />
+                            </th>
                             <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                         </tr>
                     </thead>
