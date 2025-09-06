@@ -158,10 +158,10 @@
                                                 aria-label="Ver">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            <x-modal maxWidth="xl">
+                                            <x-modal maxWidth="md">
                                                 <x-slot name="title">Detalle de Inventario #{{ $inventory->id }}</x-slot>
                                                 <x-slot name="description"></x-slot>
-                                                <iframe src="{{ route('inventories.show', $inventory) }}" class="w-full h-[60vh] rounded" loading="lazy"></iframe>
+                                                @include('admin.inventories.partials.show_card', ['inventory' => $inventory])
                                             </x-modal>
                                         </div>
                                         <form action="{{ route('inventories.destroy', $inventory) }}" method="POST"
