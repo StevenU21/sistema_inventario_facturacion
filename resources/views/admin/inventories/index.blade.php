@@ -59,11 +59,22 @@
                         <i class="fas fa-file-excel ml-2"></i>
                     </button>
                 </form>
-                <a href="{{ route('inventories.create') }}"
-                    class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600 ml-2">
-                    <span>Nuevo Inventario</span>
-                    <i class="fas fa-plus ml-2"></i>
-                </a>
+                <!-- Create Modal Trigger + Modal -->
+                <div x-data="{ isModalOpen: false, closeModal(){ this.isModalOpen=false } }" class="ml-2">
+                    <button @click="isModalOpen = true"
+                        class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600">
+                        <span>Nuevo Inventario</span>
+                        <i class="fas fa-plus ml-2"></i>
+                    </button>
+                    <x-modal maxWidth="md">
+                        <x-slot name="title">Nuevo Inventario</x-slot>
+                        <x-slot name="description"></x-slot>
+                        <form action="{{ route('inventories.store') }}" method="POST">
+                            @csrf
+                            @include('admin.inventories.form_create')
+                        </form>
+                    </x-modal>
+                </div>
             </div>
         </div>
 
@@ -123,16 +134,36 @@
                                 <td class="px-4 py-3 text-sm">C$ {{ number_format($inventory->sale_price, 2) }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
-                                        <a href="{{ route('inventories.edit', $inventory) }}"
-                                            class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green"
-                                            aria-label="Realizar Movimiento">
-                                            <i class="fas fa-exchange-alt mr-2"></i> Movimiento
-                                        </a>
-                                        <a href="{{ route('inventories.show', $inventory) }}"
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Ver">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
+                                        <!-- Edit/Movement Modal per row -->
+                                        <div x-data="{ isModalOpen:false, closeModal(){ this.isModalOpen=false } }">
+                                            <button @click="isModalOpen = true"
+                                                class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green"
+                                                aria-label="Realizar Movimiento">
+                                                <i class="fas fa-exchange-alt mr-2"></i> Movimiento
+                                            </button>
+                                            <x-modal maxWidth="lg">
+                                                <x-slot name="title">Registrar Movimiento</x-slot>
+                                                <x-slot name="description"></x-slot>
+                                                <form action="{{ route('inventories.update', $inventory) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    @include('admin.inventories.form_edit', ['inventory' => $inventory, 'warehouses' => $warehouses])
+                                                </form>
+                                            </x-modal>
+                                        </div>
+                                        <!-- Show Modal per row -->
+                                        <div x-data="{ isModalOpen:false, closeModal(){ this.isModalOpen=false } }">
+                                            <button @click="isModalOpen = true"
+                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                aria-label="Ver">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <x-modal maxWidth="xl">
+                                                <x-slot name="title">Detalle de Inventario #{{ $inventory->id }}</x-slot>
+                                                <x-slot name="description"></x-slot>
+                                                <iframe src="{{ route('inventories.show', $inventory) }}" class="w-full h-[60vh] rounded" loading="lazy"></iframe>
+                                            </x-modal>
+                                        </div>
                                         <form action="{{ route('inventories.destroy', $inventory) }}" method="POST"
                                             onsubmit="return confirm('¿Seguro de eliminar este inventario?');">
                                             @csrf
@@ -159,5 +190,7 @@
                 {{ $inventories->links() }}
             </div>
         </div>
+
+        <!-- Per-row modals defined above with their triggers -->
     </div>
 @endsection
