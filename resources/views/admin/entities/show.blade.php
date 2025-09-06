@@ -14,30 +14,6 @@
             </a>
         </div>
 
-        <div class="w-full overflow-hidden rounded-lg shadow-md bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow duration-150">
-            <div class="p-4">
-                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">
-                    Información de la Entidad
-                </h3>
-                <div class="mt-4">
-                    <p class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
-                        <i class="fas fa-tag text-purple-600 dark:text-purple-400 mr-2"></i>
-                        <strong class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Nombre:</strong> {{ $entity->name }}
-                    </p>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
-                        <i class="fas fa-align-left text-purple-600 dark:text-purple-400 mr-2"></i>
-                        <strong class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Descripción:</strong> {{ $entity->description }}
-                    </p>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
-                        <i class="fas fa-calendar-alt text-purple-600 dark:text-purple-400 mr-2"></i>
-                        <strong class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Fecha de creación:</strong> {{ $entity->formatted_created_at }}
-                    </p>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-150 flex items-center">
-                        <i class="fas fa-clock text-purple-600 dark:text-purple-400 mr-2"></i>
-                        <strong class="text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-150">Última actualización:</strong> {{ $entity->formatted_updated_at }}
-                    </p>
-                </div>
-            </div>
-        </div>
+    @include('admin.entities.partials.show_card')
     </div>
 @endsection

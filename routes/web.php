@@ -80,6 +80,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('taxes', TaxController::class);
 
     // Entities
+    Route::get('entities/search', [EntityController::class, 'search'])->name('entities.search');
+    Route::get('entities/export', [EntityController::class, 'export'])->name('entities.export');
     Route::resource('entities', EntityController::class);
 
     // Products
