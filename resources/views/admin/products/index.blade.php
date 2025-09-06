@@ -77,6 +77,7 @@
                 </form>
             </x-modal>
 
+
             <x-show-modal :title="'Detalle de Producto'" :description="'Consulta los datos del producto seleccionado.'">
                 <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Imagen del producto -->
@@ -333,45 +334,22 @@
                                         <td class="px-4 py-3">
                                             <div class="flex items-center space-x-4 text-sm">
                                                 @if (in_array($product->status, ['available', 'out_of_stock']))
-                                                    <button type="button"
-                                                        @click="
-                                                            // Datos para ver
-                                                            showProduct = {
-                                                                id: {{ $product->id }},
-                                                                name: '{{ addslashes($product->name) }}',
-                                                                description: '{{ addslashes($product->description) }}',
-                                                                barcode: '{{ addslashes($product->barcode) }}',
-                                                                category: '{{ addslashes($product->category->name ?? '-') }}',
-                                                                brand: '{{ addslashes($product->brand->name ?? '-') }}',
-                                                                unit: '{{ addslashes($product->unitMeasure->name ?? '-') }}',
-                                                                provider: '{{ addslashes(optional($product->entity)->first_name . ' ' . optional($product->entity)->last_name) }}',
-                                                                tax: '{{ addslashes($product->tax->name ?? '-') }}',
-                                                                tax_percentage: '{{ $product->tax ? $product->tax->percentage : '' }}',
-                                                                status: '{{ addslashes($product->status) }}',
-                                                                formatted_created_at: '{{ addslashes($product->formatted_created_at ?? '-') }}',
-                                                                formatted_updated_at: '{{ addslashes($product->formatted_updated_at ?? '-') }}',
-                                                                image_url: '{{ addslashes($product->image_url) }}'
-                                                            };
-                                                            // También setear editProduct para reutilizar campos visibles
-                                                            editProduct = {
-                                                                id: {{ $product->id }},
-                                                                name: '{{ addslashes($product->name) }}',
-                                                                description: '{{ addslashes($product->description) }}',
-                                                                barcode: '{{ addslashes($product->barcode) }}',
-                                                                category_id: {{ $product->category_id ?? 'null' }},
-                                                                brand_id: {{ $product->brand_id ?? 'null' }},
-                                                                unit_measure_id: {{ $product->unit_measure_id ?? 'null' }},
-                                                                entity_id: {{ $product->entity_id ?? 'null' }},
-                                                                tax_id: {{ $product->tax_id ?? 'null' }},
-                                                                status: '{{ addslashes($product->status) }}',
-                                                                image_url: '{{ addslashes($product->image_url) }}'
-                                                            };
-                                                            isShowModalOpen = true;
-                                                        "
-                                                        class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-blue-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                        aria-label="Ver Modal">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
+                                                    <div x-data="{ isModalOpen: false, closeModal() { this.isModalOpen = false } }">
+                                                        <button @click="isModalOpen = true"
+                                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                            aria-label="Ver">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        <x-modal maxWidth="md">
+                                                            <x-slot name="title">Detalle del Producto
+                                                                #{{ $product->id }}</x-slot>
+                                                            <x-slot name="description"></x-slot>
+                                                            @include(
+                                                                'admin.products.partials.show_card',
+                                                                ['product' => $product]
+                                                            )
+                                                        </x-modal>
+                                                    </div>
                                                     <button type="button"
                                                         @click="
                                                             editProduct = {
@@ -406,7 +384,7 @@
                                                             <i class="fas fa-undo"></i>
                                                         @else
                                                             <i class="fas fa-ban"></i>
-                                                        @endif  
+                                                        @endif
                                                     </button>
                                                 </form>
                                             </div>
@@ -428,4 +406,3 @@
             </div>
         </div>
     @endsection
- 
