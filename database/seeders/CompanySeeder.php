@@ -15,12 +15,12 @@ class CompanySeeder extends Seeder
     {
         Company::firstOrCreate([
             'name' => 'BlessaBoutique',
-            'ruc' => '1234567890001',
+            'ruc' => null,
             'logo' => null,
             'description' => 'Tienda de ropa y accesorios en Condega, Estelí.',
-            'address' => 'Avenida Central, Condega, Estelí',
-            'phone' => '8888-9999',
-            'email' => 'info@blessaboutique.com',
+            'address' => 'Del juzgado de Condega 2 cuadras al norte.',
+            'phone' => '58574776',
+            'email' => 'blessageneral@gmail.com',
         ]);
     }
 }

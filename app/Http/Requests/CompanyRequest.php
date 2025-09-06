@@ -33,7 +33,7 @@ class CompanyRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:3', 'max:60'],
-            'ruc' => ['required', 'string', 'min:11', 'max:30', Rule::unique('companies')->ignore($this->company)],
+            'ruc' => ['nullable', 'string', 'min:11', 'max:30', Rule::unique('companies')->ignore($this->company)],
             'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4048'],
             'description' => ['nullable', 'string', 'min:10', 'max:100'],
             'address' => ['required', 'string', 'min:10', 'max:100',],
