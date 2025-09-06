@@ -56,19 +56,8 @@
                     </select>
                 </div>
             </form>
-            <div class="flex flex-col p-1">
-                <label class="invisible block text-sm font-medium">.</label>
-                @can('create warehouses')
-                    <button @click="isModalOpen = true" type="button"
-                        class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600">
-                        <span>Nuevo Almacén</span>
-                        <i class="fas fa-plus ml-2"></i>
-                    </button>
-                @endcan
-            </div>
-            <div class="flex flex-col p-1">
-                <label class="invisible block text-sm font-medium">.</label>
-                <form method="GET" action="{{ route('warehouses.export') }}">
+            <div class="flex flex-row gap-x-4 items-end justify-end ml-auto">
+                <form method="GET" action="{{ route('warehouses.export') }}" class="mr-2">
                     <input type="hidden" name="per_page" value="{{ request('per_page') }}">
                     <input type="hidden" name="is_active" value="{{ request('is_active') }}">
                     <input type="hidden" name="search" value="{{ request('search') }}">
@@ -80,6 +69,13 @@
                         <i class="fas fa-file-excel ml-2"></i>
                     </button>
                 </form>
+                @can('create warehouses')
+                    <button @click="isModalOpen = true" type="button"
+                        class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600">
+                        <span>Nuevo Almacén</span>
+                        <i class="fas fa-plus ml-2"></i>
+                    </button>
+                @endcan
             </div>
         </div>
 
@@ -193,7 +189,8 @@
         <x-show-modal :title="'Detalle de Almacén'" :description="'Consulta los datos del almacén seleccionado.'">
             <div class="mt-4 space-y-2 text-sm text-gray-700 dark:text-gray-200">
                 <p class="flex items-center gap-2"><i class="fas fa-hashtag text-purple-600"></i><strong>ID:</strong>
-                    <span x-text="showWarehouse.id"></span></p>
+                    <span x-text="showWarehouse.id"></span>
+                </p>
                 <p class="flex items-center gap-2"><i
                         class="fas fa-warehouse text-purple-600"></i><strong>Nombre:</strong> <span
                         x-text="showWarehouse.name"></span></p>
