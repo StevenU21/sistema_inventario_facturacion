@@ -17,9 +17,14 @@ class EntitiesExport implements FromCollection, WithHeadings
 
     public function collection()
     {
+        // Normalize filters to ignore empty strings/nulls
+        $filters = array_filter($this->filters, function ($v) {
+            return !is_null($v) && $v !== '';
+        });
+
         $query = Entity::with('municipality');
-        if (!empty($this->filters['search'])) {
-            $search = $this->filters['search'];
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('first_name', 'like', "%$search%")
                     ->orWhere('last_name', 'like', "%$search%")
@@ -30,17 +35,17 @@ class EntitiesExport implements FromCollection, WithHeadings
                     ->orWhere('address', 'like', "%$search%");
             });
         }
-        if (array_key_exists('is_client', $this->filters) && $this->filters['is_client'] !== '') {
-            $query->where('is_client', (bool) $this->filters['is_client']);
+        if (array_key_exists('is_client', $filters)) {
+            $query->where('is_client', (bool) $filters['is_client']);
         }
-        if (array_key_exists('is_supplier', $this->filters) && $this->filters['is_supplier'] !== '') {
-            $query->where('is_supplier', (bool) $this->filters['is_supplier']);
+        if (array_key_exists('is_supplier', $filters)) {
+            $query->where('is_supplier', (bool) $filters['is_supplier']);
         }
-        if (array_key_exists('is_active', $this->filters) && $this->filters['is_active'] !== '') {
-            $query->where('is_active', (bool) $this->filters['is_active']);
+        if (array_key_exists('is_active', $filters)) {
+            $query->where('is_active', (bool) $filters['is_active']);
         }
-        if (!empty($this->filters['municipality_id'])) {
-            $query->where('municipality_id', $this->filters['municipality_id']);
+        if (!empty($filters['municipality_id'])) {
+            $query->where('municipality_id', $filters['municipality_id']);
         }
 
         $entities = $query->get();

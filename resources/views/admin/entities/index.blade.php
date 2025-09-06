@@ -73,10 +73,18 @@
 
             <div class="flex items-center gap-2 ml-auto shrink-0">
                 <form method="GET" action="{{ route('entities.export') }}">
-                    <input type="hidden" name="search" value="{{ request('search') }}">
-                    <input type="hidden" name="is_client" value="{{ request('is_client') }}">
-                    <input type="hidden" name="is_supplier" value="{{ request('is_supplier') }}">
-                    <input type="hidden" name="is_active" value="{{ request('is_active') }}">
+                    @if(request()->filled('search'))
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+                    @if(request()->has('is_client') && request('is_client') !== '')
+                        <input type="hidden" name="is_client" value="{{ request('is_client') }}">
+                    @endif
+                    @if(request()->has('is_supplier') && request('is_supplier') !== '')
+                        <input type="hidden" name="is_supplier" value="{{ request('is_supplier') }}">
+                    @endif
+                    @if(request()->has('is_active') && request('is_active') !== '')
+                        <input type="hidden" name="is_active" value="{{ request('is_active') }}">
+                    @endif
                     <button type="submit"
                         class="flex items-center justify-between px-4 py-2 w-36 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
                         <span>Exportar Excel</span>

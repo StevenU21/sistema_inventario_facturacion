@@ -77,6 +77,10 @@ class EntityController extends Controller
     {
         $this->authorize('viewAny', Entity::class);
         $filters = $request->only(['search', 'is_client', 'is_supplier', 'is_active', 'municipality_id']);
+        // Remove empty/null values so we don't apply unintended filters
+        $filters = array_filter($filters, function ($v) {
+            return !is_null($v) && $v !== '';
+        });
         $timestamp = now()->format('Ymd_His');
         $filename = "entidades_filtradas_{$timestamp}.xlsx";
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\EntitiesExport($filters), $filename);
