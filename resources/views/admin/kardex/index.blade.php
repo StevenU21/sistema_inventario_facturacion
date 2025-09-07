@@ -4,19 +4,33 @@
 @section('content')
     <div class="container grid px-6 mx-auto">
         <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Kardex (Costo Promedio Ponderado)
+            Generar Informe Kardex del Inventario
         </h2>
 
+
         <x-session-message />
+
+        <div
+            class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded text-sm text-gray-700 dark:bg-gray-900 dark:text-gray-200">
+            <strong>¿Qué significa cada método?</strong>
+            <ul class="list-disc pl-5 mt-2">
+                <li><strong>Costo Promedio Ponderado (CPP):</strong> Cada salida se valora al costo promedio de todas las
+                    existencias hasta ese momento.</li>
+                <li><strong>PEPS (FIFO):</strong> Las salidas se valoran al costo de las primeras entradas (las más
+                    antiguas).</li>
+                <li><strong>UEPS (LIFO):</strong> Las salidas se valoran al costo de las últimas entradas (las más
+                    recientes).</li>
+            </ul>
+        </div>
 
         <div class="flex flex-wrap gap-x-8 gap-y-4 items-end justify-between mb-4">
             <form method="GET" action="{{ route('kardex.index') }}"
                 class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
                 <div class="flex flex-col p-1">
-                    <label class="block text-sm font-medium">Producto</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Producto</label>
                     <select name="product_id"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-64 text-sm font-medium">
-                        <option value="">-- Seleccione --</option>
+                        <option value="">Seleccionar Producto</option>
                         @foreach ($products as $id => $name)
                             <option value="{{ $id }}"
                                 {{ (string) $id === (string) ($productId ?? '') ? 'selected' : '' }}>
@@ -25,10 +39,10 @@
                     </select>
                 </div>
                 <div class="flex flex-col p-1">
-                    <label class="block text-sm font-medium">Almacén</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Almacén</label>
                     <select name="warehouse_id"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium">
-                        <option value="">Todos</option>
+                        <option value="">Seleccionar Almacén</option>
                         @foreach ($warehouses as $id => $name)
                             <option value="{{ $id }}"
                                 {{ (string) $id === (string) ($warehouseId ?? '') ? 'selected' : '' }}>
@@ -37,12 +51,22 @@
                     </select>
                 </div>
                 <div class="flex flex-col p-1">
-                    <label class="block text-sm font-medium">Desde</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Seleccionar Kardex</label>
+                    <select name="metodo"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium">
+                        <option value="cpp" {{ request('metodo', 'cpp') == 'cpp' ? 'selected' : '' }}>Costo Promedio
+                        </option>
+                        <option value="peps" {{ request('metodo') == 'peps' ? 'selected' : '' }}>PEPS (FIFO)</option>
+                        <option value="ueps" {{ request('metodo') == 'ueps' ? 'selected' : '' }}>UEPS (LIFO)</option>
+                    </select>
+                </div>
+                <div class="flex flex-col p-1">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Desde</label>
                     <input type="date" name="from" value="{{ $from }}"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-44 text-sm font-medium" />
                 </div>
                 <div class="flex flex-col p-1">
-                    <label class="block text-sm font-medium">Hasta</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Hasta</label>
                     <input type="date" name="to" value="{{ $to }}"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-44 text-sm font-medium" />
                 </div>
@@ -74,6 +98,15 @@
                         <p><strong>Producto:</strong> {{ $kardexModel->product->name }}</p>
                         <p><strong>Almacén:</strong> {{ $kardexModel->warehouse->name ?? 'Todos' }}</p>
                         <p><strong>Rango:</strong> {{ $kardexModel->date_from }} a {{ $kardexModel->date_to }}</p>
+                        <p><strong>Método:</strong>
+                            @if (request('metodo', 'cpp') == 'cpp')
+                                Costo Promedio Ponderado
+                            @elseif(request('metodo') == 'peps')
+                                PEPS (FIFO)
+                            @elseif(request('metodo') == 'ueps')
+                                UEPS (LIFO)
+                            @endif
+                        </p>
                     </div>
                     <table class="w-full whitespace-no-wrap">
                         <thead>
@@ -101,11 +134,11 @@
                                     <td class="px-4 py-3 text-sm text-right">{{ $r['entry_qty'] }}</td>
                                     <td class="px-4 py-3 text-sm text-right">{{ $r['exit_qty'] }}</td>
                                     <td class="px-4 py-3 text-sm text-right">{{ $r['balance_qty'] }}</td>
-                                    <td class="px-4 py-3 text-sm text-right">{{ number_format($r['unit_cost'], 2) }}</td>
-                                    <td class="px-4 py-3 text-sm text-right">{{ number_format($r['avg_cost'], 2) }}</td>
-                                    <td class="px-4 py-3 text-sm text-right">{{ number_format($r['debe'], 2) }}</td>
-                                    <td class="px-4 py-3 text-sm text-right">{{ number_format($r['haber'], 2) }}</td>
-                                    <td class="px-4 py-3 text-sm text-right">{{ number_format($r['saldo'], 2) }}</td>
+                                    <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['unit_cost'], 2) }}</td>
+                                    <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['avg_cost'], 2) }}</td>
+                                    <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['debe'], 2) }}</td>
+                                    <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['haber'], 2) }}</td>
+                                    <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['saldo'], 2) }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -117,11 +150,11 @@
                     <div class="mt-4 text-gray-700 dark:text-gray-200">
                         <p><strong>Determinación final del inventario:</strong>
                             Unidades finales {{ $kardexModel->final['qty'] }} × Costo promedio
-                            {{ number_format($kardexModel->final['unit_cost'], 2) }}
+                            C$ {{ number_format($kardexModel->final['unit_cost'], 2) }}
                             =
-                            <strong>{{ number_format($kardexModel->final['qty'] * $kardexModel->final['unit_cost'], 2) }}</strong>
+                            <strong>C$ {{ number_format($kardexModel->final['qty'] * $kardexModel->final['unit_cost'], 2) }}</strong>
                         </p>
-                        <p>Saldo final reportado: <strong>{{ number_format($kardexModel->final['total'], 2) }}</strong></p>
+                        <p>Saldo final reportado: <strong>C$ {{ number_format($kardexModel->final['total'], 2) }}</strong></p>
                     </div>
                 </div>
             </div>
