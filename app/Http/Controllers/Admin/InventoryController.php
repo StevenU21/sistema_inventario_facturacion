@@ -22,7 +22,12 @@ class InventoryController extends Controller
         $this->authorize('viewAny', Inventory::class);
         $perPage = request('per_page', 10);
         $inventories = Inventory::with(['product', 'warehouse'])->latest()->paginate($perPage);
-        $products = Product::pluck('name', 'id');
+        // Obtener los IDs de productos que ya están en inventario
+        $productIdsInInventory = Inventory::pluck('product_id')->toArray();
+        // Solo productos disponibles y que no estén en inventario
+        $products = Product::where('status', 'available')
+            ->whereNotIn('id', $productIdsInInventory)
+            ->pluck('name', 'id');
         $warehouses = Warehouse::pluck('name', 'id');
         return view('admin.inventories.index', compact('inventories', 'products', 'warehouses'));
     }
