@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InventoryRequest;
 use App\Models\Inventory;
+use App\Models\InventoryMovement;
 use App\Models\Product;
 use App\Models\Warehouse;
 use App\Classes\InventoryMovementManager;
@@ -133,8 +134,7 @@ class InventoryController extends Controller
 
             $inventory = Inventory::create($data);
 
-            // Verificar si es el primer inventario para ese producto
-            $isFirst = !\App\Models\InventoryMovement::whereHas('inventory', function ($q) use ($inventory) {
+            $isFirst = !InventoryMovement::whereHas('inventory', function ($q) use ($inventory) {
                 $q->where('product_id', $inventory->product_id);
             })->exists();
 
