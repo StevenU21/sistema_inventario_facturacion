@@ -10,14 +10,16 @@
         <x-session-message />
 
         <div class="flex flex-wrap gap-x-8 gap-y-4 items-end justify-between mb-4">
-            <form method="GET" action="{{ route('kardex.index') }}" class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
+            <form method="GET" action="{{ route('kardex.index') }}"
+                class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
                 <div class="flex flex-col p-1">
                     <label class="block text-sm font-medium">Producto</label>
                     <select name="product_id"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-64 text-sm font-medium">
                         <option value="">-- Seleccione --</option>
                         @foreach ($products as $id => $name)
-                            <option value="{{ $id }}" {{ (string) $id === (string) ($productId ?? '') ? 'selected' : '' }}>
+                            <option value="{{ $id }}"
+                                {{ (string) $id === (string) ($productId ?? '') ? 'selected' : '' }}>
                                 {{ $name }}</option>
                         @endforeach
                     </select>
@@ -28,7 +30,8 @@
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium">
                         <option value="">Todos</option>
                         @foreach ($warehouses as $id => $name)
-                            <option value="{{ $id }}" {{ (string) $id === (string) ($warehouseId ?? '') ? 'selected' : '' }}>
+                            <option value="{{ $id }}"
+                                {{ (string) $id === (string) ($warehouseId ?? '') ? 'selected' : '' }}>
                                 {{ $name }}</option>
                         @endforeach
                     </select>
@@ -52,7 +55,7 @@
                 </div>
             </form>
 
-            @if ($report)
+            @if ($kardexModel)
                 <div class="flex flex-row p-1 gap-x-4 items-end">
                     <label class="invisible block text-sm font-medium">.</label>
                     <a href="{{ route('kardex.export', request()->all()) }}" target="_blank"
@@ -64,13 +67,13 @@
             @endif
         </div>
 
-        @if ($report)
+        @if ($kardexModel)
             <div class="w-full overflow-hidden rounded-lg shadow-xs">
                 <div class="w-full overflow-x-auto bg-white dark:bg-gray-800 p-4">
                     <div class="mb-4 text-gray-700 dark:text-gray-200">
-                        <p><strong>Producto:</strong> {{ $report['product']->name }}</p>
-                        <p><strong>Almacén:</strong> {{ $report['warehouse']->name ?? 'Todos' }}</p>
-                        <p><strong>Rango:</strong> {{ $report['date_from'] }} a {{ $report['date_to'] }}</p>
+                        <p><strong>Producto:</strong> {{ $kardexModel->product->name }}</p>
+                        <p><strong>Almacén:</strong> {{ $kardexModel->warehouse->name ?? 'Todos' }}</p>
+                        <p><strong>Rango:</strong> {{ $kardexModel->date_from }} a {{ $kardexModel->date_to }}</p>
                     </div>
                     <table class="w-full whitespace-no-wrap">
                         <thead>
@@ -82,7 +85,6 @@
                                 <th class="px-4 py-3 text-right">Entrada (Cant.)</th>
                                 <th class="px-4 py-3 text-right">Salida (Cant.)</th>
                                 <th class="px-4 py-3 text-right">Existencias</th>
-                                <th class="px-4 py-3 text-right">Precio de venta</th>
                                 <th class="px-4 py-3 text-right">Costo unitario</th>
                                 <th class="px-4 py-3 text-right">Costo promedio</th>
                                 <th class="px-4 py-3 text-right">Debe</th>
@@ -91,7 +93,7 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                            @forelse ($report['rows'] as $r)
+                            @forelse ($kardexModel->rows as $r)
                                 <tr class="text-gray-700 dark:text-gray-400">
                                     <td class="px-4 py-3 text-sm">{{ $r['date'] }}</td>
                                     <td class="px-4 py-3 text-sm">{{ $r['concept'] ?? '' }}</td>
@@ -99,13 +101,6 @@
                                     <td class="px-4 py-3 text-sm text-right">{{ $r['entry_qty'] }}</td>
                                     <td class="px-4 py-3 text-sm text-right">{{ $r['exit_qty'] }}</td>
                                     <td class="px-4 py-3 text-sm text-right">{{ $r['balance_qty'] }}</td>
-                                    <td class="px-4 py-3 text-sm text-right">
-                                        @if(isset($r['sale_price']))
-                                            {{ number_format($r['sale_price'], 2) }}
-                                        @else
-                                            -
-                                        @endif
-                                    </td>
                                     <td class="px-4 py-3 text-sm text-right">{{ number_format($r['unit_cost'], 2) }}</td>
                                     <td class="px-4 py-3 text-sm text-right">{{ number_format($r['avg_cost'], 2) }}</td>
                                     <td class="px-4 py-3 text-sm text-right">{{ number_format($r['debe'], 2) }}</td>
@@ -121,10 +116,12 @@
                     </table>
                     <div class="mt-4 text-gray-700 dark:text-gray-200">
                         <p><strong>Determinación final del inventario:</strong>
-                            Unidades finales {{ $report['final']['qty'] }} × Costo promedio {{ number_format($report['final']['unit_cost'], 2) }}
-                            = <strong>{{ number_format($report['final']['qty'] * $report['final']['unit_cost'], 2) }}</strong>
+                            Unidades finales {{ $kardexModel->final['qty'] }} × Costo promedio
+                            {{ number_format($kardexModel->final['unit_cost'], 2) }}
+                            =
+                            <strong>{{ number_format($kardexModel->final['qty'] * $kardexModel->final['unit_cost'], 2) }}</strong>
                         </p>
-                        <p>Saldo final reportado: <strong>{{ number_format($report['final']['total'], 2) }}</strong></p>
+                        <p>Saldo final reportado: <strong>{{ number_format($kardexModel->final['total'], 2) }}</strong></p>
                     </div>
                 </div>
             </div>

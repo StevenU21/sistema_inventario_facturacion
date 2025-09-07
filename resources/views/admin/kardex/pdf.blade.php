@@ -15,12 +15,12 @@
     <h1 style="font-size:22px; margin-bottom:2px;">{{ $company->name ?? 'Kardex' }}</h1>
     <h2 style="font-size:16px; margin-top:0; margin-bottom:10px;">Kardex - Costo Promedio Ponderado</h2>
     <div class="meta">
-        <p><strong>Producto:</strong> {{ $product->name }}</p>
-        <p><strong>Almacén:</strong> {{ $warehouse->name ?? 'Todos' }}</p>
-        <p><strong>Rango:</strong> {{ $date_from }} a {{ $date_to }}</p>
+        <p><strong>Producto:</strong> {{ $kardexModel->product->name }}</p>
+        <p><strong>Almacén:</strong> {{ $kardexModel->warehouse->name ?? 'Todos' }}</p>
+        <p><strong>Rango:</strong> {{ $kardexModel->date_from }} a {{ $kardexModel->date_to }}</p>
     </div>
 
-    <p><strong>Saldo inicial:</strong> Cantidad {{ $initial['qty'] }}, Costo Promedio {{ number_format($initial['unit_cost'], 2) }}, Total {{ number_format($initial['total'], 2) }}</p>
+    <p><strong>Saldo inicial:</strong> Cantidad {{ $kardexModel->initial['qty'] }}, Costo Promedio {{ number_format($kardexModel->initial['unit_cost'], 2) }}, Total {{ number_format($kardexModel->initial['total'], 2) }}</p>
 
     <table>
         <thead>
@@ -39,7 +39,7 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($rows as $r)
+            @forelse($kardexModel->rows as $r)
                 <tr>
                     <td>{{ $r['date'] }}</td>
                     <td>{{ $r['concept'] ?? '' }}</td>
@@ -62,9 +62,9 @@
     </table>
 
     <p><strong>Determinación final del inventario:</strong>
-        Unidades finales {{ $final['qty'] }} × Costo promedio {{ number_format($final['unit_cost'], 2) }}
-        = <strong>{{ number_format($final['qty'] * $final['unit_cost'], 2) }}</strong>
+        Unidades finales {{ $kardexModel->final['qty'] }} × Costo promedio {{ number_format($kardexModel->final['unit_cost'], 2) }}
+        = <strong>{{ number_format($kardexModel->final['qty'] * $kardexModel->final['unit_cost'], 2) }}</strong>
     </p>
-    <p>Saldo final reportado: <strong>{{ number_format($final['total'], 2) }}</strong></p>
+    <p>Saldo final reportado: <strong>{{ number_format($kardexModel->final['total'], 2) }}</strong></p>
 </body>
 </html>

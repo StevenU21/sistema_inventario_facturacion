@@ -30,12 +30,12 @@ class KardexController extends Controller
 
         $warehouses = Warehouse::orderBy('name')->pluck('name', 'id');
 
-        $report = null;
+        $kardexModel = null;
         if ($productId) {
-            $report = $kardex->generate((int) $productId, $warehouseId ? (int) $warehouseId : null, $from, $to);
+            $kardexModel = $kardex->generate((int) $productId, $warehouseId ? (int) $warehouseId : null, $from, $to);
         }
 
-        return view('admin.kardex.index', compact('products', 'warehouses', 'report', 'productId', 'warehouseId', 'from', 'to'));
+        return view('admin.kardex.index', compact('products', 'warehouses', 'kardexModel', 'productId', 'warehouseId', 'from', 'to'));
     }
 
     public function exportPdf(Request $request, KardexService $kardex)
@@ -45,16 +45,21 @@ class KardexController extends Controller
         $from = $request->input('from');
         $to = $request->input('to');
 
-        $report = $kardex->generate($productId, $warehouseId, $from, $to);
+        $kardexModel = $kardex->generate($productId, $warehouseId, $from, $to);
 
         $company = Company::first();
-        $data = array_merge($report, [
+        $data = [
+            'kardexModel' => $kardexModel,
             'company' => $company
-        ]);
+        ];
 
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('admin.kardex.pdf', $data)->setPaper('a4', 'landscape');
-        $filename = 'kardex_' . $report['product']->id . '_' . now()->format('Ymd_His') . '.pdf';
+        $productId = '';
+        if ($kardexModel && is_object($kardexModel->product) && isset($kardexModel->product->id)) {
+            $productId = $kardexModel->product->id;
+        }
+        $filename = 'kardex_' . $productId . '_' . now()->format('Ymd_His') . '.pdf';
         return $pdf->download($filename);
     }
 }
