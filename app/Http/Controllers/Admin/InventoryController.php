@@ -53,7 +53,15 @@ class InventoryController extends Controller
         $sort = $request->input('sort', 'id');
         $direction = $request->input('direction', 'desc');
         $allowedSorts = [
-            'id', 'product_id', 'warehouse_id', 'stock', 'min_stock', 'purchase_price', 'sale_price', 'created_at', 'updated_at'
+            'id',
+            'product_id',
+            'warehouse_id',
+            'stock',
+            'min_stock',
+            'purchase_price',
+            'sale_price',
+            'created_at',
+            'updated_at'
         ];
         if (in_array($sort, $allowedSorts, true)) {
             $query->orderBy($sort, $direction);
@@ -122,15 +130,21 @@ class InventoryController extends Controller
 
         \DB::beginTransaction();
         try {
+
             $inventory = Inventory::create($data);
+
+            // Verificar si es el primer inventario para ese producto
+            $isFirst = !\App\Models\InventoryMovement::whereHas('inventory', function ($q) use ($inventory) {
+                $q->where('product_id', $inventory->product_id);
+            })->exists();
 
             $inventory->inventoryMovements()->create([
                 'type' => 'in',
                 'quantity' => $inventory->stock,
                 'unit_price' => $inventory->purchase_price ?? 0,
                 'total_price' => ($inventory->purchase_price ?? 0) * $inventory->stock,
-                'reference' => 'Registro inicial',
-                'notes' => 'Creación de inventario',
+                'reference' => $isFirst ? 'Inventario Inicial' : 'Registro inicial',
+                'notes' => $isFirst ? 'Primer registro de inventario para este producto' : 'Creación de inventario',
                 'user_id' => auth()->id(),
             ]);
 

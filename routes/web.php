@@ -7,7 +7,6 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EntityController;
-use App\Http\Controllers\Admin\InactiveUserController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\InventoryMovementController;
 use App\Http\Controllers\Admin\PaymentMethodController;
@@ -18,6 +17,7 @@ use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Admin\UnitMeasureController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WarehouseController;
+use App\Http\Controllers\Admin\KardexController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -107,6 +107,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('inventory_movements/search', [InventoryMovementController::class, 'search'])->name('inventory_movements.search');
     Route::get('inventory_movements/export', [InventoryMovementController::class, 'export'])->name('inventory_movements.export');
     Route::resource('inventory_movements', InventoryMovementController::class);
+
+    // Kardex
+    Route::get('kardex', [KardexController::class, 'index'])->name('kardex.index');
+    Route::get('kardex/export', [KardexController::class, 'exportPdf'])->name('kardex.export');
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');

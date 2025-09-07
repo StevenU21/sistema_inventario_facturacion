@@ -95,6 +95,14 @@
                             <span class="ml-4">Almacenes</span>
                         </a>
                     </li>
+
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('kardex.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('kardex.index') }}">
+                            <i class="fas fa-book w-5 h-5"></i>
+                            <span class="ml-4">Reporte Kardex</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
 
