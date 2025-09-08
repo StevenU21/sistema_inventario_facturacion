@@ -113,6 +113,14 @@ class AuditTranslation
                 'address' => 'Dirección',
                 'description' => 'Descripción',
             ],
+            'Color' => [
+                'name' => 'Nombre',
+                'hex_code' => 'Código Hexadecimal',
+            ],
+            'Size' => [
+                'name' => 'Nombre',
+                'description' => 'Descripción',
+            ],
         ];
     }
 
@@ -149,6 +157,8 @@ class AuditTranslation
             'Inventory' => 'Inventario',
             'InventoryMovement' => 'Movimiento de Inventario',
             'Warehouse' => 'Almacén',
+            'Color' => 'Color',
+            'Size' => 'Talla',
         ];
     }
     /**

@@ -22,15 +22,15 @@
         <!-- Fin mensajes de éxito -->
 
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
-            <div class="flex flex-row flex-wrap items-center gap-x-4 gap-y-4 mb-2">
+            <div class="flex flex-row flex-wrap items-center gap-x-1 gap-y-0.5 mb-0">
                 <form method="GET" action="{{ route('products.search') }}"
-                    class="flex flex-row gap-x-4 items-center flex-1 min-w-[280px]">
-                    <div class="flex flex-col p-1 flex-1">
+                    class="flex flex-row gap-x-1 items-center flex-1 min-w-[280px]">
+                    <div class="flex flex-col p-0">
                         <input type="text" name="search" id="search" value="{{ request('search') }}"
-                            class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-full text-sm font-medium"
+                            class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
                             placeholder="Nombre...">
                     </div>
-                    <div class="flex flex-col p-1">
+                    <div class="flex flex-col p-0">
                         <button type="submit"
                             class="flex items-center justify-center px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
                             Buscar
@@ -38,7 +38,7 @@
                     </div>
                 </form>
 
-                <div class="flex items-center gap-2 ml-auto shrink-0">
+                <div class="flex items-center gap-0.5 ml-auto shrink-0">
                     <form method="GET" action="{{ route('products.export') }}">
                         <input type="hidden" name="search" value="{{ request('search') }}">
                         <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
@@ -179,12 +179,12 @@
                 </div>
             </x-show-modal>
 
-            <div class="flex flex-row flex-wrap gap-x-4 gap-y-4 items-end justify-between mb-4">
+            <div class="flex flex-row flex-wrap gap-x-1 gap-y-1 items-end justify-between mb-4">
                 <form method="GET" action="{{ route('products.search') }}"
-                    class="flex flex-row flex-wrap gap-x-4 gap-y-4 items-end self-end">
-                    <div class="flex flex-col p-1">
+                    class="flex flex-row flex-wrap gap-x-1 gap-y-1 items-end self-end">
+                    <div class="flex flex-col p-0.5">
                         <select name="per_page" id="per_page"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-16 text-sm font-medium"
+                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-20 text-sm font-medium"
                             onchange="this.form.submit()">
                             <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
                             <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
@@ -193,9 +193,9 @@
                             <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                         </select>
                     </div>
-                    <div class="flex flex-col p-1">
+                    <div class="flex flex-col p-0.5">
                         <select name="category_id" id="category_id"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
                             onchange="this.form.submit()">
                             <option value="">Todas las categorías</option>
                             @foreach ($categories as $id => $name)
@@ -205,9 +205,9 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="flex flex-col p-1">
+                    <div class="flex flex-col p-0.5">
                         <select name="brand_id" id="brand_id"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
                             onchange="this.form.submit()">
                             <option value="">Todas las marcas</option>
                             @foreach ($brands as $id => $name)
@@ -216,9 +216,9 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="flex flex-col p-1">
+                    <div class="flex flex-col p-0.5">
                         <select name="entity_id" id="entity_id"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-48 text-sm font-medium"
                             onchange="this.form.submit()">
                             <option value="">Todos los proveedores</option>
                             @foreach ($entities as $id => $name)
@@ -227,9 +227,9 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="flex flex-col p-1">
+                    <div class="flex flex-col p-0.5">
                         <select name="tax_id" id="tax_id"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
                             onchange="this.form.submit()">
                             <option value="">Todos los impuestos</option>
                             @foreach ($taxes as $id => $name)
@@ -238,9 +238,9 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="flex flex-col p-1">
+                    <div class="flex flex-col p-0.5">
                         <select name="unit_measure_id" id="unit_measure_id"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
                             onchange="this.form.submit()">
                             <option value="">Todas las medidas</option>
                             @foreach ($units as $id => $name)
@@ -249,9 +249,9 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="flex flex-col p-1">
+                    <div class="flex flex-col p-0.5">
                         <select name="status" id="status"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
                             onchange="this.form.submit()">
                             <option value="">Todos los estados</option>
                             <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Disponible
@@ -344,10 +344,9 @@
                                                             <x-slot name="title">Detalle del Producto
                                                                 #{{ $product->id }}</x-slot>
                                                             <x-slot name="description"></x-slot>
-                                                            @include(
-                                                                'admin.products.partials.show_card',
-                                                                ['product' => $product]
-                                                            )
+                                                            @include('admin.products.partials.show_card', [
+                                                                'product' => $product,
+                                                            ])
                                                         </x-modal>
                                                     </div>
                                                     <button type="button"

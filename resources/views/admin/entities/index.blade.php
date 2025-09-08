@@ -93,7 +93,7 @@
                 </form>
                 <button type="button" @click="isModalOpen = true"
                     class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600 ml-2">
-                    <span>Crear Entidad</span>
+                    <span>Crear Registro</span>
                     <i class="fas fa-plus ml-2"></i>
                 </button>
             </div>
