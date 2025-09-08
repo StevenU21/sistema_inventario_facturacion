@@ -46,6 +46,8 @@ class DatabaseSeeder extends Seeder
         // PaymentMethod::factory()->count(10)->create();
         // Tax::factory()->count(10)->create();
         // Entity::factory()->count(50)->create();
+        // Size::factory()->count(10)->create();
+        // Color::factory()->count(10)->create();
 
         $this->call(CategorySeeder::class);
         $this->call(BrandSeeder::class);

@@ -27,7 +27,9 @@ class RolesAndPermissionSeeder extends Seeder
         'roles' => [],
         'warehouses' => [],
         'inventories' => [],
-        'inventory_movements' => ['read']
+        'inventory_movements' => ['read'],
+        'sizes' => [],
+        'colors' => [],
     ];
 
     const SPECIAL_PERMISSIONS = [
@@ -36,7 +38,9 @@ class RolesAndPermissionSeeder extends Seeder
         'users' => ['reactivate users', 'export users'],
         'audits' => ['export audits'],
         'entities' => ['read suppliers', 'create suppliers', 'update suppliers', 'read clients', 'create clients', 'update clients', 'export clients', 'export suppliers'],
-        'inventory_movements' => ['export inventory_movements']
+        'inventory_movements' => ['export inventory_movements'],
+        'inventories' => ['export inventories'],
+        'kardex' => ['export kardex'],
     ];
 
     /**
@@ -91,7 +95,9 @@ class RolesAndPermissionSeeder extends Seeder
             $this->filterPermissions('roles')->only(['read roles'])->get(),
             $this->filterPermissions('warehouses')->only(['read warehouses'])->get(),
             $this->filterPermissions('inventories')->only(['read inventories'])->get(),
-            $this->filterPermissions('inventory_movements')->only(['read inventory_movements'])->get()
+            $this->filterPermissions('inventory_movements')->only(['read inventory_movements'])->get(),
+            $this->filterPermissions('sizes')->only(['read sizes'])->get(),
+            $this->filterPermissions('colors')->only(['read colors'])->get(),
         );
 
         $cashierRole->givePermissionTo($cashierPermissions);

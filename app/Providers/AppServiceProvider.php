@@ -2,13 +2,13 @@
 
 namespace App\Providers;
 
-use App\Models\Department;
+use App\Models\Color;
 use App\Models\Entity;
 use App\Models\Inventory;
 use App\Models\InventoryMovement;
-use App\Models\Municipality;
 use App\Models\PaymentMethod;
 use App\Models\Product;
+use App\Models\Size;
 use App\Models\Tax;
 use App\Models\User;
 use App\Models\Brand;
@@ -18,15 +18,15 @@ use App\Models\UnitMeasure;
 use App\Models\Category;
 use App\Models\Warehouse;
 use App\Policies\BackupPolicy;
+use App\Policies\ColorPolicy;
 use App\Policies\CompanyPolicy;
-use App\Policies\DepartmentPolicy;
 use App\Policies\EntityPolicy;
 use App\Policies\InventoryMovementPolicy;
 use App\Policies\InventoryPolicy;
-use App\Policies\MunicipalityPolicy;
 use App\Policies\PaymentMethodPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\RolePolicy;
+use App\Policies\SizePolicy;
 use App\Policies\TaxPolicy;
 use App\Policies\UnitMeasurePolicy;
 use App\Policies\UserPolicy;
@@ -74,5 +74,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Warehouse::class, WarehousePolicy::class);
         Gate::policy(Inventory::class, InventoryPolicy::class);
         Gate::policy(InventoryMovement::class, InventoryMovementPolicy::class);
+        Gate::policy(Size::class, SizePolicy::class);
+        Gate::policy(Color::class, ColorPolicy::class);
     }
 }
