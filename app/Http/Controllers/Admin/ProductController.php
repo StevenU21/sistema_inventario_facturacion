@@ -15,7 +15,7 @@ use App\Services\FileService;
 use App\Services\ModelSearchService;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {

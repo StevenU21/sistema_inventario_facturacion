@@ -55,6 +55,7 @@ class ProductsExport implements FromCollection, WithHeadings
                 'barcode' => $product->barcode,
                 'tax' => $tax,
                 'created_at' => optional($product->created_at)->format('d/m/Y H:i:s'),
+                'updated_at' => optional($product->updated_at)->format('d/m/Y H:i:s'),
             ];
         });
     }
@@ -72,6 +73,7 @@ class ProductsExport implements FromCollection, WithHeadings
             'Código de barras',
             'Impuesto',
             'Creado',
+            'Actualizado',
         ];
     }
 }

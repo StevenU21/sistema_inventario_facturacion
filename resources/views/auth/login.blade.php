@@ -25,17 +25,19 @@
     @else
         <div class="flex flex-col overflow-y-auto md:flex-row">
             <div class="h-32 md:h-auto md:w-1/2">
-                <img aria-hidden="true" class="object-cover w-full h-full dark:hidden" src="{{ asset('img/login-office.jpeg') }}"
+                <img aria-hidden="true" class="object-cover w-full h-full dark:hidden"
+                    src="{{ asset('img/login-office.jpeg') }}" alt="Office" />
+                <img aria-hidden="true" class="hidden object-cover w-full h-full dark:block" src="{{ asset('img/store.jfif') }}"
                     alt="Office" />
-                <img aria-hidden="true" class="hidden object-cover w-full h-full dark:block"
-                    src="{{ asset('img/login-office-dark.jpeg') }}" alt="Office" />
             </div>
             <form method="POST" action="{{ route('login') }}" class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
                 @csrf
                 <div class="w-full">
-                    <h1 class="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200">
-                        Iniciar sesión
+                    <h1
+                        class="mb-6 text-6xl sm:text-7xl md:text-8xl font-extrabold tracking-tight leading-none text-gray-800 dark:text-gray-100 text-center">
+                        BLESSA BOUTIQUE
                     </h1>
+
                     <label class="block text-sm">
                         <span class="text-gray-700 dark:text-gray-400">Correo electrónico</span>
                         <input
