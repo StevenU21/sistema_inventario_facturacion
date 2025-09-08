@@ -17,10 +17,10 @@
 
         <x-session-message />
 
-        <div class="flex flex-row flex-wrap items-center gap-x-4 gap-y-4 mb-2">
+    <div class="flex flex-row flex-wrap items-center gap-x-2 gap-y-1 mb-0.5">
             <form method="GET" action="{{ route('entities.search') }}"
-                class="flex flex-row gap-x-4 items-center flex-1 min-w-[280px]">
-                <div class="flex flex-col p-1">
+                class="flex flex-row gap-x-2 items-center flex-1 min-w-[280px]">
+                <div class="flex flex-col p-0.5">
                     <select name="per_page" id="per_page"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-16 text-sm font-medium"
                         onchange="this.form.submit()">
@@ -31,18 +31,18 @@
                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                     </select>
                 </div>
-                <div class="flex flex-col p-1 flex-1">
+                <div class="flex flex-col p-0.5 flex-1">
                     <input type="text" name="search" id="search" value="{{ request('search') }}"
                         class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-full text-sm font-medium"
                         placeholder="Nombre, cédula, correo...">
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <button type="submit"
                         class="flex items-center justify-center px-4 py-2 w-28 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
                         Buscar
                     </button>
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <select name="is_client"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-28 text-sm font-medium"
                         onchange="this.form.submit()">
@@ -51,7 +51,7 @@
                         <option value="0" {{ request('is_client') === '0' ? 'selected' : '' }}>No</option>
                     </select>
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <select name="is_supplier"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
                         onchange="this.form.submit()">
@@ -60,7 +60,7 @@
                         <option value="0" {{ request('is_supplier') === '0' ? 'selected' : '' }}>No</option>
                     </select>
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <select name="is_active"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-28 text-sm font-medium"
                         onchange="this.form.submit()">
@@ -71,7 +71,7 @@
                 </div>
             </form>
 
-            <div class="flex items-center gap-2 ml-auto shrink-0">
+            <div class="flex items-center gap-1 ml-auto shrink-0">
                 <form method="GET" action="{{ route('entities.export') }}">
                     @if(request()->filled('search'))
                         <input type="hidden" name="search" value="{{ request('search') }}">
