@@ -2,7 +2,17 @@
 @section('title', 'Usuarios')
 
 @section('content')
-    <div class="container grid px-6 mx-auto">
+    <div class="container grid px-6 mx-auto" x-data="{
+        isModalOpen: false,
+        isEditModalOpen: false,
+        isShowModalOpen: false,
+        editAction: '',
+        showUser: { id: '', name: '', email: '', role: '', status: '', gender: '', phone: '', identity_card: '', formatted_created_at: '', formatted_updated_at: '' },
+        editUser: { id: '', first_name: '', last_name: '', email: '', role: '', gender: '', phone: '', identity_card: '', address: '', avatar_url: '' },
+        closeModal() { this.isModalOpen = false },
+        closeEditModal() { this.isEditModalOpen = false },
+        closeShowModal() { this.isShowModalOpen = false }
+    }">
         <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
             Usuarios
         </h2>
@@ -81,13 +91,81 @@
                         <i class="fas fa-file-excel ml-2"></i>
                     </button>
                 </form>
-                <a href="{{ route('users.create') }}"
+                <button type="button" @click="isModalOpen = true"
                     class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600 ml-2">
                     <span>Crear Usuario</span>
                     <i class="fas fa-user-plus ml-2"></i>
-                </a>
+                </button>
             </div>
         </div>
+
+        <!-- Modales: Editar, Crear, Ver -->
+        <x-edit-modal :title="'Editar Usuario'" :description="'Modifica los datos del usuario seleccionado.'">
+            <form :action="editAction" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="id" :value="editUser.id">
+                @include('admin.users.form', ['alpine' => true])
+            </form>
+        </x-edit-modal>
+
+        <x-modal :title="'Crear Usuario'" :description="'Agrega un nuevo usuario al sistema.'">
+            <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @include('admin.users.form', ['alpine' => false])
+            </form>
+        </x-modal>
+
+    <x-show-modal :title="'Detalle de Usuario'" :description="'Consulta los datos del usuario seleccionado.'">
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="md:col-span-2 space-y-4">
+                    <div class="border-b pb-3">
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <i class="fas fa-user text-purple-600 dark:text-purple-400"></i>
+                            <span x-text="showUser.name"></span>
+                        </h2>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm" x-text="showUser.email"></p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                            <i class="fas fa-hashtag text-purple-600 dark:text-purple-400"></i>
+                            <strong>ID:</strong> <span x-text="showUser.id"></span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                            <i class="fas fa-user-tag text-purple-600 dark:text-purple-400"></i>
+                            <strong>Rol:</strong> <span x-text="showUser.role"></span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                            <i class="fas fa-toggle-on text-purple-600 dark:text-purple-400"></i>
+                            <strong>Estado:</strong> <span x-text="showUser.status"></span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                            <i class="fas fa-venus-mars text-purple-600 dark:text-purple-400"></i>
+                            <strong>Género:</strong> <span x-text="showUser.gender"></span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                            <i class="fas fa-phone text-purple-600 dark:text-purple-400"></i>
+                            <strong>Teléfono:</strong> <span x-text="showUser.phone"></span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                            <i class="fas fa-id-card text-purple-600 dark:text-purple-400"></i>
+                            <strong>Cédula:</strong> <span x-text="showUser.identity_card"></span>
+                        </div>
+                    </div>
+                    <div
+                        class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t pt-3 text-xs text-gray-500 dark:text-gray-400">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-calendar-alt text-purple-500"></i>
+                            <strong>Registro:</strong> <span x-text="showUser.formatted_created_at"></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-clock text-purple-500"></i>
+                            <strong>Actualización:</strong> <span x-text="showUser.formatted_updated_at"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </x-show-modal>
 
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
@@ -181,16 +259,47 @@
                                                 aria-label="Asignar Permisos">
                                                 <i class="fas fa-user-shield mr-2"></i> Permisos
                                             </a>
-                                            <a href="{{ route('users.show', $user) }}"
+                                            <button type="button"
                                                 class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                aria-label="Ver">
+                                                aria-label="Ver"
+                                                @click='
+                                                    showUser = {
+                                                        id: {{ $user->id }},
+                                                        name: @json($user->short_name),
+                                                        email: @json($user->email ?? "-"),
+                                                        role: @json($user->roles->count() ? ($user->formatted_role_name ?? "-") : "Sin rol"),
+                                                        status: @json($user->is_active ? "Activo" : "Inactivo"),
+                                                        gender: @json($user->profile->gender ?? "-"),
+                                                        phone: @json($user->profile->formatted_phone ?? "-"),
+                                                        identity_card: @json($user->profile->formatted_identity_card ?? "-"),
+                                                        formatted_created_at: @json(optional($user->created_at)->format("d/m/Y H:i") ?? ""),
+                                                        formatted_updated_at: @json(optional($user->updated_at)->format("d/m/Y H:i") ?? ""),
+                                                    };
+                                                    isShowModalOpen = true;
+                                                '>
                                                 <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('users.edit', $user) }}"
+                                            </button>
+                                            <button type="button"
                                                 class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                                aria-label="Editar">
+                                                aria-label="Editar"
+                                                @click='
+                                                    editUser = {
+                                                        id: {{ $user->id }},
+                                                        first_name: @json($user->first_name ?? ""),
+                                                        last_name: @json($user->last_name ?? ""),
+                                                        email: @json($user->email ?? ""),
+                                                        role: @json(optional($user->roles->first())->name ?? ""),
+                                                        gender: @json($user->profile->gender ?? ""),
+                                                        phone: @json($user->profile->phone ?? ""),
+                                                        identity_card: @json($user->profile->identity_card ?? ""),
+                                                        address: @json($user->profile->address ?? ""),
+                                                        avatar_url: @json(($user->profile && $user->profile->avatar) ? asset('storage/' . $user->profile->avatar) : ""),
+                                                    };
+                                                    editAction = `{{ route('users.update', $user) }}`;
+                                                    isEditModalOpen = true;
+                                                '>
                                                 <i class="fas fa-edit"></i>
-                                            </a>
+                                            </button>
                                             <form action="{{ route('users.destroy', $user) }}" method="POST"
                                                 onsubmit="return confirm('¿Estás seguro de desactivar este usuario?');">
                                                 @csrf
