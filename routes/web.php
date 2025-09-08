@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AuditController;
 use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ColorController;
 use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EntityController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Admin\UnitMeasureController;
 use App\Http\Controllers\Admin\UserController;
@@ -78,6 +80,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Taxes
     Route::resource('taxes', TaxController::class);
+
+    // Colors
+    Route::get('colors/search', [ColorController::class, 'search'])->name('colors.search');
+    Route::resource('colors', ColorController::class);
+
+    // Sizes
+    Route::get('sizes/search', [SizeController::class, 'search'])->name('sizes.search');
+    Route::resource('sizes', SizeController::class);
 
     // Entities
     Route::get('entities/search', [EntityController::class, 'search'])->name('entities.search');
