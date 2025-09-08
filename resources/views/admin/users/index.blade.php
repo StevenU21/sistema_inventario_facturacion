@@ -39,7 +39,7 @@
                 <div class="flex flex-col p-1">
                     <input type="text" name="search" id="search" value="{{ request('search') }}"
                         class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
-                        placeholder="Nombre, email o rol...">
+                        placeholder="Nombre, apellido, cedula...">
                 </div>
                 <div class="flex flex-col p-1">
                     <label class="invisible block text-sm font-medium">.</label>

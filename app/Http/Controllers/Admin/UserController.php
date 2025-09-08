@@ -46,6 +46,7 @@ class UserController extends Controller
                 'first_name',
                 'last_name',
                 'email',
+                'profile.identity_card',
                 'roles.name',
                 'roles.display_name',
                 'roles.description',
