@@ -17,22 +17,25 @@
 
         <!-- Permisos heredados por roles -->
         <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">Permisos heredados por roles</label>
-            @if($rolePermissions->count())
+            <label class="block text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">Permisos heredados por
+                roles</label>
+            @if ($rolePermissions->count())
                 <div class="overflow-x-auto">
                     <table class="w-full table-fixed">
                         <tbody>
-                            @foreach($rolePermissions->chunk(4) as $row)
+                            @foreach ($rolePermissions->chunk(4) as $row)
                                 <tr>
-                                    @foreach($row as $perm)
+                                    @foreach ($row as $index => $perm)
                                         <td class="px-2 py-2 align-middle">
-                                            <label class="flex items-center space-x-2 font-semibold text-gray-400 dark:text-gray-500 opacity-80 cursor-not-allowed">
+                                            <label
+                                                class="flex items-center space-x-2 font-semibold text-gray-400 dark:text-gray-500 opacity-80 cursor-not-allowed">
                                                 <input type="checkbox" checked disabled class="form-checkbox">
-                                                <span class="uppercase">{{ $perm }}</span>
+                                                <span
+                                                    class="uppercase">{{ $translatedRolePermissions[$perm] ?? \App\Classes\PermissionTranslator::translate($perm) }}</span>
                                             </label>
                                         </td>
                                     @endforeach
-                                    @for($i = $row->count(); $i < 4; $i++)
+                                    @for ($i = $row->count(); $i < 4; $i++)
                                         <td></td>
                                     @endfor
                                 </tr>
@@ -48,24 +51,27 @@
         <!-- Permisos especiales (directos) -->
         <form action="{{ route('users.permissions.assign', $user) }}" method="POST" class="w-full">
             @csrf
-            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-400 mb-2">Permisos especiales (directos)</label>
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-400 mb-2">Permisos especiales
+                (directos)</label>
             {{-- La lógica de permisos ya viene procesada desde el controlador --}}
-            @if($displayPermissions->count())
+            @if ($displayPermissions->count())
                 <div class="overflow-x-auto">
                     <table class="w-full table-fixed">
                         <tbody>
-                            @foreach($displayPermissions->chunk(4) as $row)
+                            @foreach ($displayPermissions->chunk(4) as $row)
                                 <tr>
-                                    @foreach($row as $perm)
+                                    @foreach ($row as $index => $perm)
                                         <td class="px-2 py-2 align-middle">
-                                            <label class="flex items-center space-x-2 font-semibold text-gray-700 dark:text-gray-300">
-                                                <input type="checkbox" name="permission[]" value="{{ $perm }}" class="form-checkbox"
-                                                    @if($directPermissions->contains($perm)) checked @endif>
-                                                <span class="uppercase">{{ $perm }}</span>
+                                            <label
+                                                class="flex items-center space-x-2 font-semibold text-gray-700 dark:text-gray-300">
+                                                <input type="checkbox" name="permission[]" value="{{ $perm }}"
+                                                    class="form-checkbox" @if ($directPermissions->contains($perm)) checked @endif>
+                                                <span
+                                                    class="uppercase">{{ $translatedDisplayPermissions[$perm] ?? \App\Classes\PermissionTranslator::translate($perm) }}</span>
                                             </label>
                                         </td>
                                     @endforeach
-                                    @for($i = $row->count(); $i < 4; $i++)
+                                    @for ($i = $row->count(); $i < 4; $i++)
                                         <td></td>
                                     @endfor
                                 </tr>
@@ -80,8 +86,10 @@
                     </button>
                 </div>
             @else
-                <div class="text-gray-700 dark:text-gray-300 italic py-4">No hay permisos especiales disponibles para asignar.</div>
+                <div class="text-gray-700 dark:text-gray-300 italic py-4">No hay permisos especiales disponibles para
+                    asignar.</div>
             @endif
         </form>
     </div>
 @endsection
+    

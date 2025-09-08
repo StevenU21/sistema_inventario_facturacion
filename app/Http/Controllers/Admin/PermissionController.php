@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Spatie\Permission\Models\Permission;
+use App\Classes\PermissionTranslator;
 
 class PermissionController extends Controller
 {
@@ -20,7 +21,21 @@ class PermissionController extends Controller
         $allPermissions = Permission::all()->pluck('name');
         $specialPermissions = $allPermissions->diff($rolePermissions);
         $displayPermissions = $specialPermissions;
-        return view('admin.permissions.edit', compact('user', 'directPermissions', 'rolePermissions', 'displayPermissions'));
+
+        // Traducción de permisos
+        $translatedDirectPermissions = PermissionTranslator::translateMany($directPermissions);
+        $translatedRolePermissions = PermissionTranslator::translateMany($rolePermissions);
+        $translatedDisplayPermissions = PermissionTranslator::translateMany($displayPermissions);
+
+        return view('admin.permissions.edit', [
+            'user' => $user,
+            'directPermissions' => $directPermissions,
+            'rolePermissions' => $rolePermissions,
+            'displayPermissions' => $displayPermissions,
+            'translatedDirectPermissions' => $translatedDirectPermissions,
+            'translatedRolePermissions' => $translatedRolePermissions,
+            'translatedDisplayPermissions' => $translatedDisplayPermissions,
+        ]);
     }
 
     public function assignPermission(Request $request, User $user)
