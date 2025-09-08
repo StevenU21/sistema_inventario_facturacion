@@ -12,9 +12,9 @@
         <!-- End Success Messages -->
 
         <!-- Filtros, búsqueda -->
-        <div class="flex flex-wrap gap-x-8 gap-y-4 items-end justify-between mb-4">
+    <div class="flex flex-wrap gap-x-1 gap-y-1 items-end justify-between mb-4">
             <form method="GET" action="{{ route('users.search') }}"
-                class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
+                class="flex flex-wrap gap-x-1 gap-y-1 items-end self-end">
                 <div class="flex flex-col p-1">
                     <select name="per_page" id="per_page"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-16 text-sm font-medium"

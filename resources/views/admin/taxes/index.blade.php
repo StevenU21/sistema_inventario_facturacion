@@ -24,10 +24,10 @@
         <!-- Fin mensajes de éxito -->
 
         <!-- Filtros, búsqueda -->
-        <div class="flex flex-wrap gap-x-8 gap-y-4 items-end justify-between mb-4">
+        <div class="flex flex-wrap gap-x-1 gap-y-1 items-end justify-between mb-4">
             <form method="GET" action="{{ route('taxes.search') }}"
-                class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
-                <div class="flex flex-col p-1">
+                class="flex flex-wrap gap-x-1 gap-y-1 items-end self-end">
+                <div class="flex flex-col p-0.5">
                     <select name="per_page" id="per_page"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-16 text-sm font-medium"
                         onchange="this.form.submit()">
@@ -38,12 +38,12 @@
                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                     </select>
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <input type="text" name="search" id="search" value="{{ request('search') }}"
                         class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
                         placeholder="Nombre o descripción...">
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <label class="invisible block text-sm font-medium">.</label>
                     <button type="submit"
                         class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
@@ -52,7 +52,7 @@
                 </div>
             </form>
             @can('create taxes')
-            <div class="flex flex-col p-1">
+            <div class="flex flex-col p-0.5">
                 <label class="invisible block text-sm font-medium">.</label>
                 <button @click="isModalOpen = true" type="button"
                     class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600">

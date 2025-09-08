@@ -9,10 +9,10 @@
 
         <x-session-message />
 
-        <div class="flex flex-wrap gap-x-8 gap-y-4 items-end justify-between mb-4">
+        <div class="flex flex-wrap gap-x-1 gap-y-1 items-end justify-between mb-4">
             <form method="GET" action="{{ route('inventory_movements.search') }}"
-                class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
-                <div class="flex flex-col p-1">
+                class="flex flex-wrap gap-x-1 gap-y-1 items-end self-end">
+                <div class="flex flex-col p-0.5">
                     <select name="per_page" id="per_page"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-20 text-sm font-medium"
                         onchange="this.form.submit()">
@@ -23,7 +23,7 @@
                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                     </select>
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <select name="user_id" id="user_id"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-48 text-sm font-medium"
                         onchange="this.form.submit()">
@@ -36,7 +36,7 @@
                         @endisset
                     </select>
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <select name="product_id" id="product_id"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-48 text-sm font-medium"
                         onchange="this.form.submit()">
@@ -49,7 +49,7 @@
                         @endisset
                     </select>
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <select name="warehouse_id" id="warehouse_id"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-48 text-sm font-medium"
                         onchange="this.form.submit()">
@@ -62,7 +62,7 @@
                         @endisset
                     </select>
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <select name="type" id="type"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
                         onchange="this.form.submit()">
@@ -76,7 +76,7 @@
                     </select>
                 </div>
             </form>
-            <div class="flex flex-col p-1">
+            <div class="flex flex-col p-0.5">
                 <label class="invisible block text-sm font-medium">.</label>
                 <form method="GET" action="{{ route('inventory_movements.export') }}">
                     <input type="hidden" name="per_page" value="{{ request('per_page') }}">

@@ -23,10 +23,10 @@
             </ul>
         </div>
 
-        <div class="flex flex-wrap gap-x-8 gap-y-4 items-end justify-between mb-4">
+    <div class="flex flex-wrap gap-x-1 gap-y-1 items-end justify-between mb-4">
             <form method="GET" action="{{ route('kardex.index') }}"
-                class="flex flex-wrap gap-x-4 gap-y-4 items-end self-end">
-                <div class="flex flex-col p-1">
+                class="flex flex-wrap gap-x-1 gap-y-1 items-end self-end">
+                <div class="flex flex-col p-0.5">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Producto</label>
                     <select name="product_id"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-64 text-sm font-medium">
@@ -38,7 +38,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Almacén</label>
                     <select name="warehouse_id"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium">
@@ -50,7 +50,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Seleccionar Kardex</label>
                     <select name="metodo"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium">
@@ -60,17 +60,17 @@
                         <option value="ueps" {{ request('metodo') == 'ueps' ? 'selected' : '' }}>UEPS (LIFO)</option>
                     </select>
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Desde</label>
                     <input type="date" name="from" value="{{ $from }}"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-44 text-sm font-medium" />
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Hasta</label>
                     <input type="date" name="to" value="{{ $to }}"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-44 text-sm font-medium" />
                 </div>
-                <div class="flex flex-col p-1">
+                <div class="flex flex-col p-0.5">
                     <label class="invisible block text-sm font-medium">.</label>
                     <button type="submit"
                         class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
@@ -80,7 +80,7 @@
             </form>
 
             @if ($kardexModel)
-                <div class="flex flex-row p-1 gap-x-4 items-end">
+                <div class="flex flex-row p-0.5 gap-x-1 items-end">
                     <label class="invisible block text-sm font-medium">.</label>
                     <a href="{{ route('kardex.export', request()->all()) }}" target="_blank"
                         class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
