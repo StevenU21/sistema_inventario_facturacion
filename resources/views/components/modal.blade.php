@@ -1,4 +1,4 @@
-@props(['maxWidth' => 'xl'])
+@props(['maxWidth' => 'xl', 'title' => null, 'description' => null])
 @php
     $sizes = [
         'sm' => 'sm:max-w-sm',
