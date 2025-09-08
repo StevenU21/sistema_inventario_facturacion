@@ -29,7 +29,7 @@
     <script src="{{ asset('js/charts-lines.js') }}" defer></script>
     <script src="{{ asset('js/charts-pie.js') }}" defer></script>
 </head>
-
+ 
 <body>
     <!-- Loading Screen -->
     <div id="app-loader"
