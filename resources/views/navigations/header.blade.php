@@ -30,14 +30,9 @@
         <ul class="flex items-center flex-shrink-0 space-x-6">
             <!-- Theme toggler -->
             <li class="flex">
-                <button class="rounded-md focus:outline-none focus:shadow-outline-purple" @click="toggleTheme"
-                    aria-label="Toggle color mode">
-                    <template x-if="!dark">
-                        <i class="fas fa-sun w-5 h-5"></i>
-                    </template>
-                    <template x-if="dark">
-                        <i class="fas fa-moon w-5 h-5"></i>
-                    </template>
+                <button class="rounded-md focus:outline-none focus:shadow-outline-purple" @click="toggleTheme" aria-label="Toggle color mode">
+                    <i class="fas fa-sun w-5 h-5" x-show="!dark"></i>
+                    <i class="fas fa-moon w-5 h-5" x-show="dark"></i>
                 </button>
             </li>
             <!-- Notifications menu -->
