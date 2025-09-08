@@ -9,7 +9,8 @@
         <x-session-message />
 
         <div class="flex flex-wrap gap-x-1 gap-y-1 items-end justify-between mb-4">
-            <form method="GET" action="{{ route('inventories.search') }}" class="flex flex-wrap gap-x-1 gap-y-1 items-end self-end">
+            <form method="GET" action="{{ route('inventories.search') }}"
+                class="flex flex-wrap gap-x-1 gap-y-1 items-end self-end">
                 <div class="flex flex-col p-0.5">
                     <select name="per_page" id="per_page"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-16 text-sm font-medium"
@@ -21,7 +22,7 @@
                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                     </select>
                 </div>
-            <div class="flex flex-col p-0.5">
+                <div class="flex flex-col p-0.5">
                     <select name="product_id" id="product_id"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
                         onchange="this.form.submit()">
@@ -34,7 +35,7 @@
                         @endisset
                     </select>
                 </div>
-            <div class="flex flex-col p-0.5">
+                <div class="flex flex-col p-0.5">
                     <select name="warehouse_id" id="warehouse_id"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
                         onchange="this.form.submit()">
@@ -60,7 +61,7 @@
                     </button>
                 </form>
                 <!-- Create Modal Trigger + Modal -->
-                <div x-data="{ isModalOpen: false, closeModal(){ this.isModalOpen=false } }" class="ml-2">
+                <div x-data="{ isModalOpen: false, closeModal() { this.isModalOpen = false } }" class="ml-2">
                     <button @click="isModalOpen = true"
                         class="flex items-center justify-center px-4 py-2 w-48 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600">
                         <span>Nuevo Inventario</span>
@@ -85,26 +86,33 @@
                         <tr
                             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="id" label="ID" route="inventories.search" icon="<i class='fas fa-hashtag mr-2'></i>" />
+                                <x-table-sort-header field="id" label="ID" route="inventories.search"
+                                    icon="<i class='fas fa-hashtag mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="product_id" label="Producto" route="inventories.search" icon="<i class='fas fa-box mr-2'></i>" />
+                                <x-table-sort-header field="product_id" label="Producto" route="inventories.search"
+                                    icon="<i class='fas fa-box mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3"><i class="fas fa-image mr-2"></i>Imagen</th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="warehouse_id" label="Almacén" route="inventories.search" icon="<i class='fas fa-warehouse mr-2'></i>" />
+                                <x-table-sort-header field="warehouse_id" label="Almacén" route="inventories.search"
+                                    icon="<i class='fas fa-warehouse mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="stock" label="Stock" route="inventories.search" icon="<i class='fas fa-cubes mr-2'></i>" />
+                                <x-table-sort-header field="stock" label="Stock" route="inventories.search"
+                                    icon="<i class='fas fa-cubes mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="min_stock" label="Mínimo" route="inventories.search" icon="<i class='fas fa-exclamation-triangle mr-2'></i>" />
+                                <x-table-sort-header field="min_stock" label="Mínimo" route="inventories.search"
+                                    icon="<i class='fas fa-exclamation-triangle mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="purchase_price" label="Compra" route="inventories.search" icon="<i class='fas fa-money-bill-wave mr-2'></i>" />
+                                <x-table-sort-header field="purchase_price" label="Compra" route="inventories.search"
+                                    icon="<i class='fas fa-money-bill-wave mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="sale_price" label="Venta" route="inventories.search" icon="<i class='fas fa-dollar-sign mr-2'></i>" />
+                                <x-table-sort-header field="sale_price" label="Venta" route="inventories.search"
+                                    icon="<i class='fas fa-dollar-sign mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                         </tr>
@@ -135,7 +143,7 @@
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-4 text-sm">
                                         <!-- Edit/Movement Modal per row -->
-                                        <div x-data="{ isModalOpen:false, closeModal(){ this.isModalOpen=false } }">
+                                        <div x-data="{ isModalOpen: false, closeModal() { this.isModalOpen = false } }">
                                             <button @click="isModalOpen = true"
                                                 class="flex items-center px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green"
                                                 aria-label="Realizar Movimiento">
@@ -144,24 +152,31 @@
                                             <x-modal maxWidth="lg">
                                                 <x-slot name="title">Registrar Movimiento</x-slot>
                                                 <x-slot name="description"></x-slot>
-                                                <form action="{{ route('inventories.update', $inventory) }}" method="POST">
+                                                <form action="{{ route('inventories.update', $inventory) }}"
+                                                    method="POST">
                                                     @csrf
                                                     @method('PUT')
-                                                    @include('admin.inventories.form_edit', ['inventory' => $inventory, 'warehouses' => $warehouses])
+                                                    @include('admin.inventories.form_edit', [
+                                                        'inventory' => $inventory,
+                                                        'warehouses' => $warehouses,
+                                                    ])
                                                 </form>
                                             </x-modal>
                                         </div>
                                         <!-- Show Modal per row -->
-                                        <div x-data="{ isModalOpen:false, closeModal(){ this.isModalOpen=false } }">
+                                        <div x-data="{ isModalOpen: false, closeModal() { this.isModalOpen = false } }">
                                             <button @click="isModalOpen = true"
                                                 class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                                                 aria-label="Ver">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                             <x-modal maxWidth="md">
-                                                <x-slot name="title">Detalle de Inventario #{{ $inventory->id }}</x-slot>
+                                                <x-slot name="title">Detalle de Inventario
+                                                    #{{ $inventory->id }}</x-slot>
                                                 <x-slot name="description"></x-slot>
-                                                @include('admin.inventories.partials.show_card', ['inventory' => $inventory])
+                                                @include('admin.inventories.partials.show_card', [
+                                                    'inventory' => $inventory,
+                                                ])
                                             </x-modal>
                                         </div>
                                         <form action="{{ route('inventories.destroy', $inventory) }}" method="POST"
