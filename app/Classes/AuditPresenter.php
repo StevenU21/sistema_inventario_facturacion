@@ -46,8 +46,8 @@ class AuditPresenter
             'Fecha' => $activity->created_at->format('d/m/Y H:i:s'),
             'Usuario' => $activity->causer ? (($activity->causer->first_name ?? '') . ' ' . ($activity->causer->last_name ?? '')) : '-',
             'Evento' => $evento,
-            'Modelo' => $modelo,
-            'ID Modelo' => $activity->subject_id ?? '-',
+            'Registro' => $modelo,
+            'Nombre Registro' => $activity->subject_id ?? '-',
             'Antes' => self::arrayToString($oldFiltered),
             'Después' => self::arrayToString($attributesFiltered),
         ];

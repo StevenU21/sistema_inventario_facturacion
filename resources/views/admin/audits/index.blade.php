@@ -107,11 +107,11 @@
                                     icon="<i class='fas fa-bolt mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="subject_type" label="Modelo" route="audits.search"
+                                <x-table-sort-header field="subject_type" label="Registro" route="audits.search"
                                     :params="request()->except(['sort', 'direction'])" icon="<i class='fas fa-cube mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="subject_id" label="Nombre Modelo" route="audits.search"
+                                <x-table-sort-header field="subject_id" label="Nombre Registro" route="audits.search"
                                     :params="request()->except(['sort', 'direction'])" icon="<i class='fas fa-id-card mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">Antes</th>

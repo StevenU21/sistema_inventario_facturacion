@@ -41,7 +41,7 @@ class AuditExport implements FromCollection, WithHeadings
                 $presented['Fecha'],
                 $presented['Usuario'],
                 $presented['Evento'],
-                $presented['Modelo'],
+                $presented['Registro'],
                 $modelDisplay,
                 $presented['Antes'],
                 $presented['Después'],
@@ -52,6 +52,6 @@ class AuditExport implements FromCollection, WithHeadings
 
     public function headings(): array
     {
-        return ['ID', 'Fecha', 'Usuario', 'Evento', 'Modelo', 'Nombre Modelo', 'Antes', 'Después'];
+        return ['ID', 'Fecha', 'Usuario', 'Evento', 'Registro', 'Nombre Registro', 'Antes', 'Después'];
     }
 }
