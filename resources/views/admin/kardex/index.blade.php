@@ -29,7 +29,7 @@
                 <div class="flex flex-col p-0.5">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Producto</label>
                     <select name="product_id"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-64 text-sm font-medium">
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-60 text-sm font-medium">
                         <option value="">Seleccionar Producto</option>
                         @foreach ($products as $id => $name)
                             <option value="{{ $id }}"
@@ -41,7 +41,7 @@
                 <div class="flex flex-col p-0.5">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Almacén</label>
                     <select name="warehouse_id"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium">
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-50 text-sm font-medium">
                         <option value="">Seleccionar Almacén</option>
                         @foreach ($warehouses as $id => $name)
                             <option value="{{ $id }}"
@@ -53,7 +53,7 @@
                 <div class="flex flex-col p-0.5">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Seleccionar Kardex</label>
                     <select name="metodo"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium">
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-36 text-sm font-medium">
                         <option value="cpp" {{ request('metodo', 'cpp') == 'cpp' ? 'selected' : '' }}>Costo Promedio
                         </option>
                         <option value="peps" {{ request('metodo') == 'peps' ? 'selected' : '' }}>PEPS (FIFO)</option>
@@ -63,17 +63,17 @@
                 <div class="flex flex-col p-0.5">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Desde</label>
                     <input type="date" name="from" value="{{ $from }}"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-44 text-sm font-medium" />
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-36 text-sm font-medium" />
                 </div>
                 <div class="flex flex-col p-0.5">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Hasta</label>
                     <input type="date" name="to" value="{{ $to }}"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-44 text-sm font-medium" />
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-36 text-sm font-medium" />
                 </div>
                 <div class="flex flex-col p-0.5">
                     <label class="invisible block text-sm font-medium">.</label>
                     <button type="submit"
-                        class="flex items-center justify-between px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
+                        class="flex items-center justify-between px-4 py-2 w-30 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
                         Generar
                     </button>
                 </div>
