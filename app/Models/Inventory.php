@@ -15,14 +15,14 @@ class Inventory extends Model
         'min_stock',
         'purchase_price',
         'sale_price',
-        'product_id',
+        'product_variant_id',
         'warehouse_id'
     ];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['stock', 'min_stock', 'purchase_price', 'sale_price', 'product_id', 'warehouse_id']);
+            ->logOnly(['stock', 'min_stock', 'purchase_price', 'sale_price', 'product_variant_id', 'warehouse_id']);
     }
 
     public function getFormattedCreatedAtAttribute(): ?string
@@ -35,9 +35,9 @@ class Inventory extends Model
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
     }
 
-    public function product()
+    public function productVariant()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(ProductVariant::class);
     }
 
     public function warehouse()

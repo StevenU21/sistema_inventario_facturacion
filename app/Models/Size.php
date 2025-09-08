@@ -31,4 +31,9 @@ class Size extends Model
     {
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
     }
+
+    public function productVariants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
 }

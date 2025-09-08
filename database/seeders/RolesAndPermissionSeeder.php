@@ -24,6 +24,7 @@ class RolesAndPermissionSeeder extends Seeder
         'taxes' => [],
         'entities' => ['destroy'],
         'products' => [],
+        'product_variants' => [],
         'roles' => [],
         'warehouses' => [],
         'inventories' => [],
@@ -35,6 +36,7 @@ class RolesAndPermissionSeeder extends Seeder
     const SPECIAL_PERMISSIONS = [
         'permissions' => ['assign permissions', 'revoke permissions'],
         'products' => ['export products'],
+        'product_variants' => ['export product_variants'],
         'users' => ['reactivate users', 'export users'],
         'audits' => ['export audits'],
         'entities' => ['read suppliers', 'create suppliers', 'update suppliers', 'read clients', 'create clients', 'update clients', 'export clients', 'export suppliers'],
@@ -98,6 +100,7 @@ class RolesAndPermissionSeeder extends Seeder
             $this->filterPermissions('inventory_movements')->only(['read inventory_movements'])->get(),
             $this->filterPermissions('sizes')->only(['read sizes'])->get(),
             $this->filterPermissions('colors')->only(['read colors'])->get(),
+            $this->filterPermissions('product_variants')->only(['read product_variants'])->get(),
         );
 
         $cashierRole->givePermissionTo($cashierPermissions);
