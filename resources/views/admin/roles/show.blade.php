@@ -57,7 +57,7 @@
                                                 <td class="px-2 py-2 align-middle">
                                                     <span
                                                         class="inline-block bg-purple-200 text-purple-900 dark:bg-purple-500 dark:text-white rounded px-2 py-1 text-xs font-semibold uppercase">
-                                                        {{ $permission->name }}
+                                                        {{ $translatedPermissions[$permission->name] ?? $permission->name }}
                                                     </span>
                                                 </td>
                                             @endforeach

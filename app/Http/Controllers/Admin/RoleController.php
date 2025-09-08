@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use App\Services\ModelSearchService;
+use App\Classes\PermissionTranslator;
 
 class RoleController extends Controller
 {
@@ -36,8 +37,9 @@ class RoleController extends Controller
     public function create()
     {
         $this->authorize('create', Role::class);
-        $permissions = Permission::all();
-        return view('admin.roles.create', compact('permissions'));
+    $permissions = Permission::all();
+    $translatedPermissions = PermissionTranslator::translateMany($permissions->pluck('name'));
+    return view('admin.roles.create', compact('permissions', 'translatedPermissions'));
     }
 
     public function store(RoleRequest $request)
@@ -53,16 +55,18 @@ class RoleController extends Controller
     public function show(Role $role)
     {
         $this->authorize('view', $role);
-        $permissions = $role->permissions;
-        return view('admin.roles.show', compact('role', 'permissions'));
+    $permissions = $role->permissions;
+    $translatedPermissions = PermissionTranslator::translateMany($permissions->pluck('name'));
+    return view('admin.roles.show', compact('role', 'permissions', 'translatedPermissions'));
     }
 
     public function edit(Role $role)
     {
         $this->authorize('update', $role);
-        $permissions = Permission::all();
-        $rolePermissions = $role->permissions->pluck('id')->toArray();
-        return view('admin.roles.edit', compact('role', 'permissions', 'rolePermissions'));
+    $permissions = Permission::all();
+    $translatedPermissions = PermissionTranslator::translateMany($permissions->pluck('name'));
+    $rolePermissions = $role->permissions->pluck('id')->toArray();
+    return view('admin.roles.edit', compact('role', 'permissions', 'rolePermissions', 'translatedPermissions'));
     }
 
     public function update(RoleRequest $request, Role $role)

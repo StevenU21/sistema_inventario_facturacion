@@ -36,7 +36,7 @@
                                                 checked
                                             @endif
                                         >
-                                        <span class="uppercase">{{ $permission->name }}</span>
+                                        <span class="uppercase">{{ $translatedPermissions[$permission->name] ?? $permission->name }}</span>
                                     </label>
                                 </td>
                             @endforeach
