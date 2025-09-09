@@ -44,33 +44,38 @@ class InventoryController extends Controller
                 return [$variant->id => $label];
             });
         $products = Product::where('status', 'available')->pluck('name', 'id');
-        $variantsByProduct = ProductVariant::whereHas('product', function ($q) {
+        $variants = ProductVariant::whereHas('product', function ($q) {
             $q->where('status', 'available');
-        })
-            ->with(['product', 'color', 'size'])
-            ->get()
-            ->groupBy('product_id')
-            ->map(function ($variants) {
-                return $variants->map(function ($variant) {
-                    $label = $variant->product->name;
-                    if ($variant->name)
-                        $label .= ' / ' . $variant->name;
-                    if ($variant->color)
-                        $label .= ' / ' . $variant->color->name;
-                    if ($variant->size)
-                        $label .= ' / ' . $variant->size->name;
-                    return [
-                        'id' => $variant->id,
-                        'label' => $label
-                    ];
-                })->values();
-            });
+        })->with(['product', 'color', 'size'])->get();
+        $variantsByProduct = $variants->groupBy('product_id')->map(function ($variants) {
+            return $variants->map(function ($variant) {
+                $label = $variant->product->name;
+                if ($variant->name)
+                    $label .= ' / ' . $variant->name;
+                if ($variant->color)
+                    $label .= ' / ' . $variant->color->name;
+                if ($variant->size)
+                    $label .= ' / ' . $variant->size->name;
+                return [
+                    'id' => $variant->id,
+                    'label' => $label
+                ];
+            })->values();
+        });
+        $colors = $variants->pluck('color')->filter()->unique('id')->mapWithKeys(function ($color) {
+            return [$color->id => $color->name];
+        });
+        $sizes = $variants->pluck('size')->filter()->unique('id')->mapWithKeys(function ($size) {
+            return [$size->id => $size->name];
+        });
         $warehouses = Warehouse::pluck('name', 'id');
         return view('admin.inventories.index', [
             'inventories' => $inventories,
             'variants' => $variants,
             'products' => $products,
             'variantsByProduct' => $variantsByProduct,
+            'colors' => $colors,
+            'sizes' => $sizes,
             'warehouses' => $warehouses
         ]);
     }
@@ -84,7 +89,18 @@ class InventoryController extends Controller
             $query->whereHas('productVariant', function ($q) use ($request) {
                 $q->where('product_id', $request->input('product_id'));
             });
-        } elseif ($request->filled('product_variant_id')) {
+        }
+        if ($request->filled('color_id')) {
+            $query->whereHas('productVariant', function ($q) use ($request) {
+                $q->where('color_id', $request->input('color_id'));
+            });
+        }
+        if ($request->filled('size_id')) {
+            $query->whereHas('productVariant', function ($q) use ($request) {
+                $q->where('size_id', $request->input('size_id'));
+            });
+        }
+        if ($request->filled('product_variant_id')) {
             $query->where('product_variant_id', $request->input('product_variant_id'));
         }
         if ($request->filled('warehouse_id')) {
@@ -119,32 +135,37 @@ class InventoryController extends Controller
         $perPage = $request->input('per_page', 10);
         $inventories = $query->paginate($perPage)->appends($request->all());
         $products = Product::where('status', 'available')->pluck('name', 'id');
-        $variantsByProduct = ProductVariant::whereHas('product', function ($q) {
+        $variants = ProductVariant::whereHas('product', function ($q) {
             $q->where('status', 'available');
-        })
-            ->with(['product', 'color', 'size'])
-            ->get()
-            ->groupBy('product_id')
-            ->map(function ($variants) {
-                return $variants->map(function ($variant) {
-                    $label = $variant->product->name;
-                    if ($variant->name)
-                        $label .= ' / ' . $variant->name;
-                    if ($variant->color)
-                        $label .= ' / ' . $variant->color->name;
-                    if ($variant->size)
-                        $label .= ' / ' . $variant->size->name;
-                    return [
-                        'id' => $variant->id,
-                        'label' => $label
-                    ];
-                })->values();
-            });
+        })->with(['product', 'color', 'size'])->get();
+        $variantsByProduct = $variants->groupBy('product_id')->map(function ($variants) {
+            return $variants->map(function ($variant) {
+                $label = $variant->product->name;
+                if ($variant->name)
+                    $label .= ' / ' . $variant->name;
+                if ($variant->color)
+                    $label .= ' / ' . $variant->color->name;
+                if ($variant->size)
+                    $label .= ' / ' . $variant->size->name;
+                return [
+                    'id' => $variant->id,
+                    'label' => $label
+                ];
+            })->values();
+        });
+        $colors = $variants->pluck('color')->filter()->unique('id')->mapWithKeys(function ($color) {
+            return [$color->id => $color->name];
+        });
+        $sizes = $variants->pluck('size')->filter()->unique('id')->mapWithKeys(function ($size) {
+            return [$size->id => $size->name];
+        });
         $warehouses = Warehouse::pluck('name', 'id');
         return view('admin.inventories.index', [
             'inventories' => $inventories,
             'products' => $products,
             'variantsByProduct' => $variantsByProduct,
+            'colors' => $colors,
+            'sizes' => $sizes,
             'warehouses' => $warehouses
         ]);
     }

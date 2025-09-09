@@ -24,13 +24,36 @@
                 </div>
                 <div class="flex flex-col p-0.5">
                     <select name="product_id" id="product_id"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-44 text-sm font-medium"
                         onchange="this.form.submit()">
                         <option value="">Todos los productos</option>
                         @isset($products)
                             @foreach ($products as $id => $name)
-                                <option value="{{ $id }}" {{ request('product_id') == $id ? 'selected' : '' }}>
-                                    {{ $name }}</option>
+                                <option value="{{ $id }}" {{ request('product_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                            @endforeach
+                        @endisset
+                    </select>
+                </div>
+                <div class="flex flex-col p-0.5">
+                    <select name="color_id" id="color_id"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-36 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="">Todos los colores</option>
+                        @isset($colors)
+                            @foreach ($colors as $id => $name)
+                                <option value="{{ $id }}" {{ request('color_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                            @endforeach
+                        @endisset
+                    </select>
+                </div>
+                <div class="flex flex-col p-0.5">
+                    <select name="size_id" id="size_id"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-36 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="">Todas las tallas</option>
+                        @isset($sizes)
+                            @foreach ($sizes as $id => $name)
+                                <option value="{{ $id }}" {{ request('size_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
                             @endforeach
                         @endisset
                     </select>
@@ -130,7 +153,11 @@
                                     @if($inventory->productVariant)
                                         <span class="font-semibold">{{ $inventory->productVariant->product->name ?? '-' }}</span>
                                         <br>
-                                        <span class="text-xs text-gray-500">{{ $inventory->productVariant->name ?? 'Variante' }}</span>
+                                        <span class="text-xs text-gray-500">
+                                            {{ $inventory->productVariant->color->name ?? '-' }}
+                                            /
+                                            {{ $inventory->productVariant->size->name ?? '-' }}
+                                        </span>
                                     @else
                                         -
                                     @endif
