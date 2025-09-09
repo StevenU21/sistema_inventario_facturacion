@@ -64,6 +64,10 @@ class PermissionTranslator
         'size' => 'talla',
         'colors' => 'colores',
         'color' => 'color',
+        'purchases' => 'compras',
+        'purchase' => 'compra',
+        'kardex' => 'kardex',
+        'kardexes' => 'kardexes',
         // Permisos especiales (ejemplo)
         'assign permissions' => 'Asignar permisos',
         'revoke permissions' => 'Revocar permisos',
