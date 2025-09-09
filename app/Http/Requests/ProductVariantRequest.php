@@ -31,12 +31,37 @@ class ProductVariantRequest extends FormRequest
      */
     public function rules(): array
     {
+        $productVariantId = $this->route('product_variant')?->id;
         return [
-            'product_id' => ['required', 'exists:products,id'],
+            'product_id' => [
+                'required',
+                'exists:products,id',
+                // composite uniqueness: product + size + color
+                Rule::unique('product_variants')
+                    ->where(function ($query) {
+                        $query->where('product_id', $this->input('product_id'));
+                        $sizeId = $this->input('size_id');
+                        $colorId = $this->input('color_id');
+                        is_null($sizeId) ? $query->whereNull('size_id') : $query->where('size_id', $sizeId);
+                        is_null($colorId) ? $query->whereNull('color_id') : $query->where('color_id', $colorId);
+                        return $query;
+                    })
+                    ->ignore($productVariantId),
+            ],
             'size_id' => ['nullable', 'exists:sizes,id'],
             'color_id' => ['nullable', 'exists:colors,id'],
-            'sku' => ['nullable', 'string', 'max:100', Rule::unique('product_variants')->ignore($this->route('product_variant'))],
-            'barcode' => ['nullable', 'string', 'max:100', Rule::unique('product_variants')->ignore($this->route('product_variant'))],
+            'sku' => ['nullable', 'string', 'max:100', Rule::unique('product_variants')->ignore($productVariantId)],
+            'barcode' => ['nullable', 'string', 'max:100', Rule::unique('product_variants')->ignore($productVariantId)],
+        ];
+    }
+
+    /**
+     * Custom messages
+     */
+    public function messages(): array
+    {
+        return [
+            'product_id.unique' => 'Ya existe una variante con la misma combinación de producto, talla y color.',
         ];
     }
 }

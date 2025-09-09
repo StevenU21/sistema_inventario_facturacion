@@ -1,13 +1,14 @@
 @props(['maxWidth' => 'xl', 'title' => null, 'description' => null])
 @php
+    // Responsive max-width presets that grow with screen size
     $sizes = [
-        'sm' => 'sm:max-w-sm',
-        'md' => 'sm:max-w-md',
-        'lg' => 'sm:max-w-lg',
-        'xl' => 'sm:max-w-xl',
-        '2xl' => 'sm:max-w-2xl',
-        '3xl' => 'sm:max-w-3xl',
-        'full' => 'sm:max-w-full',
+        'sm'  => 'sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl',
+        'md'  => 'sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl',
+        'lg'  => 'sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl',
+        'xl'  => 'sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl',
+        '2xl' => 'sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl',
+        '3xl' => 'sm:max-w-3xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl',
+        'full'=> 'sm:max-w-full',
     ];
     $maxWidthClass = $sizes[$maxWidth] ?? $sizes['xl'];
 @endphp
@@ -21,7 +22,7 @@
         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0  transform translate-y-1/2" @click.away="closeModal"
         @keydown.escape="closeModal"
-    class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 {{ $maxWidthClass }}"
+    class="inline-block w-auto px-6 py-4 bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 {{ $maxWidthClass }} max-w-[95vw] min-w-[20rem] max-h-[90vh] overflow-y-auto overflow-x-auto"
         role="dialog" id="modal">
         <!-- Remove header if you don't want a close icon. Use modal body to place modal tile. -->
         <header class="flex justify-end">

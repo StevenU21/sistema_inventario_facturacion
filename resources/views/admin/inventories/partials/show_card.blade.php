@@ -5,8 +5,8 @@
             <div class="flex-shrink-0">
                 <div
                     class="w-[100px] h-[80px] rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-center overflow-hidden p-0">
-                    @if ($inventory->product && $inventory->product->image_url)
-                        <img src="{{ $inventory->product->image_url }}" alt="Imagen del producto"
+                    @if ($inventory->productVariant && $inventory->productVariant->product && $inventory->productVariant->product->image_url)
+                        <img src="{{ $inventory->productVariant->product->image_url }}" alt="Imagen del producto"
                             style="width:260px!important;height:180px!important;object-fit:contain;display:block;margin:auto;" />
                     @else
                         <i class="fas fa-image text-gray-400 text-xl mx-auto my-auto"></i>
@@ -16,7 +16,9 @@
             <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-1">
                     <h3 class="text-base font-semibold text-gray-800 dark:text-gray-100">
-                        {{ $inventory->product->name ?? 'Producto' }}</h3>
+                        {{ $inventory->productVariant->product->name ?? 'Producto' }}
+                        <span class="block text-xs text-gray-500">{{ $inventory->productVariant->name ?? 'Variante' }}</span>
+                    </h3>
                     <span
                         class="px-2 py-0.5 text-[10px] rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">ID
                         #{{ $inventory->id }}</span>
@@ -29,9 +31,9 @@
                 <div class="mt-0.5 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
                     <span class="flex items-center"><i
                             class="fas fa-warehouse text-purple-600 dark:text-purple-400 mr-1"></i>{{ $inventory->warehouse->name ?? 'Almacén' }}</span>
-                    @if (optional($inventory->product)->barcode)
+                    @if (optional($inventory->productVariant->product)->barcode)
                         <span class="flex items-center"><i
-                                class="fas fa-barcode text-purple-600 dark:text-purple-400 mr-1"></i>{{ $inventory->product->barcode }}</span>
+                                class="fas fa-barcode text-purple-600 dark:text-purple-400 mr-1"></i>{{ $inventory->productVariant->product->barcode }}</span>
                     @endif
                 </div>
             </div>
@@ -80,19 +82,19 @@
                 <p class="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Producto</p>
                 <div class="space-y-0.5 text-xs text-gray-700 dark:text-gray-300">
                     <p class="flex items-center"><span class="w-20 text-gray-500 dark:text-gray-400">Marca:</span> <span
-                            class="font-medium">{{ optional(optional($inventory->product)->brand)->name ?? '-' }}</span>
+                            class="font-medium">{{ optional(optional($inventory->productVariant->product)->brand)->name ?? '-' }}</span>
                     </p>
                     <p class="flex items-center"><span class="w-20 text-gray-500 dark:text-gray-400">Categoría:</span>
                         <span
-                            class="font-medium">{{ optional(optional($inventory->product)->category)->name ?? '-' }}</span>
+                            class="font-medium">{{ optional(optional($inventory->productVariant->product)->category)->name ?? '-' }}</span>
                     </p>
                     <p class="flex items-center"><span class="w-20 text-gray-500 dark:text-gray-400">Impuesto:</span>
                         <span
-                            class="font-medium">{{ optional(optional($inventory->product)->tax)->name ?? '-' }}</span>
+                            class="font-medium">{{ optional(optional($inventory->productVariant->product)->tax)->name ?? '-' }}</span>
                     </p>
                     <p class="flex items-center"><span class="w-20 text-gray-500 dark:text-gray-400">Unidad:</span>
                         <span
-                            class="font-medium">{{ optional(optional($inventory->product)->unitMeasure)->name ?? '-' }}</span>
+                            class="font-medium">{{ optional(optional($inventory->productVariant->product)->unitMeasure)->name ?? '-' }}</span>
                     </p>
                 </div>
             </div>

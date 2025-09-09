@@ -131,12 +131,11 @@
                             <tr
                                 class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                                 <th class="px-4 py-3">ID</th>
-                                <th class="px-4 py-3">SKU</th>
-                                <th class="px-4 py-3">Código</th>
                                 <th class="px-4 py-3">Producto</th>
                                 <th class="px-4 py-3">Color</th>
                                 <th class="px-4 py-3">Talla</th>
                                 <th class="px-4 py-3">Creado</th>
+                                <th class="px-4 py-3">Actualizado</th>
                                 <th class="px-4 py-3">Acciones</th>
                             </tr>
                         </thead>
@@ -144,12 +143,11 @@
                             @forelse ($variants as $variant)
                                 <tr class="text-gray-700 dark:text-gray-400">
                                     <td class="px-4 py-3 text-sm">{{ $variant->id }}</td>
-                                    <td class="px-4 py-3 text-sm">{{ $variant->sku }}</td>
-                                    <td class="px-4 py-3 text-sm">{{ $variant->barcode }}</td>
                                     <td class="px-4 py-3 text-sm">{{ optional($variant->product)->name }}</td>
                                     <td class="px-4 py-3 text-sm">{{ optional($variant->color)->name ?? '-' }}</td>
                                     <td class="px-4 py-3 text-sm">{{ optional($variant->size)->name ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-sm">{{ $variant->created_at?->format('d/m/Y H:i') }}</td>
+                                    <td class="px-4 py-3 text-sm">{{ $variant->formatted_created_at }}</td>
+                                    <td class="px-4 py-3 text-sm">{{ $variant->formatted_updated_at }}</td>
                                     <td class="px-4 py-3">
                                         <div class="flex items-center space-x-4 text-sm">
                                             <button type="button"

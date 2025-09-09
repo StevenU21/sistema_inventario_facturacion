@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InventoryRequest;
 use App\Models\Inventory;
 use App\Models\InventoryMovement;
-use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Warehouse;
 use App\Classes\InventoryMovementManager;
 use Illuminate\Http\Request;
@@ -22,31 +22,48 @@ class InventoryController extends Controller
     {
         $this->authorize('viewAny', Inventory::class);
         $perPage = request('per_page', 10);
-        $inventories = Inventory::with(['product', 'warehouse'])->latest()->paginate($perPage);
-        // Obtener los IDs de productos que ya están en inventario
-        $productIdsInInventory = Inventory::pluck('product_id')->toArray();
-        // Solo productos disponibles y que no estén en inventario
-        $products = Product::where('status', 'available')
-            ->whereNotIn('id', $productIdsInInventory)
-            ->pluck('name', 'id');
+        $inventories = Inventory::with(['productVariant.product', 'warehouse'])->latest()->paginate($perPage);
+        // Obtener los IDs de variantes que ya están en inventario
+        $variantIdsInInventory = Inventory::pluck('product_variant_id')->toArray();
+        // Solo variantes cuyo producto está disponible y que no estén en inventario
+        $variants = ProductVariant::whereHas('product', function ($q) {
+            $q->where('status', 'available');
+        })
+            ->whereNotIn('id', $variantIdsInInventory)
+            ->with(['product', 'color', 'size'])
+            ->get()
+            ->mapWithKeys(function ($variant) {
+                $label = $variant->product->name;
+                if ($variant->name)
+                    $label .= ' / ' . $variant->name;
+                if ($variant->color)
+                    $label .= ' / ' . $variant->color->name;
+                if ($variant->size)
+                    $label .= ' / ' . $variant->size->name;
+                return [$variant->id => $label];
+            });
         $warehouses = Warehouse::pluck('name', 'id');
-        return view('admin.inventories.index', compact('inventories', 'products', 'warehouses'));
+        return view('admin.inventories.index', [
+            'inventories' => $inventories,
+            'variants' => $variants,
+            'warehouses' => $warehouses
+        ]);
     }
 
     public function search(Request $request)
     {
         $this->authorize('viewAny', Inventory::class);
-        $query = Inventory::with(['product', 'warehouse']);
+        $query = Inventory::with(['productVariant.product', 'warehouse']);
         // Filtros
-        if ($request->filled('product_id')) {
-            $query->where('product_id', $request->input('product_id'));
+        if ($request->filled('product_variant_id')) {
+            $query->where('product_variant_id', $request->input('product_variant_id'));
         }
         if ($request->filled('warehouse_id')) {
             $query->where('warehouse_id', $request->input('warehouse_id'));
         }
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->whereHas('product', function ($q) use ($search) {
+            $query->whereHas('productVariant.product', function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%");
             });
         }
@@ -55,7 +72,7 @@ class InventoryController extends Controller
         $direction = $request->input('direction', 'desc');
         $allowedSorts = [
             'id',
-            'product_id',
+            'product_variant_id',
             'warehouse_id',
             'stock',
             'min_stock',
@@ -72,24 +89,42 @@ class InventoryController extends Controller
 
         $perPage = $request->input('per_page', 10);
         $inventories = $query->paginate($perPage)->appends($request->all());
-        $products = Product::pluck('name', 'id');
+        $variants = ProductVariant::whereHas('product', function ($q) {
+            $q->where('status', 'available');
+        })
+            ->with(['product', 'color', 'size'])
+            ->get()
+            ->mapWithKeys(function ($variant) {
+                $label = $variant->product->name;
+                if ($variant->name)
+                    $label .= ' / ' . $variant->name;
+                if ($variant->color)
+                    $label .= ' / ' . $variant->color->name;
+                if ($variant->size)
+                    $label .= ' / ' . $variant->size->name;
+                return [$variant->id => $label];
+            });
         $warehouses = Warehouse::pluck('name', 'id');
-        return view('admin.inventories.index', compact('inventories', 'products', 'warehouses'));
+        return view('admin.inventories.index', [
+            'inventories' => $inventories,
+            'variants' => $variants,
+            'warehouses' => $warehouses
+        ]);
     }
 
     public function export(Request $request)
     {
         $this->authorize('viewAny', Inventory::class);
-        $productId = $request->input('product_id');
+        $variantId = $request->input('product_variant_id');
         $warehouseId = $request->input('warehouse_id');
         $stock = $request->input('stock');
         $minStock = $request->input('min_stock');
         $search = $request->input('search');
         $sort = $request->input('sort', 'id');
         $direction = $request->input('direction', 'desc');
-        $query = Inventory::with(['product', 'warehouse']);
-        if (!empty($productId)) {
-            $query->where('product_id', $productId);
+        $query = Inventory::with(['productVariant.product', 'warehouse']);
+        if (!empty($variantId)) {
+            $query->where('product_variant_id', $variantId);
         }
         if (!empty($warehouseId)) {
             $query->where('warehouse_id', $warehouseId);
@@ -101,11 +136,11 @@ class InventoryController extends Controller
             $query->where('min_stock', $minStock);
         }
         if (!empty($search)) {
-            $query->whereHas('product', function ($q) use ($search) {
+            $query->whereHas('productVariant.product', function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%");
             });
         }
-        $allowedSorts = ['id', 'product_id', 'warehouse_id', 'stock', 'min_stock', 'purchase_price', 'sale_price', 'created_at'];
+        $allowedSorts = ['id', 'product_variant_id', 'warehouse_id', 'stock', 'min_stock', 'purchase_price', 'sale_price', 'created_at'];
         if (in_array($sort, $allowedSorts)) {
             $query->orderBy($sort, $direction);
         } else {
@@ -119,9 +154,26 @@ class InventoryController extends Controller
     public function create()
     {
         $this->authorize('create', Inventory::class);
-        $products = Product::where('status', 'available')->pluck('name', 'id');
+        $variants = ProductVariant::whereHas('product', function ($q) {
+            $q->where('status', 'available');
+        })
+            ->with(['product', 'color', 'size'])
+            ->get()
+            ->mapWithKeys(function ($variant) {
+                $label = $variant->product->name;
+                if ($variant->name)
+                    $label .= ' / ' . $variant->name;
+                if ($variant->color)
+                    $label .= ' / ' . $variant->color->name;
+                if ($variant->size)
+                    $label .= ' / ' . $variant->size->name;
+                return [$variant->id => $label];
+            });
         $warehouses = Warehouse::pluck('name', 'id');
-        return view('admin.inventories.create', compact('products', 'warehouses'));
+        return view('admin.inventories.create', [
+            'variants' => $variants,
+            'warehouses' => $warehouses
+        ]);
     }
 
     public function store(InventoryRequest $request)
@@ -135,7 +187,7 @@ class InventoryController extends Controller
             $inventory = Inventory::create($data);
 
             $isFirst = !InventoryMovement::whereHas('inventory', function ($q) use ($inventory) {
-                $q->where('product_id', $inventory->product_id);
+                $q->where('product_variant_id', $inventory->product_variant_id);
             })->exists();
 
             $inventory->inventoryMovements()->create([
@@ -165,11 +217,30 @@ class InventoryController extends Controller
     public function edit(Inventory $inventory)
     {
         $this->authorize('update', $inventory);
-        $products = Product::where('status', 'available')->pluck('name', 'id');
+        $variants = ProductVariant::whereHas('product', function ($q) {
+            $q->where('status', 'available');
+        })
+            ->with(['product', 'color', 'size'])
+            ->get()
+            ->mapWithKeys(function ($variant) {
+                $label = $variant->product->name;
+                if ($variant->name)
+                    $label .= ' / ' . $variant->name;
+                if ($variant->color)
+                    $label .= ' / ' . $variant->color->name;
+                if ($variant->size)
+                    $label .= ' / ' . $variant->size->name;
+                return [$variant->id => $label];
+            });
         $warehouses = Warehouse::pluck('name', 'id');
         // Movimientos recientes
         $movements = $inventory->inventoryMovements()->latest()->take(10)->get();
-        return view('admin.inventories.edit', compact('inventory', 'products', 'warehouses', 'movements'));
+        return view('admin.inventories.edit', [
+            'inventory' => $inventory,
+            'variants' => $variants,
+            'warehouses' => $warehouses,
+            'movements' => $movements
+        ]);
     }
 
     public function update(InventoryRequest $request, Inventory $inventory)

@@ -14,11 +14,11 @@ class ColorSeeder extends Seeder
     public function run(): void
     {
         $colors = [
-            ['name' => 'Rojo', 'code' => '#FF0000'],
-            ['name' => 'Azul', 'code' => '#0000FF'],
-            ['name' => 'Verde', 'code' => '#00FF00'],
-            ['name' => 'Negro', 'code' => '#000000'],
-            ['name' => 'Blanco', 'code' => '#FFFFFF'],
+            ['name' => 'Rojo', 'hex_code' => '#FF0000'],
+            ['name' => 'Azul', 'hex_code' => '#0000FF'],
+            ['name' => 'Verde', 'hex_code' => '#00FF00'],
+            ['name' => 'Negro', 'hex_code' => '#000000'],
+            ['name' => 'Blanco', 'hex_code' => '#FFFFFF'],
         ];
         foreach ($colors as $color) {
             Color::firstOrCreate(['name' => $color['name']], $color);

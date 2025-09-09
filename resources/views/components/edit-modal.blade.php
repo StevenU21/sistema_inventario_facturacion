@@ -8,7 +8,7 @@
         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0  transform translate-y-1/2" @click.away="closeEditModal"
         @keydown.escape="closeEditModal"
-        class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl"
+    class="inline-block w-auto px-6 py-4 bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 max-w-[95vw] min-w-[20rem] max-h-[90vh] overflow-y-auto overflow-x-auto"
         role="dialog" id="edit-modal">
         <header class="flex justify-end">
             <button

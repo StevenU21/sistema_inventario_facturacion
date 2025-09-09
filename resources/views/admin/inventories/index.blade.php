@@ -23,13 +23,13 @@
                     </select>
                 </div>
                 <div class="flex flex-col p-0.5">
-                    <select name="product_id" id="product_id"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                    <select name="product_variant_id" id="product_variant_id"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
                         onchange="this.form.submit()">
-                        <option value="">Todos los productos</option>
-                        @isset($products)
-                            @foreach ($products as $id => $name)
-                                <option value="{{ $id }}" {{ request('product_id') == $id ? 'selected' : '' }}>
+                        <option value="">Todas las variantes</option>
+                        @isset($variants)
+                            @foreach ($variants as $id => $name)
+                                <option value="{{ $id }}" {{ request('product_variant_id') == $id ? 'selected' : '' }}>
                                     {{ $name }}</option>
                             @endforeach
                         @endisset
@@ -52,7 +52,7 @@
             <div class="flex flex-row p-0.5 gap-x-1 items-end">
                 <label class="invisible block text-sm font-medium">.</label>
                 <form method="GET" action="{{ route('inventories.export') }}">
-                    <input type="hidden" name="product_id" value="{{ request('product_id') }}">
+                    <input type="hidden" name="product_variant_id" value="{{ request('product_variant_id') }}">
                     <input type="hidden" name="warehouse_id" value="{{ request('warehouse_id') }}">
                     <button type="submit"
                         class="flex items-center justify-between px-4 py-2 w-36 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
@@ -90,7 +90,7 @@
                                     icon="<i class='fas fa-hashtag mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="product_id" label="Producto" route="inventories.search"
+                                <x-table-sort-header field="product_variant_id" label="Variante" route="inventories.search"
                                     icon="<i class='fas fa-box mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3"><i class="fas fa-image mr-2"></i>Imagen</th>
@@ -126,10 +126,18 @@
                                         {{ $inventory->id }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-sm">{{ $inventory->product->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">
-                                    @if ($inventory->product && $inventory->product->image_url)
-                                        <img src="{{ $inventory->product->image_url }}" alt="Imagen del producto"
+                                    @if($inventory->productVariant)
+                                        <span class="font-semibold">{{ $inventory->productVariant->product->name ?? '-' }}</span>
+                                        <br>
+                                        <span class="text-xs text-gray-500">{{ $inventory->productVariant->name ?? 'Variante' }}</span>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    @if ($inventory->productVariant && $inventory->productVariant->product && $inventory->productVariant->product->image_url)
+                                        <img src="{{ $inventory->productVariant->product->image_url }}" alt="Imagen del producto"
                                             class="w-12 h-12 object-cover rounded">
                                     @else
                                         <span class="text-gray-400 dark:text-gray-500">No disponible</span>

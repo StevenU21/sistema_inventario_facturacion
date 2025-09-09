@@ -30,7 +30,7 @@
                 :value="editColor.hex_code"
             @else
                 value="{{ old('hex_code', isset($color) && is_object($color) ? $color->hex_code : '') }}" @endif
-            required />
+             />
         <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
             <i class="fas fa-user w-5 h-5"></i>
         </div>
