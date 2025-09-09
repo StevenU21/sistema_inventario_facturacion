@@ -72,7 +72,7 @@ class InventoryRequest extends FormRequest
                 'min_stock' => ['required', 'integer', 'min:0', 'lte:stock'],
                 'purchase_price' => ['required', 'numeric', 'min:0'],
                 'sale_price' => ['required', 'numeric', 'min:0', 'gte:purchase_price'],
-                'product_id' => ['required', 'exists:products,id'],
+                'product_variant_id' => ['required', 'exists:product_variants,id'],
                 'warehouse_id' => ['required', 'exists:warehouses,id'],
             ];
         }
@@ -161,8 +161,8 @@ class InventoryRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            if ($this->product_id && $this->warehouse_id && $this->isMethod('post')) {
-                $exists = Inventory::where('product_id', $this->product_id)
+            if ($this->product_variant_id && $this->warehouse_id && $this->isMethod('post')) {
+                $exists = Inventory::where('product_variant_id', $this->product_variant_id)
                     ->where('warehouse_id', $this->warehouse_id)
                     ->exists();
                 if ($exists) {
