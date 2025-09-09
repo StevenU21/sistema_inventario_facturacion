@@ -14,8 +14,21 @@ class InventoryMovementManager
 
         \DB::beginTransaction();
         try {
+            // Validaciones básicas
+            if (!$destWarehouseId) {
+                \DB::rollBack();
+                return ['error' => ['error' => 'Debe seleccionar el almacén destino.']];
+            }
+            if ($destWarehouseId == $inventory->warehouse_id) {
+                \DB::rollBack();
+                return ['error' => ['error' => 'El almacén destino debe ser diferente al de origen.']];
+            }
+            if ($quantity <= 0 || $quantity > $inventory->stock) {
+                \DB::rollBack();
+                return ['error' => ['error' => 'Cantidad inválida para transferir.']];
+            }
             // Buscar inventario destino
-            $destInventory = Inventory::where('product_id', $inventory->product_id)
+            $destInventory = Inventory::where('product_variant_id', $inventory->product_variant_id)
                 ->where('warehouse_id', $destWarehouseId)
                 ->first();
 
@@ -35,9 +48,9 @@ class InventoryMovementManager
             ]);
 
             // Actualizar o crear inventario destino
-            if (!$destInventory) {
+        if (!$destInventory) {
                 $destInventory = Inventory::create([
-                    'product_id' => $inventory->product_id,
+            'product_variant_id' => $inventory->product_variant_id,
                     'warehouse_id' => $destWarehouseId,
                     'stock' => $quantity,
                     'min_stock' => $inventory->min_stock,

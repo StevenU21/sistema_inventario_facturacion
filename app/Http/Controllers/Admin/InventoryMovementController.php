@@ -20,7 +20,7 @@ class InventoryMovementController extends Controller
     {
         $this->authorize('viewAny', InventoryMovement::class);
         $perPage = request('per_page', 10);
-        $inventoryMovements = InventoryMovement::with(['inventory.product', 'user', 'inventory.warehouse'])
+    $inventoryMovements = InventoryMovement::with(['inventory.productVariant.product', 'user', 'inventory.warehouse'])
             ->latest()
             ->paginate($perPage);
         $users = User::pluck('first_name', 'id');
@@ -32,14 +32,14 @@ class InventoryMovementController extends Controller
     public function search(Request $request)
     {
         $this->authorize('viewAny', InventoryMovement::class);
-        $query = InventoryMovement::with(['inventory.product', 'inventory.warehouse', 'user']);
+    $query = InventoryMovement::with(['inventory.productVariant.product', 'inventory.warehouse', 'user']);
 
         // Filtros
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->input('user_id'));
         }
         if ($request->filled('product_id')) {
-            $query->whereHas('inventory', function ($q) use ($request) {
+            $query->whereHas('inventory.productVariant', function ($q) use ($request) {
                 $q->where('product_id', $request->input('product_id'));
             });
         }
@@ -60,7 +60,7 @@ class InventoryMovementController extends Controller
                         $uq->where('first_name', 'like', "%$search%")
                             ->orWhere('last_name', 'like', "%$search%");
                     })
-                    ->orWhereHas('inventory.product', function ($pq) use ($search) {
+                    ->orWhereHas('inventory.productVariant.product', function ($pq) use ($search) {
                         $pq->where('name', 'like', "%$search%");
                     });
             });
@@ -88,14 +88,14 @@ class InventoryMovementController extends Controller
     public function export(Request $request)
     {
         $this->authorize('viewAny', InventoryMovement::class);
-        $query = InventoryMovement::with(['inventory.product', 'inventory.warehouse', 'user']);
+    $query = InventoryMovement::with(['inventory.productVariant.product', 'inventory.warehouse', 'user']);
 
         // Mismos filtros que search
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->input('user_id'));
         }
         if ($request->filled('product_id')) {
-            $query->whereHas('inventory', function ($q) use ($request) {
+            $query->whereHas('inventory.productVariant', function ($q) use ($request) {
                 $q->where('product_id', $request->input('product_id'));
             });
         }
@@ -116,7 +116,7 @@ class InventoryMovementController extends Controller
                         $uq->where('first_name', 'like', "%$search%")
                             ->orWhere('last_name', 'like', "%$search%");
                     })
-                    ->orWhereHas('inventory.product', function ($pq) use ($search) {
+                    ->orWhereHas('inventory.productVariant.product', function ($pq) use ($search) {
                         $pq->where('name', 'like', "%$search%");
                     });
             });

@@ -26,6 +26,8 @@ class InventoryMovementsExport implements FromQuery, WithHeadings, WithMapping
             'ID',
             'Usuario',
             'Producto',
+            'Color',
+            'Talla',
             'Almacén',
             'Tipo',
             'Referencia',
@@ -40,10 +42,16 @@ class InventoryMovementsExport implements FromQuery, WithHeadings, WithMapping
 
     public function map($movement): array
     {
+        $variant = optional(optional($movement->inventory)->productVariant);
+        $product = $variant && $variant->product ? $variant->product->name : '-';
+        $color = $variant && $variant->color ? $variant->color->name : '';
+        $size = $variant && $variant->size ? $variant->size->name : '';
         return [
             $movement->id,
             $movement->user->short_name ?? '-',
-            optional($movement->inventory->product)->name ?? '-',
+            $product,
+            $color,
+            $size,
             optional($movement->inventory->warehouse)->name ?? '-',
             $movement->movement_type,
             $movement->reference,

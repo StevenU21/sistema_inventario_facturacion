@@ -138,8 +138,25 @@
                                     {{ $movement->user->short_name ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    @if ($movement->inventory)
-                                        {{ $movement->inventory->product->name ?? '' }}
+                                    @if ($movement->inventory && $movement->inventory->productVariant)
+                                        <span class="font-semibold">{{ $movement->inventory->productVariant->product->name ?? '-' }}</span>
+                                        <br>
+                                        <span class="text-xs text-gray-500">
+                                            @php
+                                                $variant = $movement->inventory->productVariant;
+                                                $color = $variant->color->name ?? null;
+                                                $size = $variant->size->name ?? null;
+                                            @endphp
+                                            @if($color && $size)
+                                                {{ $color }} / {{ $size }}
+                                            @elseif($color)
+                                                {{ $color }}
+                                            @elseif($size)
+                                                {{ $size }}
+                                            @else
+                                                {{ $variant->name ?? 'Variante' }}
+                                            @endif
+                                        </span>
                                     @else
                                         -
                                     @endif

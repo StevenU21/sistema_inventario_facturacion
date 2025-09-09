@@ -44,11 +44,33 @@ class InventoryController extends Controller
                 return [$variant->id => $label];
             });
         $products = Product::where('status', 'available')->pluck('name', 'id');
+        $variantsByProduct = ProductVariant::whereHas('product', function ($q) {
+            $q->where('status', 'available');
+        })
+            ->with(['product', 'color', 'size'])
+            ->get()
+            ->groupBy('product_id')
+            ->map(function ($variants) {
+                return $variants->map(function ($variant) {
+                    $label = $variant->product->name;
+                    if ($variant->name)
+                        $label .= ' / ' . $variant->name;
+                    if ($variant->color)
+                        $label .= ' / ' . $variant->color->name;
+                    if ($variant->size)
+                        $label .= ' / ' . $variant->size->name;
+                    return [
+                        'id' => $variant->id,
+                        'label' => $label
+                    ];
+                })->values();
+            });
         $warehouses = Warehouse::pluck('name', 'id');
         return view('admin.inventories.index', [
             'inventories' => $inventories,
             'variants' => $variants,
             'products' => $products,
+            'variantsByProduct' => $variantsByProduct,
             'warehouses' => $warehouses
         ]);
     }
