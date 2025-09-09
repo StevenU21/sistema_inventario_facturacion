@@ -10,6 +10,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Entity;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\UnitMeasure;
 use App\Services\FileService;
 use App\Services\ModelSearchService;
@@ -168,6 +169,13 @@ class ProductController extends Controller
             $product->image = $fileService->storeLocal($product, $request->file('image'));
         }
         $product->save();
+        // Crear variante simple sin color ni talla
+        $variant = new ProductVariant([
+            'product_id' => $product->id,
+            'color_id' => null,
+            'size_id' => null,
+        ]);
+        $variant->save();
         return redirect()->route('products.index')->with('success', 'Producto creado correctamente.');
     }
 
