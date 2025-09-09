@@ -7,6 +7,7 @@ use App\Http\Requests\InventoryRequest;
 use App\Models\Inventory;
 use App\Models\InventoryMovement;
 use App\Models\ProductVariant;
+use App\Models\Product;
 use App\Models\Warehouse;
 use App\Classes\InventoryMovementManager;
 use Illuminate\Http\Request;
@@ -42,10 +43,12 @@ class InventoryController extends Controller
                     $label .= ' / ' . $variant->size->name;
                 return [$variant->id => $label];
             });
+        $products = Product::where('status', 'available')->pluck('name', 'id');
         $warehouses = Warehouse::pluck('name', 'id');
         return view('admin.inventories.index', [
             'inventories' => $inventories,
             'variants' => $variants,
+            'products' => $products,
             'warehouses' => $warehouses
         ]);
     }
@@ -55,7 +58,11 @@ class InventoryController extends Controller
         $this->authorize('viewAny', Inventory::class);
         $query = Inventory::with(['productVariant.product', 'warehouse']);
         // Filtros
-        if ($request->filled('product_variant_id')) {
+        if ($request->filled('product_id')) {
+            $query->whereHas('productVariant', function ($q) use ($request) {
+                $q->where('product_id', $request->input('product_id'));
+            });
+        } elseif ($request->filled('product_variant_id')) {
             $query->where('product_variant_id', $request->input('product_variant_id'));
         }
         if ($request->filled('warehouse_id')) {
@@ -104,10 +111,12 @@ class InventoryController extends Controller
                     $label .= ' / ' . $variant->size->name;
                 return [$variant->id => $label];
             });
+        $products = Product::where('status', 'available')->pluck('name', 'id');
         $warehouses = Warehouse::pluck('name', 'id');
         return view('admin.inventories.index', [
             'inventories' => $inventories,
             'variants' => $variants,
+            'products' => $products,
             'warehouses' => $warehouses
         ]);
     }
@@ -116,6 +125,7 @@ class InventoryController extends Controller
     {
         $this->authorize('viewAny', Inventory::class);
         $variantId = $request->input('product_variant_id');
+        $productId = $request->input('product_id');
         $warehouseId = $request->input('warehouse_id');
         $stock = $request->input('stock');
         $minStock = $request->input('min_stock');
@@ -123,7 +133,11 @@ class InventoryController extends Controller
         $sort = $request->input('sort', 'id');
         $direction = $request->input('direction', 'desc');
         $query = Inventory::with(['productVariant.product', 'warehouse']);
-        if (!empty($variantId)) {
+        if (!empty($productId)) {
+            $query->whereHas('productVariant', function ($q) use ($productId) {
+                $q->where('product_id', $productId);
+            });
+        } elseif (!empty($variantId)) {
             $query->where('product_variant_id', $variantId);
         }
         if (!empty($warehouseId)) {

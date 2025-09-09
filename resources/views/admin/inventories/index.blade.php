@@ -23,13 +23,13 @@
                     </select>
                 </div>
                 <div class="flex flex-col p-0.5">
-                    <select name="product_variant_id" id="product_variant_id"
+                    <select name="product_id" id="product_id"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
                         onchange="this.form.submit()">
-                        <option value="">Todas las variantes</option>
-                        @isset($variants)
-                            @foreach ($variants as $id => $name)
-                                <option value="{{ $id }}" {{ request('product_variant_id') == $id ? 'selected' : '' }}>
+                        <option value="">Todos los productos</option>
+                        @isset($products)
+                            @foreach ($products as $id => $name)
+                                <option value="{{ $id }}" {{ request('product_id') == $id ? 'selected' : '' }}>
                                     {{ $name }}</option>
                             @endforeach
                         @endisset
@@ -37,7 +37,7 @@
                 </div>
                 <div class="flex flex-col p-0.5">
                     <select name="warehouse_id" id="warehouse_id"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-46 text-sm font-medium"
                         onchange="this.form.submit()">
                         <option value="">Todos los almacenes</option>
                         @isset($warehouses)
