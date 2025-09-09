@@ -102,7 +102,7 @@ class AuditController extends Controller
             $activity->old = $presented['Antes'];
             $activity->new = $presented['Después'];
             $activity->evento_es = $presented['Evento'];
-            $activity->modelo_es = $presented['Modelo'];
+            $activity->modelo_es = $presented['Registro'];
             if ($activity->subject) {
                 if (isset($activity->subject->name)) {
                     $activity->model_display = $activity->subject->name;
