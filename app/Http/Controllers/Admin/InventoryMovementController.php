@@ -26,7 +26,15 @@ class InventoryMovementController extends Controller
         $users = User::pluck('first_name', 'id');
         $products = Product::pluck('name', 'id');
         $warehouses = Warehouse::pluck('name', 'id');
-        return view('admin.inventory_movements.index', compact('inventoryMovements', 'users', 'products', 'warehouses'));
+        // Obtener colores y tallas globales
+        $variants = \App\Models\ProductVariant::with(['color', 'size'])->get();
+        $colors = $variants->pluck('color')->filter()->unique('id')->mapWithKeys(function ($color) {
+            return [$color->id => $color->name];
+        });
+        $sizes = $variants->pluck('size')->filter()->unique('id')->mapWithKeys(function ($size) {
+            return [$size->id => $size->name];
+        });
+        return view('admin.inventory_movements.index', compact('inventoryMovements', 'users', 'products', 'warehouses', 'colors', 'sizes'));
     }
 
     public function search(Request $request)
@@ -41,6 +49,16 @@ class InventoryMovementController extends Controller
         if ($request->filled('product_id')) {
             $query->whereHas('inventory.productVariant', function ($q) use ($request) {
                 $q->where('product_id', $request->input('product_id'));
+            });
+        }
+        if ($request->filled('color_id')) {
+            $query->whereHas('inventory.productVariant', function ($q) use ($request) {
+                $q->where('color_id', $request->input('color_id'));
+            });
+        }
+        if ($request->filled('size_id')) {
+            $query->whereHas('inventory.productVariant', function ($q) use ($request) {
+                $q->where('size_id', $request->input('size_id'));
             });
         }
         if ($request->filled('warehouse_id')) {
@@ -82,7 +100,14 @@ class InventoryMovementController extends Controller
         $users = User::pluck('first_name', 'id');
         $products = Product::pluck('name', 'id');
         $warehouses = Warehouse::pluck('name', 'id');
-        return view('admin.inventory_movements.index', compact('inventoryMovements', 'users', 'products', 'warehouses'));
+        $variants = \App\Models\ProductVariant::with(['color', 'size'])->get();
+        $colors = $variants->pluck('color')->filter()->unique('id')->mapWithKeys(function ($color) {
+            return [$color->id => $color->name];
+        });
+        $sizes = $variants->pluck('size')->filter()->unique('id')->mapWithKeys(function ($size) {
+            return [$size->id => $size->name];
+        });
+        return view('admin.inventory_movements.index', compact('inventoryMovements', 'users', 'products', 'warehouses', 'colors', 'sizes'));
     }
 
     public function export(Request $request)
@@ -97,6 +122,16 @@ class InventoryMovementController extends Controller
         if ($request->filled('product_id')) {
             $query->whereHas('inventory.productVariant', function ($q) use ($request) {
                 $q->where('product_id', $request->input('product_id'));
+            });
+        }
+        if ($request->filled('color_id')) {
+            $query->whereHas('inventory.productVariant', function ($q) use ($request) {
+                $q->where('color_id', $request->input('color_id'));
+            });
+        }
+        if ($request->filled('size_id')) {
+            $query->whereHas('inventory.productVariant', function ($q) use ($request) {
+                $q->where('size_id', $request->input('size_id'));
             });
         }
         if ($request->filled('warehouse_id')) {

@@ -9,7 +9,30 @@
 
         <x-session-message />
 
-        <div class="flex flex-wrap gap-x-1 gap-y-1 items-end justify-between mb-4">
+        <div class="flex flex-col gap-y-2 mb-4">
+            <div class="flex w-full">
+                <div class="flex-1"></div>
+                <div class="flex flex-col p-0.5 ml-auto">
+                    <label class="invisible block text-sm font-medium">.</label>
+                    <form method="GET" action="{{ route('inventory_movements.export') }}">
+                        <input type="hidden" name="per_page" value="{{ request('per_page') }}">
+                        <input type="hidden" name="user_id" value="{{ request('user_id') }}">
+                        <input type="hidden" name="product_id" value="{{ request('product_id') }}">
+                        <input type="hidden" name="warehouse_id" value="{{ request('warehouse_id') }}">
+                        <input type="hidden" name="color_id" value="{{ request('color_id') }}">
+                        <input type="hidden" name="size_id" value="{{ request('size_id') }}">
+                        <input type="hidden" name="type" value="{{ request('type') }}">
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                        <input type="hidden" name="sort" value="{{ request('sort', 'id') }}">
+                        <input type="hidden" name="direction" value="{{ request('direction', 'desc') }}">
+                        <button type="submit"
+                            class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
+                            <span>Exportar Excel</span>
+                            <i class="fas fa-file-excel ml-2"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
             <form method="GET" action="{{ route('inventory_movements.search') }}"
                 class="flex flex-wrap gap-x-1 gap-y-1 items-end self-end">
                 <div class="flex flex-col p-0.5">
@@ -25,7 +48,7 @@
                 </div>
                 <div class="flex flex-col p-0.5">
                     <select name="user_id" id="user_id"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-48 text-sm font-medium"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
                         onchange="this.form.submit()">
                         <option value="">Todos los usuarios</option>
                         @isset($users)
@@ -50,6 +73,32 @@
                     </select>
                 </div>
                 <div class="flex flex-col p-0.5">
+                    <select name="color_id" id="color_id"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="">Todos los colores</option>
+                        @isset($colors)
+                            @foreach ($colors as $id => $name)
+                                <option value="{{ $id }}" {{ request('color_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        @endisset
+                    </select>
+                </div>
+                <div class="flex flex-col p-0.5">
+                    <select name="size_id" id="size_id"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-36 text-sm font-medium"
+                        onchange="this.form.submit()">
+                        <option value="">Todas las tallas</option>
+                        @isset($sizes)
+                            @foreach ($sizes as $id => $name)
+                                <option value="{{ $id }}" {{ request('size_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        @endisset
+                    </select>
+                </div>
+                <div class="flex flex-col p-0.5">
                     <select name="warehouse_id" id="warehouse_id"
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-48 text-sm font-medium"
                         onchange="this.form.submit()">
@@ -64,9 +113,9 @@
                 </div>
                 <div class="flex flex-col p-0.5">
                     <select name="type" id="type"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-42 text-sm font-medium"
                         onchange="this.form.submit()">
-                        <option value="">Todos los tipos de movimiento</option>
+                        <option value="">Todos los movimientos</option>
                         <option value="in" {{ request('type') == 'in' ? 'selected' : '' }}>Entrada</option>
                         <option value="out" {{ request('type') == 'out' ? 'selected' : '' }}>Salida</option>
                         <option value="adjustment" {{ request('type') == 'adjustment' ? 'selected' : '' }}>Ajuste</option>
@@ -76,24 +125,6 @@
                     </select>
                 </div>
             </form>
-            <div class="flex flex-col p-0.5">
-                <label class="invisible block text-sm font-medium">.</label>
-                <form method="GET" action="{{ route('inventory_movements.export') }}">
-                    <input type="hidden" name="per_page" value="{{ request('per_page') }}">
-                    <input type="hidden" name="user_id" value="{{ request('user_id') }}">
-                    <input type="hidden" name="product_id" value="{{ request('product_id') }}">
-                    <input type="hidden" name="warehouse_id" value="{{ request('warehouse_id') }}">
-                    <input type="hidden" name="type" value="{{ request('type') }}">
-                    <input type="hidden" name="search" value="{{ request('search') }}">
-                    <input type="hidden" name="sort" value="{{ request('sort', 'id') }}">
-                    <input type="hidden" name="direction" value="{{ request('direction', 'desc') }}">
-                    <button type="submit"
-                        class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
-                        <span>Exportar Excel</span>
-                        <i class="fas fa-file-excel ml-2"></i>
-                    </button>
-                </form>
-            </div>
         </div>
 
         <div class="w-full overflow-hidden rounded-lg shadow-xs">
@@ -139,7 +170,8 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     @if ($movement->inventory && $movement->inventory->productVariant)
-                                        <span class="font-semibold">{{ $movement->inventory->productVariant->product->name ?? '-' }}</span>
+                                        <span
+                                            class="font-semibold">{{ $movement->inventory->productVariant->product->name ?? '-' }}</span>
                                         <br>
                                         <span class="text-xs text-gray-500">
                                             @php
@@ -147,7 +179,7 @@
                                                 $color = $variant->color->name ?? null;
                                                 $size = $variant->size->name ?? null;
                                             @endphp
-                                            @if($color && $size)
+                                            @if ($color && $size)
                                                 {{ $color }} / {{ $size }}
                                             @elseif($color)
                                                 {{ $color }}
