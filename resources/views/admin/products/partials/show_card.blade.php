@@ -73,7 +73,7 @@
                 <p class="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Estado</p>
                 <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 flex items-center"><i
                         class="fas fa-money-bill-wave text-purple-600 dark:text-purple-400 mr-2"></i>
-                    {{ $product->status }}</p>
+                    {{ $product->status == 'available' ? 'Disponible' : ($product->status == 'unavailable' ? 'No Disponible' : ($product->status == 'out_of_stock' ? 'Agotado' : $product->status)) }}</p>
             </div>
         </div>
     </div>
