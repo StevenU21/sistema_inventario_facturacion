@@ -38,7 +38,7 @@
                 </div>
                 <div class="flex flex-col p-1">
                     <input type="text" name="search" id="search" value="{{ request('search') }}"
-                        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
+                        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-50 text-sm font-medium"
                         placeholder="Nombre, apellido, cedula...">
                 </div>
                 <div class="flex flex-col p-1">
@@ -50,7 +50,7 @@
                 </div>
                 <div class="flex flex-col p-1">
                     <select name="role" id="role"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-36 text-sm font-medium"
                         onchange="this.form.submit()">
                         <option value="">Todos los roles</option>
                         @foreach ($roles as $role)
@@ -61,7 +61,7 @@
                 </div>
                 <div class="flex flex-col p-1">
                     <select name="status" id="status"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
                         onchange="this.form.submit()">
                         <option value="">Todos los estados</option>
                         <option value="activo" {{ request('status') == 'activo' ? 'selected' : '' }}>Activo</option>
@@ -70,7 +70,7 @@
                 </div>
                 <div class="flex flex-col p-1">
                     <select name="gender" id="gender"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
                         onchange="this.form.submit()">
                         <option value="">Todos los géneros</option>
                         <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Masculino</option>
@@ -78,7 +78,7 @@
                     </select>
                 </div>
             </form>
-            <div class="flex flex-row p-1 gap-x-4 items-end">
+            <div class="flex flex-row p-1 gap-x-3 items-end">
                 <label class="invisible block text-sm font-medium">.</label>
                 <form method="GET" action="{{ route('users.export') }}">
                     <input type="hidden" name="search" value="{{ request('search') }}">
@@ -92,7 +92,7 @@
                     </button>
                 </form>
                 <button type="button" @click="isModalOpen = true"
-                    class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600 ml-2">
+                    class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600">
                     <span>Crear Usuario</span>
                     <i class="fas fa-user-plus ml-2"></i>
                 </button>

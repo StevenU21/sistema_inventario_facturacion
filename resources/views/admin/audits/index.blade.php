@@ -34,7 +34,7 @@
                 </div>
                 <div class="flex flex-col p-0.5">
                     <select name="event" id="event"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-32 text-sm font-medium"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
                         onchange="this.form.submit()">
                         <option value="">Todos los eventos</option>
                         <option value="created" {{ request('event') == 'created' ? 'selected' : '' }}>Creado</option>
@@ -44,9 +44,9 @@
                 </div>
                 <div class="flex flex-col p-0.5">
                     <select name="model" id="model"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-46 text-sm font-medium"
                         onchange="this.form.submit()">
-                        <option value="">Todos los modelos</option>
+                        <option value="">Todos los registros</option>
                         @foreach ($allModels as $modelType)
                             @if ($modelType)
                                 @php
