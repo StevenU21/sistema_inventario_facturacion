@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\ProductVariant;
+use App\Models\Warehouse;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,12 @@ class InventoryFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'stock' => fake()->numberBetween(0, 100),
+            'min_stock' => fake()->numberBetween(0, 20),
+            'purchase_price' => fake()->randomFloat(2, 1, 100),
+            'sale_price' => fake()->randomFloat(2, 1, 150),
+            'product_variant_id' => ProductVariant::factory(),
+            'warehouse_id' => Warehouse::factory(),
         ];
     }
 }
