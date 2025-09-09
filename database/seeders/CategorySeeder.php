@@ -13,23 +13,12 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            'Alimentos',
-            'Bebidas',
-            'Limpieza',
             'Higiene Personal',
             'Electrónica',
             'Ropa',
             'Calzado',
-            'Papelería',
-            'Juguetes',
-            'Ferretería',
-            'Mascotas',
             'Salud',
             'Belleza',
-            'Hogar',
-            'Automotriz',
-            'Deportes',
-            'Herramientas',
             'Accesorios',
             'Otros',
         ];

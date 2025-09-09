@@ -15,17 +15,7 @@ class UnitMeasureSeeder extends Seeder
         $units = [
             'Unidad',
             'Caja',
-            'Paquete',
-            'Docena',
-            'Kilogramo',
-            'Gramo',
-            'Litro',
-            'Mililitro',
-            'Metro',
-            'Centímetro',
-            'Galón',
-            'Saco',
-            'Bolsa',
+            'Paquete'
         ];
 
         foreach ($units as $unit) {
