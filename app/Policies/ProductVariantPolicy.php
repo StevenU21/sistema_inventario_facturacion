@@ -34,4 +34,9 @@ class ProductVariantPolicy
     {
         return $this->checkPermission($user, 'destroy product_variants');
     }
+
+    public function export(User $user): bool
+    {
+        return $this->checkPermission($user, 'export product_variants');
+    }
 }

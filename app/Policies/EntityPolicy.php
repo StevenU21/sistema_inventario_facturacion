@@ -47,4 +47,9 @@ class EntityPolicy
     {
         return $this->checkPermission($user, 'destroy entities');
     }
+
+    public function export(User $user): bool
+    {
+        return $this->checkPermission($user, 'export entities');
+    }
 }

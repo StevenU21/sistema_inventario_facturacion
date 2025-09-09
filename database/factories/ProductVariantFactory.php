@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Color;
+use App\Models\Product;
+use App\Models\Size;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +20,11 @@ class ProductVariantFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'sku' => fake()->unique()->serialNumber(),
+            'barcode' => fake()->unique()->ean13(),
+            'product_id' => null,
+            'color_id' => Color::inRandomOrder()->first()->id,
+            'size_id' => Size::inRandomOrder()->first()->id,
         ];
     }
 }
