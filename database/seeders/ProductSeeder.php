@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Inventory;
 use App\Models\InventoryMovement;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
@@ -56,9 +57,19 @@ class ProductSeeder extends Seeder
         foreach ($products as $product) {
             $productModel = Product::firstOrCreate($product);
 
-            // Crear inventario para cada producto
-            $inventory = Inventory::firstOrCreate([
+            // Crear variante simple para el producto
+            $variant = ProductVariant::firstOrCreate([
                 'product_id' => $productModel->id,
+                'color_id' => null,
+                'size_id' => null,
+            ], [
+                'sku' => 'SKU-' . $productModel->id,
+                'barcode' => $productModel->barcode,
+            ]);
+
+            // Crear inventario para la variante
+            $inventory = Inventory::firstOrCreate([
+                'product_variant_id' => $variant->id,
             ], [
                 'stock' => 50,
                 'min_stock' => 5,

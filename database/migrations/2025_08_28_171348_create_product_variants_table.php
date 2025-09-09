@@ -18,10 +18,10 @@ return new class extends Migration {
             $table->integer('product_id')->unsigned();
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
 
-            $table->integer('color_id')->unsigned();
+            $table->integer('color_id')->unsigned()->nullable();
             $table->foreign('color_id')->references('id')->on('colors')->onDelete('cascade')->onUpdate('cascade');
 
-            $table->integer('size_id')->unsigned();
+            $table->integer('size_id')->unsigned()->nullable();
             $table->foreign('size_id')->references('id')->on('sizes')->onDelete('cascade')->onUpdate('cascade');
 
             $table->timestamps();

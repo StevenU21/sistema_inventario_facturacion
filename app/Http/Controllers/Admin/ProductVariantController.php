@@ -20,8 +20,11 @@ class ProductVariantController extends Controller
     public function index()
     {
         $this->authorize('viewAny', ProductVariant::class);
-        $variants = ProductVariant::with(['product', 'color', 'size'])->paginate(15);
-        return view('product_variants.index', compact('variants'));
+    $variants = ProductVariant::with(['product', 'color', 'size'])->paginate(10);
+    $products = Product::pluck('name', 'id');
+    $colors = Color::pluck('name', 'id');
+    $sizes = Size::pluck('name', 'id');
+    return view('admin.product_variants.index', compact('variants', 'products', 'colors', 'sizes'));
     }
 
     public function search(Request $request, ModelSearchService $searchService)
@@ -49,10 +52,10 @@ class ProductVariantController extends Controller
                 }
             }
         );
-        $products = Product::all();
-        $colors = Color::all();
-        $sizes = Size::all();
-        return view('product_variants.index', compact('variants', 'products', 'colors', 'sizes'));
+    $products = Product::pluck('name', 'id');
+    $colors = Color::pluck('name', 'id');
+    $sizes = Size::pluck('name', 'id');
+        return view('admin.product_variants.index', compact('variants', 'products', 'colors', 'sizes'));
     }
 
     public function export(Request $request)
@@ -100,7 +103,7 @@ class ProductVariantController extends Controller
         $products = Product::all();
         $colors = Color::all();
         $sizes = Size::all();
-        return view('product_variants.create', compact('products', 'colors', 'sizes'));
+        return view('admin.product_variants.create', compact('products', 'colors', 'sizes'));
     }
 
     public function store(ProductVariantRequest $request)
@@ -112,7 +115,7 @@ class ProductVariantController extends Controller
     public function show(ProductVariant $product_variant)
     {
         $this->authorize('view', $product_variant);
-        return view('product_variants.show', compact('product_variant'));
+        return view('admin.product_variants.show', compact('product_variant'));
     }
 
     public function edit(ProductVariant $product_variant)
@@ -120,7 +123,7 @@ class ProductVariantController extends Controller
         $products = Product::all();
         $colors = Color::all();
         $sizes = Size::all();
-        return view('product_variants.edit', compact('product_variant', 'products', 'colors', 'sizes'));
+        return view('admin.product_variants.edit', compact('product_variant', 'products', 'colors', 'sizes'));
     }
 
     public function update(ProductVariantRequest $request, ProductVariant $product_variant)

@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\InventoryMovementController;
 use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\TaxController;
@@ -98,6 +99,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('products/search', [ProductController::class, 'search'])->name('products.search');
     Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
     Route::resource('products', ProductController::class);
+
+    // Product Variants
+    Route::get('product_variants/search', [ProductVariantController::class, 'search'])->name('product_variants.search');
+    Route::get('product_variants/export', [ProductVariantController::class, 'export'])->name('product_variants.export');
+    Route::resource('product_variants', ProductVariantController::class);
 
     // Roles
     Route::get('roles/search', [RoleController::class, 'search'])->name('roles.search');
