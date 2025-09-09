@@ -46,4 +46,9 @@ class ProductVariant extends Model
     {
         return $this->hasMany(Inventory::class);
     }
+
+    public function purchaseDetails()
+    {
+        return $this->hasMany(PurchaseDetail::class);
+    }
 }
