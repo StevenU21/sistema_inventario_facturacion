@@ -96,27 +96,33 @@ class InventoryController extends Controller
 
         $perPage = $request->input('per_page', 10);
         $inventories = $query->paginate($perPage)->appends($request->all());
-        $variants = ProductVariant::whereHas('product', function ($q) {
+        $products = Product::where('status', 'available')->pluck('name', 'id');
+        $variantsByProduct = ProductVariant::whereHas('product', function ($q) {
             $q->where('status', 'available');
         })
             ->with(['product', 'color', 'size'])
             ->get()
-            ->mapWithKeys(function ($variant) {
-                $label = $variant->product->name;
-                if ($variant->name)
-                    $label .= ' / ' . $variant->name;
-                if ($variant->color)
-                    $label .= ' / ' . $variant->color->name;
-                if ($variant->size)
-                    $label .= ' / ' . $variant->size->name;
-                return [$variant->id => $label];
+            ->groupBy('product_id')
+            ->map(function ($variants) {
+                return $variants->map(function ($variant) {
+                    $label = $variant->product->name;
+                    if ($variant->name)
+                        $label .= ' / ' . $variant->name;
+                    if ($variant->color)
+                        $label .= ' / ' . $variant->color->name;
+                    if ($variant->size)
+                        $label .= ' / ' . $variant->size->name;
+                    return [
+                        'id' => $variant->id,
+                        'label' => $label
+                    ];
+                })->values();
             });
-        $products = Product::where('status', 'available')->pluck('name', 'id');
         $warehouses = Warehouse::pluck('name', 'id');
         return view('admin.inventories.index', [
             'inventories' => $inventories,
-            'variants' => $variants,
             'products' => $products,
+            'variantsByProduct' => $variantsByProduct,
             'warehouses' => $warehouses
         ]);
     }
@@ -183,9 +189,33 @@ class InventoryController extends Controller
                     $label .= ' / ' . $variant->size->name;
                 return [$variant->id => $label];
             });
+        $products = \App\Models\Product::where('status', 'available')->pluck('name', 'id');
+        // Agrupar variantes por producto para facilitar el filtrado en el frontend
+        $variantsByProduct = ProductVariant::whereHas('product', function ($q) {
+            $q->where('status', 'available');
+        })
+            ->with(['product', 'color', 'size'])
+            ->get()
+            ->groupBy('product_id')
+            ->map(function ($variants) {
+                return $variants->map(function ($variant) {
+                    $label = $variant->product->name;
+                    if ($variant->name)
+                        $label .= ' / ' . $variant->name;
+                    if ($variant->color)
+                        $label .= ' / ' . $variant->color->name;
+                    if ($variant->size)
+                        $label .= ' / ' . $variant->size->name;
+                    return [
+                        'id' => $variant->id,
+                        'label' => $label
+                    ];
+                })->values();
+            });
         $warehouses = Warehouse::pluck('name', 'id');
         return view('admin.inventories.create', [
-            'variants' => $variants,
+            'products' => $products,
+            'variantsByProduct' => $variantsByProduct,
             'warehouses' => $warehouses
         ]);
     }
@@ -231,27 +261,35 @@ class InventoryController extends Controller
     public function edit(Inventory $inventory)
     {
         $this->authorize('update', $inventory);
-        $variants = ProductVariant::whereHas('product', function ($q) {
+        $products = Product::where('status', 'available')->pluck('name', 'id');
+        $variantsByProduct = ProductVariant::whereHas('product', function ($q) {
             $q->where('status', 'available');
         })
             ->with(['product', 'color', 'size'])
             ->get()
-            ->mapWithKeys(function ($variant) {
-                $label = $variant->product->name;
-                if ($variant->name)
-                    $label .= ' / ' . $variant->name;
-                if ($variant->color)
-                    $label .= ' / ' . $variant->color->name;
-                if ($variant->size)
-                    $label .= ' / ' . $variant->size->name;
-                return [$variant->id => $label];
+            ->groupBy('product_id')
+            ->map(function ($variants) {
+                return $variants->map(function ($variant) {
+                    $label = $variant->product->name;
+                    if ($variant->name)
+                        $label .= ' / ' . $variant->name;
+                    if ($variant->color)
+                        $label .= ' / ' . $variant->color->name;
+                    if ($variant->size)
+                        $label .= ' / ' . $variant->size->name;
+                    return [
+                        'id' => $variant->id,
+                        'label' => $label
+                    ];
+                })->values();
             });
         $warehouses = Warehouse::pluck('name', 'id');
         // Movimientos recientes
         $movements = $inventory->inventoryMovements()->latest()->take(10)->get();
         return view('admin.inventories.edit', [
             'inventory' => $inventory,
-            'variants' => $variants,
+            'products' => $products,
+            'variantsByProduct' => $variantsByProduct,
             'warehouses' => $warehouses,
             'movements' => $movements
         ]);

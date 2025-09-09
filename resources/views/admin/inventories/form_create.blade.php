@@ -1,15 +1,34 @@
 
 <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
     <!-- Producto y Bodega -->
-    <div class="flex flex-col md:flex-row gap-4">
+    <div x-data="{
+        productId: @js(old('product_id')),
+        variantId: @js(old('product_variant_id')),
+        variantsByProduct: @js($variantsByProduct)
+    }" x-effect="if(!productId||!(variantsByProduct[productId]||[]).some(v=>String(v.id)===String(variantId))){variantId='';}"
+        class="flex flex-col md:flex-row gap-4">
+        <label class="block text-sm w-full">
+            <span class="text-gray-700 dark:text-gray-400">Producto</span>
+            <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+                <select x-model="productId" name="product_id" class="block w-full min-w-[200px] pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray">
+                    <option value="">Seleccione</option>
+                    @foreach ($products as $id => $name)
+                        <option value="{{ $id }}" {{ old('product_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+                <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
+                    <i class="fas fa-box w-5 h-5"></i>
+                </div>
+            </div>
+        </label>
         <label class="block text-sm w-full">
             <span class="text-gray-700 dark:text-gray-400">Variante</span>
             <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                <select name="product_variant_id" required class="block w-full min-w-[260px] pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('product_variant_id') border-red-600 @enderror">
+                <select x-model="variantId" name="product_variant_id" required class="block w-full min-w-[260px] pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('product_variant_id') border-red-600 @enderror">
                     <option value="">Seleccione</option>
-                    @foreach ($variants as $id => $name)
-                        <option value="{{ $id }}" {{ old('product_variant_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                    @endforeach
+                    <template x-for="variant in (variantsByProduct[productId] || [])" :key="variant.id">
+                        <option :value="variant.id" x-text="variant.label" :selected="variantId == variant.id"></option>
+                    </template>
                 </select>
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                     <i class="fas fa-box w-5 h-5"></i>
