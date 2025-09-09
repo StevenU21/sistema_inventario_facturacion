@@ -23,12 +23,25 @@
             </ul>
         </div>
 
-    <div class="flex flex-wrap gap-x-1 gap-y-1 items-end justify-between mb-4">
+        <div class="flex flex-col gap-y-2 mb-4">
+            <div class="flex w-full">
+                <div class="flex-1"></div>
+                @if ($kardexModel)
+                    <div class="flex flex-col p-0.5 ml-auto">
+                        <label class="invisible block text-sm font-medium">.</label>
+                        <a href="{{ route('kardex.export', request()->all()) }}" target="_blank"
+                            class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
+                            <span>Exportar PDF</span>
+                            <i class="fas fa-file-pdf ml-2"></i>
+                        </a>
+                    </div>
+                @endif
+            </div>
             <form method="GET" action="{{ route('kardex.index') }}"
                 class="flex flex-wrap gap-x-1 gap-y-1 items-end self-end">
                 <div class="flex flex-col p-0.5">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Producto</label>
-                    <select name="product_id"
+                    <select name="product_id" required
                         class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-60 text-sm font-medium">
                         <option value="">Seleccionar Producto</option>
                         @foreach ($products as $id => $name)
@@ -36,6 +49,34 @@
                                 {{ (string) $id === (string) ($productId ?? '') ? 'selected' : '' }}>
                                 {{ $name }}</option>
                         @endforeach
+                    </select>
+                </div>
+                <div class="flex flex-col p-0.5">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Color</label>
+                    <select name="color_id"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium">
+                        <option value="">Todos los colores</option>
+                        @isset($colors)
+                            @foreach ($colors as $id => $name)
+                                <option value="{{ $id }}"
+                                    {{ (string) $id === (string) ($colorId ?? '') ? 'selected' : '' }}>{{ $name }}
+                                </option>
+                            @endforeach
+                        @endisset
+                    </select>
+                </div>
+                <div class="flex flex-col p-0.5">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Talla</label>
+                    <select name="size_id"
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium">
+                        <option value="">Todas las tallas</option>
+                        @isset($sizes)
+                            @foreach ($sizes as $id => $name)
+                                <option value="{{ $id }}"
+                                    {{ (string) $id === (string) ($sizeId ?? '') ? 'selected' : '' }}>{{ $name }}
+                                </option>
+                            @endforeach
+                        @endisset
                     </select>
                 </div>
                 <div class="flex flex-col p-0.5">
@@ -63,7 +104,7 @@
                 <div class="flex flex-col p-0.5">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Desde</label>
                     <input type="date" name="from" value="{{ $from }}"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-36 text-sm font-medium" />
+                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-36 text-sm font-medium" required/>
                 </div>
                 <div class="flex flex-col p-0.5">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Hasta</label>
@@ -78,17 +119,6 @@
                     </button>
                 </div>
             </form>
-
-            @if ($kardexModel)
-                <div class="flex flex-row p-0.5 gap-x-1 items-end">
-                    <label class="invisible block text-sm font-medium">.</label>
-                    <a href="{{ route('kardex.export', request()->all()) }}" target="_blank"
-                        class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
-                        <span>Exportar PDF</span>
-                        <i class="fas fa-file-pdf ml-2"></i>
-                    </a>
-                </div>
-            @endif
         </div>
 
         @if ($kardexModel)
@@ -134,7 +164,8 @@
                                     <td class="px-4 py-3 text-sm text-right">{{ $r['entry_qty'] }}</td>
                                     <td class="px-4 py-3 text-sm text-right">{{ $r['exit_qty'] }}</td>
                                     <td class="px-4 py-3 text-sm text-right">{{ $r['balance_qty'] }}</td>
-                                    <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['unit_cost'], 2) }}</td>
+                                    <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['unit_cost'], 2) }}
+                                    </td>
                                     <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['avg_cost'], 2) }}</td>
                                     <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['debe'], 2) }}</td>
                                     <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['haber'], 2) }}</td>
@@ -152,9 +183,11 @@
                             Unidades finales {{ $kardexModel->final['qty'] }} × Costo promedio
                             C$ {{ number_format($kardexModel->final['unit_cost'], 2) }}
                             =
-                            <strong>C$ {{ number_format($kardexModel->final['qty'] * $kardexModel->final['unit_cost'], 2) }}</strong>
+                            <strong>C$
+                                {{ number_format($kardexModel->final['qty'] * $kardexModel->final['unit_cost'], 2) }}</strong>
                         </p>
-                        <p>Saldo final reportado: <strong>C$ {{ number_format($kardexModel->final['total'], 2) }}</strong></p>
+                        <p>Saldo final reportado: <strong>C$ {{ number_format($kardexModel->final['total'], 2) }}</strong>
+                        </p>
                     </div>
                 </div>
             </div>

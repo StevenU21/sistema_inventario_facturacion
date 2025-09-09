@@ -20,23 +20,33 @@ class KardexController extends Controller
 
         $productId = $request->input('product_id');
         $warehouseId = $request->input('warehouse_id');
-        $from = $request->input('from');
-        $to = $request->input('to');
+    $from = $request->input('from');
+    $to = $request->input('to');
+    $colorId = $request->input('color_id');
+    $sizeId = $request->input('size_id');
         $metodo = $request->input('metodo', 'cpp');
 
-        // Para el selector: solo productos con inventario
+        // Para el selector: solo productos con variantes en inventario
         $products = Product::whereIn('id', function ($q) {
-            $q->select('product_id')->from('inventories');
+            $q->select('product_id')
+                ->from('product_variants')
+                ->whereIn('id', function ($sq) {
+                    $sq->select('product_variant_id')->from('inventories');
+                });
         })->orderBy('name')->pluck('name', 'id');
 
-        $warehouses = Warehouse::orderBy('name')->pluck('name', 'id');
+    $warehouses = Warehouse::orderBy('name')->pluck('name', 'id');
+    // Selects globales de color y talla
+    $variants = \App\Models\ProductVariant::with(['color', 'size'])->get();
+    $colors = $variants->pluck('color')->filter()->unique('id')->mapWithKeys(fn($c) => [$c->id => $c->name]);
+    $sizes = $variants->pluck('size')->filter()->unique('id')->mapWithKeys(fn($s) => [$s->id => $s->name]);
 
         $kardexModel = null;
         if ($productId) {
-            $kardexModel = $kardex->generate((int) $productId, $warehouseId ? (int) $warehouseId : null, $from, $to, $metodo);
+            $kardexModel = $kardex->generate((int) $productId, $warehouseId ? (int) $warehouseId : null, $from, $to, $metodo, $colorId ? (int)$colorId : null, $sizeId ? (int)$sizeId : null);
         }
 
-        return view('admin.kardex.index', compact('products', 'warehouses', 'kardexModel', 'productId', 'warehouseId', 'from', 'to', 'metodo'));
+        return view('admin.kardex.index', compact('products', 'warehouses', 'colors', 'sizes', 'kardexModel', 'productId', 'warehouseId', 'from', 'to', 'metodo', 'colorId', 'sizeId'));
     }
 
     public function exportPdf(Request $request, KardexService $kardex)
@@ -47,7 +57,9 @@ class KardexController extends Controller
         $to = $request->input('to');
         $metodo = $request->input('metodo', 'cpp');
 
-        $kardexModel = $kardex->generate($productId, $warehouseId, $from, $to, $metodo);
+    $colorId = $request->filled('color_id') ? (int)$request->input('color_id') : null;
+    $sizeId = $request->filled('size_id') ? (int)$request->input('size_id') : null;
+    $kardexModel = $kardex->generate($productId, $warehouseId, $from, $to, $metodo, $colorId, $sizeId);
 
         $company = Company::first();
         $data = [

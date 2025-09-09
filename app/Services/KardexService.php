@@ -23,7 +23,7 @@ class KardexService
     /**
      * @param string $metodo 'cpp'|'peps'|'ueps'
      */
-    public function generate(int $productId, ?int $warehouseId = null, ?string $from = null, ?string $to = null, string $metodo = 'cpp'): Kardex
+    public function generate(int $productId, ?int $warehouseId = null, ?string $from = null, ?string $to = null, string $metodo = 'cpp', ?int $colorId = null, ?int $sizeId = null): Kardex
     {
         $kardex = new Kardex();
         // Lógica igual que antes, pero asignando atributos al modelo Kardex
@@ -31,7 +31,17 @@ class KardexService
         $warehouse = $warehouseId ? Warehouse::findOrFail($warehouseId) : null;
         $dateFrom = $from ? Carbon::parse($from)->startOfDay() : Carbon::minValue();
         $dateTo = $to ? Carbon::parse($to)->endOfDay() : Carbon::now()->endOfDay();
-        $inventoryIds = Inventory::where('product_id', $productId)
+        // Ajustado a la nueva lógica: inventarios se relacionan por variante de producto.
+        // Traer todos los inventarios cuyas variantes pertenezcan al producto padre seleccionado.
+        $inventoryIds = Inventory::whereHas('productVariant', function ($q) use ($productId, $colorId, $sizeId) {
+            $q->where('product_id', $productId);
+            if (!is_null($colorId)) {
+                $q->where('color_id', $colorId);
+            }
+            if (!is_null($sizeId)) {
+                $q->where('size_id', $sizeId);
+            }
+        })
             ->when($warehouseId, fn($q) => $q->where('warehouse_id', $warehouseId))
             ->pluck('id');
         $kardex->product = $product;
@@ -70,12 +80,12 @@ class KardexService
             foreach ($previousMovements as $m) {
                 if ($this->isInbound($m)) {
                     $fifoStack[] = [
-                        'qty' => (int)$m->quantity,
-                        'unit_cost' => (float)$m->unit_price
+                        'qty' => (int) $m->quantity,
+                        'unit_cost' => (float) $m->unit_price
                     ];
-                    $qty += (int)$m->quantity;
+                    $qty += (int) $m->quantity;
                 } elseif ($this->isOutbound($m)) {
-                    $outQty = (int)$m->quantity;
+                    $outQty = (int) $m->quantity;
                     while ($outQty > 0 && count($fifoStack) > 0) {
                         $lote = &$fifoStack[0];
                         if ($lote['qty'] > $outQty) {
@@ -97,7 +107,7 @@ class KardexService
             }
             $unit_cost = $qty > 0 ? $total / $qty : 0.0;
             $kardex->initial = [
-                'qty' => (int)$qty,
+                'qty' => (int) $qty,
                 'unit_cost' => round($unit_cost, 2),
                 'total' => round($total, 2),
             ];
@@ -106,14 +116,14 @@ class KardexService
             foreach ($previousMovements as $m) {
                 if ($this->isInbound($m)) {
                     $lifoStack[] = [
-                        'qty' => (int)$m->quantity,
-                        'unit_cost' => (float)$m->unit_price
+                        'qty' => (int) $m->quantity,
+                        'unit_cost' => (float) $m->unit_price
                     ];
-                    $qty += (int)$m->quantity;
+                    $qty += (int) $m->quantity;
                 } elseif ($this->isOutbound($m)) {
-                    $outQty = (int)$m->quantity;
+                    $outQty = (int) $m->quantity;
                     while ($outQty > 0 && count($lifoStack) > 0) {
-                        $lote = &$lifoStack[count($lifoStack)-1];
+                        $lote = &$lifoStack[count($lifoStack) - 1];
                         if ($lote['qty'] > $outQty) {
                             $lote['qty'] -= $outQty;
                             $qty -= $outQty;
@@ -133,7 +143,7 @@ class KardexService
             }
             $unit_cost = $qty > 0 ? $total / $qty : 0.0;
             $kardex->initial = [
-                'qty' => (int)$qty,
+                'qty' => (int) $qty,
                 'unit_cost' => round($unit_cost, 2),
                 'total' => round($total, 2),
             ];
@@ -198,7 +208,7 @@ class KardexService
                     $row['unit_cost'] = round($exitUnit, 2);
                     $row['haber'] = round($exitTotal, 2);
                     $row['concept'] = 'Salida';
-                    $row['sale_price'] = isset($m->sale_price) ? (float)$m->sale_price : null;
+                    $row['sale_price'] = isset($m->sale_price) ? (float) $m->sale_price : null;
                 } else {
                     continue;
                 }
@@ -208,16 +218,16 @@ class KardexService
             } elseif ($metodo === 'peps') {
                 if ($isInbound) {
                     $fifoStackMov[] = [
-                        'qty' => (int)$m->quantity,
-                        'unit_cost' => (float)$m->unit_price
+                        'qty' => (int) $m->quantity,
+                        'unit_cost' => (float) $m->unit_price
                     ];
-                    $qtyMov += (int)$m->quantity;
-                    $row['entry_qty'] = (int)$m->quantity;
-                    $row['unit_cost'] = round((float)$m->unit_price, 2);
-                    $row['debe'] = round($m->quantity * (float)$m->unit_price, 2);
+                    $qtyMov += (int) $m->quantity;
+                    $row['entry_qty'] = (int) $m->quantity;
+                    $row['unit_cost'] = round((float) $m->unit_price, 2);
+                    $row['debe'] = round($m->quantity * (float) $m->unit_price, 2);
                     $row['concept'] = 'Entrada';
                 } elseif ($isOutbound) {
-                    $exitQty = (int)$m->quantity;
+                    $exitQty = (int) $m->quantity;
                     $exitTotal = 0.0;
                     $exitUnit = 0.0;
                     $qtyToRemove = $exitQty;
@@ -229,7 +239,8 @@ class KardexService
                         $exitTotal += $used * $lote['unit_cost'];
                         $qtyToRemove -= $used;
                         $lote['qty'] -= $used;
-                        if ($lote['qty'] == 0) array_shift($fifoStackMov);
+                        if ($lote['qty'] == 0)
+                            array_shift($fifoStackMov);
                     }
                     $qtyMov -= $exitQty;
                     $exitUnit = $exitQty > 0 ? $exitTotal / $exitQty : 0.0;
@@ -237,11 +248,11 @@ class KardexService
                     $row['unit_cost'] = round($exitUnit, 2);
                     $row['haber'] = round($exitTotal, 2);
                     $row['concept'] = 'Salida';
-                    $row['sale_price'] = isset($m->sale_price) ? (float)$m->sale_price : null;
+                    $row['sale_price'] = isset($m->sale_price) ? (float) $m->sale_price : null;
                 } else {
                     continue;
                 }
-                $row['balance_qty'] = (int)$qtyMov;
+                $row['balance_qty'] = (int) $qtyMov;
                 // Calcular costo promedio actual de los lotes restantes
                 $totalRestante = 0.0;
                 foreach ($fifoStackMov as $lote) {
@@ -252,28 +263,29 @@ class KardexService
             } elseif ($metodo === 'ueps') {
                 if ($isInbound) {
                     $lifoStackMov[] = [
-                        'qty' => (int)$m->quantity,
-                        'unit_cost' => (float)$m->unit_price
+                        'qty' => (int) $m->quantity,
+                        'unit_cost' => (float) $m->unit_price
                     ];
-                    $qtyMov += (int)$m->quantity;
-                    $row['entry_qty'] = (int)$m->quantity;
-                    $row['unit_cost'] = round((float)$m->unit_price, 2);
-                    $row['debe'] = round($m->quantity * (float)$m->unit_price, 2);
+                    $qtyMov += (int) $m->quantity;
+                    $row['entry_qty'] = (int) $m->quantity;
+                    $row['unit_cost'] = round((float) $m->unit_price, 2);
+                    $row['debe'] = round($m->quantity * (float) $m->unit_price, 2);
                     $row['concept'] = 'Entrada';
                 } elseif ($isOutbound) {
-                    $exitQty = (int)$m->quantity;
+                    $exitQty = (int) $m->quantity;
                     $exitTotal = 0.0;
                     $exitUnit = 0.0;
                     $qtyToRemove = $exitQty;
                     $costos = [];
                     while ($qtyToRemove > 0 && count($lifoStackMov) > 0) {
-                        $lote = &$lifoStackMov[count($lifoStackMov)-1];
+                        $lote = &$lifoStackMov[count($lifoStackMov) - 1];
                         $used = min($lote['qty'], $qtyToRemove);
                         $costos[] = ['qty' => $used, 'unit_cost' => $lote['unit_cost']];
                         $exitTotal += $used * $lote['unit_cost'];
                         $qtyToRemove -= $used;
                         $lote['qty'] -= $used;
-                        if ($lote['qty'] == 0) array_pop($lifoStackMov);
+                        if ($lote['qty'] == 0)
+                            array_pop($lifoStackMov);
                     }
                     $qtyMov -= $exitQty;
                     $exitUnit = $exitQty > 0 ? $exitTotal / $exitQty : 0.0;
@@ -281,11 +293,11 @@ class KardexService
                     $row['unit_cost'] = round($exitUnit, 2);
                     $row['haber'] = round($exitTotal, 2);
                     $row['concept'] = 'Salida';
-                    $row['sale_price'] = isset($m->sale_price) ? (float)$m->sale_price : null;
+                    $row['sale_price'] = isset($m->sale_price) ? (float) $m->sale_price : null;
                 } else {
                     continue;
                 }
-                $row['balance_qty'] = (int)$qtyMov;
+                $row['balance_qty'] = (int) $qtyMov;
                 // Calcular costo promedio actual de los lotes restantes
                 $totalRestante = 0.0;
                 foreach ($lifoStackMov as $lote) {
@@ -300,7 +312,7 @@ class KardexService
         // Calcular final según método
         if ($metodo === 'cpp') {
             $kardex->final = [
-                'qty' => (int)$qtyMov,
+                'qty' => (int) $qtyMov,
                 'unit_cost' => round($avgMov, 2),
                 'total' => round($qtyMov * $avgMov, 2),
             ];
@@ -310,7 +322,7 @@ class KardexService
                 $totalRestante += $lote['qty'] * $lote['unit_cost'];
             }
             $kardex->final = [
-                'qty' => (int)$qtyMov,
+                'qty' => (int) $qtyMov,
                 'unit_cost' => $qtyMov > 0 ? round($totalRestante / $qtyMov, 2) : 0.0,
                 'total' => round($totalRestante, 2),
             ];
@@ -320,7 +332,7 @@ class KardexService
                 $totalRestante += $lote['qty'] * $lote['unit_cost'];
             }
             $kardex->final = [
-                'qty' => (int)$qtyMov,
+                'qty' => (int) $qtyMov,
                 'unit_cost' => $qtyMov > 0 ? round($totalRestante / $qtyMov, 2) : 0.0,
                 'total' => round($totalRestante, 2),
             ];
