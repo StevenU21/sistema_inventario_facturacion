@@ -86,6 +86,8 @@ class PermissionTranslator
         'export inventory_movements' => 'Exportar movimientos de inventario',
         'export inventories' => 'Exportar inventarios',
         'export kardex' => 'Exportar kardex',
+        'export purchases' => 'Exportar compras',
+        'generate kardex' => 'Generar kardex',
     ];
 
     /**
