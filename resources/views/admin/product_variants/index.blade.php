@@ -151,15 +151,17 @@
                                     <td class="px-4 py-3 text-sm">{{ optional($variant->size)->name ?? '-' }}</td>
                                     <td class="px-4 py-3 text-sm">{{ $variant->created_at?->format('d/m/Y H:i') }}</td>
                                     <td class="px-4 py-3">
-                                        <div class="flex items-center space-x-2">
+                                        <div class="flex items-center space-x-4 text-sm">
                                             <button type="button"
                                                 @click="isShowModalOpen=true; showVariant={ id:'{{ $variant->id }}', sku:'{{ $variant->sku }}', barcode:'{{ $variant->barcode }}', product:'{{ optional($variant->product)->name }}', color:'{{ optional($variant->color)->name }}', size:'{{ optional($variant->size)->name }}', created_at:'{{ $variant->created_at?->format('d/m/Y H:i') }}', updated_at:'{{ $variant->updated_at?->format('d/m/Y H:i') }}' }"
-                                                class="px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg hover:text-purple-700 focus:outline-none">
+                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                aria-label="Ver">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                             <button type="button"
                                                 @click="isEditModalOpen=true; editAction='{{ route('product_variants.update', $variant) }}'; editVariant={ id:'{{ $variant->id }}', sku:'{{ $variant->sku }}', barcode:'{{ $variant->barcode }}', product_id:'{{ $variant->product_id }}', color_id:'{{ $variant->color_id }}', size_id:'{{ $variant->size_id }}' }"
-                                                class="px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg hover:text-purple-700 focus:outline-none">
+                                                class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                aria-label="Editar Modal">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <form action="{{ route('product_variants.destroy', $variant) }}"
@@ -167,7 +169,8 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
-                                                    class="px-2 py-2 text-sm font-medium leading-5 text-red-600 rounded-lg hover:text-red-700 focus:outline-none">
+                                                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    aria-label="Eliminar">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
