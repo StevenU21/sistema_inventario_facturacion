@@ -105,14 +105,14 @@
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="id" :value="editEntity.id">
-                @include('admin.entities.form', ['entity' => null])
+                @include('admin.entities.form', ['entity' => null, 'useAlpine' => true])
             </form>
         </x-edit-modal>
 
         <x-modal :title="'Crear Entidad'" :description="'Agrega una nueva entidad al sistema.'">
             <form action="{{ route('entities.store') }}" method="POST">
                 @csrf
-                @include('admin.entities.form')
+                @include('admin.entities.form', ['useAlpine' => false])
             </form>
         </x-modal>
 
@@ -208,6 +208,7 @@
                                                     address: '{{ addslashes($entity->address) }}',
                                                     description: '{{ addslashes($entity->description) }}',
                                                     municipality_id: {{ $entity->municipality_id ?? 'null' }},
+                                                    department_id: {{ optional($entity->municipality)->department_id ?? 'null' }},
                                                     is_client: {{ $entity->is_client ? 'true' : 'false' }},
                                                     is_supplier: {{ $entity->is_supplier ? 'true' : 'false' }},
                                                     is_active: {{ $entity->is_active ? 'true' : 'false' }},

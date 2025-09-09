@@ -17,14 +17,15 @@ use App\Http\Requests\ProductVariantRequest;
 class ProductVariantController extends Controller
 {
     use AuthorizesRequests;
+
     public function index()
     {
         $this->authorize('viewAny', ProductVariant::class);
-    $variants = ProductVariant::with(['product', 'color', 'size'])->paginate(10);
-    $products = Product::pluck('name', 'id');
-    $colors = Color::pluck('name', 'id');
-    $sizes = Size::pluck('name', 'id');
-    return view('admin.product_variants.index', compact('variants', 'products', 'colors', 'sizes'));
+        $variants = ProductVariant::with(['product', 'color', 'size'])->paginate(10);
+        $products = Product::pluck('name', 'id');
+        $colors = Color::pluck('name', 'id');
+        $sizes = Size::pluck('name', 'id');
+        return view('admin.product_variants.index', compact('variants', 'products', 'colors', 'sizes'));
     }
 
     public function search(Request $request, ModelSearchService $searchService)
@@ -52,9 +53,9 @@ class ProductVariantController extends Controller
                 }
             }
         );
-    $products = Product::pluck('name', 'id');
-    $colors = Color::pluck('name', 'id');
-    $sizes = Size::pluck('name', 'id');
+        $products = Product::pluck('name', 'id');
+        $colors = Color::pluck('name', 'id');
+        $sizes = Size::pluck('name', 'id');
         return view('admin.product_variants.index', compact('variants', 'products', 'colors', 'sizes'));
     }
 
