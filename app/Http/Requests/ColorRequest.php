@@ -32,7 +32,7 @@ class ColorRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:2', 'max:16'],
-            'hex_code' => ['nullable', 'string', 'min:6', 'max:12'],
+            'hex_code' => ['nullable', 'string', 'min:1', 'max:12'],
         ];
     }
 }

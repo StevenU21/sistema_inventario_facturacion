@@ -47,7 +47,7 @@ class EntityRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('entities')->ignore($this->entity)],
             'phone' => ['nullable', 'string', 'max:20', Rule::unique('entities')->ignore($this->entity)],
             'address' => ['nullable', 'string', 'min:5', 'max:255'],
-            'description' => ['nullable', 'string', 'min:5', 'max:120'],
+            'description' => ['nullable', 'string', 'min:1', 'max:120'],
             'is_client' => ['required', 'boolean'],
             'is_supplier' => ['required', 'boolean'],
             'is_active' => ['required', 'boolean'],

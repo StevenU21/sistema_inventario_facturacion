@@ -33,7 +33,7 @@ class BrandRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:3', 'max:60', Rule::unique('brands')->ignore($this->brand)],
-            'description' => ['nullable', 'string', 'min:10', 'max:120'],
+            'description' => ['nullable', 'string', 'min:1', 'max:120'],
         ];
     }
 }
