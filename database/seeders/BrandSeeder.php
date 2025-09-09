@@ -13,25 +13,14 @@ class BrandSeeder extends Seeder
     public function run(): void
     {
         $brands = [
-            'Genérica',
+            'HP',
+            'Dell',
+            'Acer',
             'Nike',
-            'Adidas',
-            'Puma',
             'Gucci',
             'Prada',
             'Chanel',
             'Louis Vuitton',
-            'Zara',
-            'H&M',
-            'Mango',
-            'Forever 21',
-            'Calvin Klein',
-            'Ralph Lauren',
-            'Tommy Hilfiger',
-            'Levi\'s',
-            'Gap',
-            'Coach',
-            'Kate Spade'
         ];
 
         foreach ($brands as $brand) {

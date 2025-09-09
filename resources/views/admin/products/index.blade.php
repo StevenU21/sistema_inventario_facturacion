@@ -138,9 +138,6 @@
                             </option>
                             <option value="discontinued" {{ request('status') == 'discontinued' ? 'selected' : '' }}>
                                 Descontinuado</option>
-                            <option value="out_of_stock" {{ request('status') == 'out_of_stock' ? 'selected' : '' }}>Sin
-                                stock</option>
-                            </option>
                         </select>
                     </div>
                 </form>
