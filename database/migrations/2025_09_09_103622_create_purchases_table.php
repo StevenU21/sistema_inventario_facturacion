@@ -12,12 +12,7 @@ return new class extends Migration {
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->increments('id');
-            $table->enum('status', ['pending', 'completed', 'canceled'])->default('pending');
-            $table->date('purchase_date')->nullable();
-            $table->date('expected_at')->nullable();
-            $table->date('received_at')->nullable();
             $table->string('reference')->nullable();
-            $table->string('document_number')->nullable();
             $table->decimal('subtotal', 10, 2)->nullable()->default(0);
             $table->decimal('total', 10, 2)->nullable()->default(0);
 

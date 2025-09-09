@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->increments('id');
             $table->unsignedInteger('quantity');
             $table->decimal('unit_price', 10, 2);
-            $table->string('notes')->nullable();
 
             $table->integer('purchase_id')->unsigned();
             $table->foreign('purchase_id')->references('id')->on('purchases')->onDelete('cascade')->onUpdate('cascade');
