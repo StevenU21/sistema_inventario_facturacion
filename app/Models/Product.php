@@ -15,7 +15,6 @@ class Product extends Model
     {
         return $this->hasMany(\App\Models\Inventory::class);
     }
-    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'name',
@@ -29,6 +28,9 @@ class Product extends Model
         'unit_measure_id',
         'entity_id',
     ];
+
+    // Eager load to avoid N+1 when showing product info
+    protected $with = ['tax', 'unitMeasure'];
 
     public function getActivitylogOptions(): LogOptions
     {
