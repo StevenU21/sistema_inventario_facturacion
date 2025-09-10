@@ -138,11 +138,103 @@
         </div>
         <div id="lines" class="space-y-3">
             <!-- Lines will be added here -->
+            @php $oldLines = old('lines', []); @endphp
+            @if (is_array($oldLines) && count($oldLines))
+                @foreach ($oldLines as $i => $line)
+                    <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end border rounded p-3" data-line>
+                        <div>
+                            <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Color</span>
+                                <select name="lines[{{ $i }}][color_id]"
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                    <option value="">Ninguno</option>
+                                    @foreach ($colors ?? [] as $id => $name)
+                                        <option value="{{ $id }}"
+                                            {{ (string) old("lines.$i.color_id") === (string) $id ? 'selected' : '' }}>
+                                            {{ $name }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+                            @error('lines.' . $i . '.color_id')
+                                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Talla</span>
+                                <select name="lines[{{ $i }}][size_id]"
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                    <option value="">Ninguna</option>
+                                    @foreach ($sizes ?? [] as $id => $name)
+                                        <option value="{{ $id }}"
+                                            {{ (string) old("lines.$i.size_id") === (string) $id ? 'selected' : '' }}>
+                                            {{ $name }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+                            @error('lines.' . $i . '.size_id')
+                                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Cantidad</span>
+                                <input type="number" min="0" step="1"
+                                    name="lines[{{ $i }}][quantity]"
+                                    value="{{ old("lines.$i.quantity") }}"
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                            </label>
+                            @error('lines.' . $i . '.quantity')
+                                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio
+                                    unitario</span>
+                                <input type="number" min="0" step="0.01"
+                                    name="lines[{{ $i }}][unit_price]"
+                                    value="{{ old("lines.$i.unit_price") }}"
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                            </label>
+                            @error('lines.' . $i . '.unit_price')
+                                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio
+                                    compra</span>
+                                <input type="number" min="0" step="0.01"
+                                    name="lines[{{ $i }}][purchase_price]"
+                                    value="{{ old("lines.$i.purchase_price") }}"
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                    placeholder="Compra">
+                            </label>
+                            @error('lines.' . $i . '.purchase_price')
+                                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio
+                                    venta</span>
+                                <input type="number" min="0" step="0.01"
+                                    name="lines[{{ $i }}][sale_price]"
+                                    value="{{ old("lines.$i.sale_price") }}"
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                    placeholder="Venta">
+                            </label>
+                            @error('lines.' . $i . '.sale_price')
+                                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="button"
+                                class="remove-line px-3 py-2 text-sm rounded bg-red-600 text-white w-full">Quitar</button>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
         </div>
     </div>
 
     <template id="line-template">
-        <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end border rounded p-3">
+        <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end border rounded p-3" data-line>
             <div>
                 <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Color</span>
                     <select name="lines[__INDEX__][color_id]"
@@ -153,9 +245,6 @@
                         @endforeach
                     </select>
                 </label>
-                @error('lines.' . '$$INDEX$$' . '.color_id')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
             </div>
             <div>
                 <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Talla</span>
@@ -167,27 +256,18 @@
                         @endforeach
                     </select>
                 </label>
-                @error('lines.' . '$$INDEX$$' . '.size_id')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
             </div>
             <div>
                 <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Cantidad</span>
                     <input type="number" min="0" step="1" name="lines[__INDEX__][quantity]"
                         class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                 </label>
-                @error('lines.' . '$$INDEX$$' . '.quantity')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
             </div>
             <div>
                 <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio unitario</span>
                     <input type="number" min="0" step="0.01" name="lines[__INDEX__][unit_price]"
                         class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                 </label>
-                @error('lines.' . '$$INDEX$$' . '.unit_price')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
             </div>
             <div>
                 <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio compra</span>
@@ -195,9 +275,6 @@
                         class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
                         placeholder="Compra">
                 </label>
-                @error('lines.' . '$$INDEX$$' . '.purchase_price')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
             </div>
             <div>
                 <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio venta</span>
@@ -205,9 +282,6 @@
                         class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
                         placeholder="Venta">
                 </label>
-                @error('lines.' . '$$INDEX$$' . '.sale_price')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
             </div>
             <div class="flex gap-2">
                 <button type="button"
@@ -221,7 +295,7 @@
             const lines = document.getElementById('lines');
             const tpl = document.getElementById('line-template').innerHTML;
             const addBtn = document.getElementById('add-line');
-            let idx = 0;
+            let idx = {{ is_array(old('lines')) ? count(old('lines')) : 0 }};
 
             function addLine(prefill = {}) {
                 let html = tpl.replace(/__INDEX__/g, idx);
@@ -239,12 +313,22 @@
                     .sale_price;
                 if (prefill.color_id) node.querySelector(`[name="lines[${idx}][color_id]"]`).value = prefill.color_id;
                 if (prefill.size_id) node.querySelector(`[name="lines[${idx}][size_id]"]`).value = prefill.size_id;
-                node.querySelector('.remove-line').addEventListener('click', () => node.remove());
                 idx++;
             }
+            // Delegación para botones quitar (funciona para líneas renderizadas por Blade y nuevas)
+            lines.addEventListener('click', (e) => {
+                const btn = e.target.closest('.remove-line');
+                if (btn) {
+                    const line = btn.closest('[data-line]');
+                    if (line) line.remove();
+                }
+            });
             addBtn.addEventListener('click', () => addLine());
-            // start with one empty line
-            addLine();
+            // Agregar una línea vacía solo si no hay líneas previas por validación
+            const hasOld = {{ is_array(old('lines')) && count(old('lines')) ? 'true' : 'false' }};
+            if (!hasOld) {
+                addLine();
+            }
         })();
     </script>
 
