@@ -14,6 +14,13 @@ use App\Models\PaymentMethod;
 use App\Models\Inventory;
 use App\Models\InventoryMovement;
 use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\Category;
+use App\Models\Brand;
+use App\Models\UnitMeasure;
+use App\Models\Tax;
+use App\Models\Color;
+use App\Models\Size;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -119,18 +126,88 @@ class PurchaseController extends Controller
     public function create()
     {
         $this->authorize('create', Purchase::class);
-        $entities = Entity::where('is_active', true)->where('is_supplier', true)->pluck('first_name', 'id');
-        $warehouses = Warehouse::pluck('name', 'id');
-        $methods = PaymentMethod::pluck('name', 'id');
-        return view('admin.purchases.create', compact('entities', 'warehouses', 'methods'));
+    $entities = Entity::where('is_active', true)->where('is_supplier', true)->pluck('first_name', 'id');
+    $warehouses = Warehouse::pluck('name', 'id');
+    $methods = PaymentMethod::pluck('name', 'id');
+    $categories = Category::pluck('name', 'id');
+    $brands = Brand::pluck('name', 'id');
+    $units = UnitMeasure::pluck('name', 'id');
+    $taxes = Tax::pluck('name', 'id');
+    $colors = Color::pluck('name', 'id');
+    $sizes = Size::pluck('name', 'id');
+    return view('admin.purchases.create', compact('entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes'));
     }
 
     public function store(PurchaseRequest $request)
     {
         $this->authorize('create', Purchase::class);
-        $data = $request->validated();
+    $data = $request->validated();
+    // Ensure sensitive/derived fields are set server-side
+    $data['user_id'] = auth()->id();
+    $data['subtotal'] = 0;
+    $data['total'] = 0;
         $purchase = Purchase::create($data);
-        return redirect()->route('purchases.edit', $purchase)->with('success', 'Compra creada. Agregue los detalles.');
+
+        // Inline product + variants creation (optional)
+        $lines = $request->input('lines', []);
+        $creatingProduct = $request->filled('product_name');
+
+        if ($creatingProduct) {
+            // Minimal validation for product when present
+            $request->validate([
+                'product_name' => ['required', 'string', 'min:2', 'max:255'],
+                'product_category_id' => ['required', 'exists:categories,id'],
+                'product_brand_id' => ['required', 'exists:brands,id'],
+                'product_unit_measure_id' => ['required', 'exists:unit_measures,id'],
+                'product_tax_id' => ['required', 'exists:taxes,id'],
+            ]);
+
+            $product = Product::create([
+                'name' => $request->input('product_name'),
+                'description' => $request->input('product_description'),
+                'barcode' => $request->input('product_barcode'),
+                'status' => 'available',
+                'brand_id' => (int) $request->input('product_brand_id'),
+                'category_id' => (int) $request->input('product_category_id'),
+                'tax_id' => (int) $request->input('product_tax_id'),
+                'unit_measure_id' => (int) $request->input('product_unit_measure_id'),
+                'entity_id' => $purchase->entity_id,
+            ]);
+
+            // Ensure at least a simple variant exists if no lines
+            if (empty($lines)) {
+                ProductVariant::firstOrCreate([
+                    'product_id' => $product->id,
+                    'color_id' => null,
+                    'size_id' => null,
+                ]);
+            }
+
+            // For each line, create/find variant and detail
+            foreach ($lines as $line) {
+                $qty = (int)($line['quantity'] ?? 0);
+                $price = (float)($line['unit_price'] ?? 0);
+                $colorId = $line['color_id'] !== '' ? ($line['color_id'] ?? null) : null;
+                $sizeId = $line['size_id'] !== '' ? ($line['size_id'] ?? null) : null;
+                if ($qty <= 0) continue;
+                $variant = ProductVariant::firstOrCreate([
+                    'product_id' => $product->id,
+                    'color_id' => $colorId,
+                    'size_id' => $sizeId,
+                ]);
+                $detail = PurchaseDetail::create([
+                    'purchase_id' => $purchase->id,
+                    'product_variant_id' => $variant->id,
+                    'quantity' => $qty,
+                    'unit_price' => $price,
+                ]);
+                $this->applyDetailToInventory($purchase, $detail);
+            }
+
+            $this->recalculateTotals($purchase);
+        }
+
+        return redirect()->route('purchases.show', $purchase)->with('success', 'Compra creada correctamente.');
     }
 
     public function show(Purchase $purchase)
@@ -148,7 +225,17 @@ class PurchaseController extends Controller
         $warehouses = Warehouse::pluck('name', 'id');
         $methods = PaymentMethod::pluck('name', 'id');
         $details = PurchaseDetail::with('productVariant.product')->where('purchase_id', $purchase->id)->get();
-        return view('admin.purchases.edit', compact('purchase', 'entities', 'warehouses', 'methods', 'details'));
+        // Variants select options (Product name + Color/Talla o Simple)
+        $variants = \App\Models\ProductVariant::with(['product', 'color', 'size'])
+            ->get()
+            ->mapWithKeys(function ($v) {
+                $label = $v->product->name;
+                $c = $v->color->name ?? null;
+                $s = $v->size->name ?? null;
+                $label .= ' - ' . ($c || $s ? (($c ?: '—') . ' / ' . ($s ?: '—')) : 'Simple');
+                return [$v->id => $label];
+            });
+        return view('admin.purchases.edit', compact('purchase', 'entities', 'warehouses', 'methods', 'details', 'variants'));
     }
 
     public function update(PurchaseRequest $request, Purchase $purchase)

@@ -2,58 +2,28 @@
 @section('title', 'Editar Compra')
 
 @section('content')
-    <div class="container grid px-6 mx-auto">
+    <div class="container px-6 mx-auto grid">
         <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">Editar Compra #{{ $purchase->id }}</h2>
         <x-session-message />
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 max-w-4xl mb-6">
-            <form method="POST" action="{{ route('purchases.update', $purchase) }}">
-                @csrf
-                @method('PUT')
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium">Referencia</label>
-                        <input type="text" name="reference" value="{{ old('reference', $purchase->reference) }}" class="w-full px-3 py-2 border rounded-lg text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium">Proveedor</label>
-                        <select name="entity_id" class="w-full px-3 py-2 border rounded-lg text-sm" required>
-                            @foreach($entities as $id=>$name)
-                                <option value="{{ $id }}" {{ (old('entity_id',$purchase->entity_id)==$id)?'selected':'' }}>{{ $name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium">Almacén</label>
-                        <select name="warehouse_id" class="w-full px-3 py-2 border rounded-lg text-sm" required>
-                            @foreach($warehouses as $id=>$name)
-                                <option value="{{ $id }}" {{ (old('warehouse_id',$purchase->warehouse_id)==$id)?'selected':'' }}>{{ $name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium">Método de pago</label>
-                        <select name="payment_method_id" class="w-full px-3 py-2 border rounded-lg text-sm" required>
-                            @foreach($methods as $id=>$name)
-                                <option value="{{ $id }}" {{ (old('payment_method_id',$purchase->payment_method_id)==$id)?'selected':'' }}>{{ $name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium">Usuario</label>
-                        <input type="number" name="user_id" value="{{ old('user_id', $purchase->user_id) }}" class="w-full px-3 py-2 border rounded-lg text-sm" required />
-                    </div>
-                    <div class="hidden">
-                        <input type="number" name="subtotal" value="{{ $purchase->subtotal }}" />
-                        <input type="number" name="total" value="{{ $purchase->total }}" />
-                    </div>
-                </div>
-                <div class="mt-4 flex gap-2">
-                    <a href="{{ route('purchases.index') }}" class="px-4 py-2 rounded bg-gray-200 text-gray-800">Volver</a>
-                    <button type="submit" class="px-4 py-2 rounded bg-purple-600 text-white">Guardar</button>
-                </div>
-            </form>
+        <div class="mb-4 flex justify-end">
+            <a href="{{ route('purchases.index') }}"
+                class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                <i class="fas fa-arrow-left mr-2"></i> Volver
+            </a>
         </div>
+
+        <form method="POST" action="{{ route('purchases.update', $purchase) }}">
+            @csrf
+            @method('PUT')
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 max-w-4xl mb-6">
+                @include('admin.purchases.form')
+            </div>
+            <div class="mt-4 flex gap-2">
+                <a href="{{ route('purchases.index') }}" class="px-4 py-2 rounded bg-gray-200 text-gray-800">Volver</a>
+                <button type="submit" class="px-4 py-2 rounded bg-purple-600 text-white">Guardar</button>
+            </div>
+        </form>
 
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 max-w-4xl">
             <h3 class="text-lg font-semibold mb-3">Detalles</h3>
