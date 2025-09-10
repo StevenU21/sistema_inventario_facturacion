@@ -20,11 +20,37 @@ class ProductVariantFactory extends Factory
     public function definition(): array
     {
         return [
-            'sku' => fake()->unique()->serialNumber(),
+            'sku' => fake()->unique()->bothify('???-########'),
             'barcode' => fake()->unique()->ean13(),
-            'product_id' => null,
-            'color_id' => Color::inRandomOrder()->first()->id,
-            'size_id' => Size::inRandomOrder()->first()->id,
+            // Ensure it links to a product by default
+            'product_id' => Product::inRandomOrder()->first()?->id ?? Product::factory(),
+            // Allow nullable for simple variants; specialized states provided below
+            'color_id' => null,
+            'size_id' => null,
         ];
+    }
+
+    /**
+     * State: simple variant without color/size.
+     */
+    public function simple(): static
+    {
+        return $this->state(fn () => [
+            'color_id' => null,
+            'size_id' => null,
+        ]);
+    }
+
+    /**
+     * State: with color and size.
+     */
+    public function withColorSize(): static
+    {
+        return $this->state(function () {
+            return [
+                'color_id' => Color::inRandomOrder()->first()?->id,
+                'size_id' => Size::inRandomOrder()->first()?->id,
+            ];
+        });
     }
 }

@@ -17,7 +17,10 @@ class WarehouseFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => 'Almacén ' . fake()->unique()->citySuffix(),
+            'address' => fake()->address(),
+            'description' => fake()->optional()->sentence(),
+            'is_active' => true,
         ];
     }
 }

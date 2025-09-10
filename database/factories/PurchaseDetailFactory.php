@@ -21,8 +21,8 @@ class PurchaseDetailFactory extends Factory
         return [
             'quantity' => fake()->numberBetween(1, 10),
             'unit_price' => fake()->randomFloat(2, 5, 100),
-            'purchase_id' => Purchase::factory(),
-            'product_variant_id' => ProductVariant::factory(),
+            'purchase_id' => null,
+            'product_variant_id' => ProductVariant::inRandomOrder()->first()?->id,
         ];
     }
 }

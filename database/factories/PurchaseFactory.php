@@ -3,6 +3,10 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Entity;
+use App\Models\Warehouse;
+use App\Models\User;
+use App\Models\PaymentMethod;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Purchase>
@@ -17,13 +21,13 @@ class PurchaseFactory extends Factory
     public function definition(): array
     {
         return [
-            'reference' => fake()->unique()->serialNumber(),
-            'subtotal' => null,
-            'total' => null,
-            'entity_id' => EntityFactory::inRandomOrder()->first()->id,
-            'warehouse_id' => WarehouseFactory::inRandomOrder()->first()->id,
-            'user_id' => UserFactory::inRandomOrder()->first()->id,
-            'payment_method_id' => PaymentMethodFactory::inRandomOrder()->first()->id,
+            'reference' => fake()->unique()->bothify('PUR-########'),
+            'subtotal' => 0,
+            'total' => 0,
+            'entity_id' => Entity::inRandomOrder()->first()?->id,
+            'warehouse_id' => Warehouse::inRandomOrder()->first()?->id,
+            'user_id' => User::inRandomOrder()->first()?->id,
+            'payment_method_id' => PaymentMethod::inRandomOrder()->first()?->id,
         ];
     }
 }
