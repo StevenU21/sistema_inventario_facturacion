@@ -84,6 +84,16 @@ class PurchaseController extends Controller
     public function store(PurchaseRequest $request, PurchaseService $purchaseService)
     {
         $this->authorize('create', Purchase::class);
+
+        $purchase = Purchase::create($request->validated() + [
+            'user_id' => $request->user()->id,
+            'subtotal' => 0,
+            'total' => 0,
+        ]);
+
+        PurchaseDetail::create($request->validated() + [
+            'purchase_id' => $purchase->id,
+        ]);
         return redirect()->route('purchases.index', )->with('success', 'Compra creada correctamente.');
     }
 
