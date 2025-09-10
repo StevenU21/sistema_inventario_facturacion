@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PurchaseDetailRequest;
 use App\Http\Requests\PurchaseRequest;
 use App\Exports\PurchasesExport;
 use App\Models\Purchase;
@@ -81,17 +82,17 @@ class PurchaseController extends Controller
         return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods'));
     }
 
-    public function store(PurchaseRequest $request, PurchaseService $purchaseService)
+    public function store(PurchaseRequest $purchaseRequest, PurchaseDetailRequest $purchaseDetailRequest)
     {
         $this->authorize('create', Purchase::class);
 
-        $purchase = Purchase::create($request->validated() + [
-            'user_id' => $request->user()->id,
+        $purchase = Purchase::create($purchaseRequest->validated() + [
+            'user_id' => $purchaseRequest->user()->id,
             'subtotal' => 0,
             'total' => 0,
         ]);
 
-        PurchaseDetail::create($request->validated() + [
+        PurchaseDetail::create($purchaseDetailRequest->validated() + [
             'purchase_id' => $purchase->id,
         ]);
         return redirect()->route('purchases.index', )->with('success', 'Compra creada correctamente.');
