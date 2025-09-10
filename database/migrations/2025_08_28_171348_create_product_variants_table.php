@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('product_variants', function (Blueprint $table) {
             $table->increments('id');
             $table->string('sku')->nullable()->unique();
-            $table->string('barcode')->nullable()->unique();
+            $table->string('code')->nullable()->unique();
 
             $table->integer('product_id')->unsigned();
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');

@@ -51,7 +51,7 @@ class ProductVariantRequest extends FormRequest
             'size_id' => ['nullable', 'exists:sizes,id'],
             'color_id' => ['nullable', 'exists:colors,id'],
             'sku' => ['nullable', 'string', 'max:100', Rule::unique('product_variants')->ignore($productVariantId)],
-            'barcode' => ['nullable', 'string', 'max:100', Rule::unique('product_variants')->ignore($productVariantId)],
+            'code' => ['nullable', 'string', 'max:100', Rule::unique('product_variants')->ignore($productVariantId)],
         ];
     }
 
