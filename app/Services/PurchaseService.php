@@ -15,7 +15,13 @@ class PurchaseService
         $data = $request->validated();
         $data['purchase_id'] = $purchase->id;
         $detail = PurchaseDetail::create($data);
-        $this->applyDetailToInventory($purchase, $detail);
+        // Map unit_price (detail) -> purchase_price (inventory), forward optional sale_price from request
+        $purchasePrice = isset($data['unit_price']) ? (float) $data['unit_price'] : null;
+        $salePrice = $request->filled('sale_price') ? (float) $request->input('sale_price') : null;
+        if ($salePrice !== null && $salePrice <= 0) {
+            $salePrice = null;
+        }
+        $this->applyDetailToInventory($purchase, $detail, $purchasePrice, $salePrice);
         $this->recalculateTotals($purchase);
         return $detail;
     }
@@ -30,8 +36,11 @@ class PurchaseService
         $this->recalculateTotals($purchase);
     }
 
-    public function applyDetailToInventory(Purchase $purchase, PurchaseDetail $detail): void
+    public function applyDetailToInventory(Purchase $purchase, PurchaseDetail $detail, ?float $purchasePrice = null, ?float $salePrice = null): void
     {
+        // unit_price in PurchaseDetail is the same as purchase_price for Inventory
+        $effectivePurchasePrice = $purchasePrice ?? (float) $detail->unit_price;
+        $effectiveSalePrice = $salePrice; // can be null; we'll default on create only
         $inventory = Inventory::firstOrCreate(
             [
                 'product_variant_id' => $detail->product_variant_id,
@@ -40,12 +49,15 @@ class PurchaseService
             [
                 'stock' => 0,
                 'min_stock' => 0,
-                'purchase_price' => $detail->unit_price,
-                'sale_price' => round($detail->unit_price * 1.3, 2),
+                'purchase_price' => $effectivePurchasePrice,
+                'sale_price' => $effectiveSalePrice !== null ? $effectiveSalePrice : round($effectivePurchasePrice * 1.3, 2),
             ]
         );
         $inventory->stock += $detail->quantity;
-        $inventory->purchase_price = $detail->unit_price;
+        $inventory->purchase_price = $effectivePurchasePrice;
+        if ($effectiveSalePrice !== null) {
+            $inventory->sale_price = $effectiveSalePrice;
+        }
         $inventory->save();
         InventoryMovement::create([
             'type' => 'in',

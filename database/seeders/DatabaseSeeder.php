@@ -118,7 +118,7 @@ class DatabaseSeeder extends Seeder
         //         );
 
         //         $inventory->stock += $quantity;
-        //         $inventory->purchase_price = $unitPrice; 
+        //         $inventory->purchase_price = $unitPrice;
         //         $inventory->save();
         //         InventoryMovement::create([
         //             'type' => 'in',

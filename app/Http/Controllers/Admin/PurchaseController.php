@@ -191,7 +191,13 @@ class PurchaseController extends Controller
             // For each line, create/find variant and detail
             foreach ($lines as $line) {
                 $qty = (int) ($line['quantity'] ?? 0);
-                $price = (float) ($line['unit_price'] ?? 0);
+                // unit_price (detalle) es igual a purchase_price (inventario)
+                $price = (float) ($line['unit_price'] ?? ($line['purchase_price'] ?? 0));
+                // sale_price opcional para inventario
+                $salePrice = isset($line['sale_price']) ? (float) $line['sale_price'] : null;
+                if ($salePrice !== null && $salePrice <= 0) {
+                    $salePrice = null;
+                }
                 $colorId = $line['color_id'] !== '' ? ($line['color_id'] ?? null) : null;
                 $sizeId = $line['size_id'] !== '' ? ($line['size_id'] ?? null) : null;
                 if ($qty <= 0)
@@ -207,7 +213,8 @@ class PurchaseController extends Controller
                     'quantity' => $qty,
                     'unit_price' => $price,
                 ]);
-                $this->purchaseService->applyDetailToInventory($purchase, $detail);
+                // Propagar purchase_price (=$price) y sale_price al inventario
+                $this->purchaseService->applyDetailToInventory($purchase, $detail, $price, $salePrice);
             }
 
             $this->purchaseService->recalculateTotals($purchase);

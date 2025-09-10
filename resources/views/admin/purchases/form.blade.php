@@ -142,7 +142,7 @@
     </div>
 
     <template id="line-template">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end border rounded p-3">
+        <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end border rounded p-3">
             <div>
                 <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Color</span>
                     <select name="lines[__INDEX__][color_id]"
@@ -153,6 +153,9 @@
                         @endforeach
                     </select>
                 </label>
+                @error('lines.' . '$$INDEX$$' . '.color_id')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
             </div>
             <div>
                 <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Talla</span>
@@ -164,18 +167,47 @@
                         @endforeach
                     </select>
                 </label>
+                @error('lines.' . '$$INDEX$$' . '.size_id')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
             </div>
             <div>
                 <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Cantidad</span>
                     <input type="number" min="0" step="1" name="lines[__INDEX__][quantity]"
                         class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                 </label>
+                @error('lines.' . '$$INDEX$$' . '.quantity')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
             </div>
             <div>
                 <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio unitario</span>
                     <input type="number" min="0" step="0.01" name="lines[__INDEX__][unit_price]"
                         class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                 </label>
+                @error('lines.' . '$$INDEX$$' . '.unit_price')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
+            </div>
+            <div>
+                <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio compra</span>
+                    <input type="number" min="0" step="0.01" name="lines[__INDEX__][purchase_price]"
+                        class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                        placeholder="Compra">
+                </label>
+                @error('lines.' . '$$INDEX$$' . '.purchase_price')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
+            </div>
+            <div>
+                <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio venta</span>
+                    <input type="number" min="0" step="0.01" name="lines[__INDEX__][sale_price]"
+                        class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                        placeholder="Venta">
+                </label>
+                @error('lines.' . '$$INDEX$$' . '.sale_price')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
             </div>
             <div class="flex gap-2">
                 <button type="button"
@@ -192,7 +224,8 @@
             let idx = 0;
 
             function addLine(prefill = {}) {
-                const html = tpl.replace(/__INDEX__/g, idx);
+                let html = tpl.replace(/__INDEX__/g, idx);
+                html = html.replace(/\$\$INDEX\$\$/g, idx); // para los errores
                 const wrapper = document.createElement('div');
                 wrapper.innerHTML = html.trim();
                 const node = wrapper.firstChild;
@@ -200,6 +233,10 @@
                 if (prefill.quantity) node.querySelector(`[name="lines[${idx}][quantity]"]`).value = prefill.quantity;
                 if (prefill.unit_price) node.querySelector(`[name="lines[${idx}][unit_price]"]`).value = prefill
                     .unit_price;
+                if (prefill.purchase_price) node.querySelector(`[name="lines[${idx}][purchase_price]"]`).value = prefill
+                    .purchase_price;
+                if (prefill.sale_price) node.querySelector(`[name="lines[${idx}][sale_price]"]`).value = prefill
+                    .sale_price;
                 if (prefill.color_id) node.querySelector(`[name="lines[${idx}][color_id]"]`).value = prefill.color_id;
                 if (prefill.size_id) node.querySelector(`[name="lines[${idx}][size_id]"]`).value = prefill.size_id;
                 node.querySelector('.remove-line').addEventListener('click', () => node.remove());
@@ -213,6 +250,6 @@
 
     <div class="mt-6 flex gap-2">
         <a href="{{ route('purchases.index') }}" class="px-4 py-2 rounded bg-gray-200 text-gray-800">Cancelar</a>
-        <button type="submit" class="px-4 py-2 rounded bg-purple-600 text-white">Guardar y agregar detalles</button>
+        <button type="submit" class="px-4 py-2 rounded bg-purple-600 text-white">Guardar</button>
     </div>
 </div>
