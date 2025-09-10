@@ -226,7 +226,7 @@ class PurchaseController extends Controller
         $methods = PaymentMethod::pluck('name', 'id');
         $details = PurchaseDetail::with('productVariant.product')->where('purchase_id', $purchase->id)->get();
         // Variants select options (Product name + Color/Talla o Simple)
-        $variants = \App\Models\ProductVariant::with(['product', 'color', 'size'])
+        $variants = ProductVariant::with(['product', 'color', 'size'])
             ->get()
             ->mapWithKeys(function ($v) {
                 $label = $v->product->name;
