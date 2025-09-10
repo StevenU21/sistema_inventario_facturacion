@@ -36,31 +36,41 @@
                 </a>
             </li>
 
-            <!-- Clientes & Proveedores -->
-            <li class="relative px-6 py-3">
-                <span
-                    class="{{ Route::is('entities.*') ? 'absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg' : '' }}"
-                    aria-hidden="true"></span>
-                <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 {{ Route::is('entities.*') ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200' }}"
-                    href="{{ route('entities.index') }}">
-                    <i class="fas fa-users w-5 h-5"></i>
-                    <span class="ml-4">Clientes & Proveedores</span>
-                </a>
+            <li class="relative px-6 py-3" x-data="purchaseDropdownMenu()" x-init="initPurchaseDropdown()">
+                <button
+                    class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none"
+                    @click="togglePurchaseDropdown" aria-haspopup="true">
+                    <span class="inline-flex items-center">
+                        <i class="fas fa-boxes w-5 h-5"></i>
+                        <span class="ml-4">Gestión de Compras</span>
+                    </span>
+                    <i class="fas" :class="{ 'fa-chevron-down': !isOpen, 'fa-chevron-up': isOpen }"></i>
+                </button>
+                <ul x-show="isOpen" x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-300"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95"
+                    class="mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('purchases.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('purchases.index') }}">
+                            <i class="fas fa-shopping-cart w-5 h-5"></i>
+                            <span class="ml-4">Compras</span>
+                        </a>
+                    </li>
+                    <li class="px-6 py-2">
+                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('entities.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('entities.index') }}">
+                            <i class="fas fa-users w-5 h-5"></i>
+                            <span class="ml-4">Clientes & Proveedores</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
-
-            <!-- Compras -->
-            <li class="relative px-6 py-3">
-                <span
-                    class="{{ Route::is('purchases.*') ? 'absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg' : '' }}"
-                    aria-hidden="true"></span>
-                <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('purchases.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                    href="{{ route('purchases.index') }}">
-                    <i class="fas fa-shopping-cart w-5 h-5"></i>
-                    <span class="ml-4">Compras</span>
-                </a>
-            </li>
-
         </ul>
+
         <ul>
             <!-- Dropdown Gestión de Inventario -->
             <li class="relative px-6 py-3" x-data="inventoryDropdownMenu()" x-init="initInventoryDropdown()">
@@ -295,6 +305,19 @@
             },
             initInventoryDropdown() {
                 this.isOpen = localStorage.getItem('inventoryDropdownOpen') === 'true';
+            }
+        }
+    }
+
+    function purchaseDropdownMenu() {
+        return {
+            isOpen: localStorage.getItem('purchaseDropdownOpen') === 'true',
+            togglePurchaseDropdown() {
+                this.isOpen = !this.isOpen;
+                localStorage.setItem('purchaseDropdownOpen', this.isOpen);
+            },
+            initPurchaseDropdown() {
+                this.isOpen = localStorage.getItem('purchaseDropdownOpen') === 'true';
             }
         }
     }
