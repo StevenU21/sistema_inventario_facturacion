@@ -33,6 +33,7 @@ class PurchaseDetailRequest extends FormRequest
         return [
             'quantity' => ['required', 'integer', 'min:1'],
             'unit_price' => ['required', 'numeric', 'min:0'],
+            'sale_price' => ['nullable', 'numeric', 'min:0'],
             'purchase_id' => ['required', 'exists:purchases,id'],
             'product_variant_id' => ['required', 'exists:product_variants,id'],
         ];

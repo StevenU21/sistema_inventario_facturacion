@@ -29,21 +29,6 @@ class PurchaseController extends Controller
 {
     use AuthorizesRequests;
 
-    public function create()
-    {
-        $this->authorize('create', Purchase::class);
-        $entities = Entity::where('is_active', true)->where('is_supplier', true)->pluck('first_name', 'id');
-        $warehouses = Warehouse::pluck('name', 'id');
-        $methods = PaymentMethod::pluck('name', 'id');
-        $categories = Category::pluck('name', 'id');
-        $brands = Brand::pluck('name', 'id');
-        $units = UnitMeasure::pluck('name', 'id');
-        $taxes = Tax::pluck('name', 'id');
-        $colors = Color::pluck('name', 'id');
-        $sizes = Size::pluck('name', 'id');
-        return view('admin.purchases.create', compact('entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes'));
-    }
-
     public function index(Request $request)
     {
         $this->authorize('viewAny', Purchase::class);
@@ -82,25 +67,37 @@ class PurchaseController extends Controller
         return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods'));
     }
 
-    public function store(PurchaseRequest $purchaseRequest, PurchaseDetailRequest $purchaseDetailRequest)
+    public function create()
     {
         $this->authorize('create', Purchase::class);
+        $entities = Entity::where('is_active', true)->where('is_supplier', true)->pluck('first_name', 'id');
+        $warehouses = Warehouse::pluck('name', 'id');
+        $methods = PaymentMethod::pluck('name', 'id');
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $units = UnitMeasure::pluck('name', 'id');
+        $taxes = Tax::pluck('name', 'id');
+        $colors = Color::pluck('name', 'id');
+        $sizes = Size::pluck('name', 'id');
+        return view('admin.purchases.create', compact('entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes'));
+    }
 
-        $purchase = Purchase::create($purchaseRequest->validated() + [
-            'user_id' => $purchaseRequest->user()->id,
-            'subtotal' => 0,
-            'total' => 0,
-        ]);
-
-        PurchaseDetail::create($purchaseDetailRequest->validated() + [
-            'purchase_id' => $purchase->id,
-        ]);
-        return redirect()->route('purchases.index', )->with('success', 'Compra creada correctamente.');
+    public function store(PurchaseRequest $request, PurchaseService $purchaseService)
+    {
+        $this->authorize('create', Purchase::class);
+        $data = $request->validated();
+        try {
+            $purchase = $purchaseService->createPurchase($data, $request->user());
+            return redirect()->route('purchases.index')->with('success', 'Compra creada correctamente.');
+        } catch (\Throwable $e) {
+            return back()->withInput()->withErrors(['error' => 'No se pudo guardar la compra: ' . $e->getMessage()]);
+        }
     }
 
     public function show(Purchase $purchase)
     {
         $this->authorize('view', $purchase);
+        $details = $purchase->details()->with('productVariant.product')->get();
         return view('admin.purchases.show', compact('purchase', 'details'));
     }
 

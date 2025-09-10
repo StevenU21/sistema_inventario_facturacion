@@ -7,98 +7,145 @@ use App\Models\Purchase;
 use App\Models\PurchaseDetail;
 use App\Models\Inventory;
 use App\Models\InventoryMovement;
+use App\Models\Product;
+use App\Models\ProductVariant;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseService
 {
-    public function addDetail(PurchaseDetailRequest $request, Purchase $purchase)
+    /**
+     * Crea una compra y sus detalles, productos y variantes.
+     *
+     * @param array $data
+     * @param \Illuminate\Contracts\Auth\Authenticatable $user
+     * @return Purchase
+     * @throws \Throwable
+     */
+    public function createPurchase(array $data, $user)
     {
-        $data = $request->validated();
-        $data['purchase_id'] = $purchase->id;
-        $detail = PurchaseDetail::create($data);
-        // Map unit_price (detail) -> purchase_price (inventory), forward optional sale_price from request
-        $purchasePrice = isset($data['unit_price']) ? (float) $data['unit_price'] : null;
-        $salePrice = $request->filled('sale_price') ? (float) $request->input('sale_price') : null;
-        if ($salePrice !== null && $salePrice <= 0) {
-            $salePrice = null;
-        }
-        $this->applyDetailToInventory($purchase, $detail, $purchasePrice, $salePrice);
-        $this->recalculateTotals($purchase);
-        return $detail;
+        return DB::transaction(function () use ($data, $user) {
+            $purchase = $this->createBasePurchase($data, $user);
+            $product = $this->getOrCreateProduct($data);
+
+            $subtotal = 0;
+            foreach ($data['details'] as $row) {
+                $variant = $this->getOrCreateVariant($product, $row);
+                $detail = $this->createPurchaseDetail($purchase, $variant, $row);
+                $this->updateInventoryAndRegisterMovement($purchase, $variant, $row);
+                $subtotal += ((int) $row['quantity']) * ((float) $row['unit_price']);
+            }
+            $this->updatePurchaseTotals($purchase, $subtotal);
+            return $purchase;
+        });
     }
 
-    public function removeDetail(Purchase $purchase, PurchaseDetail $detail)
+    private function createBasePurchase(array $data, $user)
     {
-        if ($detail->purchase_id !== $purchase->id) {
-            abort(404);
-        }
-        $this->revertDetailFromInventory($purchase, $detail);
-        $detail->delete();
-        $this->recalculateTotals($purchase);
+        return Purchase::create([
+            'reference' => $data['reference'] ?? null,
+            'entity_id' => $data['entity_id'],
+            'warehouse_id' => $data['warehouse_id'],
+            'payment_method_id' => $data['payment_method_id'],
+            'user_id' => $user->getAuthIdentifier(),
+            'subtotal' => 0,
+            'total' => 0,
+        ]);
     }
 
-    public function applyDetailToInventory(Purchase $purchase, PurchaseDetail $detail, ?float $purchasePrice = null, ?float $salePrice = null): void
+    private function getOrCreateProduct(array $data)
     {
-        // unit_price in PurchaseDetail is the same as purchase_price for Inventory
-        $effectivePurchasePrice = $purchasePrice ?? (float) $detail->unit_price;
-        $effectiveSalePrice = $salePrice; // can be null; we'll default on create only
-        $inventory = Inventory::firstOrCreate(
+        $productId = $data['product']['id'] ?? null;
+        if ($productId) {
+            return Product::findOrFail($productId);
+        }
+        $productPayload = [
+            'name' => $data['product']['name'],
+            'description' => $data['product']['description'] ?? null,
+            'barcode' => $data['product']['barcode'] ?? null,
+            'code' => $data['product']['code'] ?? null,
+            'sku' => $data['product']['sku'] ?? null,
+            'status' => $data['product']['status'] ?? 'available',
+            'brand_id' => $data['product']['brand_id'],
+            'category_id' => $data['product']['category_id'],
+            'tax_id' => $data['product']['tax_id'],
+            'unit_measure_id' => $data['product']['unit_measure_id'],
+            'entity_id' => $data['product']['entity_id'] ?? $data['entity_id'],
+        ];
+        return Product::create($productPayload);
+    }
+
+    private function getOrCreateVariant(Product $product, array $row)
+    {
+        $variant = ProductVariant::firstOrCreate(
             [
-                'product_variant_id' => $detail->product_variant_id,
-                'warehouse_id' => $purchase->warehouse_id,
+                'product_id' => $product->id,
+                'color_id' => $row['color_id'],
+                'size_id' => $row['size_id'],
             ],
             [
-                'stock' => 0,
-                'min_stock' => 0,
-                'purchase_price' => $effectivePurchasePrice,
-                'sale_price' => $effectiveSalePrice !== null ? $effectiveSalePrice : round($effectivePurchasePrice * 1.3, 2),
+                'sku' => $row['sku'] ?? null,
+                'code' => $row['code'] ?? null,
             ]
         );
-        $inventory->stock += $detail->quantity;
-        $inventory->purchase_price = $effectivePurchasePrice;
-        if ($effectiveSalePrice !== null) {
-            $inventory->sale_price = $effectiveSalePrice;
-        }
-        $inventory->save();
-        InventoryMovement::create([
-            'type' => 'in',
-            'adjustment_reason' => null,
-            'quantity' => $detail->quantity,
-            'unit_price' => $detail->unit_price,
-            'total_price' => $detail->quantity * $detail->unit_price,
-            'reference' => $purchase->reference,
-            'notes' => 'Entrada por compra (CRUD)',
-            'user_id' => auth()->id(),
-            'inventory_id' => $inventory->id,
+        $variant->fill([
+            'sku' => $row['sku'] ?? $variant->sku,
+            'code' => $row['code'] ?? $variant->code,
+        ]);
+        $variant->save();
+        return $variant;
+    }
+
+    private function createPurchaseDetail(Purchase $purchase, ProductVariant $variant, array $row)
+    {
+        return PurchaseDetail::create([
+            'purchase_id' => $purchase->id,
+            'product_variant_id' => $variant->id,
+            'quantity' => (int) $row['quantity'],
+            'unit_price' => (float) $row['unit_price'],
         ]);
     }
 
-    public function revertDetailFromInventory(Purchase $purchase, PurchaseDetail $detail): void
+    private function updateInventoryAndRegisterMovement(Purchase $purchase, ProductVariant $variant, array $row)
     {
-        $inventory = Inventory::where('product_variant_id', $detail->product_variant_id)
-            ->where('warehouse_id', $purchase->warehouse_id)
+        $variantId = $variant->id;
+        $warehouseId = $purchase->warehouse_id;
+        $quantity = (int) $row['quantity'];
+        $unitPrice = (float) $row['unit_price'];
+        $salePrice = (float) $row['sale_price'];
+
+        $inventory = Inventory::where('product_variant_id', $variantId)
+            ->where('warehouse_id', $warehouseId)
             ->first();
-        if (!$inventory)
-            return;
-        $inventory->stock = max(0, $inventory->stock - $detail->quantity);
-        $inventory->save();
+        if ($inventory) {
+            $inventory->stock += $quantity;
+            $inventory->purchase_price = $unitPrice;
+            $inventory->sale_price = $salePrice;
+            $inventory->save();
+        } else {
+            $inventory = Inventory::create([
+                'product_variant_id' => $variantId,
+                'warehouse_id' => $warehouseId,
+                'stock' => $quantity,
+                'purchase_price' => $unitPrice,
+                'sale_price' => $salePrice,
+                'min_stock' => 0,
+            ]);
+        }
         InventoryMovement::create([
-            'type' => 'out',
-            'adjustment_reason' => null,
-            'quantity' => $detail->quantity,
-            'unit_price' => $detail->unit_price,
-            'total_price' => $detail->quantity * $detail->unit_price,
-            'reference' => $purchase->reference,
-            'notes' => 'Reversión de detalle de compra (CRUD)',
-            'user_id' => auth()->id(),
             'inventory_id' => $inventory->id,
+            'type' => 'in',
+            'quantity' => $quantity,
+            'unit_price' => $unitPrice,
+            'total_price' => $unitPrice * $quantity,
+            'reference' => 'Compra #' . $purchase->id,
+            'notes' => 'Ingreso por compra',
+            'user_id' => $purchase->user_id,
         ]);
     }
 
-    public function recalculateTotals(Purchase $purchase): void
+    private function updatePurchaseTotals(Purchase $purchase, $subtotal)
     {
-        $subtotal = PurchaseDetail::where('purchase_id', $purchase->id)
-            ->selectRaw('COALESCE(SUM(quantity * unit_price), 0) as subtotal')
-            ->value('subtotal');
         $purchase->subtotal = $subtotal;
         $purchase->total = $subtotal;
         $purchase->save();
