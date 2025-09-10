@@ -139,11 +139,11 @@
                                     class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                                     <th class="px-4 py-3">ID</th>
                                     <th class="px-4 py-3">Producto</th>
-                                    <th class="px-4 py-3 text-right">Cantidad</th>
                                     <th class="px-4 py-3">Proveedor</th>
                                     <th class="px-4 py-3">Almacén</th>
                                     <th class="px-4 py-3">Método</th>
-                                    <th class="px-4 py-3 text-right">Subtotal</th>
+                                    <th class="px-4 py-3 text-right">Cantidad</th>
+                                    <th class="px-4 py-3 text-right">Precio Unitario</th>
                                     <th class="px-4 py-3 text-right">Total</th>
                                     <th class="px-4 py-3">Acciones</th>
                                 </tr>
@@ -163,17 +163,17 @@
                                             @endphp
                                             {{ $firstProductName ?? '-' }}
                                         </td>
-                                        <td class="px-4 py-3 text-sm text-right">
+                                        <td class="px-4 py-3 text-sm">{{ $purchase->entity?->short_name ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm">{{ $purchase->warehouse?->name ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm">{{ $purchase->paymentMethod?->name ?? '-' }}</td>
+                                                                              <td class="px-4 py-3 text-sm text-right">
                                             @php
                                                 $firstQty = optional($purchase->details->first())->quantity;
                                             @endphp
                                             {{ $firstQty ?? '-' }}
                                         </td>
-                                        <td class="px-4 py-3 text-sm">{{ $purchase->entity?->short_name ?? '-' }}</td>
-                                        <td class="px-4 py-3 text-sm">{{ $purchase->warehouse?->name ?? '-' }}</td>
-                                        <td class="px-4 py-3 text-sm">{{ $purchase->paymentMethod?->name ?? '-' }}</td>
                                         <td class="px-4 py-3 text-sm text-right">C$
-                                            {{ number_format($purchase->subtotal ?? 0, 2) }}</td>
+                                            {{ number_format($purchase->details->unit_price ?? 0, 2) }}</td>
                                         <td class="px-4 py-3 text-sm text-right">C$
                                             {{ number_format($purchase->total ?? 0, 2) }}</td>
                                         <td class="px-4 py-3">
