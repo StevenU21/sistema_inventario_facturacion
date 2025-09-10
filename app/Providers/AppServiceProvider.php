@@ -37,6 +37,10 @@ use App\Policies\BrandPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\PermissionPolicy;
 use App\Policies\WarehousePolicy;
+use App\Policies\PurchasePolicy;
+use App\Policies\PurchaseDetailPolicy;
+use App\Models\Purchase;
+use App\Models\PurchaseDetail;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -79,5 +83,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Size::class, SizePolicy::class);
         Gate::policy(Color::class, ColorPolicy::class);
         Gate::policy(ProductVariant::class, ProductVariantPolicy::class);
+        Gate::policy(Purchase::class, PurchasePolicy::class);
+        Gate::policy(PurchaseDetail::class, PurchaseDetailPolicy::class);
     }
 }

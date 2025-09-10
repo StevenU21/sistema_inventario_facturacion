@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\TaxController;
@@ -127,6 +128,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Kardex
     Route::get('kardex', [KardexController::class, 'index'])->name('kardex.index');
     Route::get('kardex/export', [KardexController::class, 'exportPdf'])->name('kardex.export');
+
+    // Purchases
+    Route::get('purchases/search', [PurchaseController::class, 'search'])->name('purchases.search');
+    Route::get('purchases/export', [PurchaseController::class, 'export'])->name('purchases.export');
+    Route::resource('purchases', PurchaseController::class);
+    // Purchase details management
+    Route::post('purchases/{purchase}/details', [PurchaseController::class, 'addDetail'])->name('purchases.details.store');
+    Route::delete('purchases/{purchase}/details/{detail}', [PurchaseController::class, 'removeDetail'])->name('purchases.details.destroy');
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');

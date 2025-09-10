@@ -66,7 +66,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SizeSeeder::class);
         $this->call(ColorSeeder::class);
         $this->call(CompanySeeder::class);
-        Entity::factory()->count(20)->create();
+        $this->call(EntitySeeder::class);
         Warehouse::factory()->count(3)->create();
 
         Product::factory()->count(100)->create()->each(function ($product) {
@@ -137,7 +137,6 @@ class DatabaseSeeder extends Seeder
             $purchase->save();
         });
 
-        // $this->call(EntitySeeder::class);
         // $this->call(ProductSeeder::class);
 
     }
