@@ -26,7 +26,7 @@ class Product extends Model
     ];
 
     // Eager load to avoid N+1 when showing product info
-    protected $with = ['tax', 'unitMeasure'];
+    protected $with = ['tax', 'unitMeasure', 'brand', 'category'];
 
     public function getActivitylogOptions(): LogOptions
     {

@@ -21,7 +21,7 @@ class ProductVariantFactory extends Factory
     {
         return [
             'sku' => fake()->unique()->bothify('???-########'),
-            'barcode' => fake()->unique()->ean13(),
+            'code' => fake()->unique()->ean13(),
             // Ensure it links to a product by default
             'product_id' => Product::inRandomOrder()->first()?->id ?? Product::factory(),
             // Allow nullable for simple variants; specialized states provided below

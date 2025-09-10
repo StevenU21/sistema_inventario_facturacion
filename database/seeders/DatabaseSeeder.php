@@ -69,7 +69,7 @@ class DatabaseSeeder extends Seeder
         $this->call(EntitySeeder::class);
         Warehouse::factory()->count(3)->create();
 
-        Product::factory()->count(100)->create()->each(function ($product) {
+        Product::factory()->count(400)->create()->each(function ($product) {
             // Always create one simple variant
             $simple = ProductVariant::factory()->simple()->create([
                 'product_id' => $product->id,
@@ -83,7 +83,7 @@ class DatabaseSeeder extends Seeder
             }
         });
 
-        Purchase::factory()->count(20)->create()->each(function ($purchase) {
+        Purchase::factory()->count(3000)->create()->each(function ($purchase) {
             $detailsCount = rand(1, 5);
             $subtotal = 0;
             for ($i = 0; $i < $detailsCount; $i++) {
