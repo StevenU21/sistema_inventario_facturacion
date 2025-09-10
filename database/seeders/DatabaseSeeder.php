@@ -67,77 +67,74 @@ class DatabaseSeeder extends Seeder
         $this->call(ColorSeeder::class);
         $this->call(CompanySeeder::class);
         $this->call(EntitySeeder::class);
-        Warehouse::factory()->count(3)->create();
+        $this->call(ProductSeeder::class);
+        // Warehouse::factory()->count(3)->create();
 
-        Product::factory()->count(400)->create()->each(function ($product) {
-            // Always create one simple variant
-            $simple = ProductVariant::factory()->simple()->create([
-                'product_id' => $product->id,
-            ]);
-            // Optionally add 0-4 colored/size variants
-            $variantsCount = rand(0, 4);
-            for ($i = 0; $i < $variantsCount; $i++) {
-                ProductVariant::factory()->withColorSize()->create([
-                    'product_id' => $product->id,
-                ]);
-            }
-        });
+        // Product::factory()->count(400)->create()->each(function ($product) {
 
-        Purchase::factory()->count(3000)->create()->each(function ($purchase) {
-            $detailsCount = rand(1, 5);
-            $subtotal = 0;
-            for ($i = 0; $i < $detailsCount; $i++) {
-                $variant = ProductVariant::inRandomOrder()->first();
-                $quantity = rand(1, 10);
-                // Use a consistent price source: from existing inventory if any, else random
-                $inv = Inventory::where('product_variant_id', $variant->id)
-                    ->where('warehouse_id', $purchase->warehouse_id)
-                    ->first();
-                $unitPrice = $inv?->purchase_price ?? rand(10, 100);
-                $lineTotal = $quantity * $unitPrice;
-                $subtotal += $lineTotal;
-                PurchaseDetail::factory()->create([
-                    'purchase_id' => $purchase->id,
-                    'product_variant_id' => $variant->id,
-                    'quantity' => $quantity,
-                    'unit_price' => $unitPrice,
-                ]);
+        //     ProductVariant::factory()->simple()->create([
+        //         'product_id' => $product->id,
+        //     ]);
 
-                // Ensure there is an inventory record for this variant in the warehouse
-                $inventory = Inventory::firstOrCreate(
-                    [
-                        'product_variant_id' => $variant->id,
-                        'warehouse_id' => $purchase->warehouse_id,
-                    ],
-                    [
-                        'stock' => 0,
-                        'min_stock' => rand(0, 10),
-                        'purchase_price' => $unitPrice,
-                        'sale_price' => round($unitPrice * 1.3, 2),
-                    ]
-                );
-                // Increase stock and log movement as entry
-                $inventory->stock += $quantity;
-                $inventory->purchase_price = $unitPrice; // last cost
-                $inventory->save();
-                InventoryMovement::create([
-                    'type' => 'in',
-                    'adjustment_reason' => null,
-                    'quantity' => $quantity,
-                    'unit_price' => $unitPrice,
-                    'total_price' => $lineTotal,
-                    'reference' => $purchase->reference,
-                    'notes' => 'Entrada por compra',
-                    'user_id' => $purchase->user_id ?? User::query()->value('id'),
-                    'inventory_id' => $inventory->id,
-                ]);
-            }
-            $purchase->subtotal = $subtotal;
-            $purchase->total = $subtotal;
-            $purchase->save();
-        });
+        //     $variantsCount = rand(0, 4);
+        //     for ($i = 0; $i < $variantsCount; $i++) {
+        //         ProductVariant::factory()->withColorSize()->create([
+        //             'product_id' => $product->id,
+        //         ]);
+        //     }
+        // });
 
-        // $this->call(ProductSeeder::class);
+        // Purchase::factory()->count(3000)->create()->each(function ($purchase) {
+        //     $detailsCount = rand(1, 5);
+        //     $subtotal = 0;
+        //     for ($i = 0; $i < $detailsCount; $i++) {
+        //         $variant = ProductVariant::inRandomOrder()->first();
+        //         $quantity = rand(1, 10);
 
+        //         $inv = Inventory::where('product_variant_id', $variant->id)
+        //             ->where('warehouse_id', $purchase->warehouse_id)
+        //             ->first();
+        //         $unitPrice = $inv?->purchase_price ?? rand(10, 100);
+        //         $lineTotal = $quantity * $unitPrice;
+        //         $subtotal += $lineTotal;
+        //         PurchaseDetail::factory()->create([
+        //             'purchase_id' => $purchase->id,
+        //             'product_variant_id' => $variant->id,
+        //             'quantity' => $quantity,
+        //             'unit_price' => $unitPrice,
+        //         ]);
+
+        //         $inventory = Inventory::firstOrCreate(
+        //             [
+        //                 'product_variant_id' => $variant->id,
+        //                 'warehouse_id' => $purchase->warehouse_id,
+        //             ],
+        //             [
+        //                 'stock' => 0,
+        //                 'min_stock' => rand(0, 10),
+        //                 'purchase_price' => $unitPrice,
+        //                 'sale_price' => round($unitPrice * 1.3, 2),
+        //             ]
+        //         );
+
+        //         $inventory->stock += $quantity;
+        //         $inventory->purchase_price = $unitPrice; 
+        //         $inventory->save();
+        //         InventoryMovement::create([
+        //             'type' => 'in',
+        //             'adjustment_reason' => null,
+        //             'quantity' => $quantity,
+        //             'unit_price' => $unitPrice,
+        //             'total_price' => $lineTotal,
+        //             'reference' => $purchase->reference,
+        //             'notes' => 'Entrada por compra',
+        //             'user_id' => $purchase->user_id ?? User::query()->value('id'),
+        //             'inventory_id' => $inventory->id,
+        //         ]);
+        //     }
+        //     $purchase->subtotal = $subtotal;
+        //     $purchase->total = $subtotal;
+        //     $purchase->save();
+        // });
     }
 }

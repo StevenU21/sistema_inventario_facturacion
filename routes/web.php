@@ -133,9 +133,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('purchases/search', [PurchaseController::class, 'search'])->name('purchases.search');
     Route::get('purchases/export', [PurchaseController::class, 'export'])->name('purchases.export');
     Route::resource('purchases', PurchaseController::class);
-    // Purchase details management
-    Route::post('purchases/{purchase}/details', [PurchaseController::class, 'addDetail'])->name('purchases.details.store');
-    Route::delete('purchases/{purchase}/details/{detail}', [PurchaseController::class, 'removeDetail'])->name('purchases.details.destroy');
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');

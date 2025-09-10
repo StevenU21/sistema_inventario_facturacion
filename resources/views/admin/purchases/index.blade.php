@@ -202,7 +202,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="px-4 py-3 text-center text-gray-400 dark:text-gray-500">
+                                        <td colspan="12" class="px-4 py-3 text-center text-gray-400 dark:text-gray-500">
                                             No hay compras registradas.</td>
                                     </tr>
                                 @endforelse

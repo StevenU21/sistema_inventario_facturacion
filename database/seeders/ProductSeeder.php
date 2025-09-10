@@ -64,7 +64,7 @@ class ProductSeeder extends Seeder
                 'size_id' => null,
             ], [
                 'sku' => 'SKU-' . $productModel->id,
-                'barcode' => $productModel->barcode,
+                'code' => $productModel->barcode,
             ]);
 
             // Crear inventario para la variante

@@ -4,15 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PurchaseRequest;
-use App\Http\Requests\PurchaseDetailRequest;
 use App\Exports\PurchasesExport;
 use App\Models\Purchase;
 use App\Models\PurchaseDetail;
 use App\Models\Entity;
 use App\Models\Warehouse;
 use App\Models\PaymentMethod;
-use App\Models\Inventory;
-use App\Models\InventoryMovement;
+use App\Services\PurchaseService;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Category;
@@ -28,6 +26,13 @@ use Maatwebsite\Excel\Facades\Excel;
 class PurchaseController extends Controller
 {
     use AuthorizesRequests;
+
+    protected $purchaseService;
+
+    public function __construct(PurchaseService $purchaseService)
+    {
+        $this->purchaseService = $purchaseService;
+    }
 
     public function index(Request $request)
     {
@@ -126,26 +131,26 @@ class PurchaseController extends Controller
     public function create()
     {
         $this->authorize('create', Purchase::class);
-    $entities = Entity::where('is_active', true)->where('is_supplier', true)->pluck('first_name', 'id');
-    $warehouses = Warehouse::pluck('name', 'id');
-    $methods = PaymentMethod::pluck('name', 'id');
-    $categories = Category::pluck('name', 'id');
-    $brands = Brand::pluck('name', 'id');
-    $units = UnitMeasure::pluck('name', 'id');
-    $taxes = Tax::pluck('name', 'id');
-    $colors = Color::pluck('name', 'id');
-    $sizes = Size::pluck('name', 'id');
-    return view('admin.purchases.create', compact('entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes'));
+        $entities = Entity::where('is_active', true)->where('is_supplier', true)->pluck('first_name', 'id');
+        $warehouses = Warehouse::pluck('name', 'id');
+        $methods = PaymentMethod::pluck('name', 'id');
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $units = UnitMeasure::pluck('name', 'id');
+        $taxes = Tax::pluck('name', 'id');
+        $colors = Color::pluck('name', 'id');
+        $sizes = Size::pluck('name', 'id');
+        return view('admin.purchases.create', compact('entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes'));
     }
 
     public function store(PurchaseRequest $request)
     {
         $this->authorize('create', Purchase::class);
-    $data = $request->validated();
-    // Ensure sensitive/derived fields are set server-side
-    $data['user_id'] = auth()->id();
-    $data['subtotal'] = 0;
-    $data['total'] = 0;
+        $data = $request->validated();
+        // Ensure sensitive/derived fields are set server-side
+        $data['user_id'] = auth()->id();
+        $data['subtotal'] = 0;
+        $data['total'] = 0;
         $purchase = Purchase::create($data);
 
         // Inline product + variants creation (optional)
@@ -185,11 +190,12 @@ class PurchaseController extends Controller
 
             // For each line, create/find variant and detail
             foreach ($lines as $line) {
-                $qty = (int)($line['quantity'] ?? 0);
-                $price = (float)($line['unit_price'] ?? 0);
+                $qty = (int) ($line['quantity'] ?? 0);
+                $price = (float) ($line['unit_price'] ?? 0);
                 $colorId = $line['color_id'] !== '' ? ($line['color_id'] ?? null) : null;
                 $sizeId = $line['size_id'] !== '' ? ($line['size_id'] ?? null) : null;
-                if ($qty <= 0) continue;
+                if ($qty <= 0)
+                    continue;
                 $variant = ProductVariant::firstOrCreate([
                     'product_id' => $product->id,
                     'color_id' => $colorId,
@@ -201,10 +207,10 @@ class PurchaseController extends Controller
                     'quantity' => $qty,
                     'unit_price' => $price,
                 ]);
-                $this->applyDetailToInventory($purchase, $detail);
+                $this->purchaseService->applyDetailToInventory($purchase, $detail);
             }
 
-            $this->recalculateTotals($purchase);
+            $this->purchaseService->recalculateTotals($purchase);
         }
 
         return redirect()->route('purchases.show', $purchase)->with('success', 'Compra creada correctamente.');
@@ -251,91 +257,5 @@ class PurchaseController extends Controller
         $this->authorize('destroy', $purchase);
         $purchase->delete();
         return redirect()->route('purchases.index')->with('deleted', 'Compra eliminada.');
-    }
-
-    // Details management
-    public function addDetail(PurchaseDetailRequest $request, Purchase $purchase)
-    {
-        $this->authorize('update', $purchase);
-        $data = $request->validated();
-        $data['purchase_id'] = $purchase->id;
-        $detail = PurchaseDetail::create($data);
-        $this->applyDetailToInventory($purchase, $detail);
-        $this->recalculateTotals($purchase);
-        return back()->with('success', 'Detalle agregado.');
-    }
-
-    public function removeDetail(Purchase $purchase, PurchaseDetail $detail)
-    {
-        $this->authorize('update', $purchase);
-        if ($detail->purchase_id !== $purchase->id) {
-            abort(404);
-        }
-        $this->revertDetailFromInventory($purchase, $detail);
-        $detail->delete();
-        $this->recalculateTotals($purchase);
-        return back()->with('deleted', 'Detalle eliminado.');
-    }
-
-    private function applyDetailToInventory(Purchase $purchase, PurchaseDetail $detail): void
-    {
-        $inventory = Inventory::firstOrCreate(
-            [
-                'product_variant_id' => $detail->product_variant_id,
-                'warehouse_id' => $purchase->warehouse_id,
-            ],
-            [
-                'stock' => 0,
-                'min_stock' => 0,
-                'purchase_price' => $detail->unit_price,
-                'sale_price' => round($detail->unit_price * 1.3, 2),
-            ]
-        );
-        $inventory->stock += $detail->quantity;
-        $inventory->purchase_price = $detail->unit_price;
-        $inventory->save();
-        InventoryMovement::create([
-            'type' => 'in',
-            'adjustment_reason' => null,
-            'quantity' => $detail->quantity,
-            'unit_price' => $detail->unit_price,
-            'total_price' => $detail->quantity * $detail->unit_price,
-            'reference' => $purchase->reference,
-            'notes' => 'Entrada por compra (CRUD)',
-            'user_id' => auth()->id(),
-            'inventory_id' => $inventory->id,
-        ]);
-    }
-
-    private function revertDetailFromInventory(Purchase $purchase, PurchaseDetail $detail): void
-    {
-        $inventory = Inventory::where('product_variant_id', $detail->product_variant_id)
-            ->where('warehouse_id', $purchase->warehouse_id)
-            ->first();
-        if (!$inventory)
-            return;
-        $inventory->stock = max(0, $inventory->stock - $detail->quantity);
-        $inventory->save();
-        InventoryMovement::create([
-            'type' => 'out',
-            'adjustment_reason' => null,
-            'quantity' => $detail->quantity,
-            'unit_price' => $detail->unit_price,
-            'total_price' => $detail->quantity * $detail->unit_price,
-            'reference' => $purchase->reference,
-            'notes' => 'Reversión de detalle de compra (CRUD)',
-            'user_id' => auth()->id(),
-            'inventory_id' => $inventory->id,
-        ]);
-    }
-
-    private function recalculateTotals(Purchase $purchase): void
-    {
-        $subtotal = PurchaseDetail::where('purchase_id', $purchase->id)
-            ->selectRaw('COALESCE(SUM(quantity * unit_price), 0) as subtotal')
-            ->value('subtotal');
-        $purchase->subtotal = $subtotal;
-        $purchase->total = $subtotal;
-        $purchase->save();
     }
 }
