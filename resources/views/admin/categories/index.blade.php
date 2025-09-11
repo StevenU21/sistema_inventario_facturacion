@@ -18,9 +18,9 @@
         <nav class="mt-4 mb-2 text-sm text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
             <ol class="flex items-center gap-2">
                 <li>
-                    <a href="{{ route('dashboard.index') }}"
+                    <a href="#"
                         class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
-                        <i class="fas fa-home mr-1"></i> Dashboard
+                        <i class="fas fa-home mr-1"></i> Modulo de Catálogos
                     </a>
                 </li>
                 <li class="text-gray-400">/</li>
