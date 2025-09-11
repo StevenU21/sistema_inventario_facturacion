@@ -64,8 +64,9 @@ class PurchaseController extends Controller
             ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         $warehouses = Warehouse::pluck('name', 'id');
         $methods = PaymentMethod::pluck('name', 'id');
+        $products = Product::pluck('name', 'id');
 
-        return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods'));
+        return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods', 'products'));
     }
 
     public function create()

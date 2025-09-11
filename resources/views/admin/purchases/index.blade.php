@@ -165,12 +165,14 @@
                         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         onchange="this.form.submit()">
                         <option value="">Todos los productos</option>
-                        @isset($products)
+                        @if(isset($products) && count($products))
                             @foreach ($products as $id => $name)
                                 <option value="{{ $id }}" {{ request('product_id') == $id ? 'selected' : '' }}>
                                     {{ $name }}</option>
                             @endforeach
-                        @endisset
+                        @else
+                            <option value="" disabled>No hay productos disponibles</option>
+                        @endif
                     </select>
                 </div>
             </form>
