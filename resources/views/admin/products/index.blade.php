@@ -76,8 +76,8 @@
         <!-- Filtros, búsqueda -->
         <section class="mt-4 rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 sm:p-5">
             <form method="GET" action="{{ route('products.search') }}"
-                class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-3 items-end">
-                <div class="sm:col-span-3 lg:col-span-4 flex flex-row gap-2 items-end">
+                class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 items-end">
+                <div class="col-span-1 sm:col-span-3 lg:col-span-5 flex flex-row gap-2 items-end">
                     <div class="flex-1">
                         <label for="search"
                             class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
