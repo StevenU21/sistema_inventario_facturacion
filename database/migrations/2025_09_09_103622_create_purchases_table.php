@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->decimal('subtotal', 10, 2)->nullable()->default(0);
             $table->decimal('total', 10, 2)->nullable()->default(0);
 
-            $table->integer('entity_id')->nullable();
+            $table->integer('entity_id')->unsigned();
             $table->foreign('entity_id')->references('id')->on('entities')->onDelete('cascade')->onUpdate('cascade');
 
             $table->integer('warehouse_id')->unsigned();
