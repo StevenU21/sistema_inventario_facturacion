@@ -57,7 +57,8 @@
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                 <option value="">Seleccionar</option>
                 @foreach ($categories ?? [] as $id => $name)
-                    <option value="{{ $id }}" {{ old('product.category_id', optional($product)->category_id) == $id ? 'selected' : '' }}>
+                    <option value="{{ $id }}"
+                        {{ old('product.category_id', optional($product)->category_id) == $id ? 'selected' : '' }}>
                         {{ $name }}</option>
                 @endforeach
             </select>
@@ -69,7 +70,8 @@
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                 <option value="">Seleccionar</option>
                 @foreach ($brands ?? [] as $id => $name)
-                    <option value="{{ $id }}" {{ old('product.brand_id', optional($product)->brand_id) == $id ? 'selected' : '' }}>
+                    <option value="{{ $id }}"
+                        {{ old('product.brand_id', optional($product)->brand_id) == $id ? 'selected' : '' }}>
                         {{ $name }}</option>
                 @endforeach
             </select>
@@ -112,7 +114,8 @@
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Seleccionar</option>
                     @foreach ($taxes ?? [] as $id => $name)
-                        <option value="{{ $id }}" {{ old('product.tax_id', optional($product)->tax_id) == $id ? 'selected' : '' }}>
+                        <option value="{{ $id }}"
+                            {{ old('product.tax_id', optional($product)->tax_id) == $id ? 'selected' : '' }}>
                             {{ $name }}</option>
                     @endforeach
                 </select>
@@ -155,15 +158,23 @@
             <!-- Lines will be added here -->
             @php
                 $oldDetails = old('details');
-                $detailsToShow = is_array($oldDetails) && count($oldDetails)
-                    ? $oldDetails
-                    : (isset($prefillDetails) && is_array($prefillDetails) && count($prefillDetails) ? $prefillDetails : []);
-                $initialCount = is_array($oldDetails) && count($oldDetails) ? count($oldDetails) : (is_array($detailsToShow) ? count($detailsToShow) : 0);
+                $detailsToShow =
+                    is_array($oldDetails) && count($oldDetails)
+                        ? $oldDetails
+                        : (isset($prefillDetails) && is_array($prefillDetails) && count($prefillDetails)
+                            ? $prefillDetails
+                            : []);
+                $initialCount =
+                    is_array($oldDetails) && count($oldDetails)
+                        ? count($oldDetails)
+                        : (is_array($detailsToShow)
+                            ? count($detailsToShow)
+                            : 0);
             @endphp
             @if (is_array($detailsToShow) && count($detailsToShow))
                 @foreach ($detailsToShow as $i => $line)
-                    <div class="grid grid-cols-1 md:grid-cols-8 gap-4 items-end border rounded p-3" data-line>
-                        <div>
+                    <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end border rounded p-3" data-line>
+                        <div class="col-span-1">
                             <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Color</span>
                                 <select name="details[{{ $i }}][color_id]"
                                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
@@ -179,7 +190,7 @@
                                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div>
+                        <div class="col-span-1">
                             <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Talla</span>
                                 <select name="details[{{ $i }}][size_id]"
                                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
@@ -195,8 +206,9 @@
                                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div>
-                            <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Cantidad</span>
+                        <div class="col-span-1">
+                            <label class="block text-sm"><span
+                                    class="text-gray-700 dark:text-gray-200">Cantidad</span>
                                 <input type="number" min="1" step="1"
                                     name="details[{{ $i }}][quantity]"
                                     value="{{ old("details.$i.quantity", $line['quantity'] ?? '') }}"
@@ -206,7 +218,7 @@
                                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div>
+                        <div class="col-span-1">
                             <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio
                                     unitario</span>
                                 <input type="number" min="0" step="0.01"
@@ -218,7 +230,7 @@
                                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div>
+                        <div class="col-span-1">
                             <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio
                                     venta</span>
                                 <input type="number" min="0" step="0.01"
@@ -231,7 +243,7 @@
                                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div>
+                        <div class="col-span-1">
                             <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Stock
                                     mínimo</span>
                                 <input type="number" min="0" step="1"
@@ -244,10 +256,10 @@
                                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div class="flex gap-2">
+                        <div class="col-span-1 flex gap-2">
                             <button type="button"
-                                class="remove-line px-3 py-2 text-sm rounded-lg bg-red-600 hover:bg-red-700 text-white w-full inline-flex items-center justify-center gap-2">
-                                <i class="fas fa-trash"></i> Quitar
+                                class="remove-line w-full px-0 py-0 text-sm rounded-lg bg-red-600 hover:bg-red-700 text-white flex items-center justify-center gap-2 font-semibold min-h-[36px]">
+                                <i class="fas fa-trash fa-sm mr-2"></i> Quitar
                             </button>
                         </div>
                     </div>
@@ -256,8 +268,8 @@
         </div>
         <!-- Template must be inside the Alpine component to be accessible via $refs -->
         <template id="line-template" x-ref="tpl">
-            <div class="grid grid-cols-1 md:grid-cols-8 gap-4 items-end border rounded p-3" data-line>
-                <div>
+            <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end border rounded p-3" data-line>
+                <div class="col-span-1">
                     <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Color</span>
                         <select name="details[__INDEX__][color_id]"
                             class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
@@ -268,7 +280,7 @@
                         </select>
                     </label>
                 </div>
-                <div>
+                <div class="col-span-1">
                     <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Talla</span>
                         <select name="details[__INDEX__][size_id]"
                             class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
@@ -279,45 +291,45 @@
                         </select>
                     </label>
                 </div>
-                <div>
+                <div class="col-span-1">
                     <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Cantidad</span>
                         <input type="number" min="1" step="1" name="details[__INDEX__][quantity]"
                             class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     </label>
                 </div>
-                <div>
+                <div class="col-span-1">
                     <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio unitario</span>
                         <input type="number" min="0" step="0.01" name="details[__INDEX__][unit_price]"
                             class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     </label>
                 </div>
-                <div>
+                <div class="col-span-1">
                     <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio venta</span>
                         <input type="number" min="0" step="0.01" name="details[__INDEX__][sale_price]"
                             class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
                             placeholder="Venta">
                     </label>
                 </div>
-                <div>
+                <div class="col-span-1">
                     <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Stock mínimo</span>
                         <input type="number" min="0" step="1" name="details[__INDEX__][min_stock]"
                             class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
                             placeholder="Opcional">
                     </label>
                 </div>
-                <div class="flex gap-2">
+                <div class="col-span-1 flex gap-2">
                     <button type="button"
-                        class="remove-line px-3 py-2 text-sm rounded-lg bg-red-600 hover:bg-red-700 text-white w-full inline-flex items-center justify-center gap-2">
-                        <i class="fas fa-trash"></i> Quitar
+                        class="remove-line w-full px-0 py-0 text-sm rounded-lg bg-red-600 hover:bg-red-700 text-white flex items-center justify-center gap-2 font-semibold min-h-[40px]">
+                        <i class="fas fa-trash fa-sm mr-2"></i> Quitar
                     </button>
                 </div>
             </div>
         </template>
     </div>
     <script>
-    function purchaseForm() {
+        function purchaseForm() {
             return {
-        idx: Number(@json($initialCount)),
+                idx: Number(@json($initialCount)),
                 linesEl: null,
                 tplHtml: null,
                 init() {
@@ -396,7 +408,9 @@
     </script>
 
     <div class="mt-6 flex gap-2">
-        <a href="{{ route('purchases.index') }}" class="px-4 py-2 rounded bg-gray-200 text-gray-800">Cancelar</a>
-        <button type="submit" class="px-4 py-2 rounded bg-purple-600 text-white">Guardar</button>
+        <button type="submit"
+            class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple active:bg-purple-600">
+            <i class="fas fa-paper-plane mr-2"></i> {{ isset($color) ? 'Actualizar' : 'Guardar' }}
+        </button>
     </div>
 </div>
