@@ -217,9 +217,9 @@
                                 <td class="px-4 py-3 text-sm">{{ $purchase->paymentMethod?->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm text-right">
                                     @php
-                                        $firstQty = optional($purchase->details->first())->quantity;
+                                        $totalQty = $purchase->details->sum('quantity');
                                     @endphp
-                                    {{ $firstQty ?? '-' }}
+                                    {{ $totalQty > 0 ? $totalQty : '-' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-right">C$
                                     @php
