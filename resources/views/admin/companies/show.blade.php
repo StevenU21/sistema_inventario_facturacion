@@ -7,8 +7,9 @@
         <nav class="mt-4 mb-2 text-sm text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
             <ol class="flex items-center gap-2">
                 <li>
-                    <a href="{{ route('companies.index') }}" class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
-                        <i class="fas fa-list-ul mr-1"></i> Empresas
+                    <a href="{{ route('companies.index') }}"
+                        class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                        <i class="fas fa-cogs w-5 h-5"></i> Módulo de Administración
                     </a>
                 </li>
                 <li class="text-gray-400">/
@@ -22,7 +23,8 @@
         <!-- Page header card -->
         <section class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg">
             <div class="absolute inset-0 opacity-20 pointer-events-none"
-                 style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.35), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.25), transparent 40%);"></div>
+                style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.35), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.25), transparent 40%);">
+            </div>
             <div class="relative p-6 sm:p-8">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
@@ -33,11 +35,13 @@
                         <p class="mt-1 text-white/80 text-sm">Revisa la información general y de contacto.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <a href="{{ route('companies.index') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                        <a href="{{ route('companies.index') }}"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
                             <i class="fas fa-arrow-left"></i>
                             Volver
                         </a>
-                        <a href="{{ route('companies.edit', $company) }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
+                        <a href="{{ route('companies.edit', $company) }}"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
                             <i class="fas fa-edit"></i>
                             Editar
                         </a>
@@ -53,14 +57,12 @@
                 <div class="flex flex-col items-center text-center">
                     <div class="relative">
                         @if ($company->logo)
-                            <img
-                                src="{{ $company->avatar_url }}"
-                                alt="Logo de {{ $company->name }}"
+                            <img src="{{ $company->avatar_url }}" alt="Logo de {{ $company->name }}"
                                 class="w-40 h-40 md:w-48 md:h-48 object-cover rounded-xl ring-4 ring-purple-100 dark:ring-purple-900/40 shadow"
-                                loading="lazy"
-                            >
+                                loading="lazy">
                         @else
-                            <div class="w-40 h-40 md:w-48 md:h-48 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center ring-4 ring-purple-100 dark:ring-purple-900/40 shadow text-5xl text-gray-400">
+                            <div
+                                class="w-40 h-40 md:w-48 md:h-48 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center ring-4 ring-purple-100 dark:ring-purple-900/40 shadow text-5xl text-gray-400">
                                 <i class="fas fa-building"></i>
                             </div>
                         @endif
@@ -73,9 +75,11 @@
                         <div class="py-3 text-left">
                             <span class="block text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">RUC</span>
                             <div class="mt-1 flex items-center justify-between gap-2">
-                                <span id="company-ruc" class="font-medium text-gray-800 dark:text-gray-100">{{ $company->ruc ?? '—' }}</span>
+                                <span id="company-ruc"
+                                    class="font-medium text-gray-800 dark:text-gray-100">{{ $company->ruc ?? '—' }}</span>
                                 @if (!empty($company->ruc))
-                                    <button type="button" onclick="copyField('company-ruc')" class="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600">
+                                    <button type="button" onclick="copyField('company-ruc')"
+                                        class="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600">
                                         Copiar
                                     </button>
                                 @endif
@@ -83,26 +87,34 @@
                             <span id="company-ruc-copied" class="hidden mt-1 text-xs text-green-600">Copiado</span>
                         </div>
                         <div class="py-3 text-left">
-                            <span class="block text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">Correo</span>
+                            <span
+                                class="block text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">Correo</span>
                             <div class="mt-1 flex items-center justify-between gap-2">
-                                <span id="company-email" class="font-medium text-gray-800 dark:text-gray-100">{{ $company->email ?? '—' }}</span>
+                                <span id="company-email"
+                                    class="font-medium text-gray-800 dark:text-gray-100">{{ $company->email ?? '—' }}</span>
                                 @if (!empty($company->email))
                                     <div class="flex items-center gap-2">
-                                        <a href="mailto:{{ $company->email }}" class="px-2 py-1 text-xs rounded-md bg-purple-50 text-purple-700 hover:bg-purple-100 dark:bg-purple-900/30 dark:text-purple-300">Enviar</a>
-                                        <button type="button" onclick="copyField('company-email')" class="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600">Copiar</button>
+                                        <a href="mailto:{{ $company->email }}"
+                                            class="px-2 py-1 text-xs rounded-md bg-purple-50 text-purple-700 hover:bg-purple-100 dark:bg-purple-900/30 dark:text-purple-300">Enviar</a>
+                                        <button type="button" onclick="copyField('company-email')"
+                                            class="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600">Copiar</button>
                                     </div>
                                 @endif
                             </div>
                             <span id="company-email-copied" class="hidden mt-1 text-xs text-green-600">Copiado</span>
                         </div>
                         <div class="py-3 text-left">
-                            <span class="block text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">Teléfono</span>
+                            <span
+                                class="block text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">Teléfono</span>
                             <div class="mt-1 flex items-center justify-between gap-2">
-                                <span id="company-phone" class="font-medium text-gray-800 dark:text-gray-100">{{ $company->phone ?? '—' }}</span>
+                                <span id="company-phone"
+                                    class="font-medium text-gray-800 dark:text-gray-100">{{ $company->phone ?? '—' }}</span>
                                 @if (!empty($company->phone))
                                     <div class="flex items-center gap-2">
-                                        <a href="tel:{{ $company->phone }}" class="px-2 py-1 text-xs rounded-md bg-purple-50 text-purple-700 hover:bg-purple-100 dark:bg-purple-900/30 dark:text-purple-300">Llamar</a>
-                                        <button type="button" onclick="copyField('company-phone')" class="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600">Copiar</button>
+                                        <a href="tel:{{ $company->phone }}"
+                                            class="px-2 py-1 text-xs rounded-md bg-purple-50 text-purple-700 hover:bg-purple-100 dark:bg-purple-900/30 dark:text-purple-300">Llamar</a>
+                                        <button type="button" onclick="copyField('company-phone')"
+                                            class="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600">Copiar</button>
                                     </div>
                                 @endif
                             </div>
@@ -125,11 +137,14 @@
                     <div class="px-6 py-6">
                         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Dirección</dt>
-                                <dd id="company-address" class="mt-1 text-gray-800 dark:text-gray-100">{{ $company->address ?? '—' }}</dd>
+                                <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                    Dirección</dt>
+                                <dd id="company-address" class="mt-1 text-gray-800 dark:text-gray-100">
+                                    {{ $company->address ?? '—' }}</dd>
                             </div>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Descripción</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                    Descripción</dt>
                                 <dd class="mt-1 text-gray-800 dark:text-gray-100">{{ $company->description ?? '—' }}</dd>
                             </div>
                         </dl>
@@ -147,21 +162,27 @@
                     <div class="px-6 py-6">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div class="flex items-start gap-3">
-                                <span class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                                <span
+                                    class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
                                     <i class="fas fa-calendar-plus"></i>
                                 </span>
                                 <div>
-                                    <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Fecha de registro</p>
-                                    <p class="mt-1 font-medium text-gray-800 dark:text-gray-100">{{ $company->formatted_created_at ?? '—' }}</p>
+                                    <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Fecha de
+                                        registro</p>
+                                    <p class="mt-1 font-medium text-gray-800 dark:text-gray-100">
+                                        {{ $company->formatted_created_at ?? '—' }}</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-3">
-                                <span class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                                <span
+                                    class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
                                     <i class="fas fa-history"></i>
                                 </span>
                                 <div>
-                                    <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Última actualización</p>
-                                    <p class="mt-1 font-medium text-gray-800 dark:text-gray-100">{{ $company->formatted_updated_at ?? '—' }}</p>
+                                    <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Última
+                                        actualización</p>
+                                    <p class="mt-1 font-medium text-gray-800 dark:text-gray-100">
+                                        {{ $company->formatted_updated_at ?? '—' }}</p>
                                 </div>
                             </div>
                         </div>

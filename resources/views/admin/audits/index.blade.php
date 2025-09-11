@@ -3,12 +3,13 @@
 
 @section('content')
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+
         <!-- Breadcrumbs -->
         <nav class="mt-4 mb-2 text-sm text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
             <ol class="flex items-center gap-2">
                 <li>
-                    <a href="{{ route('dashboard.index') }}" class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
-                        <i class="fas fa-home mr-1"></i> Dashboard
+                    <a href="#" class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                        <i class="fas fa-cogs w-5 h-5"></i> Modulo de Administración
                     </a>
                 </li>
                 <li class="text-gray-400">/</li>
