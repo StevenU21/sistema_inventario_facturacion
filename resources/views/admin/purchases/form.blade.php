@@ -149,8 +149,8 @@
         <div class="flex items-center justify-between mb-3">
             <h4 class="text-base font-semibold text-gray-800 dark:text-gray-100">Variantes / Líneas</h4>
             <button type="button" x-ref="addBtn"
-                class="inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-green-600 hover:bg-green-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-green-500">
-                <i class="fas fa-plus"></i>
+                class="inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[36px] font-semibold">
+                <i class="fas fa-plus fa-sm mr-2"></i>
                 Agregar línea
             </button>
         </div>
