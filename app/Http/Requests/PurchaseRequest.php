@@ -57,21 +57,32 @@ class PurchaseRequest extends FormRequest
             'details.*.color_id' => ['required', 'exists:colors,id'],
             'details.*.size_id' => ['required', 'exists:sizes,id'],
             'details.*.quantity' => ['required', 'integer', 'min:1'],
-            'details.*.unit_price' => ['required', 'numeric', 'min:0', function ($attribute, $value, $fail) {
-                $index = explode('.', $attribute)[1];
-                $salePrice = $this->input("details.{$index}.sale_price");
-                if ($salePrice !== null && $value > $salePrice) {
-                    $fail('El precio unitario no puede ser mayor al precio de venta.');
+            'details.*.unit_price' => [
+                'required',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) {
+                    $index = explode('.', $attribute)[1];
+                    $salePrice = $this->input("details.{$index}.sale_price");
+                    if ($salePrice !== null && $value > $salePrice) {
+                        $fail('El precio unitario no puede ser mayor al precio de venta.');
+                    }
                 }
-            }],
-            'details.*.sale_price' => ['nullable', 'numeric', 'min:0', function ($attribute, $value, $fail) {
-                if ($value === null) return;
-                $index = explode('.', $attribute)[1];
-                $unitPrice = $this->input("details.{$index}.unit_price");
-                if ($unitPrice !== null && $value < $unitPrice) {
-                    $fail('El precio de venta no puede ser menor al precio unitario.');
+            ],
+            'details.*.sale_price' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) {
+                    if ($value === null)
+                        return;
+                    $index = explode('.', $attribute)[1];
+                    $unitPrice = $this->input("details.{$index}.unit_price");
+                    if ($unitPrice !== null && $value < $unitPrice) {
+                        $fail('El precio de venta no puede ser menor al precio unitario.');
+                    }
                 }
-            }],
+            ],
             'details.*.min_stock' => ['nullable', 'integer', 'min:0'],
             'details.*.sku' => ['nullable', 'string', 'max:255'],
             'details.*.code' => ['nullable', 'string', 'max:255'],
