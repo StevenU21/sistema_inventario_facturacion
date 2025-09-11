@@ -171,9 +171,7 @@
         <x-show-modal :title="'Detalle de Variante'" :description="'Consulta la información de la variante.'">
             @include('admin.product_variants.partials.show_card')
         </x-show-modal>
-    </div>
-
-    <div class="mt-4 w-full overflow-hidden rounded-xl shadow-md bg-white dark:bg-gray-800">
+        <div class="mt-4 w-full overflow-hidden rounded-xl shadow-md bg-white dark:bg-gray-800">
         <div class="w-full overflow-x-auto">
             <table class="w-full text-left">
                 <thead class="bg-gray-50 dark:bg-gray-800">
@@ -234,10 +232,9 @@
                 </tbody>
             </table>
         </div>
-        <div class="mt-4">
+            <div class="mt-4">
             {{ $variants->links() }}
         </div>
-    </div>
-    </div>
+        </div>
     </div>
 @endsection
