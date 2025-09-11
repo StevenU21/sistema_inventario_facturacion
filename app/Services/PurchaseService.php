@@ -153,4 +153,61 @@ class PurchaseService
         $purchase->total = $subtotal;
         $purchase->save();
     }
+    /**
+     * Actualiza una compra y sus detalles, productos y variantes.
+     * Revierte inventario y movimientos previos, y aplica los nuevos datos.
+     *
+     * @param Purchase $purchase
+     * @param array $data
+     * @param \Illuminate\Contracts\Auth\Authenticatable $user
+     * @return Purchase
+     * @throws \Throwable
+     */
+    public function updatePurchase(Purchase $purchase, array $data, $user)
+    {
+        return DB::transaction(function () use ($purchase, $data, $user) {
+            // 1. Revertir inventario y eliminar movimientos previos
+            foreach ($purchase->details as $detail) {
+                $variant = $detail->productVariant;
+                $inventory = Inventory::where('product_variant_id', $variant->id)
+                    ->where('warehouse_id', $purchase->warehouse_id)
+                    ->first();
+                if ($inventory) {
+                    $inventory->stock -= $detail->quantity;
+                    $inventory->save();
+                }
+                // Eliminar movimientos de inventario relacionados a este detalle y compra
+                InventoryMovement::where('inventory_id', $inventory ? $inventory->id : null)
+                    ->where('type', 'in')
+                    ->where('reference', 'Compra #' . $purchase->id)
+                    ->delete();
+            }
+            // 2. Eliminar detalles previos
+            $purchase->details()->delete();
+
+            // 3. Actualizar datos base de la compra
+            $purchase->reference = $data['reference'] ?? $purchase->reference;
+            $purchase->entity_id = $data['entity_id'];
+            $purchase->warehouse_id = $data['warehouse_id'];
+            $purchase->payment_method_id = $data['payment_method_id'];
+            $purchase->user_id = $user->getAuthIdentifier();
+            $purchase->subtotal = 0;
+            $purchase->total = 0;
+            $purchase->save();
+
+            // 4. Obtener o crear producto principal
+            $product = $this->getOrCreateProduct($data);
+
+            // 5. Crear nuevos detalles y actualizar inventario
+            $subtotal = 0;
+            foreach ($data['details'] as $row) {
+                $variant = $this->getOrCreateVariant($product, $row);
+                $detail = $this->createPurchaseDetail($purchase, $variant, $row);
+                $this->updateInventoryAndRegisterMovement($purchase, $variant, $row);
+                $subtotal += ((int) $row['quantity']) * ((float) $row['unit_price']);
+            }
+            $this->updatePurchaseTotals($purchase, $subtotal);
+            return $purchase->fresh(['details.productVariant']);
+        });
+    }
 }

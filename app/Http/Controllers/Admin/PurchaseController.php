@@ -95,23 +95,86 @@ class PurchaseController extends Controller
         }
     }
 
+
     public function show(Purchase $purchase)
     {
         $this->authorize('view', $purchase);
-        $details = $purchase->details()->with('productVariant.product')->get();
-        return view('admin.purchases.show', compact('purchase', 'details'));
+        $purchase->load(['entity', 'warehouse', 'user', 'paymentMethod', 'details.productVariant.product']);
+        $details = $purchase->details;
+        $product = optional(optional($details->first())->productVariant)->product;
+        // Prefill detalles desde inventario
+        $prefillDetails = $details->map(function ($d) use ($purchase) {
+            $variant = $d->productVariant;
+            $inventory = \App\Models\Inventory::where('product_variant_id', $variant->id)
+                ->where('warehouse_id', $purchase->warehouse_id)
+                ->first();
+            return [
+                'color_id' => $variant->color_id,
+                'size_id' => $variant->size_id,
+                'quantity' => $d->quantity,
+                'unit_price' => $d->unit_price,
+                'sale_price' => optional($inventory)->sale_price,
+                'min_stock' => optional($inventory)->min_stock,
+            ];
+        })->toArray();
+        $entities = Entity::where('is_active', true)->where('is_supplier', true)
+            ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
+        $warehouses = Warehouse::pluck('name', 'id');
+        $methods = PaymentMethod::pluck('name', 'id');
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $units = UnitMeasure::pluck('name', 'id');
+        $taxes = Tax::pluck('name', 'id');
+        $colors = Color::pluck('name', 'id');
+        $sizes = Size::pluck('name', 'id');
+        return view('admin.purchases.show', compact('purchase', 'product', 'details', 'prefillDetails', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes'));
     }
+
 
     public function edit(Purchase $purchase)
     {
         $this->authorize('update', $purchase);
-        return view('admin.purchases.edit', compact('purchase'));
+        $purchase->load(['entity', 'warehouse', 'user', 'paymentMethod', 'details.productVariant.product']);
+        $details = $purchase->details;
+        $product = optional(optional($details->first())->productVariant)->product;
+        // Prefill detalles desde inventario
+        $prefillDetails = $details->map(function ($d) use ($purchase) {
+            $variant = $d->productVariant;
+            $inventory = \App\Models\Inventory::where('product_variant_id', $variant->id)
+                ->where('warehouse_id', $purchase->warehouse_id)
+                ->first();
+            return [
+                'color_id' => $variant->color_id,
+                'size_id' => $variant->size_id,
+                'quantity' => $d->quantity,
+                'unit_price' => $d->unit_price,
+                'sale_price' => optional($inventory)->sale_price,
+                'min_stock' => optional($inventory)->min_stock,
+            ];
+        })->toArray();
+        $entities = Entity::where('is_active', true)->where('is_supplier', true)
+            ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
+        $warehouses = Warehouse::pluck('name', 'id');
+        $methods = PaymentMethod::pluck('name', 'id');
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $units = UnitMeasure::pluck('name', 'id');
+        $taxes = Tax::pluck('name', 'id');
+        $colors = Color::pluck('name', 'id');
+        $sizes = Size::pluck('name', 'id');
+        return view('admin.purchases.edit', compact('purchase', 'product', 'details', 'prefillDetails', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes'));
     }
 
-    public function update(PurchaseRequest $request, Purchase $purchase)
+    public function update(PurchaseRequest $request, Purchase $purchase, PurchaseService $purchaseService)
     {
         $this->authorize('update', $purchase);
-        return redirect()->route('purchases.index')->with('updated', 'Compra actualizada.');
+        $data = $request->validated();
+        try {
+            $purchaseService->updatePurchase($purchase, $data, $request->user());
+            return redirect()->route('purchases.index')->with('updated', 'Compra actualizada correctamente.');
+        } catch (\Throwable $e) {
+            return back()->withInput()->withErrors(['error' => 'No se pudo actualizar la compra: ' . $e->getMessage()]);
+        }
     }
 
     public function destroy(Purchase $purchase)

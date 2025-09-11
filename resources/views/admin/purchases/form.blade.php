@@ -10,7 +10,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <label class="block text-sm w-full">
             <span class="text-gray-700 dark:text-gray-200">Nombre del producto</span>
-            <input type="text" name="product[name]" value="{{ old('product.name') }}"
+            <input type="text" name="product[name]" value="{{ old('product.name', optional($product)->name) }}"
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
         </label>
 
@@ -57,7 +57,7 @@
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                 <option value="">Seleccionar</option>
                 @foreach ($categories ?? [] as $id => $name)
-                    <option value="{{ $id }}" {{ old('product.category_id') == $id ? 'selected' : '' }}>
+                    <option value="{{ $id }}" {{ old('product.category_id', optional($product)->category_id) == $id ? 'selected' : '' }}>
                         {{ $name }}</option>
                 @endforeach
             </select>
@@ -69,7 +69,7 @@
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                 <option value="">Seleccionar</option>
                 @foreach ($brands ?? [] as $id => $name)
-                    <option value="{{ $id }}" {{ old('product.brand_id') == $id ? 'selected' : '' }}>
+                    <option value="{{ $id }}" {{ old('product.brand_id', optional($product)->brand_id) == $id ? 'selected' : '' }}>
                         {{ $name }}</option>
                 @endforeach
             </select>
@@ -112,7 +112,7 @@
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Seleccionar</option>
                     @foreach ($taxes ?? [] as $id => $name)
-                        <option value="{{ $id }}" {{ old('product.tax_id') == $id ? 'selected' : '' }}>
+                        <option value="{{ $id }}" {{ old('product.tax_id', optional($product)->tax_id) == $id ? 'selected' : '' }}>
                             {{ $name }}</option>
                     @endforeach
                 </select>
@@ -125,7 +125,7 @@
                     <option value="">Seleccionar</option>
                     @foreach ($units ?? [] as $id => $name)
                         <option value="{{ $id }}"
-                            {{ old('product.unit_measure_id') == $id ? 'selected' : '' }}>
+                            {{ old('product.unit_measure_id', optional($product)->unit_measure_id) == $id ? 'selected' : '' }}>
                             {{ $name }}</option>
                     @endforeach
                 </select>
@@ -138,7 +138,7 @@
         <label class="block text-sm w-full">
             <span class="text-gray-700 dark:text-gray-200">Descripción</span>
             <textarea name="product[description]" rows="3"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">{{ old('product_description') }}</textarea>
+                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">{{ old('product.description', optional($product)->description) }}</textarea>
         </label>
     </div>
 
@@ -153,9 +153,15 @@
         </div>
         <div id="lines" x-ref="lines" class="space-y-3">
             <!-- Lines will be added here -->
-            @php $oldDetails = old('details', []); @endphp
-            @if (is_array($oldDetails) && count($oldDetails))
-                @foreach ($oldDetails as $i => $line)
+            @php
+                $oldDetails = old('details');
+                $detailsToShow = is_array($oldDetails) && count($oldDetails)
+                    ? $oldDetails
+                    : (isset($prefillDetails) && is_array($prefillDetails) && count($prefillDetails) ? $prefillDetails : []);
+                $initialCount = is_array($oldDetails) && count($oldDetails) ? count($oldDetails) : (is_array($detailsToShow) ? count($detailsToShow) : 0);
+            @endphp
+            @if (is_array($detailsToShow) && count($detailsToShow))
+                @foreach ($detailsToShow as $i => $line)
                     <div class="grid grid-cols-1 md:grid-cols-8 gap-4 items-end border rounded p-3" data-line>
                         <div>
                             <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Color</span>
@@ -164,7 +170,7 @@
                                     <option value="">Ninguno</option>
                                     @foreach ($colors ?? [] as $id => $name)
                                         <option value="{{ $id }}"
-                                            {{ (string) old("details.$i.color_id") === (string) $id ? 'selected' : '' }}>
+                                            {{ (string) old("details.$i.color_id", $line['color_id'] ?? '') === (string) $id ? 'selected' : '' }}>
                                             {{ $name }}</option>
                                     @endforeach
                                 </select>
@@ -180,7 +186,7 @@
                                     <option value="">Ninguna</option>
                                     @foreach ($sizes ?? [] as $id => $name)
                                         <option value="{{ $id }}"
-                                            {{ (string) old("details.$i.size_id") === (string) $id ? 'selected' : '' }}>
+                                            {{ (string) old("details.$i.size_id", $line['size_id'] ?? '') === (string) $id ? 'selected' : '' }}>
                                             {{ $name }}</option>
                                     @endforeach
                                 </select>
@@ -193,7 +199,7 @@
                             <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Cantidad</span>
                                 <input type="number" min="1" step="1"
                                     name="details[{{ $i }}][quantity]"
-                                    value="{{ old("details.$i.quantity") }}"
+                                    value="{{ old("details.$i.quantity", $line['quantity'] ?? '') }}"
                                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                             </label>
                             @error('details.' . $i . '.quantity')
@@ -205,7 +211,7 @@
                                     unitario</span>
                                 <input type="number" min="0" step="0.01"
                                     name="details[{{ $i }}][unit_price]"
-                                    value="{{ old("details.$i.unit_price") }}"
+                                    value="{{ old("details.$i.unit_price", $line['unit_price'] ?? '') }}"
                                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                             </label>
                             @error('details.' . $i . '.unit_price')
@@ -217,7 +223,7 @@
                                     venta</span>
                                 <input type="number" min="0" step="0.01"
                                     name="details[{{ $i }}][sale_price]"
-                                    value="{{ old("details.$i.sale_price") }}"
+                                    value="{{ old("details.$i.sale_price", $line['sale_price'] ?? '') }}"
                                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
                                     placeholder="Venta">
                             </label>
@@ -230,7 +236,7 @@
                                     mínimo</span>
                                 <input type="number" min="0" step="1"
                                     name="details[{{ $i }}][min_stock]"
-                                    value="{{ old("details.$i.min_stock") }}"
+                                    value="{{ old("details.$i.min_stock", $line['min_stock'] ?? '') }}"
                                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
                                     placeholder="Opcional">
                             </label>
@@ -309,9 +315,9 @@
         </template>
     </div>
     <script>
-        function purchaseForm() {
+    function purchaseForm() {
             return {
-                idx: Number(@json(is_array(old('details')) ? count(old('details')) : 0)),
+        idx: Number(@json($initialCount)),
                 linesEl: null,
                 tplHtml: null,
                 init() {
@@ -345,9 +351,10 @@
                     // Botón agregar
                     this.$refs.addBtn.addEventListener('click', () => this.addLine());
 
-                    // Agregar una línea vacía si no hay previas por validación
+                    // Agregar una línea vacía solo si no hay previas por validación ni precargadas
                     const hasOld = @json(is_array(old('details')) && count(old('details')) ? true : false);
-                    if (!hasOld) {
+                    const hasPrefill = @json(is_array($detailsToShow) && count($detailsToShow) ? true : false);
+                    if (!hasOld && !hasPrefill) {
                         this.addLine();
                     }
                 },
