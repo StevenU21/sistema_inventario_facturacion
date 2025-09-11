@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PurchaseDetailRequest;
 use App\Http\Requests\PurchaseRequest;
 use App\Exports\PurchasesExport;
+use App\Exports\PurchaseDetailsExport;
 use App\Models\Purchase;
 use App\Models\PurchaseDetail;
 use App\Models\Entity;
@@ -80,7 +81,10 @@ class PurchaseController extends Controller
         $taxes = Tax::pluck('name', 'id');
         $colors = Color::pluck('name', 'id');
         $sizes = Size::pluck('name', 'id');
-        return view('admin.purchases.create', compact('entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes'));
+        $product = null;
+        $details = [];
+        $prefillDetails = [];
+        return view('admin.purchases.create', compact('entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes', 'product', 'details', 'prefillDetails'));
     }
 
     public function store(PurchaseRequest $request, PurchaseService $purchaseService)
@@ -207,6 +211,14 @@ class PurchaseController extends Controller
         $query = $this->buildPurchasesQuery($request);
         $filename = 'compras_' . now()->format('Ymd_His') . '.xlsx';
         return Excel::download(new PurchasesExport($query), $filename);
+    }
+
+    // Exporta el detalle completo de una compra específica
+    public function exportDetails(Purchase $purchase)
+    {
+        $this->authorize('view', $purchase);
+        $filename = 'compra_' . $purchase->id . '_' . now()->format('Ymd_His') . '.xlsx';
+        return Excel::download(new PurchaseDetailsExport($purchase), $filename);
     }
 
     // Construye la consulta con todos los filtros soportados

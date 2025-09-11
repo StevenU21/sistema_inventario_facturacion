@@ -23,9 +23,9 @@
                     class="px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700">
                     <i class="fas fa-arrow-left mr-2"></i>Volver
                 </a>
-                <a href="{{ route('purchases.edit', $purchase) }}"
-                    class="px-4 py-2 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white">
-                    <i class="fas fa-edit mr-2"></i>Editar
+                <a href="{{ route('purchases.exportDetails', $purchase) }}"
+                    class="px-4 py-2 rounded-lg text-sm font-medium bg-green-600 hover:bg-green-700 text-white">
+                    <i class="fas fa-file-excel mr-2"></i>Exportar Excel
                 </a>
             </div>
         </div>
@@ -185,10 +185,6 @@
                     <a href="{{ route('purchases.edit', $purchase) }}"
                         class="px-4 py-2 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white text-center">
                         <i class="fas fa-edit mr-2"></i>Editar compra
-                    </a>
-                    <a href="{{ route('purchases.index') }}"
-                        class="px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700 text-center">
-                        <i class="fas fa-list mr-2"></i>Ver listado
                     </a>
                 </div>
             </div>
