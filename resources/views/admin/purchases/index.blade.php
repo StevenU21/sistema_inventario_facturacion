@@ -7,8 +7,7 @@
         <nav class="mt-4 mb-2 text-sm text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
             <ol class="flex items-center gap-2">
                 <li>
-                    <a href="#"
-                        class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                    <a href="#" class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
                         <i class="fas fa-home mr-1"></i> Modulo de Compras
                     </a>
                 </li>
@@ -74,7 +73,7 @@
                             class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
                         <input type="text" name="search" id="search" value="{{ request('search') }}"
                             class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                            placeholder="Referencia...">
+                            placeholder="Nombre del producto...">
                     </div>
                     <div class="flex flex-row gap-2 items-end">
                         <button type="submit"
