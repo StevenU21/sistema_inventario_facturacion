@@ -2,7 +2,7 @@
 @section('title', 'Productos')
 
 @section('content')
-    <div class="container grid px-6 mx-auto" x-data="{
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8" x-data="{
         isModalOpen: false,
         isEditModalOpen: false,
         isShowModalOpen: false,
@@ -13,134 +13,169 @@
         closeEditModal() { this.isEditModalOpen = false },
         closeShowModal() { this.isShowModalOpen = false }
     }">
-        <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Productos
-        </h2>
+        <!-- Breadcrumbs -->
+        <nav class="mt-4 mb-2 text-sm text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
+            <ol class="flex items-center gap-2">
+                <li>
+                    <a href="{{ route('dashboard.index') }}" class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                        <i class="fas fa-home mr-1"></i> Dashboard
+                    </a>
+                </li>
+                <li class="text-gray-400">/</li>
+                <li>
+                    <span class="text-gray-700 dark:text-gray-200">Productos</span>
+                </li>
+            </ol>
+        </nav>
 
-        <!-- Mensajes de éxito -->
-        <x-session-message />
-        <!-- Fin mensajes de éxito -->
-
-        <div class="w-full overflow-hidden rounded-lg shadow-xs">
-            <div class="flex flex-row flex-wrap items-center gap-x-1 gap-y-0.5 mb-2">
-                <form method="GET" action="{{ route('products.search') }}"
-                    class="flex flex-row gap-x-1 items-center flex-1 min-w-[280px]">
-                    <div class="flex flex-col p-0">
-                        <input type="text" name="search" id="search" value="{{ request('search') }}"
-                            class="px-4 py-2 border rounded-lg focus:outline-none focus:ring w-56 text-sm font-medium"
-                            placeholder="Nombre...">
+        <!-- Page header card -->
+        <section class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg">
+            <div class="absolute inset-0 opacity-20 pointer-events-none"
+                 style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.35), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.25), transparent 40%);"></div>
+            <div class="relative p-6 sm:p-8">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center">
+                            <i class="fas fa-boxes text-white/90 mr-3"></i>
+                            Productos
+                        </h1>
+                        <p class="mt-1 text-white/80 text-sm">Busca, filtra y gestiona tus productos.</p>
                     </div>
-                    <div class="flex flex-col p-0">
-                        <button type="submit"
-                            class="flex items-center justify-center px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
-                            Buscar
+                    <div class="flex items-center gap-2">
+                        <form method="GET" action="{{ route('products.export') }}">
+                            <input type="hidden" name="search" value="{{ request('search') }}">
+                            <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
+                            <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                            <input type="hidden" name="unit_measure_id" value="{{ request('unit_measure_id') }}">
+                            <input type="hidden" name="tax_id" value="{{ request('tax_id') }}">
+                            <input type="hidden" name="status" value="{{ request('status') }}">
+                            <button type="submit"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                <i class="fas fa-file-excel"></i>
+                                Exportar Excel
+                            </button>
+                        </form>
+                        <button type="button" @click="isModalOpen = true"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
+                            <i class="fas fa-plus"></i>
+                            Crear producto
                         </button>
                     </div>
-                </form>
-
-                <div class="flex items-center gap-0.5 ml-auto shrink-0">
-                    <form method="GET" action="{{ route('products.export') }}">
-                        <input type="hidden" name="search" value="{{ request('search') }}">
-                        <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
-                        <input type="hidden" name="category_id" value="{{ request('category_id') }}">
-                        <input type="hidden" name="unit_measure_id" value="{{ request('unit_measure_id') }}">
-                        <input type="hidden" name="tax_id" value="{{ request('tax_id') }}">
-                        <input type="hidden" name="status" value="{{ request('status') }}">
-                        <button type="submit"
-                            class="flex items-center justify-between px-4 py-2 w-36 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
-                            <span>Exportar Excel</span>
-                            <i class="fas fa-file-excel ml-2"></i>
-                        </button>
-                    </form>
-                    <button type="button" @click="isModalOpen = true"
-                        class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white border border-transparent active:bg-purple-600 ml-2">
-                        <span>Crear Producto</span>
-                        <i class="fas fa-plus ml-2"></i>
-                    </button>
                 </div>
             </div>
+        </section>
 
-            <div class="flex flex-row flex-wrap gap-x-1 gap-y-1 items-end justify-between mb-4">
-                <form method="GET" action="{{ route('products.search') }}"
-                    class="flex flex-row flex-wrap gap-x-1 gap-y-1 items-end self-end">
-                    <div class="flex flex-col p-0.5">
-                        <select name="per_page" id="per_page"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-20 text-sm font-medium"
+        <!-- Mensajes de éxito -->
+        <div class="mt-4">
+            <x-session-message />
+        </div>
+        <!-- Fin mensajes de éxito -->
+
+        <!-- Filtros, búsqueda -->
+        <section class="mt-4 rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 sm:p-5">
+            <form method="GET" action="{{ route('products.search') }}" class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-3 items-end">
+                <div class="sm:col-span-2 lg:col-span-2">
+                    <label for="search" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
+                    <input type="text" name="search" id="search" value="{{ request('search') }}"
+                           class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                           placeholder="Nombre...">
+                </div>
+                <div>
+                    <label for="per_page" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Mostrar</label>
+                    <select name="per_page" id="per_page"
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                             onchange="this.form.submit()">
-                            <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
-                            <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
-                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
-                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
-                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
-                        </select>
-                    </div>
-                    <div class="flex flex-col p-0.5">
-                        <select name="category_id" id="category_id"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                        <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="category_id" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Categoría</label>
+                    <select name="category_id" id="category_id"
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                             onchange="this.form.submit()">
-                            <option value="">Todas las categorías</option>
-                            @foreach ($categories as $id => $name)
-                                <option value="{{ $id }}" {{ request('category_id') == $id ? 'selected' : '' }}>
-                                    {{ $name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="flex flex-col p-0.5">
-                        <select name="brand_id" id="brand_id"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                        <option value="">Todas las categorías</option>
+                        @foreach ($categories as $id => $name)
+                            <option value="{{ $id }}" {{ request('category_id') == $id ? 'selected' : '' }}>
+                                {{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="brand_id" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Marca</label>
+                    <select name="brand_id" id="brand_id"
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                             onchange="this.form.submit()">
-                            <option value="">Todas las marcas</option>
-                            @foreach ($brands as $id => $name)
-                                <option value="{{ $id }}" {{ request('brand_id') == $id ? 'selected' : '' }}>
-                                    {{ $name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="flex flex-col p-0.5">
-                        <select name="entity_id" id="entity_id"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-48 text-sm font-medium"
+                        <option value="">Todas las marcas</option>
+                        @foreach ($brands as $id => $name)
+                            <option value="{{ $id }}" {{ request('brand_id') == $id ? 'selected' : '' }}>
+                                {{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="entity_id" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Proveedor</label>
+                    <select name="entity_id" id="entity_id"
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                             onchange="this.form.submit()">
-                            <option value="">Todos los proveedores</option>
-                            @foreach ($entities as $id => $name)
-                                <option value="{{ $id }}" {{ request('entity_id') == $id ? 'selected' : '' }}>
-                                    {{ $name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="flex flex-col p-0.5">
-                        <select name="tax_id" id="tax_id"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                        <option value="">Todos los proveedores</option>
+                        @foreach ($entities as $id => $name)
+                            <option value="{{ $id }}" {{ request('entity_id') == $id ? 'selected' : '' }}>
+                                {{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="tax_id" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Impuesto</label>
+                    <select name="tax_id" id="tax_id"
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                             onchange="this.form.submit()">
-                            <option value="">Todos los impuestos</option>
-                            @foreach ($taxes as $id => $name)
-                                <option value="{{ $id }}" {{ request('tax_id') == $id ? 'selected' : '' }}>
-                                    {{ $name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="flex flex-col p-0.5">
-                        <select name="unit_measure_id" id="unit_measure_id"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                        <option value="">Todos los impuestos</option>
+                        @foreach ($taxes as $id => $name)
+                            <option value="{{ $id }}" {{ request('tax_id') == $id ? 'selected' : '' }}>
+                                {{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="unit_measure_id" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Medida</label>
+                    <select name="unit_measure_id" id="unit_measure_id"
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                             onchange="this.form.submit()">
-                            <option value="">Todas las medidas</option>
-                            @foreach ($units as $id => $name)
-                                <option value="{{ $id }}"
-                                    {{ request('unit_measure_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="flex flex-col p-0.5">
-                        <select name="status" id="status"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium"
+                        <option value="">Todas las medidas</option>
+                        @foreach ($units as $id => $name)
+                            <option value="{{ $id }}" {{ request('unit_measure_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="status" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Estado</label>
+                    <select name="status" id="status"
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                             onchange="this.form.submit()">
-                            <option value="">Todos los estados</option>
-                            <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Disponible
-                            </option>
-                            <option value="discontinued" {{ request('status') == 'discontinued' ? 'selected' : '' }}>
-                                Descontinuado</option>
-                        </select>
-                    </div>
-                </form>
+                        <option value="">Todos los estados</option>
+                        <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Disponible</option>
+                        <option value="discontinued" {{ request('status') == 'discontinued' ? 'selected' : '' }}>Descontinuado</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-3 lg:col-span-4 flex gap-2">
+                    <button type="submit"
+                            class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-semibold rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white shadow">
+                        <i class="fas fa-search"></i>
+                        Buscar
+                    </button>
+                    @if(request()->hasAny(['search','per_page','category_id','brand_id','entity_id','tax_id','unit_measure_id','status']))
+                        <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
+                            <i class="fas fa-undo"></i>
+                            Limpiar
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </section>
 
 
                 <!-- Modales: Editar, Crear, Ver -->
@@ -263,12 +298,11 @@
                     </div>
                 </x-show-modal>
 
-                <div class="w-full overflow-hidden rounded-lg shadow-xs">
+                <div class="mt-4 w-full overflow-hidden rounded-xl shadow-md bg-white dark:bg-gray-800">
                     <div class="w-full overflow-x-auto">
-                        <table class="w-full whitespace-no-wrap">
-                            <thead>
-                                <tr
-                                    class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50 dark:bg-gray-800">
+                                <tr class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase border-b border-gray-200 dark:border-gray-700">
                                     <th class="px-4 py-3"><x-table-sort-header field="id" label="ID"
                                             route="products.search" icon="<i class='fas fa-hashtag mr-2'></i>" /></th>
                                     <th class="px-4 py-3"><i class="fas fa-image mr-2"></i>Imagen</th>
@@ -289,9 +323,9 @@
                                     <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
                                 @forelse($products as $product)
-                                    <tr class="text-gray-700 dark:text-gray-400">
+                    <tr class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
                                         <td class="px-4 py-3 text-xs">
                                             <span
                                                 class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
@@ -306,7 +340,7 @@
                                         <td class="px-4 py-3 text-sm">{{ $product->category->name ?? '-' }}</td>
                                         <td class="px-4 py-3 text-sm">{{ $product->brand->name ?? '-' }}</td>
                                         <td class="px-4 py-3 text-sm">{{ $product->unitMeasure->name ?? '-' }}</td>
-                                        <td class="px-4 py-3 text-sm">
+                                        <td class="px-4 py-3 text-sm font-medium">
                                             {{ $product->entity ? $product->entity->short_name : '-' }}
                                         </td>
                                         <td class="px-4 py-3 text-sm">
@@ -331,11 +365,11 @@
                                             </span>
                                         </td>
                                         <td class="px-4 py-3">
-                                            <div class="flex items-center space-x-4 text-sm">
+                                            <div class="flex items-center gap-2 text-sm">
                                                 @if (in_array($product->status, ['available', 'out_of_stock']))
                                                     <div x-data="{ isModalOpen: false, closeModal() { this.isModalOpen = false } }">
-                                                        <button @click="isModalOpen = true"
-                                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                        <button @click="isModalOpen = true" title="Ver"
+                                                            class="inline-flex items-center justify-center h-9 w-9 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                             aria-label="Ver">
                                                             <i class="fas fa-eye"></i>
                                                         </button>
@@ -348,7 +382,7 @@
                                                             ])
                                                         </x-modal>
                                                     </div>
-                                                    <button type="button"
+                                                    <button type="button" title="Editar"
                                                         @click="
                                                             editProduct = {
                                                                 id: {{ $product->id }},
@@ -366,7 +400,7 @@
                                                             editAction = '{{ route('products.update', $product) }}';
                                                             isEditModalOpen = true;
                                                         "
-                                                        class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-green-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                        class="inline-flex items-center justify-center h-9 w-9 text-green-600 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                         aria-label="Editar Modal">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
@@ -375,8 +409,8 @@
                                                     onsubmit="return confirm('{{ $product->status === 'discontinued' ? '¿Seguro de rehabilitar este producto?' : '¿Seguro de descontinuar este producto?' }}\n\n¿Está seguro que desea realizar esta acción?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit"
-                                                        class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                                    <button type="submit" title="{{ $product->status === 'discontinued' ? 'Rehabilitar' : 'Descontinuar' }}"
+                                                        class="inline-flex items-center justify-center h-9 w-9 {{ $product->status === 'discontinued' ? 'text-amber-600 hover:bg-amber-50' : 'text-red-600 hover:bg-red-50' }} dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                         aria-label="{{ $product->status === 'discontinued' ? 'Rehabilitar' : 'Descontinuar' }}">
                                                         @if ($product->status === 'discontinued')
                                                             <i class="fas fa-undo"></i>
