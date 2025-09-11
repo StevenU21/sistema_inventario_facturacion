@@ -27,6 +27,8 @@ class PurchaseDetailsExport implements FromCollection, WithHeadings
         foreach ($this->purchase->details as $detail) {
             $variant = $detail->productVariant;
             $product = $variant?->product;
+            $color = $variant?->color?->name ?? '-';
+            $size = $variant?->size?->name ?? '-';
             $inventory = Inventory::where('product_variant_id', $variant->id ?? null)
                 ->where('warehouse_id', $this->purchase->warehouse_id)
                 ->first();
@@ -37,8 +39,8 @@ class PurchaseDetailsExport implements FromCollection, WithHeadings
                 'supplier' => $supplier,
                 'warehouse' => $this->purchase->warehouse->name ?? '-',
                 'product' => $product->name ?? '-',
-                'variant_color_id' => $variant->color_id ?? null,
-                'variant_size_id' => $variant->size_id ?? null,
+                'color' => $color,
+                'size' => $size,
                 'quantity' => (int) $detail->quantity,
                 'unit_price' => (float) $detail->unit_price,
                 'sale_price' => (float) ($inventory->sale_price ?? 0),
@@ -60,8 +62,8 @@ class PurchaseDetailsExport implements FromCollection, WithHeadings
             'Proveedor',
             'Almacén',
             'Producto',
-            'Color ID',
-            'Talla ID',
+            'Color',
+            'Talla',
             'Cantidad',
             'Precio Unitario',
             'Precio Venta',
