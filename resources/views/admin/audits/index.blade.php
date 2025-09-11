@@ -121,11 +121,6 @@
                     </select>
                 </div>
                 <div class="sm:col-span-2 lg:col-span-6 flex gap-2">
-                    <button type="submit"
-                            class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-semibold rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white shadow">
-                        <i class="fas fa-search"></i>
-                        Buscar
-                    </button>
                     @if(request()->hasAny(['per_page','causer_id','event','model','range']))
                         <a href="{{ route('audits.index') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
                             <i class="fas fa-undo"></i>

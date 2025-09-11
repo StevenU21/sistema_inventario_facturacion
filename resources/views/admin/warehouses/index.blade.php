@@ -18,7 +18,8 @@
         <nav class="mt-4 mb-2 text-sm text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
             <ol class="flex items-center gap-2">
                 <li>
-                    <a href="{{ route('dashboard.index') }}" class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                    <a href="{{ route('dashboard.index') }}"
+                        class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
                         <i class="fas fa-home mr-1"></i> Dashboard
                     </a>
                 </li>
@@ -32,7 +33,8 @@
         <!-- Page header card -->
         <section class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg">
             <div class="absolute inset-0 opacity-20 pointer-events-none"
-                 style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.35), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.25), transparent 40%);"></div>
+                style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.35), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.25), transparent 40%);">
+            </div>
             <div class="relative p-6 sm:p-8">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
@@ -50,14 +52,14 @@
                             <input type="hidden" name="sort" value="{{ request('sort', 'id') }}">
                             <input type="hidden" name="direction" value="{{ request('direction', 'desc') }}">
                             <button type="submit"
-                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
                                 <i class="fas fa-file-excel"></i>
                                 Exportar Excel
                             </button>
                         </form>
                         @can('create warehouses')
                             <button @click="isModalOpen = true" type="button"
-                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
                                 <i class="fas fa-plus"></i>
                                 Nuevo Almacén
                             </button>
@@ -74,12 +76,37 @@
 
         <!-- Filtros, búsqueda -->
         <section class="mt-4 rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 sm:p-5">
-            <form method="GET" action="{{ route('warehouses.search') }}" class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 items-end">
-                <div>
-                    <label for="per_page" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Mostrar</label>
-                    <select name="per_page" id="per_page"
+            <form method="GET" action="{{ route('warehouses.search') }}"
+                class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 items-end">
+                <div class="sm:col-span-5 flex flex-row gap-2 items-end">
+                    <div class="flex-1">
+                        <label for="search"
+                            class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
+                        <input type="text" name="search" id="search" value="{{ request('search') }}"
                             class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                            onchange="this.form.submit()">
+                            placeholder="Nombre, dirección o descripción...">
+                    </div>
+                    <div class="flex flex-row gap-2 items-end">
+                        <button type="submit"
+                            class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white shadow">
+                            <i class="fas fa-search"></i>
+                            Buscar
+                        </button>
+                        @if (request()->hasAny(['per_page', 'search', 'is_active']))
+                            <a href="{{ route('warehouses.index') }}"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
+                                <i class="fas fa-undo"></i>
+                                Limpiar
+                            </a>
+                        @endif
+                    </div>
+                </div>
+                <div>
+                    <label for="per_page"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Mostrar</label>
+                    <select name="per_page" id="per_page"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        onchange="this.form.submit()">
                         <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
                         <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
                         <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
@@ -87,40 +114,22 @@
                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                     </select>
                 </div>
-                <div class="sm:col-span-2 lg:col-span-3">
-                    <label for="search" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
-                    <input type="text" name="search" id="search" value="{{ request('search') }}"
-                           class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                           placeholder="Nombre, dirección o descripción...">
-                </div>
                 <div>
-                    <label for="is_active" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Estado</label>
+                    <label for="is_active"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Estado</label>
                     <select name="is_active" id="is_active"
-                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                            onchange="this.form.submit()">
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        onchange="this.form.submit()">
                         <option value="">Todos los estados</option>
                         <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Activos</option>
                         <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Inactivos</option>
                     </select>
                 </div>
-                <div class="sm:col-span-3 lg:col-span-5 flex gap-2">
-                    <button type="submit"
-                            class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-semibold rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white shadow">
-                        <i class="fas fa-search"></i>
-                        Buscar
-                    </button>
-                    @if(request()->hasAny(['per_page','search','is_active']))
-                        <a href="{{ route('warehouses.index') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
-                            <i class="fas fa-undo"></i>
-                            Limpiar
-                        </a>
-                    @endif
-                </div>
             </form>
         </section>
 
         <!-- Edit Modal and Create Modal -->
-    <x-edit-modal :title="'Editar Almacén'" :description="'Modifica los datos del almacén seleccionado.'">
+        <x-edit-modal :title="'Editar Almacén'" :description="'Modifica los datos del almacén seleccionado.'">
             <form :action="editAction" method="POST">
                 @csrf
                 @method('PUT')
@@ -139,7 +148,8 @@
             <div class="w-full overflow-x-auto">
                 <table class="w-full text-left">
                     <thead class="bg-gray-50 dark:bg-gray-800">
-                        <tr class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase border-b border-gray-200 dark:border-gray-700">
+                        <tr
+                            class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase border-b border-gray-200 dark:border-gray-700">
                             <th class="px-4 py-3"><x-table-sort-header field="id" label="ID"
                                     route="warehouses.search" icon="<i class='fas fa-hashtag mr-2'></i>" /></th>
                             <th class="px-4 py-3"><x-table-sort-header field="name" label="Nombre"
@@ -155,7 +165,8 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
                         @forelse($warehouses as $warehouse)
-                            <tr class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
+                            <tr
+                                class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
                                 <td class="px-4 py-3 text-xs">
                                     <span
                                         class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700 dark:text-white">
@@ -180,7 +191,7 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2 text-sm">
-                                        @if($warehouse->is_active)
+                                        @if ($warehouse->is_active)
                                             @can('read warehouses')
                                                 <button type="button" title="Ver"
                                                     @click="showWarehouse = { id: {{ $warehouse->id }}, name: '{{ addslashes($warehouse->name) }}', address: '{{ addslashes($warehouse->address) }}', description: '{{ addslashes($warehouse->description) }}', is_active: {{ $warehouse->is_active ? 'true' : 'false' }}, formatted_created_at: '{{ $warehouse->formatted_created_at }}', formatted_updated_at: '{{ $warehouse->formatted_updated_at }}' }; isShowModalOpen = true;"
