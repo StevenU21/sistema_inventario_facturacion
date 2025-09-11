@@ -31,12 +31,17 @@ class PurchasesExport implements FromCollection, WithHeadings
             $supplier = $purchase->entity?->short_name
                 ?: trim(($purchase->entity->first_name ?? '') . ' ' . ($purchase->entity->last_name ?? ''))
                 ?: '-';
+            $user = $purchase->user?->short_name ?? ($purchase->user?->name ?? '-');
+            $firstProduct = optional($purchase->details->first()?->productVariant?->product)->name ?? '-';
+            $totalQty = $purchase->details->sum('quantity');
             return [
                 'id' => $purchase->id,
-                'reference' => $purchase->reference,
+                'user' => $user,
+                'product' => $firstProduct,
                 'supplier' => $supplier,
                 'warehouse' => $purchase->warehouse->name ?? '-',
                 'method' => $purchase->paymentMethod->name ?? '-',
+                'quantity' => $totalQty,
                 'subtotal' => (float) ($purchase->subtotal ?? 0),
                 'total' => (float) ($purchase->total ?? 0),
                 'created_at' => optional($purchase->created_at)->format('d/m/Y H:i:s'),
@@ -49,10 +54,12 @@ class PurchasesExport implements FromCollection, WithHeadings
     {
         return [
             'ID',
-            'Referencia',
+            'Usuario',
+            'Producto',
             'Proveedor',
             'Almacén',
             'Método de pago',
+            'Cantidad',
             'Subtotal',
             'Total',
             'Creado',
