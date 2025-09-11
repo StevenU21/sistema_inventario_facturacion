@@ -154,9 +154,9 @@
                                         <span class="font-semibold">{{ $inventory->productVariant->product->name ?? '-' }}</span>
                                         <br>
                                         <span class="text-xs text-gray-500">
-                                            {{ $inventory->productVariant->color->name ?? '-' }}
+                                            {{ $colors[$inventory->productVariant->color_id] ?? '-' }}
                                             /
-                                            {{ $inventory->productVariant->size->name ?? '-' }}
+                                            {{ $sizes[$inventory->productVariant->size_id] ?? '-' }}
                                         </span>
                                     @else
                                         -

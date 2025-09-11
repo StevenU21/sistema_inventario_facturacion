@@ -8,6 +8,8 @@ use App\Models\Inventory;
 use App\Models\InventoryMovement;
 use App\Models\ProductVariant;
 use App\Models\Product;
+use App\Models\Color;
+use App\Models\Size;
 use App\Models\Warehouse;
 use App\Classes\InventoryMovementManager;
 use Illuminate\Http\Request;
@@ -23,32 +25,40 @@ class InventoryController extends Controller
     {
         $this->authorize('viewAny', Inventory::class);
         $perPage = request('per_page', 10);
-        $inventories = Inventory::with(['productVariant.product.tax', 'productVariant.product.unitMeasure', 'warehouse'])->latest()->paginate($perPage);
+        $inventories = Inventory::with([
+            'productVariant.product.tax',
+            'productVariant.product.unitMeasure',
+            'productVariant.product.brand',
+            'productVariant.product.category',
+            'warehouse'
+        ])->latest()->paginate($perPage);
+        // Catálogo de productos para usar sus nombres sin recargar relaciones en variantes
         $products = Product::where('status', 'available')->pluck('name', 'id');
+        // Evitar eager load duplicado en variantes: no cargamos relaciones; resolveremos nombres vía catálogos
         $variants = ProductVariant::whereHas('product', function ($q) {
             $q->where('status', 'available');
-        })->with(['product.tax', 'product.unitMeasure', 'color', 'size'])->get();
-        $variantsByProduct = $variants->groupBy('product_id')->map(function ($variants) {
-            return $variants->map(function ($variant) {
-                $label = $variant->product->name;
+        })->get();
+        $colorIds = $variants->pluck('color_id')->filter()->unique()->values();
+        $sizeIds = $variants->pluck('size_id')->filter()->unique()->values();
+        $colors = Color::whereIn('id', $colorIds)->pluck('name', 'id');
+        $sizes = Size::whereIn('id', $sizeIds)->pluck('name', 'id');
+        $variantsByProduct = $variants->groupBy('product_id')->map(function ($variants) use ($products, $colors, $sizes) {
+            return $variants->map(function ($variant) use ($products, $colors, $sizes) {
+                // Usar nombre de producto desde el catálogo
+                $label = $products->get($variant->product_id, (string) $variant->product_id);
                 if ($variant->name)
                     $label .= ' / ' . $variant->name;
-                if ($variant->color)
-                    $label .= ' / ' . $variant->color->name;
-                if ($variant->size)
-                    $label .= ' / ' . $variant->size->name;
+                if ($variant->color_id)
+                    $label .= ' / ' . ($colors[$variant->color_id] ?? $variant->color_id);
+                if ($variant->size_id)
+                    $label .= ' / ' . ($sizes[$variant->size_id] ?? $variant->size_id);
                 return [
                     'id' => $variant->id,
                     'label' => $label
                 ];
             })->values();
         });
-        $colors = $variants->pluck('color')->filter()->unique('id')->mapWithKeys(function ($color) {
-            return [$color->id => $color->name];
-        });
-        $sizes = $variants->pluck('size')->filter()->unique('id')->mapWithKeys(function ($size) {
-            return [$size->id => $size->name];
-        });
+        // $colors y $sizes ya calculados arriba
         $warehouses = Warehouse::pluck('name', 'id');
         return view('admin.inventories.index', [
             'inventories' => $inventories,
@@ -64,7 +74,13 @@ class InventoryController extends Controller
     public function search(Request $request)
     {
         $this->authorize('viewAny', Inventory::class);
-        $query = Inventory::with(['productVariant.product.tax', 'productVariant.product.unitMeasure', 'warehouse']);
+        $query = Inventory::with([
+            'productVariant.product.tax',
+            'productVariant.product.unitMeasure',
+            'productVariant.product.brand',
+            'productVariant.product.category',
+            'warehouse'
+        ]);
         // Filtros
         if ($request->filled('product_id')) {
             $query->whereHas('productVariant', function ($q) use ($request) {
@@ -116,30 +132,30 @@ class InventoryController extends Controller
         $perPage = $request->input('per_page', 10);
         $inventories = $query->paginate($perPage)->appends($request->all());
         $products = Product::where('status', 'available')->pluck('name', 'id');
+        // Evitar duplicar eager loads innecesarios: no cargar color/size aquí
         $variants = ProductVariant::whereHas('product', function ($q) {
             $q->where('status', 'available');
-        })->with(['product.tax', 'product.unitMeasure', 'color', 'size'])->get();
-        $variantsByProduct = $variants->groupBy('product_id')->map(function ($variants) {
-            return $variants->map(function ($variant) {
-                $label = $variant->product->name;
+        })->get();
+        $colorIds = $variants->pluck('color_id')->filter()->unique()->values();
+        $sizeIds = $variants->pluck('size_id')->filter()->unique()->values();
+        $colors = Color::whereIn('id', $colorIds)->pluck('name', 'id');
+        $sizes = Size::whereIn('id', $sizeIds)->pluck('name', 'id');
+        $variantsByProduct = $variants->groupBy('product_id')->map(function ($variants) use ($products, $colors, $sizes) {
+            return $variants->map(function ($variant) use ($products, $colors, $sizes) {
+                $label = $products->get($variant->product_id, (string) $variant->product_id);
                 if ($variant->name)
                     $label .= ' / ' . $variant->name;
-                if ($variant->color)
-                    $label .= ' / ' . $variant->color->name;
-                if ($variant->size)
-                    $label .= ' / ' . $variant->size->name;
+                if ($variant->color_id)
+                    $label .= ' / ' . ($colors[$variant->color_id] ?? $variant->color_id);
+                if ($variant->size_id)
+                    $label .= ' / ' . ($sizes[$variant->size_id] ?? $variant->size_id);
                 return [
                     'id' => $variant->id,
                     'label' => $label
                 ];
             })->values();
         });
-        $colors = $variants->pluck('color')->filter()->unique('id')->mapWithKeys(function ($color) {
-            return [$color->id => $color->name];
-        });
-        $sizes = $variants->pluck('size')->filter()->unique('id')->mapWithKeys(function ($size) {
-            return [$size->id => $size->name];
-        });
+        // $colors y $sizes ya calculados arriba
         $warehouses = Warehouse::pluck('name', 'id');
         return view('admin.inventories.index', [
             'inventories' => $inventories,
@@ -198,34 +214,37 @@ class InventoryController extends Controller
     public function create()
     {
         $this->authorize('create', Inventory::class);
-        $variantsAll = ProductVariant::whereHas('product', function ($q) {
+        // Catálogo de productos para etiquetas sin recargar relaciones
+        $products = Product::where('status', 'available')->pluck('name', 'id');
+    $variantsAll = ProductVariant::whereHas('product', function ($q) {
             $q->where('status', 'available');
-        })
-            ->with(['product.tax', 'product.unitMeasure', 'color', 'size'])
-            ->get();
-        $variants = $variantsAll->mapWithKeys(function ($variant) {
-            $label = $variant->product->name;
+    })->get();
+    $colorIds = $variantsAll->pluck('color_id')->filter()->unique()->values();
+    $sizeIds = $variantsAll->pluck('size_id')->filter()->unique()->values();
+    $colors = Color::whereIn('id', $colorIds)->pluck('name', 'id');
+    $sizes = Size::whereIn('id', $sizeIds)->pluck('name', 'id');
+        $variants = $variantsAll->mapWithKeys(function ($variant) use ($products, $colors, $sizes) {
+            $label = $products->get($variant->product_id, (string) $variant->product_id);
             if ($variant->name)
                 $label .= ' / ' . $variant->name;
-            if ($variant->color)
-                $label .= ' / ' . $variant->color->name;
-            if ($variant->size)
-                $label .= ' / ' . $variant->size->name;
+            if ($variant->color_id)
+                $label .= ' / ' . ($colors[$variant->color_id] ?? $variant->color_id);
+            if ($variant->size_id)
+                $label .= ' / ' . ($sizes[$variant->size_id] ?? $variant->size_id);
             return [$variant->id => $label];
         });
-        $products = \App\Models\Product::where('status', 'available')->pluck('name', 'id');
         // Agrupar variantes por producto para facilitar el filtrado en el frontend
         $variantsByProduct = $variantsAll
             ->groupBy('product_id')
-            ->map(function ($variants) {
-                return $variants->map(function ($variant) {
-                    $label = $variant->product->name;
+            ->map(function ($variants) use ($products, $colors, $sizes) {
+                return $variants->map(function ($variant) use ($products, $colors, $sizes) {
+                    $label = $products->get($variant->product_id, (string) $variant->product_id);
                     if ($variant->name)
                         $label .= ' / ' . $variant->name;
-                    if ($variant->color)
-                        $label .= ' / ' . $variant->color->name;
-                    if ($variant->size)
-                        $label .= ' / ' . $variant->size->name;
+                    if ($variant->color_id)
+                        $label .= ' / ' . ($colors[$variant->color_id] ?? $variant->color_id);
+                    if ($variant->size_id)
+                        $label .= ' / ' . ($sizes[$variant->size_id] ?? $variant->size_id);
                     return [
                         'id' => $variant->id,
                         'label' => $label
@@ -275,24 +294,36 @@ class InventoryController extends Controller
     public function show(Inventory $inventory)
     {
         $this->authorize('view', $inventory);
-        $inventory->load(['productVariant.product.tax', 'productVariant.product.unitMeasure', 'warehouse']);
+        $inventory->load([
+            'productVariant.product.tax',
+            'productVariant.product.unitMeasure',
+            'productVariant.product.brand',
+            'productVariant.product.category',
+            'warehouse'
+        ]);
         return view('admin.inventories.show', compact('inventory'));
     }
 
     public function edit(Inventory $inventory)
     {
         $this->authorize('update', $inventory);
-        $inventory->load(['productVariant.product.tax', 'productVariant.product.unitMeasure', 'warehouse']);
+        $inventory->load([
+            'productVariant.product.tax',
+            'productVariant.product.unitMeasure',
+            'productVariant.product.brand',
+            'productVariant.product.category',
+            'warehouse'
+        ]);
         $products = Product::where('status', 'available')->pluck('name', 'id');
         $variantsByProduct = ProductVariant::whereHas('product', function ($q) {
             $q->where('status', 'available');
         })
-            ->with(['product.tax', 'product.unitMeasure', 'color', 'size'])
+            ->with(['color', 'size'])
             ->get()
             ->groupBy('product_id')
-            ->map(function ($variants) {
-                return $variants->map(function ($variant) {
-                    $label = $variant->product->name;
+            ->map(function ($variants) use ($products) {
+                return $variants->map(function ($variant) use ($products) {
+                    $label = $products->get($variant->product_id, (string) $variant->product_id);
                     if ($variant->name)
                         $label .= ' / ' . $variant->name;
                     if ($variant->color)

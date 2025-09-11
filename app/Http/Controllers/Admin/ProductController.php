@@ -25,7 +25,12 @@ class ProductController extends Controller
     public function index()
     {
         $this->authorize("viewAny", Product::class);
-        $products = Product::with(['brand', 'category', 'tax', 'unitMeasure', 'entity'])->where('status', 'available')->latest()->paginate(15);
+        $products = Product::with(['brand', 'category', 'tax', 'unitMeasure', 'entity'])
+            ->where('status', 'available')
+            ->latest()
+            ->paginate(15);
+
+        // Solo consulta catálogos una vez
         $brands = Brand::pluck('name', 'id');
         $categories = Category::pluck('name', 'id');
         $units = UnitMeasure::pluck('name', 'id');
@@ -33,9 +38,8 @@ class ProductController extends Controller
         $entities = Entity::where('is_active', true)
             ->where('is_supplier', true)
             ->get()
-            ->pluck(function ($entity) {
-                return $entity->first_name . ' ' . $entity->last_name;
-            }, 'id');
+            ->pluck(fn($entity) => $entity->first_name . ' ' . $entity->last_name, 'id');
+
         return view('admin.products.index', compact('products', 'brands', 'categories', 'units', 'taxes', 'entities'));
     }
 
