@@ -113,22 +113,6 @@
                             @endisset
                         </select>
                     </div>
-                    <div class="flex flex-col p-0.5">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Desde</label>
-                        <input type="date" name="from" value="{{ request('from') }}"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium" />
-                    </div>
-                    <div class="flex flex-col p-0.5">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Hasta</label>
-                        <input type="date" name="to" value="{{ request('to') }}"
-                            class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium" />
-                    </div>
-                    <div class="flex flex-col p-0.5">
-                        <button type="submit"
-                            class="flex items-center justify-center px-4 py-2 w-32 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
-                            Filtrar
-                        </button>
-                    </div>
                 </form>
 
                 <div class="w-full overflow-hidden rounded-lg shadow-xs">
@@ -163,7 +147,9 @@
                                             @endphp
                                             {{ $firstProductName ?? '-' }}
                                         </td>
-                                        <td class="px-4 py-3 text-sm">{{ trim(($purchase->entity?->first_name ?? '') . ' ' . ($purchase->entity?->last_name ?? '')) ?: '-' }}</td>
+                                        <td class="px-4 py-3 text-sm">
+                                            {{ trim(($purchase->entity?->first_name ?? '') . ' ' . ($purchase->entity?->last_name ?? '')) ?: '-' }}
+                                        </td>
                                         <td class="px-4 py-3 text-sm">{{ $purchase->warehouse?->name ?? '-' }}</td>
                                         <td class="px-4 py-3 text-sm">{{ $purchase->paymentMethod?->name ?? '-' }}</td>
                                         <td class="px-4 py-3 text-sm text-right">
