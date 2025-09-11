@@ -64,8 +64,17 @@ class PurchaseController extends Controller
             ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         $warehouses = Warehouse::pluck('name', 'id');
         $methods = PaymentMethod::pluck('name', 'id');
+        // Solo productos que han sido comprados (existen en detalles de compras)
+        $productIds = PurchaseDetail::query()
+            ->select('product_variant_id')
+            ->whereNotNull('product_variant_id')
+            ->distinct()
+            ->pluck('product_variant_id');
+        $products = Product::whereIn('id',
+            ProductVariant::whereIn('id', $productIds)->pluck('product_id')->unique()
+        )->pluck('name', 'id');
 
-        return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods'));
+        return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods', 'products'));
     }
 
     public function create()
@@ -213,7 +222,15 @@ class PurchaseController extends Controller
             ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         $warehouses = Warehouse::pluck('name', 'id');
         $methods = PaymentMethod::pluck('name', 'id');
-        $products = Product::pluck('name', 'id');
+        // Solo productos que han sido comprados (existen en detalles de compras)
+        $productIds = PurchaseDetail::query()
+            ->select('product_variant_id')
+            ->whereNotNull('product_variant_id')
+            ->distinct()
+            ->pluck('product_variant_id');
+        $products = Product::whereIn('id',
+            ProductVariant::whereIn('id', $productIds)->pluck('product_id')->unique()
+        )->pluck('name', 'id');
 
         return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods', 'products'));
     }
