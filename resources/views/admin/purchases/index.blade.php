@@ -3,6 +3,35 @@
 
 @section('content')
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <style>
+            .animate-gradient {
+                background-image: linear-gradient(90deg, #c026d3, #7c3aed, #4f46e5, #c026d3);
+                background-size: 400% 400%;
+                animation: gradientShift 6s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+                filter: saturate(1.2) contrast(1.05);
+                will-change: background-position;
+            }
+
+            @keyframes gradientShift {
+                0% {
+                    background-position: 0% 50%;
+                }
+
+                50% {
+                    background-position: 100% 50%;
+                }
+
+                100% {
+                    background-position: 0% 50%;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .animate-gradient {
+                    animation: none;
+                }
+            }
+        </style>
         <!-- Breadcrumbs -->
         <nav class="mt-4 mb-2 text-sm text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
             <ol class="flex items-center gap-2">
@@ -19,8 +48,9 @@
         </nav>
 
         <!-- Page header card -->
-        <section class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg">
-            <div class="absolute inset-0 opacity-20 pointer-events-none"
+        <section
+            class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg animate-gradient">
+            <div class="absolute inset-0 opacity-10 pointer-events-none"
                 style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.35), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.25), transparent 40%);">
             </div>
             <div class="relative p-6 sm:p-8">
@@ -159,12 +189,13 @@
                 </div>
                 <div>
                     <label for="product_id"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Producto (solo comprados)</label>
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Producto
+                        (solo comprados)</label>
                     <select name="product_id" id="product_id"
                         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         onchange="this.form.submit()">
                         <option value="">Todos los productos</option>
-                        @if(isset($products) && count($products))
+                        @if (isset($products) && count($products))
                             @foreach ($products as $id => $name)
                                 <option value="{{ $id }}" {{ request('product_id') == $id ? 'selected' : '' }}>
                                     {{ $name }}</option>
