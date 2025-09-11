@@ -121,6 +121,9 @@ class PurchaseService
             $inventory->stock += $quantity;
             $inventory->purchase_price = $unitPrice;
             $inventory->sale_price = $salePrice;
+            if (array_key_exists('min_stock', $row) && $row['min_stock'] !== null && $row['min_stock'] !== '') {
+                $inventory->min_stock = (int) $row['min_stock'];
+            }
             $inventory->save();
         } else {
             $inventory = Inventory::create([
@@ -129,7 +132,7 @@ class PurchaseService
                 'stock' => $quantity,
                 'purchase_price' => $unitPrice,
                 'sale_price' => $salePrice,
-                'min_stock' => 0,
+                'min_stock' => (int) ($row['min_stock'] ?? 0),
             ]);
         }
         InventoryMovement::create([

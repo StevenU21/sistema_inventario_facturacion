@@ -152,7 +152,7 @@
         @php $oldDetails = old('details', []); @endphp
         @if (is_array($oldDetails) && count($oldDetails))
         @foreach ($oldDetails as $i => $line)
-                    <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end border rounded p-3" data-line>
+                    <div class="grid grid-cols-1 md:grid-cols-8 gap-4 items-end border rounded p-3" data-line>
                         <div>
                             <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Color</span>
                 <select name="details[{{ $i }}][color_id]"
@@ -219,6 +219,18 @@
                                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
                             @enderror
                         </div>
+                        <div>
+                            <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Stock mínimo</span>
+                                <input type="number" min="0" step="1"
+                                    name="details[{{ $i }}][min_stock]"
+                                    value="{{ old("details.$i.min_stock") }}"
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                    placeholder="Opcional">
+                            </label>
+                            @error('details.' . $i . '.min_stock')
+                                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
                         <div class="flex gap-2">
                             <button type="button"
                                 class="remove-line px-3 py-2 text-sm rounded bg-red-600 text-white w-full">Quitar</button>
@@ -230,7 +242,7 @@
     </div>
 
     <template id="line-template">
-        <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end border rounded p-3" data-line>
+    <div class="grid grid-cols-1 md:grid-cols-8 gap-4 items-end border rounded p-3" data-line>
             <div>
                 <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Color</span>
             <select name="details[__INDEX__][color_id]"
@@ -272,6 +284,13 @@
                         placeholder="Venta">
                 </label>
             </div>
+            <div>
+                <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Stock mínimo</span>
+            <input type="number" min="0" step="1" name="details[__INDEX__][min_stock]"
+                        class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                        placeholder="Opcional">
+                </label>
+            </div>
             <div class="flex gap-2">
                 <button type="button"
                     class="remove-line px-3 py-2 text-sm rounded bg-red-600 text-white w-full">Quitar</button>
@@ -300,6 +319,7 @@
                     .sale_price;
                 if (prefill.color_id) node.querySelector(`[name="details[${idx}][color_id]"]`).value = prefill.color_id;
                 if (prefill.size_id) node.querySelector(`[name="details[${idx}][size_id]"]`).value = prefill.size_id;
+                if (prefill.min_stock) node.querySelector(`[name="details[${idx}][min_stock]"]`).value = prefill.min_stock;
                 idx++;
             }
             // Delegación para botones quitar (funciona para líneas renderizadas por Blade y nuevas)

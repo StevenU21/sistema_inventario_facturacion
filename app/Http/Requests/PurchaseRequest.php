@@ -72,6 +72,7 @@ class PurchaseRequest extends FormRequest
                     $fail('El precio de venta no puede ser menor al precio unitario.');
                 }
             }],
+            'details.*.min_stock' => ['nullable', 'integer', 'min:0'],
             'details.*.sku' => ['nullable', 'string', 'max:255'],
             'details.*.code' => ['nullable', 'string', 'max:255'],
         ];
