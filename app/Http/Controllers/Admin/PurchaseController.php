@@ -70,7 +70,8 @@ class PurchaseController extends Controller
             ->whereNotNull('product_variant_id')
             ->distinct()
             ->pluck('product_variant_id');
-        $products = Product::whereIn('id',
+        $products = Product::whereIn(
+            'id',
             ProductVariant::whereIn('id', $productIds)->pluck('product_id')->unique()
         )->pluck('name', 'id');
 
@@ -93,7 +94,8 @@ class PurchaseController extends Controller
         $product = null;
         $details = [];
         $prefillDetails = [];
-        return view('admin.purchases.create', compact('entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes', 'product', 'details', 'prefillDetails'));
+        $allProducts = Product::pluck('name', 'id');
+        return view('admin.purchases.create', compact('entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes', 'product', 'details', 'prefillDetails', 'allProducts'));
     }
 
     public function store(PurchaseRequest $request, PurchaseService $purchaseService)
@@ -188,7 +190,8 @@ class PurchaseController extends Controller
         $taxes = Tax::pluck('name', 'id');
         $colors = Color::pluck('name', 'id');
         $sizes = Size::pluck('name', 'id');
-        return view('admin.purchases.edit', compact('purchase', 'product', 'details', 'prefillDetails', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes'));
+        $allProducts = Product::pluck('name', 'id');
+        return view('admin.purchases.edit', compact('purchase', 'product', 'details', 'prefillDetails', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes', 'allProducts'));
     }
 
     public function update(PurchaseRequest $request, Purchase $purchase, PurchaseService $purchaseService)
@@ -228,7 +231,8 @@ class PurchaseController extends Controller
             ->whereNotNull('product_variant_id')
             ->distinct()
             ->pluck('product_variant_id');
-        $products = Product::whereIn('id',
+        $products = Product::whereIn(
+            'id',
             ProductVariant::whereIn('id', $productIds)->pluck('product_id')->unique()
         )->pluck('name', 'id');
 

@@ -6,6 +6,42 @@
     <hr class="my-6 border-gray-200 dark:border-gray-700">
 
     <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Producto</h3>
+
+    <!-- Modo de producto -->
+    <div class="mt-2 mb-4" x-data="{ mode: @js(old('product_mode', isset($product) && $product ? 'existing' : 'new')) }">
+        <div class="flex items-center gap-4">
+            <label class="inline-flex items-center gap-2">
+                <input type="radio" name="product_mode" value="new" x-model="mode" class="text-purple-600" />
+                <span class="text-sm text-gray-700 dark:text-gray-200">Producto nuevo</span>
+            </label>
+            <label class="inline-flex items-center gap-2">
+                <input type="radio" name="product_mode" value="existing" x-model="mode" class="text-purple-600" />
+                <span class="text-sm text-gray-700 dark:text-gray-200">Producto existente</span>
+            </label>
+        </div>
+        @error('product_mode')
+            <div class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</div>
+        @enderror
+
+        <!-- Selección de producto existente -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4" x-show="mode==='existing'" x-cloak>
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Seleccionar producto</span>
+                <select name="product[id]" x-bind:disabled="mode==='new'"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">-- Selecciona --</option>
+                    @foreach(($allProducts ?? []) as $id => $name)
+                        <option value="{{ $id }}" {{ (string)old('product.id')===(string)$id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+                @error('product.id')
+                    <div class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</div>
+                @enderror
+            </label>
+        </div>
+
+        <!-- Campos de producto nuevo -->
+        <div x-show="mode==='new'" x-cloak x-ref="newFields" x-effect="Array.from($refs.newFields.querySelectorAll('input, select, textarea')).forEach(el => el.disabled = (mode==='existing'))">
     <!-- Fila 1: Nombre - Proveedor - Almacén -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <label class="block text-sm w-full">
@@ -86,6 +122,10 @@
                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
             @enderror
         </label>
+    </div>
+
+        </div>
+        <!-- Fin campos de producto nuevo -->
     </div>
 
     <!-- Fila 3: Método de pago - Impuesto -->

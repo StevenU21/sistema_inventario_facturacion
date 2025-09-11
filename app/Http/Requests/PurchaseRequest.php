@@ -38,19 +38,30 @@ class PurchaseRequest extends FormRequest
             'warehouse_id' => ['required', 'exists:warehouses,id'],
             'payment_method_id' => ['required', 'exists:payment_methods,id'],
 
+            // Modo de producto: nuevo o existente
+            'product_mode' => ['required', 'in:new,existing'],
+
             // Producto (opcional si se envía product.id); si no existe, se crea
-            'product.id' => ['nullable', 'exists:products,id'],
-            'product.name' => ['required_without:product.id', 'string', 'max:255'],
+            'product.id' => [
+                'nullable',
+                'exists:products,id',
+                // Si el modo es existente, el id es requerido
+                'required_if:product_mode,existing',
+                // Si el modo es nuevo, no se permite enviar id
+                'prohibited_if:product_mode,new',
+            ],
+            // Si el modo es nuevo, se requieren los campos; si es existente, se prohíben para evitar mezcla
+            'product.name' => ['required_if:product_mode,new', 'prohibited_if:product_mode,existing', 'string', 'max:255'],
             'product.description' => ['nullable', 'string'],
             'product.barcode' => ['nullable', 'string', 'max:255'],
             'product.code' => ['nullable', 'string', 'max:255'],
             'product.sku' => ['nullable', 'string', 'max:255'],
             'product.status' => ['nullable', 'in:available,discontinued,out_of_stock'],
             // Estos campos son obligatorios cuando se crea un producto nuevo (no se envía product.id)
-            'product.brand_id' => ['required_without:product.id', 'exists:brands,id'],
-            'product.category_id' => ['required_without:product.id', 'exists:categories,id'],
-            'product.tax_id' => ['required_without:product.id', 'exists:taxes,id'],
-            'product.unit_measure_id' => ['required_without:product.id', 'exists:unit_measures,id'],
+            'product.brand_id' => ['required_if:product_mode,new', 'prohibited_if:product_mode,existing', 'exists:brands,id'],
+            'product.category_id' => ['required_if:product_mode,new', 'prohibited_if:product_mode,existing', 'exists:categories,id'],
+            'product.tax_id' => ['required_if:product_mode,new', 'prohibited_if:product_mode,existing', 'exists:taxes,id'],
+            'product.unit_measure_id' => ['required_if:product_mode,new', 'prohibited_if:product_mode,existing', 'exists:unit_measures,id'],
 
             // Detalles (variantes)
             'details' => ['required', 'array', 'min:1'],

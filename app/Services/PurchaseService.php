@@ -55,22 +55,25 @@ class PurchaseService
 
     private function getOrCreateProduct(array $data)
     {
-        $productId = $data['product']['id'] ?? null;
-        if ($productId) {
+        $mode = $data['product_mode'] ?? null;
+        if ($mode === 'existing') {
+            $productId = $data['product']['id'] ?? null;
             return Product::findOrFail($productId);
         }
+
+        // default to new if not specified (backward compatible)
         $productPayload = [
-            'name' => $data['product']['name'],
+            'name' => $data['product']['name'] ?? null,
             'description' => $data['product']['description'] ?? null,
             'barcode' => $data['product']['barcode'] ?? null,
             'code' => $data['product']['code'] ?? null,
             'sku' => $data['product']['sku'] ?? null,
             'status' => $data['product']['status'] ?? 'available',
-            'brand_id' => $data['product']['brand_id'],
-            'category_id' => $data['product']['category_id'],
-            'tax_id' => $data['product']['tax_id'],
-            'unit_measure_id' => $data['product']['unit_measure_id'],
-            'entity_id' => $data['product']['entity_id'] ?? $data['entity_id'],
+            'brand_id' => $data['product']['brand_id'] ?? null,
+            'category_id' => $data['product']['category_id'] ?? null,
+            'tax_id' => $data['product']['tax_id'] ?? null,
+            'unit_measure_id' => $data['product']['unit_measure_id'] ?? null,
+            'entity_id' => $data['product']['entity_id'] ?? $data['entity_id'] ?? null,
         ];
         return Product::create($productPayload);
     }
@@ -195,7 +198,7 @@ class PurchaseService
             $purchase->total = 0;
             $purchase->save();
 
-            // 4. Obtener o crear producto principal
+            // 4. Obtener o crear producto principal basado en product_mode
             $product = $this->getOrCreateProduct($data);
 
             // 5. Crear nuevos detalles y actualizar inventario
