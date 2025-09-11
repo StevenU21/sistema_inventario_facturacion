@@ -163,7 +163,7 @@
                                             @endphp
                                             {{ $firstProductName ?? '-' }}
                                         </td>
-                                        <td class="px-4 py-3 text-sm">{{ $purchase->entity?->short_name ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm">{{ trim(($purchase->entity?->first_name ?? '') . ' ' . ($purchase->entity?->last_name ?? '')) ?: '-' }}</td>
                                         <td class="px-4 py-3 text-sm">{{ $purchase->warehouse?->name ?? '-' }}</td>
                                         <td class="px-4 py-3 text-sm">{{ $purchase->paymentMethod?->name ?? '-' }}</td>
                                         <td class="px-4 py-3 text-sm text-right">

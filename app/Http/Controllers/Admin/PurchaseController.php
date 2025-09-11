@@ -70,7 +70,8 @@ class PurchaseController extends Controller
     public function create()
     {
         $this->authorize('create', Purchase::class);
-        $entities = Entity::where('is_active', true)->where('is_supplier', true)->pluck('first_name', 'id');
+        $entities = Entity::where('is_active', true)->where('is_supplier', true)
+            ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         $warehouses = Warehouse::pluck('name', 'id');
         $methods = PaymentMethod::pluck('name', 'id');
         $categories = Category::pluck('name', 'id');
