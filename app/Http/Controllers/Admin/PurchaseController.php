@@ -103,24 +103,39 @@ class PurchaseController extends Controller
     public function show(Purchase $purchase)
     {
         $this->authorize('view', $purchase);
-        $purchase->load(['entity', 'warehouse', 'user', 'paymentMethod', 'details.productVariant.product']);
+        $purchase->load([
+            'entity',
+            'warehouse',
+            'user',
+            'paymentMethod',
+            'details.productVariant.product',
+            'details.productVariant.color',
+            'details.productVariant.size',
+        ]);
         $details = $purchase->details;
         $product = optional(optional($details->first())->productVariant)->product;
-        // Prefill detalles desde inventario
-        $prefillDetails = $details->map(function ($d) use ($purchase) {
+
+        // Preload all inventories for the variants in this purchase and warehouse
+        $variantIds = $details->pluck('product_variant_id')->filter()->unique()->values();
+        $inventories = \App\Models\Inventory::whereIn('product_variant_id', $variantIds)
+            ->where('warehouse_id', $purchase->warehouse_id)
+            ->get()
+            ->keyBy('product_variant_id');
+
+        // Prefill detalles desde inventario (sin N+1)
+        $prefillDetails = $details->map(function ($d) use ($inventories) {
             $variant = $d->productVariant;
-            $inventory = \App\Models\Inventory::where('product_variant_id', $variant->id)
-                ->where('warehouse_id', $purchase->warehouse_id)
-                ->first();
+            $inventory = $variant ? $inventories->get($variant->id) : null;
             return [
-                'color_id' => $variant->color_id,
-                'size_id' => $variant->size_id,
+                'color_id' => $variant?->color_id,
+                'size_id' => $variant?->size_id,
                 'quantity' => $d->quantity,
                 'unit_price' => $d->unit_price,
                 'sale_price' => optional($inventory)->sale_price,
                 'min_stock' => optional($inventory)->min_stock,
             ];
         })->toArray();
+
         $entities = Entity::where('is_active', true)->where('is_supplier', true)
             ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         $warehouses = Warehouse::pluck('name', 'id');

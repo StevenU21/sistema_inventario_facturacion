@@ -185,8 +185,9 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        $this->authorize("view", $product);
-        return view('admin.products.show', compact('product'));
+    $this->authorize("view", $product);
+    $product->load(['brand', 'category', 'tax', 'unitMeasure', 'entity']);
+    return view('admin.products.show', compact('product'));
     }
 
     public function edit(Product $product)
