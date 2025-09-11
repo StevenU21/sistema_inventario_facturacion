@@ -109,7 +109,29 @@
                 <div class="px-5 pt-5 pb-3 flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Detalles</h3>
                 </div>
-                <div class="w-full overflow-x-auto">
+                <div class="w-full overflow-x-auto" x-data="purchaseDetailsFilter()">
+                    <div class="flex flex-wrap gap-4 mb-5 px-2">
+                        <div class="w-40">
+                            <label for="color-filter" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Color</label>
+                            <select x-model="color" id="color-filter"
+                                class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                                <option value="">Todos los colores</option>
+                                @foreach ($colors as $id => $name)
+                                    <option value="{{ $name }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="w-40">
+                            <label for="size-filter" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Talla</label>
+                            <select x-model="size" id="size-filter"
+                                class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                                <option value="">Todas las tallas</option>
+                                @foreach ($sizes as $id => $name)
+                                    <option value="{{ $name }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                     <table class="w-full whitespace-nowrap">
                         <thead>
                             <tr
@@ -122,29 +144,23 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                            @forelse($details as $d)
-                                @php
-                                    $color = $d->productVariant->color->name ?? null;
-                                    $size = $d->productVariant->size->name ?? null;
-                                    $variant =
-                                        $color || $size
-                                            ? trim(($color ?: '') . ($color && $size ? ' / ' : '') . ($size ?: ''))
-                                            : 'Simple';
-                                    $amount = $d->quantity * $d->unit_price;
-                                @endphp
+                            <template x-for="d in filteredDetails()" :key="d.id">
                                 <tr class="text-gray-700 dark:text-gray-300">
-                                    <td class="px-5 py-3 text-sm">{{ $d->productVariant->product->name }}</td>
-                                    <td class="px-5 py-3 text-sm">{{ $variant }}</td>
-                                    <td class="px-5 py-3 text-sm text-right">{{ $d->quantity }}</td>
-                                    <td class="px-5 py-3 text-sm text-right">C$ {{ number_format($d->unit_price, 2) }}</td>
-                                    <td class="px-5 py-3 text-sm text-right">C$ {{ number_format($amount, 2) }}</td>
+                                    <td class="px-5 py-3 text-sm" x-text="d.product"></td>
+                                    <td class="px-5 py-3 text-sm" x-text="d.variant"></td>
+                                    <td class="px-5 py-3 text-sm text-right" x-text="d.quantity"></td>
+                                    <td class="px-5 py-3 text-sm text-right">C$ <span
+                                            x-text="parseFloat(d.unit_price).toFixed(2)"></span></td>
+                                    <td class="px-5 py-3 text-sm text-right">C$ <span
+                                            x-text="parseFloat(d.amount).toFixed(2)"></span></td>
                                 </tr>
-                            @empty
+                            </template>
+                            <template x-if="filteredDetails().length === 0">
                                 <tr>
                                     <td colspan="5" class="px-5 py-6 text-center text-gray-400 dark:text-gray-500">Sin
                                         detalles</td>
                                 </tr>
-                            @endforelse
+                            </template>
                         </tbody>
                         <tfoot>
                             <tr class="border-t dark:border-gray-700">
@@ -164,6 +180,44 @@
                         </tfoot>
                     </table>
                 </div>
+                @php
+                    $jsDetails = $details
+                        ->map(function ($d) {
+                            $color = $d->productVariant->color->name ?? null;
+                            $size = $d->productVariant->size->name ?? null;
+                            $variant =
+                                $color || $size
+                                    ? trim(($color ?: '') . ($color && $size ? ' / ' : '') . ($size ?: ''))
+                                    : 'Simple';
+                            $amount = (float) $d->quantity * (float) $d->unit_price;
+                            return [
+                                'id' => $d->id,
+                                'product' => $d->productVariant->product->name,
+                                'variant' => $variant,
+                                'color' => $color,
+                                'size' => $size,
+                                'quantity' => (int) $d->quantity,
+                                'unit_price' => (float) $d->unit_price,
+                                'amount' => (float) $amount,
+                            ];
+                        })
+                        ->values();
+                @endphp
+                <script>
+                    function purchaseDetailsFilter() {
+                        return {
+                            color: '',
+                            size: '',
+                            details: @json($jsDetails),
+                            filteredDetails() {
+                                return this.details.filter(d => {
+                                    return (this.color === '' || d.color === this.color) &&
+                                        (this.size === '' || d.size === this.size);
+                                });
+                            }
+                        }
+                    }
+                </script>
             </div>
 
             <!-- Totals card -->
