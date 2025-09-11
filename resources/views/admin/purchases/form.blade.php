@@ -11,7 +11,7 @@
         <label class="block text-sm w-full">
             <span class="text-gray-700 dark:text-gray-200">Nombre del producto</span>
             <input type="text" name="product[name]" value="{{ old('product.name', optional($product)->name) }}"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="Nombre del producto">
         </label>
 
         <label class="block text-sm w-full">
@@ -19,7 +19,7 @@
             <select name="entity_id"
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('entity_id') border-red-600 @enderror"
                 required>
-                <option value="">Seleccionar</option>
+                <option value="">Seleccionar Proveedor</option>
                 @foreach ($entities ?? [] as $id => $name)
                     <option value="{{ $id }}"
                         {{ (string) old('entity_id', $purchase->entity_id ?? '') === (string) $id ? 'selected' : '' }}>
@@ -36,7 +36,7 @@
             <select name="warehouse_id"
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('warehouse_id') border-red-600 @enderror"
                 required>
-                <option value="">Seleccionar</option>
+                <option value="">Seleccionar Almacén</option>
                 @foreach ($warehouses ?? [] as $id => $name)
                     <option value="{{ $id }}"
                         {{ (string) old('warehouse_id', $purchase->warehouse_id ?? '') === (string) $id ? 'selected' : '' }}>
@@ -55,7 +55,7 @@
             <span class="text-gray-700 dark:text-gray-200">Categoría</span>
             <select name="product[category_id]"
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                <option value="">Seleccionar</option>
+                <option value="">Seleccionar Categoría</option>
                 @foreach ($categories ?? [] as $id => $name)
                     <option value="{{ $id }}"
                         {{ old('product.category_id', optional($product)->category_id) == $id ? 'selected' : '' }}>
@@ -68,7 +68,7 @@
             <span class="text-gray-700 dark:text-gray-200">Marca</span>
             <select name="product[brand_id]"
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                <option value="">Seleccionar</option>
+                <option value="">Seleccionar Marca</option>
                 @foreach ($brands ?? [] as $id => $name)
                     <option value="{{ $id }}"
                         {{ old('product.brand_id', optional($product)->brand_id) == $id ? 'selected' : '' }}>
@@ -95,7 +95,7 @@
             <select name="payment_method_id"
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('payment_method_id') border-red-600 @enderror"
                 required>
-                <option value="">Seleccionar</option>
+                <option value="">Seleccionar Método de Pago</option>
                 @foreach ($methods ?? [] as $id => $name)
                     <option value="{{ $id }}"
                         {{ (string) old('payment_method_id', $purchase->payment_method_id ?? '') === (string) $id ? 'selected' : '' }}>
@@ -112,7 +112,7 @@
                 <span class="text-gray-700 dark:text-gray-200">Impuesto</span>
                 <select name="product[tax_id]"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                    <option value="">Seleccionar</option>
+                    <option value="">Seleccionar Impuesto</option>
                     @foreach ($taxes ?? [] as $id => $name)
                         <option value="{{ $id }}"
                             {{ old('product.tax_id', optional($product)->tax_id) == $id ? 'selected' : '' }}>
@@ -125,7 +125,7 @@
                 <span class="text-gray-700 dark:text-gray-200">Unidad de medida</span>
                 <select name="product[unit_measure_id]"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                    <option value="">Seleccionar</option>
+                    <option value="">Seleccionar Unidad de Medida</option>
                     @foreach ($units ?? [] as $id => $name)
                         <option value="{{ $id }}"
                             {{ old('product.unit_measure_id', optional($product)->unit_measure_id) == $id ? 'selected' : '' }}>
@@ -140,7 +140,7 @@
     <div class="mt-6">
         <label class="block text-sm w-full">
             <span class="text-gray-700 dark:text-gray-200">Descripción</span>
-            <textarea name="product[description]" rows="3"
+            <textarea name="product[description]" rows="3" placeholder="Opcional..."
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">{{ old('product.description', optional($product)->description) }}</textarea>
         </label>
     </div>
@@ -177,7 +177,8 @@
                         <div class="col-span-1">
                             <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Color</span>
                                 <select name="details[{{ $i }}][color_id]"
-                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                    placeholder="Color">
                                     <option value="">Ninguno</option>
                                     @foreach ($colors ?? [] as $id => $name)
                                         <option value="{{ $id }}"
@@ -193,7 +194,8 @@
                         <div class="col-span-1">
                             <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Talla</span>
                                 <select name="details[{{ $i }}][size_id]"
-                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                    placeholder="Talla">
                                     <option value="">Ninguna</option>
                                     @foreach ($sizes ?? [] as $id => $name)
                                         <option value="{{ $id }}"
@@ -212,7 +214,8 @@
                                 <input type="number" min="1" step="1"
                                     name="details[{{ $i }}][quantity]"
                                     value="{{ old("details.$i.quantity", $line['quantity'] ?? '') }}"
-                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                    placeholder="Cantidad">
                             </label>
                             @error('details.' . $i . '.quantity')
                                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
@@ -224,7 +227,8 @@
                                 <input type="number" min="0" step="0.01"
                                     name="details[{{ $i }}][unit_price]"
                                     value="{{ old("details.$i.unit_price", $line['unit_price'] ?? '') }}"
-                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                    placeholder="Precio unitario">
                             </label>
                             @error('details.' . $i . '.unit_price')
                                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
@@ -237,7 +241,7 @@
                                     name="details[{{ $i }}][sale_price]"
                                     value="{{ old("details.$i.sale_price", $line['sale_price'] ?? '') }}"
                                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                                    placeholder="Venta">
+                                    placeholder="Precio venta">
                             </label>
                             @error('details.' . $i . '.sale_price')
                                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
@@ -250,7 +254,7 @@
                                     name="details[{{ $i }}][min_stock]"
                                     value="{{ old("details.$i.min_stock", $line['min_stock'] ?? '') }}"
                                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                                    placeholder="Opcional">
+                                    placeholder="Stock mínimo (opcional)">
                             </label>
                             @error('details.' . $i . '.min_stock')
                                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
@@ -272,7 +276,8 @@
                 <div class="col-span-1">
                     <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Color</span>
                         <select name="details[__INDEX__][color_id]"
-                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            placeholder="Color">
                             <option value="">Ninguno</option>
                             @foreach ($colors ?? [] as $id => $name)
                                 <option value="{{ $id }}">{{ $name }}</option>
@@ -283,7 +288,8 @@
                 <div class="col-span-1">
                     <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Talla</span>
                         <select name="details[__INDEX__][size_id]"
-                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            placeholder="Talla">
                             <option value="">Ninguna</option>
                             @foreach ($sizes ?? [] as $id => $name)
                                 <option value="{{ $id }}">{{ $name }}</option>
@@ -294,27 +300,29 @@
                 <div class="col-span-1">
                     <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Cantidad</span>
                         <input type="number" min="1" step="1" name="details[__INDEX__][quantity]"
-                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            placeholder="Cantidad">
                     </label>
                 </div>
                 <div class="col-span-1">
                     <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio unitario</span>
                         <input type="number" min="0" step="0.01" name="details[__INDEX__][unit_price]"
-                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            placeholder="Precio unitario">
                     </label>
                 </div>
                 <div class="col-span-1">
                     <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio venta</span>
                         <input type="number" min="0" step="0.01" name="details[__INDEX__][sale_price]"
                             class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                            placeholder="Venta">
+                            placeholder="Precio venta">
                     </label>
                 </div>
                 <div class="col-span-1">
                     <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Stock mínimo</span>
                         <input type="number" min="0" step="1" name="details[__INDEX__][min_stock]"
                             class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                            placeholder="Opcional">
+                            placeholder="Stock mínimo (opcional)">
                     </label>
                 </div>
                 <div class="col-span-1 flex gap-2">
