@@ -166,14 +166,18 @@
                                         <td class="px-4 py-3 text-sm">{{ $purchase->entity?->short_name ?? '-' }}</td>
                                         <td class="px-4 py-3 text-sm">{{ $purchase->warehouse?->name ?? '-' }}</td>
                                         <td class="px-4 py-3 text-sm">{{ $purchase->paymentMethod?->name ?? '-' }}</td>
-                                                                              <td class="px-4 py-3 text-sm text-right">
+                                        <td class="px-4 py-3 text-sm text-right">
                                             @php
                                                 $firstQty = optional($purchase->details->first())->quantity;
                                             @endphp
                                             {{ $firstQty ?? '-' }}
                                         </td>
                                         <td class="px-4 py-3 text-sm text-right">C$
-                                            {{ number_format($purchase->details->unit_price ?? 0, 2) }}</td>
+                                            @php
+                                                $firstUnitPrice = optional($purchase->details->first())->unit_price;
+                                            @endphp
+                                            {{ number_format($firstUnitPrice ?? 0, 2) }}
+                                        </td>
                                         <td class="px-4 py-3 text-sm text-right">C$
                                             {{ number_format($purchase->total ?? 0, 2) }}</td>
                                         <td class="px-4 py-3">

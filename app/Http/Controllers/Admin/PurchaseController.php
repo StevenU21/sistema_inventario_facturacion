@@ -87,7 +87,7 @@ class PurchaseController extends Controller
         $this->authorize('create', Purchase::class);
         $data = $request->validated();
         try {
-            $purchase = $purchaseService->createPurchase($data, $request->user());
+            $purchaseService->createPurchase($data, $request->user());
             return redirect()->route('purchases.index')->with('success', 'Compra creada correctamente.');
         } catch (\Throwable $e) {
             return back()->withInput()->withErrors(['error' => 'No se pudo guardar la compra: ' . $e->getMessage()]);
