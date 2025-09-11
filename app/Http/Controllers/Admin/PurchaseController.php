@@ -130,7 +130,6 @@ class PurchaseController extends Controller
         return view('admin.purchases.show', compact('purchase', 'product', 'details', 'prefillDetails', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes'));
     }
 
-
     public function edit(Purchase $purchase)
     {
         $this->authorize('update', $purchase);
@@ -182,5 +181,65 @@ class PurchaseController extends Controller
         $this->authorize('destroy', $purchase);
         $purchase->delete();
         return redirect()->route('purchases.index')->with('deleted', 'Compra eliminada.');
+    }
+
+    // Búsqueda con filtros (misma vista que index)
+    public function search(Request $request)
+    {
+        $this->authorize('viewAny', Purchase::class);
+        $query = $this->buildPurchasesQuery($request);
+        $perPage = (int) ($request->input('per_page', 10));
+        $purchases = $query->latest()->paginate($perPage)->appends($request->all());
+
+        $entities = Entity::where('is_active', true)->where('is_supplier', true)
+            ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
+        $warehouses = Warehouse::pluck('name', 'id');
+        $methods = PaymentMethod::pluck('name', 'id');
+        $products = Product::pluck('name', 'id');
+
+        return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods', 'products'));
+    }
+
+    // Exportación a Excel usando los mismos filtros
+    public function export(Request $request)
+    {
+        $this->authorize('viewAny', Purchase::class);
+        $query = $this->buildPurchasesQuery($request);
+        $filename = 'compras_' . now()->format('Ymd_His') . '.xlsx';
+        return Excel::download(new PurchasesExport($query), $filename);
+    }
+
+    // Construye la consulta con todos los filtros soportados
+    private function buildPurchasesQuery(Request $request)
+    {
+        $query = Purchase::with(['entity', 'warehouse', 'user', 'paymentMethod', 'details.productVariant.product']);
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('reference', 'like', "%$search%");
+            });
+        }
+        if ($entityId = $request->input('entity_id')) {
+            $query->where('entity_id', $entityId);
+        }
+        if ($warehouseId = $request->input('warehouse_id')) {
+            $query->where('warehouse_id', $warehouseId);
+        }
+        if ($methodId = $request->input('payment_method_id')) {
+            $query->where('payment_method_id', $methodId);
+        }
+        if ($from = $request->input('from')) {
+            $query->whereDate('created_at', '>=', $from);
+        }
+        if ($to = $request->input('to')) {
+            $query->whereDate('created_at', '<=', $to);
+        }
+        if ($productId = $request->input('product_id')) {
+            $query->whereHas('details.productVariant.product', function ($q) use ($productId) {
+                $q->where('id', $productId);
+            });
+        }
+
+        return $query;
     }
 }
