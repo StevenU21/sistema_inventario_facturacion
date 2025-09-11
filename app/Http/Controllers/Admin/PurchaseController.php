@@ -289,4 +289,49 @@ class PurchaseController extends Controller
 
         return $query;
     }
+
+    // Devuelve productos filtrados para el modo "existing" (JSON)
+    public function productSearch(Request $request)
+    {
+        $this->authorize('viewAny', Purchase::class);
+    $q = Product::query()->with(['brand', 'category']);
+
+        if ($entityId = $request->input('entity_id')) {
+            $q->where('entity_id', $entityId);
+        }
+        if ($categoryId = $request->input('category_id')) {
+            $q->where('category_id', $categoryId);
+        }
+        if ($brandId = $request->input('brand_id')) {
+            $q->where('brand_id', $brandId);
+        }
+        if ($term = trim((string) $request->input('q'))) {
+            $q->where(function ($sub) use ($term) {
+                $like = "%$term%";
+                $sub->where('name', 'like', $like)
+                    ->orWhere('code', 'like', $like)
+                    ->orWhere('sku', 'like', $like)
+                    ->orWhere('barcode', 'like', $like);
+            });
+        }
+
+        if ($warehouseId = $request->input('warehouse_id')) {
+            $q->whereHas('variants.inventories', function ($inv) use ($warehouseId) {
+                $inv->where('warehouse_id', $warehouseId);
+            });
+        }
+
+        $items = $q->latest()->limit(50)->get();
+        $data = $items->map(function ($p) {
+            $brand = optional($p->brand)->name;
+            $cat = optional($p->category)->name;
+            $badge = trim(($brand ? "[$brand] " : '') . ($cat ? "($cat) " : ''));
+            return [
+                'id' => $p->id,
+                'text' => trim($badge . $p->name . ' ' . ( $p->sku ? ("SKU:".$p->sku) : '' )),
+            ];
+        });
+
+        return response()->json($data);
+    }
 }

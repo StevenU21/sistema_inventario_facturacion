@@ -1,189 +1,361 @@
-<div
+<div x-data="{
+    mode: @js(old('product_mode', isset($product) && $product ? 'existing' : 'new')),
+    // Filters and search state for existing products
+    filters: {
+        entity_id: @js(old('entity_id', $purchase->entity_id ?? '')),
+        warehouse_id: @js(old('warehouse_id', $purchase->warehouse_id ?? '')),
+        category_id: @js(old('filter.category_id')),
+        brand_id: @js(old('filter.brand_id')),
+        q: @js(old('filter.q')),
+    },
+    results: [],
+    loading: false,
+    async searchProducts() {
+        this.loading = true;
+        try {
+            const url = new URL(@js(route('purchases.productSearch')));
+            Object.entries(this.filters).forEach(([k, v]) => {
+                if (v !== undefined && v !== null && String(v).trim() !== '') url.searchParams.set(k, v);
+            });
+            const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+            const data = await res.json();
+            this.results = Array.isArray(data) ? data : (data.data || []);
+        } catch (e) {
+            console.error(e);
+            this.results = [];
+        } finally {
+            this.loading = false;
+        }
+    }
+}"
     class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-full">
 
     <!-- Totales y usuario ahora se calculan/inyectan en el servidor -->
 
     <hr class="my-6 border-gray-200 dark:border-gray-700">
 
-    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Producto</h3>
+    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3">Producto</h3>
 
-    <!-- Modo de producto -->
-    <div class="mt-2 mb-4" x-data="{ mode: @js(old('product_mode', isset($product) && $product ? 'existing' : 'new')) }">
-        <div class="flex items-center gap-4">
-            <label class="inline-flex items-center gap-2">
-                <input type="radio" name="product_mode" value="new" x-model="mode" class="text-purple-600" />
-                <span class="text-sm text-gray-700 dark:text-gray-200">Producto nuevo</span>
+    <!-- Selector de modo -->
+    <div class="mt-2 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label class="relative cursor-pointer">
+                <input type="radio" name="product_mode" value="new" x-model="mode" class="sr-only" />
+                <div class="rounded-lg border p-4 h-full transition-colors select-none"
+                    :class="mode === 'new' ?
+                        'border-purple-500 ring-2 ring-purple-200 dark:ring-purple-900/50 bg-purple-50 dark:bg-purple-900/10' :
+                        'border-gray-200 dark:border-gray-700'">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-md bg-purple-600 text-white">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-800 dark:text-gray-100">Producto nuevo</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-300">Crea el producto y registra sus
+                                variantes.</div>
+                        </div>
+                    </div>
+                </div>
             </label>
-            <label class="inline-flex items-center gap-2">
-                <input type="radio" name="product_mode" value="existing" x-model="mode" class="text-purple-600" />
-                <span class="text-sm text-gray-700 dark:text-gray-200">Producto existente</span>
+            <label class="relative cursor-pointer">
+                <input type="radio" name="product_mode" value="existing" x-model="mode" class="sr-only" />
+                <div class="rounded-lg border p-4 h-full transition-colors select-none"
+                    :class="mode === 'existing' ?
+                        'border-purple-500 ring-2 ring-purple-200 dark:ring-purple-900/50 bg-purple-50 dark:bg-purple-900/10' :
+                        'border-gray-200 dark:border-gray-700'">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-md bg-purple-600 text-white">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-800 dark:text-gray-100">Producto existente</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-300">Busca un producto y agrega sus
+                                variantes.</div>
+                        </div>
+                    </div>
+                </div>
             </label>
         </div>
         @error('product_mode')
             <div class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</div>
         @enderror
 
-        <!-- Selección de producto existente -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4" x-show="mode==='existing'" x-cloak>
-            <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-200">Seleccionar producto</span>
-                <select name="product[id]" x-bind:disabled="mode==='new'"
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                    <option value="">-- Selecciona --</option>
-                    @foreach(($allProducts ?? []) as $id => $name)
-                        <option value="{{ $id }}" {{ (string)old('product.id')===(string)$id ? 'selected' : '' }}>{{ $name }}</option>
-                    @endforeach
-                </select>
-                @error('product.id')
-                    <div class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</div>
-                @enderror
-            </label>
+        <!-- Producto existente: filtros + resultados -->
+        <div class="mt-4" x-show="mode==='existing'" x-cloak>
+            <!-- Datos de la compra (usados para guardar y también filtrar) -->
+            <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Proveedor</span>
+                        <select name="entity_id" x-model="filters.entity_id"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('entity_id') border-red-600 @enderror"
+                            required>
+                            <option value="">Seleccionar Proveedor</option>
+                            @foreach ($entities ?? [] as $id => $name)
+                                <option value="{{ $id }}"
+                                    {{ (string) old('entity_id', $purchase->entity_id ?? '') === (string) $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        </select>
+                        @error('entity_id')
+                            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                        @enderror
+                    </label>
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Almacén</span>
+                        <select name="warehouse_id" x-model="filters.warehouse_id"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('warehouse_id') border-red-600 @enderror"
+                            required>
+                            <option value="">Seleccionar Almacén</option>
+                            @foreach ($warehouses ?? [] as $id => $name)
+                                <option value="{{ $id }}"
+                                    {{ (string) old('warehouse_id', $purchase->warehouse_id ?? '') === (string) $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        </select>
+                        @error('warehouse_id')
+                            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                        @enderror
+                    </label>
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Método de pago</span>
+                        <select name="payment_method_id"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('payment_method_id') border-red-600 @enderror"
+                            required>
+                            <option value="">Seleccionar Método de Pago</option>
+                            @foreach ($methods ?? [] as $id => $name)
+                                <option value="{{ $id }}"
+                                    {{ (string) old('payment_method_id', $purchase->payment_method_id ?? '') === (string) $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        </select>
+                        @error('payment_method_id')
+                            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                        @enderror
+                    </label>
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Referencia</span>
+                        <input type="text" name="reference"
+                            value="{{ old('reference', $purchase->reference ?? '') }}"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('reference') border-red-600 @enderror"
+                            placeholder="Opcional...">
+                        @error('reference')
+                            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                        @enderror
+                    </label>
+                </div>
+            </div>
+
+            <!-- Buscar producto -->
+            <div class="text-sm text-gray-600 dark:text-gray-300 mb-2">Usa los filtros para encontrar el producto.</div>
+            <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Categoría</span>
+                        <select x-model="filters.category_id"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                            <option value="">Todas</option>
+                            @foreach ($categories ?? [] as $id => $name)
+                                <option value="{{ $id }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Marca</span>
+                        <select x-model="filters.brand_id"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                            <option value="">Todas</option>
+                            @foreach ($brands ?? [] as $id => $name)
+                                <option value="{{ $id }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                    <label class="block text-sm w-full md:col-span-2">
+                        <span class="text-gray-700 dark:text-gray-200">Buscar (nombre, código, SKU, barras)</span>
+                        <input type="text" x-model="filters.q"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            placeholder="Texto de búsqueda">
+                    </label>
+                </div>
+                <div class="flex items-end gap-3 mt-3">
+                    <button type="button" @click="searchProducts()"
+                        class="inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[36px] font-semibold">
+                        <i class="fas fa-search fa-sm mr-1"></i> Buscar
+                    </button>
+                    <span x-show="loading" class="text-sm text-gray-600 dark:text-gray-300">Buscando...</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Seleccionar producto</span>
+                        <select name="product[id]" x-bind:disabled="mode === 'new'"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                            <option value="">-- Selecciona --</option>
+                            <template x-for="p in results" :key="p.id">
+                                <option :value="p.id" x-text="p.text"></option>
+                            </template>
+                        </select>
+                        @error('product.id')
+                            <div class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</div>
+                        @enderror
+                    </label>
+                </div>
+            </div>
         </div>
 
         <!-- Campos de producto nuevo -->
-        <div x-show="mode==='new'" x-cloak x-ref="newFields" x-effect="Array.from($refs.newFields.querySelectorAll('input, select, textarea')).forEach(el => el.disabled = (mode==='existing'))">
-    <!-- Fila 1: Nombre - Proveedor - Almacén -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Nombre del producto</span>
-            <input type="text" name="product[name]" value="{{ old('product.name', optional($product)->name) }}"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="Nombre del producto">
-        </label>
+        <div x-show="mode==='new'" x-cloak x-ref="newFields"
+            x-effect="Array.from($refs.newFields.querySelectorAll('input, select, textarea')).forEach(el => el.disabled = (mode==='existing'))">
+            <!-- Datos de la compra (para guardar) -->
+            <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Proveedor</span>
+                        <select name="entity_id"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('entity_id') border-red-600 @enderror"
+                            required>
+                            <option value="">Seleccionar Proveedor</option>
+                            @foreach ($entities ?? [] as $id => $name)
+                                <option value="{{ $id }}"
+                                    {{ (string) old('entity_id', $purchase->entity_id ?? '') === (string) $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        </select>
+                        @error('entity_id')
+                            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                        @enderror
+                    </label>
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Almacén</span>
+                        <select name="warehouse_id"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('warehouse_id') border-red-600 @enderror"
+                            required>
+                            <option value="">Seleccionar Almacén</option>
+                            @foreach ($warehouses ?? [] as $id => $name)
+                                <option value="{{ $id }}"
+                                    {{ (string) old('warehouse_id', $purchase->warehouse_id ?? '') === (string) $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        </select>
+                        @error('warehouse_id')
+                            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                        @enderror
+                    </label>
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Método de pago</span>
+                        <select name="payment_method_id"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('payment_method_id') border-red-600 @enderror"
+                            required>
+                            <option value="">Seleccionar Método de Pago</option>
+                            @foreach ($methods ?? [] as $id => $name)
+                                <option value="{{ $id }}"
+                                    {{ (string) old('payment_method_id', $purchase->payment_method_id ?? '') === (string) $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        </select>
+                        @error('payment_method_id')
+                            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                        @enderror
+                    </label>
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Referencia</span>
+                        <input type="text" name="reference"
+                            value="{{ old('reference', $purchase->reference ?? '') }}"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('reference') border-red-600 @enderror"
+                            placeholder="Opcional...">
+                        @error('reference')
+                            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                        @enderror
+                    </label>
+                </div>
+            </div>
 
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Proveedor</span>
-            <select name="entity_id"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('entity_id') border-red-600 @enderror"
-                required>
-                <option value="">Seleccionar Proveedor</option>
-                @foreach ($entities ?? [] as $id => $name)
-                    <option value="{{ $id }}"
-                        {{ (string) old('entity_id', $purchase->entity_id ?? '') === (string) $id ? 'selected' : '' }}>
-                        {{ $name }}</option>
-                @endforeach
-            </select>
-            @error('entity_id')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
+            <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                <!-- Fila 1: Nombre -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Nombre del producto</span>
+                        <input type="text" name="product[name]"
+                            value="{{ old('product.name', optional($product)->name) }}"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            placeholder="Nombre del producto">
+                    </label>
+                </div>
 
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Almacén</span>
-            <select name="warehouse_id"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('warehouse_id') border-red-600 @enderror"
-                required>
-                <option value="">Seleccionar Almacén</option>
-                @foreach ($warehouses ?? [] as $id => $name)
-                    <option value="{{ $id }}"
-                        {{ (string) old('warehouse_id', $purchase->warehouse_id ?? '') === (string) $id ? 'selected' : '' }}>
-                        {{ $name }}</option>
-                @endforeach
-            </select>
-            @error('warehouse_id')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-    </div>
+                <!-- Fila 2: Categoría - Marca - Referencia -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Categoría</span>
+                        <select name="product[category_id]"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                            <option value="">Seleccionar Categoría</option>
+                            @foreach ($categories ?? [] as $id => $name)
+                                <option value="{{ $id }}"
+                                    {{ old('product.category_id', optional($product)->category_id) == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </label>
 
-    <!-- Fila 2: Categoría - Marca - Referencia -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Categoría</span>
-            <select name="product[category_id]"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                <option value="">Seleccionar Categoría</option>
-                @foreach ($categories ?? [] as $id => $name)
-                    <option value="{{ $id }}"
-                        {{ old('product.category_id', optional($product)->category_id) == $id ? 'selected' : '' }}>
-                        {{ $name }}</option>
-                @endforeach
-            </select>
-        </label>
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Marca</span>
+                        <select name="product[brand_id]"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                            <option value="">Seleccionar Marca</option>
+                            @foreach ($brands ?? [] as $id => $name)
+                                <option value="{{ $id }}"
+                                    {{ old('product.brand_id', optional($product)->brand_id) == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </label>
 
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Marca</span>
-            <select name="product[brand_id]"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                <option value="">Seleccionar Marca</option>
-                @foreach ($brands ?? [] as $id => $name)
-                    <option value="{{ $id }}"
-                        {{ old('product.brand_id', optional($product)->brand_id) == $id ? 'selected' : '' }}>
-                        {{ $name }}</option>
-                @endforeach
-            </select>
-        </label>
+                    <!-- La referencia ahora está arriba como dato de la compra -->
+                </div>
 
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Referencia</span>
-            <input type="text" name="reference" value="{{ old('reference', $purchase->reference ?? '') }}"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('reference') border-red-600 @enderror"
-                placeholder="Opcional...">
-            @error('reference')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-    </div>
+                <!-- Descripción (solo nuevo) -->
+                <div class="mt-4">
+                    <label class="block text-sm w-full">
+                        <span class="text-gray-700 dark:text-gray-200">Descripción</span>
+                        <textarea name="product[description]" rows="3" placeholder="Opcional..."
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">{{ old('product.description', optional($product)->description) }}</textarea>
+                    </label>
+                </div>
+            </div>
 
         </div>
         <!-- Fin campos de producto nuevo -->
     </div>
 
-    <!-- Fila 3: Método de pago - Impuesto -->
+    <!-- Impuesto y unidad de medida solo si es producto nuevo -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Método de pago</span>
-            <select name="payment_method_id"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('payment_method_id') border-red-600 @enderror"
-                required>
-                <option value="">Seleccionar Método de Pago</option>
-                @foreach ($methods ?? [] as $id => $name)
+        <label class="block text-sm w-full" x-show="mode==='new'" x-cloak>
+            <span class="text-gray-700 dark:text-gray-200">Impuesto</span>
+            <select name="product[tax_id]" :disabled="mode === 'existing'"
+                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                <option value="">Seleccionar Impuesto</option>
+                @foreach ($taxes ?? [] as $id => $name)
                     <option value="{{ $id }}"
-                        {{ (string) old('payment_method_id', $purchase->payment_method_id ?? '') === (string) $id ? 'selected' : '' }}>
+                        {{ old('product.tax_id', optional($product)->tax_id) == $id ? 'selected' : '' }}>
                         {{ $name }}</option>
                 @endforeach
             </select>
-            @error('payment_method_id')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
         </label>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-200">Impuesto</span>
-                <select name="product[tax_id]"
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                    <option value="">Seleccionar Impuesto</option>
-                    @foreach ($taxes ?? [] as $id => $name)
-                        <option value="{{ $id }}"
-                            {{ old('product.tax_id', optional($product)->tax_id) == $id ? 'selected' : '' }}>
-                            {{ $name }}</option>
-                    @endforeach
-                </select>
-            </label>
-
-            <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-200">Unidad de medida</span>
-                <select name="product[unit_measure_id]"
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                    <option value="">Seleccionar Unidad de Medida</option>
-                    @foreach ($units ?? [] as $id => $name)
-                        <option value="{{ $id }}"
-                            {{ old('product.unit_measure_id', optional($product)->unit_measure_id) == $id ? 'selected' : '' }}>
-                            {{ $name }}</option>
-                    @endforeach
-                </select>
-            </label>
-        </div>
-    </div>
-
-    <!-- Descripción -->
-    <div class="mt-6">
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Descripción</span>
-            <textarea name="product[description]" rows="3" placeholder="Opcional..."
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">{{ old('product.description', optional($product)->description) }}</textarea>
+        <label class="block text-sm w-full" x-show="mode==='new'" x-cloak>
+            <span class="text-gray-700 dark:text-gray-200">Unidad de medida</span>
+            <select name="product[unit_measure_id]" :disabled="mode === 'existing'"
+                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                <option value="">Seleccionar Unidad de Medida</option>
+                @foreach ($units ?? [] as $id => $name)
+                    <option value="{{ $id }}"
+                        {{ old('product.unit_measure_id', optional($product)->unit_measure_id) == $id ? 'selected' : '' }}>
+                        {{ $name }}</option>
+                @endforeach
+            </select>
         </label>
     </div>
+
+
 
     <div class="mt-6" x-data="purchaseForm()" x-init="init()">
         <div class="flex items-center justify-between mb-3">

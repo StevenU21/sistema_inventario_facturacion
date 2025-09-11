@@ -131,6 +131,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Purchases
     Route::get('purchases/search', [PurchaseController::class, 'search'])->name('purchases.search');
+    Route::get('purchases/product-search', [PurchaseController::class, 'productSearch'])->name('purchases.productSearch');
     Route::get('purchases/export', [PurchaseController::class, 'export'])->name('purchases.export');
     Route::get('purchases/{purchase}/export', [PurchaseController::class, 'exportDetails'])->name('purchases.exportDetails');
     Route::resource('purchases', PurchaseController::class);
