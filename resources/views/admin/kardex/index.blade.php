@@ -2,128 +2,148 @@
 @section('title', 'Kardex')
 
 @section('content')
-    <div class="container grid px-6 mx-auto">
-        <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Generar Informe Kardex del Inventario
-        </h2>
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumbs -->
+        <nav class="mt-4 mb-2 text-sm text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
+            <ol class="flex items-center gap-2">
+                <li>
+                    <a href="{{ route('dashboard.index') }}" class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                        <i class="fas fa-home mr-1"></i> Dashboard
+                    </a>
+                </li>
+                <li class="text-gray-400">/</li>
+                <li>
+                    <span class="text-gray-700 dark:text-gray-200">Kardex</span>
+                </li>
+            </ol>
+        </nav>
 
+        <!-- Page header card -->
+        <section class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg">
+            <div class="absolute inset-0 opacity-20 pointer-events-none"
+                 style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.35), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.25), transparent 40%);"></div>
+            <div class="relative p-6 sm:p-8">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center">
+                            <i class="fas fa-clipboard-list text-white/90 mr-3"></i>
+                            Kardex de Inventario
+                        </h1>
+                        <p class="mt-1 text-white/80 text-sm">Genera y exporta el informe por producto, rango y método.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        @if ($kardexModel)
+                            <a href="{{ route('kardex.export', request()->all()) }}" target="_blank"
+                               class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                <i class="fas fa-file-pdf"></i>
+                                Exportar PDF
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <x-session-message />
-
-        <div
-            class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded text-sm text-gray-700 dark:bg-gray-900 dark:text-gray-200">
-            <strong>¿Qué significa cada método?</strong>
-            <ul class="list-disc pl-5 mt-2">
-                <li><strong>Costo Promedio Ponderado (CPP):</strong> Cada salida se valora al costo promedio de todas las
-                    existencias hasta ese momento.</li>
-                <li><strong>PEPS (FIFO):</strong> Las salidas se valoran al costo de las primeras entradas (las más
-                    antiguas).</li>
-                <li><strong>UEPS (LIFO):</strong> Las salidas se valoran al costo de las últimas entradas (las más
-                    recientes).</li>
-            </ul>
+        <!-- Mensajes de éxito -->
+        <div class="mt-4">
+            <x-session-message />
         </div>
 
-        <div class="flex flex-col gap-y-2 mb-4">
-            <div class="flex w-full">
-                <div class="flex-1"></div>
-                @if ($kardexModel)
-                    <div class="flex flex-col p-0.5 ml-auto">
-                        <label class="invisible block text-sm font-medium">.</label>
-                        <a href="{{ route('kardex.export', request()->all()) }}" target="_blank"
-                            class="flex items-center justify-between px-4 py-2 w-40 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-red bg-red-600 hover:bg-red-700 text-white border border-red-600 active:bg-red-600">
-                            <span>Exportar PDF</span>
-                            <i class="fas fa-file-pdf ml-2"></i>
-                        </a>
-                    </div>
-                @endif
-            </div>
-            <form method="GET" action="{{ route('kardex.index') }}"
-                class="flex flex-wrap gap-x-1 gap-y-1 items-end self-end">
-                <div class="flex flex-col p-0.5">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Producto</label>
+        <!-- Info helper card -->
+        <section class="mt-4 rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 sm:p-5">
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">¿Qué significa cada método?</h3>
+            <ul class="list-disc pl-5 mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                <li><strong>Costo Promedio Ponderado (CPP):</strong> Cada salida se valora al costo promedio de todas las existencias hasta ese momento.</li>
+                <li><strong>PEPS (FIFO):</strong> Las salidas se valoran al costo de las primeras entradas (las más antiguas).</li>
+                <li><strong>UEPS (LIFO):</strong> Las salidas se valoran al costo de las últimas entradas (las más recientes).</li>
+            </ul>
+        </section>
+
+        <!-- Filtros -->
+        <section class="mt-4 rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 sm:p-5">
+            <form method="GET" action="{{ route('kardex.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Producto</label>
                     <select name="product_id" required
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-60 text-sm font-medium">
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                         <option value="">Seleccionar Producto</option>
                         @foreach ($products as $id => $name)
-                            <option value="{{ $id }}"
-                                {{ (string) $id === (string) ($productId ?? '') ? 'selected' : '' }}>
-                                {{ $name }}</option>
+                            <option value="{{ $id }}" {{ (string) $id === (string) ($productId ?? '') ? 'selected' : '' }}>{{ $name }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="flex flex-col p-0.5">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Color</label>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Color</label>
                     <select name="color_id"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium">
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                         <option value="">Todos los colores</option>
                         @isset($colors)
                             @foreach ($colors as $id => $name)
-                                <option value="{{ $id }}"
-                                    {{ (string) $id === (string) ($colorId ?? '') ? 'selected' : '' }}>{{ $name }}
-                                </option>
+                                <option value="{{ $id }}" {{ (string) $id === (string) ($colorId ?? '') ? 'selected' : '' }}>{{ $name }}</option>
                             @endforeach
                         @endisset
                     </select>
                 </div>
-                <div class="flex flex-col p-0.5">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Talla</label>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Talla</label>
                     <select name="size_id"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-40 text-sm font-medium">
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                         <option value="">Todas las tallas</option>
                         @isset($sizes)
                             @foreach ($sizes as $id => $name)
-                                <option value="{{ $id }}"
-                                    {{ (string) $id === (string) ($sizeId ?? '') ? 'selected' : '' }}>{{ $name }}
-                                </option>
+                                <option value="{{ $id }}" {{ (string) $id === (string) ($sizeId ?? '') ? 'selected' : '' }}>{{ $name }}</option>
                             @endforeach
                         @endisset
                     </select>
                 </div>
-                <div class="flex flex-col p-0.5">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Almacén</label>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Almacén</label>
                     <select name="warehouse_id"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-50 text-sm font-medium">
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                         <option value="">Seleccionar Almacén</option>
                         @foreach ($warehouses as $id => $name)
-                            <option value="{{ $id }}"
-                                {{ (string) $id === (string) ($warehouseId ?? '') ? 'selected' : '' }}>
-                                {{ $name }}</option>
+                            <option value="{{ $id }}" {{ (string) $id === (string) ($warehouseId ?? '') ? 'selected' : '' }}>{{ $name }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="flex flex-col p-0.5">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Seleccionar Kardex</label>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Seleccionar Kardex</label>
                     <select name="metodo"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-36 text-sm font-medium">
-                        <option value="cpp" {{ request('metodo', 'cpp') == 'cpp' ? 'selected' : '' }}>Costo Promedio
-                        </option>
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <option value="cpp" {{ request('metodo', 'cpp') == 'cpp' ? 'selected' : '' }}>Costo Promedio</option>
                         <option value="peps" {{ request('metodo') == 'peps' ? 'selected' : '' }}>PEPS (FIFO)</option>
                         <option value="ueps" {{ request('metodo') == 'ueps' ? 'selected' : '' }}>UEPS (LIFO)</option>
                     </select>
                 </div>
-                <div class="flex flex-col p-0.5">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Desde</label>
-                    <input type="date" name="from" value="{{ $from }}"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-36 text-sm font-medium" required/>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Desde</label>
+                    <input type="date" name="from" value="{{ $from }}" required
+                           class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
                 </div>
-                <div class="flex flex-col p-0.5">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Hasta</label>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Hasta</label>
                     <input type="date" name="to" value="{{ $to }}"
-                        class="px-2 py-2 border rounded-lg focus:outline-none focus:ring w-36 text-sm font-medium" />
+                           class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
                 </div>
-                <div class="flex flex-col p-0.5">
-                    <label class="invisible block text-sm font-medium">.</label>
+                <div class="sm:col-span-2 lg:col-span-6 flex gap-2">
                     <button type="submit"
-                        class="flex items-center justify-between px-4 py-2 w-30 text-sm font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:shadow-outline-purple bg-purple-600 hover:bg-purple-700 text-white">
+                            class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-semibold rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white shadow">
+                        <i class="fas fa-cogs"></i>
                         Generar
                     </button>
+                    @if(request()->hasAny(['product_id','color_id','size_id','warehouse_id','metodo','from','to']))
+                        <a href="{{ route('kardex.index') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
+                            <i class="fas fa-undo"></i>
+                            Limpiar
+                        </a>
+                    @endif
                 </div>
             </form>
-        </div>
+        </section>
 
         @if ($kardexModel)
-            <div class="w-full overflow-hidden rounded-lg shadow-xs">
-                <div class="w-full overflow-x-auto bg-white dark:bg-gray-800 p-4">
+            <div class="mt-4 w-full overflow-hidden rounded-xl shadow-md bg-white dark:bg-gray-800">
+                <div class="w-full overflow-x-auto p-4">
                     <div class="mb-4 text-gray-700 dark:text-gray-200">
                         <p><strong>Producto:</strong> {{ $kardexModel->product->name }}</p>
                         <p><strong>Almacén:</strong> {{ $kardexModel->warehouse->name ?? 'Todos' }}</p>
@@ -138,10 +158,9 @@
                             @endif
                         </p>
                     </div>
-                    <table class="w-full whitespace-no-wrap">
-                        <thead>
-                            <tr
-                                class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                            <tr class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase border-b border-gray-200 dark:border-gray-700">
                                 <th class="px-4 py-3">Fecha y hora</th>
                                 <th class="px-4 py-3">Concepto</th>
                                 <th class="px-4 py-3">Almacén</th>
@@ -155,17 +174,16 @@
                                 <th class="px-4 py-3 text-right">Saldo</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+                        <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
                             @forelse ($kardexModel->rows as $r)
-                                <tr class="text-gray-700 dark:text-gray-400">
+                                <tr class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
                                     <td class="px-4 py-3 text-sm">{{ $r['date'] }}</td>
                                     <td class="px-4 py-3 text-sm">{{ $r['concept'] ?? '' }}</td>
                                     <td class="px-4 py-3 text-sm">{{ $r['warehouse'] }}</td>
                                     <td class="px-4 py-3 text-sm text-right">{{ $r['entry_qty'] }}</td>
                                     <td class="px-4 py-3 text-sm text-right">{{ $r['exit_qty'] }}</td>
                                     <td class="px-4 py-3 text-sm text-right">{{ $r['balance_qty'] }}</td>
-                                    <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['unit_cost'], 2) }}
-                                    </td>
+                                    <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['unit_cost'], 2) }}</td>
                                     <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['avg_cost'], 2) }}</td>
                                     <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['debe'], 2) }}</td>
                                     <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($r['haber'], 2) }}</td>
@@ -183,11 +201,9 @@
                             Unidades finales {{ $kardexModel->final['qty'] }} × Costo promedio
                             C$ {{ number_format($kardexModel->final['unit_cost'], 2) }}
                             =
-                            <strong>C$
-                                {{ number_format($kardexModel->final['qty'] * $kardexModel->final['unit_cost'], 2) }}</strong>
+                            <strong>C$ {{ number_format($kardexModel->final['qty'] * $kardexModel->final['unit_cost'], 2) }}</strong>
                         </p>
-                        <p>Saldo final reportado: <strong>C$ {{ number_format($kardexModel->final['total'], 2) }}</strong>
-                        </p>
+                        <p>Saldo final reportado: <strong>C$ {{ number_format($kardexModel->final['total'], 2) }}</strong></p>
                     </div>
                 </div>
             </div>
