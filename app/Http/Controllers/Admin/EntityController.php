@@ -32,13 +32,9 @@ class EntityController extends Controller
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
-                $q->where('first_name', 'like', "%$search%")
-                    ->orWhere('last_name', 'like', "%$search%")
-                    ->orWhere('identity_card', 'like', "%$search%")
-                    ->orWhere('ruc', 'like', "%$search%")
-                    ->orWhere('email', 'like', "%$search%")
-                    ->orWhere('phone', 'like', "%$search%")
-                    ->orWhere('address', 'like', "%$search%");
+                $like = "%$search%";
+                $q->where('first_name', 'like', $like)
+                  ->orWhere('last_name', 'like', $like);
             });
         }
         if ($request->filled('is_client')) {
@@ -71,6 +67,41 @@ class EntityController extends Controller
         $municipalities = Municipality::orderBy('name')->pluck('name', 'id');
         $departmentsByMunicipality = Municipality::pluck('department_id', 'id');
         return view('admin.entities.index', compact('entities', 'departments', 'municipalities', 'departmentsByMunicipality'));
+    }
+
+    // Endpoint para autocompletar entidades por nombre
+    public function autocomplete(\Illuminate\Http\Request $request)
+    {
+        $this->authorize('viewAny', Entity::class);
+        $term = trim((string) $request->input('q', ''));
+        $limit = (int) $request->input('limit', 10);
+        $limit = max(1, min(20, $limit));
+
+        $query = Entity::query();
+        if ($term !== '') {
+            $like = "%$term%";
+            $query->where(function ($q) use ($like) {
+                $q->where('first_name', 'like', $like)
+                  ->orWhere('last_name', 'like', $like);
+            });
+        }
+
+        $entities = $query->select(['id', 'first_name', 'last_name'])
+            ->orderBy('first_name')
+            ->limit($limit)
+            ->get();
+
+        $suggestions = $entities->map(function ($e) {
+            $full = trim($e->first_name . ' ' . $e->last_name);
+            return [
+                'id' => $full,
+                'text' => $full,
+            ];
+        });
+
+        return response()->json([
+            'data' => $suggestions,
+        ]);
     }
 
     public function export(\Illuminate\Http\Request $request)
