@@ -93,6 +93,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Entities
     Route::get('entities/search', [EntityController::class, 'search'])->name('entities.search');
+    Route::get('entities/autocomplete', [EntityController::class, 'autocomplete'])->name('entities.autocomplete');
     Route::get('entities/export', [EntityController::class, 'export'])->name('entities.export');
     Route::resource('entities', EntityController::class);
 

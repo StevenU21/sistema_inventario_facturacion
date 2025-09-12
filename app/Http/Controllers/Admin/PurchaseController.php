@@ -265,14 +265,14 @@ class PurchaseController extends Controller
         $limit = max(1, min(20, $limit));
 
         // Solo productos que han sido comprados (existen en detalles de compras)
-        $productIds = \App\Models\PurchaseDetail::query()
+        $productIds = PurchaseDetail::query()
             ->select('product_variant_id')
             ->whereNotNull('product_variant_id')
             ->distinct()
             ->pluck('product_variant_id');
 
-        $productsQuery = \App\Models\Product::query()
-            ->whereIn('id', \App\Models\ProductVariant::whereIn('id', $productIds)->pluck('product_id')->unique());
+        $productsQuery = Product::query()
+            ->whereIn('id', ProductVariant::whereIn('id', $productIds)->pluck('product_id')->unique());
 
         if ($term !== '') {
             $productsQuery->where('name', 'like', "%$term%");
