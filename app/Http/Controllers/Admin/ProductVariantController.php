@@ -21,7 +21,7 @@ class ProductVariantController extends Controller
     public function index()
     {
         $this->authorize('viewAny', ProductVariant::class);
-        $variants = ProductVariant::with(['product', 'color', 'size'])->paginate(10);
+        $variants = ProductVariant::with(['product', 'color', 'size'])->latest()->paginate(10);
         $products = Product::pluck('name', 'id');
         $colors = Color::pluck('name', 'id');
         $sizes = Size::pluck('name', 'id');

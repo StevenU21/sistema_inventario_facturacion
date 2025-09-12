@@ -197,13 +197,6 @@
                                     </select>
                                 </label>
                             </div>
-                            <div class="mt-4 flex justify-end gap-2">
-                                <button type="button"
-                                    @click="filters = { ...filters, category_id: '', brand_id: '' }; searchProducts(1)"
-                                    class="px-3 py-2 text-sm rounded-lg border bg-white dark:bg-gray-800 dark:border-gray-700">Limpiar</button>
-                                <button type="button" @click="filtersOpen=false; searchProducts(1)"
-                                    class="px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white">Aplicar</button>
-                            </div>
                         </div>
                     </div>
                 </div>

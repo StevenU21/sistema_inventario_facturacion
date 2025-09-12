@@ -306,6 +306,8 @@ class PurchaseController extends Controller
         Log::debug('Purchases.productSearch: incoming filters', $filters);
 
         $warehouseId = $request->input('warehouse_id');
+        $perPage = (int) $request->input('per_page', 10);
+        $perPage = max(1, min(100, $perPage));
 
         // Eager load mínimo requerido y, si corresponde, inventarios
         $with = [
@@ -350,16 +352,12 @@ class PurchaseController extends Controller
         }
 
         $started = microtime(true);
-        $items = $q->latest()->limit(50)->get();
+        $paginator = $q->latest()->paginate($perPage)->appends($request->query());
         $elapsedMs = round((microtime(true) - $started) * 1000, 1);
-        Log::debug('Purchases.productSearch: result', [
-            'count' => $items->count(),
-            'ids' => $items->pluck('id')->take(50),
-            'elapsed_ms' => $elapsedMs,
-        ]);
 
-        // Salida estructurada: cada campo en su propiedad, sin mezclar en "text"
-        $data = $items->map(function ($p) use ($warehouseId) {
+        // Transformar items para salida estructurada: cada campo en su propiedad
+        $collection = $paginator->getCollection();
+        $transformed = $collection->map(function ($p) use ($warehouseId) {
             $stock = 0;
             foreach ($p->variants as $variant) {
                 foreach ($variant->inventories as $inv) {
@@ -371,8 +369,8 @@ class PurchaseController extends Controller
             return [
                 'id' => $p->id,
                 'name' => $p->name,
-        // compat con consumidores tipo select2
-        'text' => $p->name,
+                // compat con consumidores tipo select2
+                'text' => $p->name,
                 'brand_name' => optional($p->brand)->name,
                 'category_name' => optional($p->category)->name,
                 'code' => $p->code,
@@ -384,20 +382,28 @@ class PurchaseController extends Controller
                 // útil para el front cuando ya hay un almacén filtrado
                 'warehouse_id' => $warehouseId ? (int) $warehouseId : null,
             ];
-        });
+        })->values();
 
-        // Si se solicita ?debug=1 o está activo app.debug, incluir bloque de debug sin romper el consumidor (data en raíz)
-        if ($request->boolean('debug') || config('app.debug')) {
-            return response()->json([
-                'data' => $data,
-                'debug' => [
-                    'filters' => $filters,
-                    'count' => $items->count(),
-                    'elapsed_ms' => $elapsedMs,
-                ],
-            ]);
-        }
+        Log::debug('Purchases.productSearch: result', [
+            'count' => $transformed->count(),
+            'ids' => $collection->pluck('id')->take(50),
+            'elapsed_ms' => $elapsedMs,
+            'page' => $paginator->currentPage(),
+            'per_page' => $paginator->perPage(),
+            'last_page' => $paginator->lastPage(),
+            'total' => $paginator->total(),
+        ]);
 
-        return response()->json($data);
+        $meta = [
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'per_page' => $paginator->perPage(),
+            'total' => $paginator->total(),
+        ];
+
+        return response()->json([
+            'data' => $transformed,
+            'meta' => $meta,
+        ]);
     }
 }

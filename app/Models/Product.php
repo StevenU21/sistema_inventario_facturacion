@@ -15,7 +15,6 @@ class Product extends Model
     protected $fillable = [
         'name',
         'description',
-    'barcode',
         'code',
         'sku',
         'image',
@@ -33,7 +32,7 @@ class Product extends Model
             ->logOnly([
                 'name',
                 'description',
-                'barcode',
+                'code',
                 'status',
                 'brand_id',
                 'category_id',

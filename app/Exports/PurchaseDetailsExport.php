@@ -69,7 +69,7 @@ class PurchaseDetailsExport implements FromCollection, WithHeadings
             'Precio Venta',
             'Stock',
             'Stock Mínimo',
-            'Total Línea',
+            'Total',
             'Creado',
         ];
     }
