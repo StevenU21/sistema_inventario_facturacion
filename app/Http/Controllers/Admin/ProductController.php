@@ -17,6 +17,7 @@ use App\Services\ModelSearchService;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -243,10 +244,24 @@ class ProductController extends Controller
 
         $q = Product::query();
         if ($term !== '') {
-            $q->where('name', 'like', "%$term%");
+            $tokens = array_values(array_filter(preg_split('/\s+/', $term)));
+            $driver = DB::getDriverName();
+            $collation = 'utf8mb4_unicode_ci';
+            $q->where(function ($qb) use ($tokens, $driver, $collation) {
+                foreach ($tokens as $token) {
+                    $like = "%$token%";
+                    $qb->where(function ($sub) use ($like, $driver, $collation) {
+                        if ($driver === 'mysql') {
+                            $sub->whereRaw("name COLLATE $collation LIKE ?", [$like]);
+                        } else {
+                            $sub->where('name', 'like', $like);
+                        }
+                    });
+                }
+            });
         }
 
-        // Opcional: solo disponibles en listado
+        // Solo listar productos disponibles
         $q->where('status', 'available');
 
         $products = $q->select(['id', 'name'])
@@ -256,11 +271,13 @@ class ProductController extends Controller
 
         $suggestions = $products->map(function ($p) {
             return [
-                'id' => $p->name,
+                'id' => $p->id,
                 'text' => $p->name,
             ];
         });
 
-        return response()->json(['data' => $suggestions]);
+        return response()->json([
+            'data' => $suggestions,
+        ]);
     }
 }
