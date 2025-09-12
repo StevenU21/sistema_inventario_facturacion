@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\WarehousesExport;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\DB;
 
 class WarehouseController extends Controller
 {
@@ -132,5 +133,50 @@ class WarehouseController extends Controller
             $warehouse->save();
             return redirect()->route('warehouses.index')->with('deleted', 'Almacén reactivado correctamente.');
         }
+    }
+
+    // Endpoint para autocompletar almacenes por nombre/dirección/descripción
+    public function autocomplete(Request $request)
+    {
+        $this->authorize('viewAny', Warehouse::class);
+        $term = trim((string) $request->input('q', ''));
+        $limit = max(1, min(20, (int) $request->input('limit', 10)));
+
+        $q = Warehouse::query();
+        if ($term !== '') {
+            $tokens = array_values(array_filter(preg_split('/\s+/', $term)));
+            $driver = DB::getDriverName();
+            $collation = 'utf8mb4_unicode_ci';
+            $q->where(function ($qb) use ($tokens, $driver, $collation) {
+                foreach ($tokens as $token) {
+                    $like = "%$token%";
+                    $qb->where(function ($sub) use ($like, $driver, $collation) {
+                        if ($driver === 'mysql') {
+                            $sub->whereRaw("name COLLATE $collation LIKE ?", [$like])
+                                ->orWhereRaw("address COLLATE $collation LIKE ?", [$like])
+                                ->orWhereRaw("description COLLATE $collation LIKE ?", [$like]);
+                        } else {
+                            $sub->where('name', 'like', $like)
+                                ->orWhere('address', 'like', $like)
+                                ->orWhere('description', 'like', $like);
+                        }
+                    });
+                }
+            });
+        }
+
+        $warehouses = $q->select(['id', 'name'])
+            ->orderBy('name')
+            ->limit($limit)
+            ->get();
+
+        $data = $warehouses->map(function ($w) {
+            return [
+                'id' => $w->id,
+                'text' => $w->name,
+            ];
+        });
+
+        return response()->json(['data' => $data]);
     }
 }

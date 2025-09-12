@@ -115,6 +115,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Warehouses
     Route::get('warehouses/search', [WarehouseController::class, 'search'])->name('warehouses.search');
+    Route::get('warehouses/autocomplete', [WarehouseController::class, 'autocomplete'])->name('warehouses.autocomplete');
     Route::get('warehouses/export', [WarehouseController::class, 'export'])->name('warehouses.export');
     Route::resource('warehouses', WarehouseController::class);
 
