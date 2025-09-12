@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class PurchaseService
 {
@@ -25,8 +26,10 @@ class PurchaseService
     public function createPurchase(array $data, $user)
     {
         return DB::transaction(function () use ($data, $user) {
-            $purchase = $this->createBasePurchase($data, $user);
+            // Obtener/crear producto primero para poder inferir almacén cuando sea necesario
             $product = $this->getOrCreateProduct($data);
+            $warehouseId = $this->resolveWarehouseId($data, $product);
+            $purchase = $this->createBasePurchase($data, $user, $warehouseId);
 
             $subtotal = 0;
             foreach ($data['details'] as $row) {
@@ -40,12 +43,12 @@ class PurchaseService
         });
     }
 
-    private function createBasePurchase(array $data, $user)
+    private function createBasePurchase(array $data, $user, int $warehouseId)
     {
         return Purchase::create([
             'reference' => $data['reference'] ?? null,
             'entity_id' => $data['entity_id'],
-            'warehouse_id' => $data['warehouse_id'],
+            'warehouse_id' => $warehouseId,
             'payment_method_id' => $data['payment_method_id'],
             'user_id' => $user->getAuthIdentifier(),
             'subtotal' => 0,
@@ -76,6 +79,56 @@ class PurchaseService
             'entity_id' => $data['product']['entity_id'] ?? $data['entity_id'] ?? null,
         ];
         return Product::create($productPayload);
+    }
+
+    /**
+     * Resuelve el almacén destino para la compra.
+     * - Si viene en la data, se usa.
+     * - Si el modo es 'existing' e indirectamente se puede inferir desde el inventario existente, se usa ese.
+     * - Si no se puede inferir, lanza ValidationException pidiendo que seleccione un almacén.
+     */
+    private function resolveWarehouseId(array $data, Product $product): int
+    {
+        $provided = $data['warehouse_id'] ?? null;
+        if (!empty($provided)) {
+            return (int) $provided;
+        }
+
+        $mode = $data['product_mode'] ?? null;
+        if ($mode === 'existing') {
+            // Preferir el inventario del primer detalle si existe
+            $firstRow = $data['details'][0] ?? null;
+            if (is_array($firstRow)) {
+                $variant = ProductVariant::where('product_id', $product->id)
+                    ->where('color_id', $firstRow['color_id'] ?? null)
+                    ->where('size_id', $firstRow['size_id'] ?? null)
+                    ->first();
+                if ($variant) {
+                    $inv = Inventory::where('product_variant_id', $variant->id)->first();
+                    if ($inv) {
+                        return (int) $inv->warehouse_id;
+                    }
+                }
+            }
+
+            // Fallback: algún inventario de cualquier variante del producto
+            $variantIds = ProductVariant::where('product_id', $product->id)->pluck('id');
+            if ($variantIds && $variantIds->count() > 0) {
+                $inv = Inventory::whereIn('product_variant_id', $variantIds)->first();
+                if ($inv) {
+                    return (int) $inv->warehouse_id;
+                }
+            }
+
+            throw ValidationException::withMessages([
+                'warehouse_id' => 'No se pudo inferir el almacén para el producto existente. Seleccione un almacén en los filtros.'
+            ]);
+        }
+
+        // Para modo 'new' la validación ya lo exige, pero por si acaso:
+        throw ValidationException::withMessages([
+            'warehouse_id' => 'El campo almacén es obligatorio.'
+        ]);
     }
 
     private function getOrCreateVariant(Product $product, array $row)
@@ -112,10 +165,10 @@ class PurchaseService
     private function updateInventoryAndRegisterMovement(Purchase $purchase, ProductVariant $variant, array $row)
     {
         $variantId = $variant->id;
-        $warehouseId = $purchase->warehouse_id;
+    $warehouseId = $purchase->warehouse_id;
         $quantity = (int) $row['quantity'];
         $unitPrice = (float) $row['unit_price'];
-        $salePrice = (float) $row['sale_price'];
+    $salePrice = (float) ($row['sale_price'] ?? 0);
 
         $inventory = Inventory::where('product_variant_id', $variantId)
             ->where('warehouse_id', $warehouseId)
@@ -191,7 +244,10 @@ class PurchaseService
             // 3. Actualizar datos base de la compra
             $purchase->reference = $data['reference'] ?? $purchase->reference;
             $purchase->entity_id = $data['entity_id'];
-            $purchase->warehouse_id = $data['warehouse_id'];
+            // Resolver almacén si no viene (modo existente)
+            $productForWarehouse = $this->getOrCreateProduct($data);
+            $resolvedWarehouseId = $this->resolveWarehouseId($data, $productForWarehouse);
+            $purchase->warehouse_id = $resolvedWarehouseId;
             $purchase->payment_method_id = $data['payment_method_id'];
             $purchase->user_id = $user->getAuthIdentifier();
             $purchase->subtotal = 0;
@@ -199,7 +255,7 @@ class PurchaseService
             $purchase->save();
 
             // 4. Obtener o crear producto principal basado en product_mode
-            $product = $this->getOrCreateProduct($data);
+            $product = $productForWarehouse;
 
             // 5. Crear nuevos detalles y actualizar inventario
             $subtotal = 0;

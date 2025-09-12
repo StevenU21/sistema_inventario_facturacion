@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use App\Models\ProductVariant;
 
 class Product extends Model
 {
@@ -83,5 +84,11 @@ class Product extends Model
     public function entity()
     {
         return $this->belongsTo(Entity::class);
+    }
+
+    // Variantes del producto (necesario para filtros por almacén en las búsquedas)
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
     }
 }

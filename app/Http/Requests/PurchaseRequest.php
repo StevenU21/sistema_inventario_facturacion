@@ -35,7 +35,8 @@ class PurchaseRequest extends FormRequest
             'reference' => ['nullable', 'string', 'min:3', 'max:255'],
             // subtotal y total se calculan en el servidor
             'entity_id' => ['required', 'exists:entities,id'],
-            'warehouse_id' => ['required', 'exists:warehouses,id'],
+            // En modo existente no es obligatorio seleccionar almacén; se infiere del inventario
+            'warehouse_id' => ['nullable', 'exists:warehouses,id', 'required_if:product_mode,new'],
             'payment_method_id' => ['required', 'exists:payment_methods,id'],
 
             // Modo de producto: nuevo o existente
@@ -65,8 +66,8 @@ class PurchaseRequest extends FormRequest
 
             // Detalles (variantes)
             'details' => ['required', 'array', 'min:1'],
-            'details.*.color_id' => ['required', 'exists:colors,id'],
-            'details.*.size_id' => ['required', 'exists:sizes,id'],
+            'details.*.color_id' => ['nullable', 'exists:colors,id'],
+            'details.*.size_id' => ['nullable', 'exists:sizes,id'],
             'details.*.quantity' => ['required', 'integer', 'min:1'],
             'details.*.unit_price' => [
                 'required',

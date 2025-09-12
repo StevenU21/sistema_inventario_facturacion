@@ -24,6 +24,7 @@ use App\Models\Size;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class PurchaseController extends Controller
@@ -294,7 +295,31 @@ class PurchaseController extends Controller
     public function productSearch(Request $request)
     {
         $this->authorize('viewAny', Purchase::class);
-    $q = Product::query()->with(['brand', 'category']);
+        // Debug: registrar filtros de entrada
+        $filters = [
+            'entity_id' => $request->input('entity_id'),
+            'category_id' => $request->input('category_id'),
+            'brand_id' => $request->input('brand_id'),
+            'warehouse_id' => $request->input('warehouse_id'),
+            'q' => $request->input('q'),
+        ];
+        Log::debug('Purchases.productSearch: incoming filters', $filters);
+
+        $warehouseId = $request->input('warehouse_id');
+
+        // Eager load mínimo requerido y, si corresponde, inventarios
+        $with = [
+            'brand:id,name',
+            'category:id,name',
+            'variants.inventories' => function ($inv) use ($warehouseId) {
+                $inv->select('id', 'product_variant_id', 'warehouse_id', 'stock');
+                if ($warehouseId) {
+                    $inv->where('warehouse_id', $warehouseId);
+                }
+            },
+        ];
+
+        $q = Product::query()->with($with);
 
         if ($entityId = $request->input('entity_id')) {
             $q->where('entity_id', $entityId);
@@ -315,22 +340,59 @@ class PurchaseController extends Controller
             });
         }
 
-        if ($warehouseId = $request->input('warehouse_id')) {
+        if ($warehouseId) {
+            // Asegura que el producto tenga inventario en el almacén seleccionado
             $q->whereHas('variants.inventories', function ($inv) use ($warehouseId) {
                 $inv->where('warehouse_id', $warehouseId);
             });
+            Log::debug('Purchases.productSearch: warehouse filter applied', ['warehouse_id' => $warehouseId]);
         }
 
+        $started = microtime(true);
         $items = $q->latest()->limit(50)->get();
-        $data = $items->map(function ($p) {
-            $brand = optional($p->brand)->name;
-            $cat = optional($p->category)->name;
-            $badge = trim(($brand ? "[$brand] " : '') . ($cat ? "($cat) " : ''));
+        $elapsedMs = round((microtime(true) - $started) * 1000, 1);
+        Log::debug('Purchases.productSearch: result', [
+            'count' => $items->count(),
+            'ids' => $items->pluck('id')->take(50),
+            'elapsed_ms' => $elapsedMs,
+        ]);
+
+        // Salida estructurada: cada campo en su propiedad, sin mezclar en "text"
+    $data = $items->map(function ($p) use ($warehouseId) {
+            $stock = 0;
+            foreach ($p->variants as $variant) {
+                foreach ($variant->inventories as $inv) {
+                    $stock += (int) $inv->stock;
+                }
+            }
             return [
                 'id' => $p->id,
-                'text' => trim($badge . $p->name . ' ' . ( $p->sku ? ("SKU:".$p->sku) : '' )),
+                'name' => $p->name,
+        // compat con consumidores tipo select2
+        'text' => $p->name,
+                'brand_name' => optional($p->brand)->name,
+                'category_name' => optional($p->category)->name,
+                'code' => $p->code,
+                'sku' => $p->sku,
+                'barcode' => $p->barcode,
+                'stock' => $stock,
+                'entity_id' => $p->entity_id,
+                // útil para el front cuando ya hay un almacén filtrado
+                'warehouse_id' => $warehouseId ? (int) $warehouseId : null,
             ];
         });
+
+        // Si se solicita ?debug=1 o está activo app.debug, incluir bloque de debug sin romper el consumidor (data en raíz)
+        if ($request->boolean('debug') || config('app.debug')) {
+            return response()->json([
+                'data' => $data,
+                'debug' => [
+                    'filters' => $filters,
+                    'count' => $items->count(),
+                    'elapsed_ms' => $elapsedMs,
+                ],
+            ]);
+        }
 
         return response()->json($data);
     }
