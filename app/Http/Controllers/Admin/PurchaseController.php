@@ -401,19 +401,6 @@ class PurchaseController extends Controller
             'total' => $paginator->total(),
         ];
 
-        // Si se solicita ?debug=1 o está activo app.debug, incluir bloque de debug
-        if ($request->boolean('debug') || config('app.debug')) {
-            return response()->json([
-                'data' => $transformed,
-                'meta' => $meta,
-                'debug' => [
-                    'filters' => $filters,
-                    'count' => $transformed->count(),
-                    'elapsed_ms' => $elapsedMs,
-                ],
-            ]);
-        }
-
         return response()->json([
             'data' => $transformed,
             'meta' => $meta,
