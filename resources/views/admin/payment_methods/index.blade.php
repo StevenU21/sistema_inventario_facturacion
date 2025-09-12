@@ -202,14 +202,14 @@
                                         @can('read payment_methods')
                                             <button type="button" title="Ver"
                                                 @click="showPaymentMethod = { id: {{ $paymentMethod->id }}, name: '{{ addslashes($paymentMethod->name) }}', description: '{{ addslashes($paymentMethod->description) }}', formatted_created_at: '{{ addslashes($paymentMethod->formatted_created_at) }}', formatted_updated_at: '{{ addslashes($paymentMethod->formatted_updated_at) }}' }; isShowModalOpen = true;"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                         @endcan
                                         @can('update payment_methods')
                                             <button type="button" title="Editar"
                                                 @click="editPaymentMethod = { id: {{ $paymentMethod->id }}, name: '{{ addslashes($paymentMethod->name) }}', description: '{{ addslashes($paymentMethod->description) }}' }; editAction = '{{ route('payment_methods.update', $paymentMethod) }}'; isEditModalOpen = true;"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-green-600 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         @endcan
@@ -220,7 +220,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" title="Eliminar"
-                                                    class="inline-flex items-center justify-center h-9 w-9 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>

@@ -421,7 +421,7 @@
                                         @if (in_array($product->status, ['available', 'out_of_stock']))
                                             <div x-data="{ isModalOpen: false, closeModal() { this.isModalOpen = false } }">
                                                 <button @click="isModalOpen = true" title="Ver"
-                                                    class="inline-flex items-center justify-center h-9 w-9 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                     aria-label="Ver">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
@@ -452,7 +452,7 @@
                                                             editAction = '{{ route('products.update', $product) }}';
                                                             isEditModalOpen = true;
                                                         "
-                                                class="inline-flex items-center justify-center h-9 w-9 text-green-600 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                 aria-label="Editar Modal">
                                                 <i class="fas fa-edit"></i>
                                             </button>
@@ -463,7 +463,7 @@
                                             @method('DELETE')
                                             <button type="submit"
                                                 title="{{ $product->status === 'discontinued' ? 'Rehabilitar' : 'Descontinuar' }}"
-                                                class="inline-flex items-center justify-center h-9 w-9 {{ $product->status === 'discontinued' ? 'text-amber-600 hover:bg-amber-50' : 'text-red-600 hover:bg-red-50' }} dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                 aria-label="{{ $product->status === 'discontinued' ? 'Rehabilitar' : 'Descontinuar' }}">
                                                 @if ($product->status === 'discontinued')
                                                     <i class="fas fa-undo"></i>

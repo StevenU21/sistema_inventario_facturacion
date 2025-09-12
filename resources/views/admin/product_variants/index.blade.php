@@ -228,13 +228,13 @@
                                     <div class="flex items-center gap-2 text-sm">
                                         <button type="button" title="Ver"
                                             @click="isShowModalOpen=true; showVariant={ id:'{{ $variant->id }}', sku:'{{ $variant->sku }}', barcode:'{{ $variant->barcode }}', product:'{{ optional($variant->product)->name }}', color:'{{ optional($variant->color)->name }}', size:'{{ optional($variant->size)->name }}', created_at:'{{ $variant->created_at?->format('d/m/Y H:i') }}', updated_at:'{{ $variant->updated_at?->format('d/m/Y H:i') }}' }"
-                                            class="inline-flex items-center justify-center h-9 w-9 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                             aria-label="Ver">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                         <button type="button" title="Editar"
                                             @click="isEditModalOpen=true; editAction='{{ route('product_variants.update', $variant) }}'; editVariant={ id:'{{ $variant->id }}', sku:'{{ $variant->sku }}', barcode:'{{ $variant->barcode }}', product_id:'{{ $variant->product_id }}', color_id:'{{ $variant->color_id }}', size_id:'{{ $variant->size_id }}' }"
-                                            class="inline-flex items-center justify-center h-9 w-9 text-green-600 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                             aria-label="Editar Modal">
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -243,7 +243,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Eliminar"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                 aria-label="Eliminar">
                                                 <i class="fas fa-trash"></i>
                                             </button>

@@ -332,12 +332,12 @@
                                     <div class="flex items-center gap-2 text-sm">
                                         @if ($user->is_active)
                                             <a href="{{ route('users.permissions.edit', $user) }}" title="Permisos"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                 aria-label="Asignar Permisos">
                                                 <i class="fas fa-user-shield"></i>
                                             </a>
                                             <button type="button" title="Ver"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                 aria-label="Ver"
                                                 @click='
                                                     showUser = {
@@ -357,7 +357,7 @@
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                             <button type="button" title="Editar"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-green-600 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                 aria-label="Editar"
                                                 @click='
                                                     editUser = {
@@ -382,7 +382,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" title="Desactivar"
-                                                    class="inline-flex items-center justify-center h-9 w-9 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                     aria-label="Desactivar">
                                                     <i class="fas fa-user-slash"></i>
                                                 </button>

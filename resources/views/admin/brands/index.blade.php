@@ -224,7 +224,7 @@
                                         @can('read brands')
                                             <button type="button" title="Ver"
                                                 @click="showBrand = { id: {{ $brand->id }}, name: '{{ $brand->name }}', description: '{{ $brand->description }}', formatted_created_at: '{{ $brand->formatted_created_at }}', formatted_updated_at: '{{ $brand->formatted_updated_at }}' }; isShowModalOpen = true;"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                 aria-label="Ver Modal">
                                                 <i class="fas fa-eye"></i>
                                             </button>
@@ -232,7 +232,7 @@
                                         @can('update brands')
                                             <button type="button" title="Editar"
                                                 @click="editBrand = { id: {{ $brand->id }}, name: '{{ addslashes($brand->name) }}', description: '{{ addslashes($brand->description) }}' }; editAction = '{{ route('brands.update', $brand) }}'; isEditModalOpen = true;"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-green-600 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                 aria-label="Editar Modal">
                                                 <i class="fas fa-edit"></i>
                                             </button>
@@ -243,7 +243,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" title="Eliminar"
-                                                    class="inline-flex items-center justify-center h-9 w-9 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                     aria-label="Eliminar">
                                                     <i class="fas fa-trash"></i>
                                                 </button>

@@ -246,7 +246,7 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     <span
-                                        class="px-2 py-1 font-semibold leading-tight rounded-full {{ $entity->is_active ? 'text-green-700 bg-green-100 dark:bg-green-700 dark:text-green-100' : 'text-red-700 bg-red-100 dark:bg-red-700 dark:text-red-100' }}">{{ $entity->is_active ? 'Sí' : 'No' }}</span>
+                                        class="px-2 py-1 font-semibold leading-tight r  ounded-full {{ $entity->is_active ? 'text-green-700 bg-green-100 dark:bg-green-700 dark:text-green-100' : 'text-red-700 bg-red-100 dark:bg-red-700 dark:text-red-100' }}">{{ $entity->is_active ? 'Sí' : 'No' }}</span>
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2 text-sm">
@@ -271,7 +271,7 @@
                                                 };
                                                 isShowModalOpen = true;
                                             "
-                                            class="inline-flex items-center justify-center h-9 w-9 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                             aria-label="Ver Modal">
                                             <i class="fas fa-eye"></i>
                                         </button>
@@ -296,7 +296,7 @@
                                                 editAction = '{{ route('entities.update', $entity) }}';
                                                 isEditModalOpen = true;
                                             "
-                                            class="inline-flex items-center justify-center h-9 w-9 text-green-600 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                             aria-label="Editar Modal">
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -306,7 +306,7 @@
                                             @method('DELETE')
                                             <button type="submit"
                                                 title="{{ $entity->is_active ? 'Desactivar' : 'Activar' }}"
-                                                class="inline-flex items-center justify-center h-9 w-9 {{ $entity->is_active ? 'text-amber-600 hover:bg-amber-50' : 'text-green-600 hover:bg-green-50' }} dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                 aria-label="Toggle Active">
                                                 @if ($entity->is_active)
                                                     <i class="fas fa-user-slash"></i>
