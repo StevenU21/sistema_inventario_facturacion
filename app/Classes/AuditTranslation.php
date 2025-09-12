@@ -78,7 +78,8 @@ class AuditTranslation
             'Product' => [
                 'name' => 'Nombre',
                 'description' => 'Descripción',
-                'barcode' => 'Código de Barras',
+                'code' => 'Código de Barras',
+                'sku' => 'SKU',
                 'image' => 'Imagen',
                 'status' => 'Estado',
                 'brand_id' => 'Marca',
@@ -86,6 +87,13 @@ class AuditTranslation
                 'tax_id' => 'Impuesto',
                 'unit_measure_id' => 'Unidad de Medida',
                 'entity_id' => 'Entidad',
+            ],
+            'ProductVariant' => [
+                'sku' => 'SKU',
+                'code' => 'Código',
+                'product_id' => 'Producto',
+                'color_id' => 'Color',
+                'size_id' => 'Talla',
             ],
             // Traducción para Inventory
             'Inventory' => [
@@ -120,6 +128,22 @@ class AuditTranslation
             'Size' => [
                 'name' => 'Nombre',
                 'description' => 'Descripción',
+            ],
+            'Purchase' => [
+                'reference' => 'Referencia',
+                'subtotal' => 'Subtotal',
+                'total' => 'Total',
+                'entity_id' => 'Entidad',
+                'warehouse_id' => 'Almacén',
+                'user_id' => 'Usuario',
+                'payment_method_id' => 'Método de Pago',
+            ],
+            'PurchaseDetail' => [
+                'quantity' => 'Cantidad',
+                'unit_price' => 'Precio Unitario',
+                'total_price' => 'Precio Total',
+                'product_variant_id' => 'Variante de Producto',
+                'purchase_id' => 'Compra',
             ],
         ];
     }
@@ -159,6 +183,9 @@ class AuditTranslation
             'Warehouse' => 'Almacén',
             'Color' => 'Color',
             'Size' => 'Talla',
+            'Purchase' => 'Compra',
+            'PurchaseDetail' => 'Detalle de Compra',
+            'ProductVariant' => 'Variante de Producto',
         ];
     }
     /**
