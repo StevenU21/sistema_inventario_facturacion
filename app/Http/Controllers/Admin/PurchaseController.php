@@ -264,35 +264,31 @@ class PurchaseController extends Controller
         $limit = (int) $request->input('limit', 10);
         $limit = max(1, min(20, $limit));
 
-        $query = Purchase::query()
-            ->with(['details.productVariant.product'])
-            ->latest();
+        // Solo productos que han sido comprados (existen en detalles de compras)
+        $productIds = \App\Models\PurchaseDetail::query()
+            ->select('product_variant_id')
+            ->whereNotNull('product_variant_id')
+            ->distinct()
+            ->pluck('product_variant_id');
+
+        $productsQuery = \App\Models\Product::query()
+            ->whereIn('id', \App\Models\ProductVariant::whereIn('id', $productIds)->pluck('product_id')->unique());
 
         if ($term !== '') {
-            $like = "%$term%";
-            $query->whereHas('details.productVariant.product', function ($qq) use ($like) {
-                $qq->where('name', 'like', $like);
-            });
+            $productsQuery->where('name', 'like', "%$term%");
         }
 
-        // Generar sugerencias únicas y ligeras
-        $purchases = $query->take($limit)->get();
-        $suggestions = collect();
+        $products = $productsQuery->select(['id', 'name'])->orderBy('name')->limit($limit)->get();
 
-        foreach ($purchases as $purchase) {
-            foreach ($purchase->details as $detail) {
-                $name = optional(optional($detail->productVariant)->product)->name;
-                if ($name) {
-                    $suggestions->push(['id' => $name, 'text' => $name]);
-                }
-            }
-        }
-
-        // Dejar solo valores únicos por texto
-        $unique = $suggestions->unique('text')->take($limit)->values();
+        $suggestions = $products->map(function ($p) {
+            return [
+                'id' => $p->name,
+                'text' => $p->name,
+            ];
+        });
 
         return response()->json([
-            'data' => $unique,
+            'data' => $suggestions,
         ]);
     }
 
