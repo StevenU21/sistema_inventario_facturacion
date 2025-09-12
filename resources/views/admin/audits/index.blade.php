@@ -19,10 +19,38 @@
             </ol>
         </nav>
 
+        <style>
+            .animate-gradient {
+                background-image: linear-gradient(90deg, #c026d3, #7c3aed, #4f46e5, #c026d3);
+                background-size: 300% 100%;
+                animation: gradientShift 8s linear infinite alternate;
+                filter: saturate(1.2) contrast(1.05);
+                will-change: background-position;
+            }
+
+            @keyframes gradientShift {
+                0% {
+                    background-position: 100% 50%;
+                }
+
+                100% {
+                    background-position: 0% 50%;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .animate-gradient {
+                    animation: none;
+                }
+            }
+        </style>
+
         <!-- Page header card -->
-        <section class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg">
+        <section
+            class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg animate-gradient">
             <div class="absolute inset-0 opacity-20 pointer-events-none"
-                 style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.35), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.25), transparent 40%);"></div>
+                style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.35), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.25), transparent 40%);">
+            </div>
             <div class="relative p-6 sm:p-8">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
@@ -36,7 +64,7 @@
                         <form method="GET" action="{{ route('audits.export') }}">
                             <input type="hidden" name="range" value="{{ request('range') }}">
                             <button type="submit"
-                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
                                 <i class="fas fa-file-excel"></i>
                                 Exportar Excel
                             </button>
@@ -53,12 +81,14 @@
 
         <!-- Filtros, búsqueda -->
         <section class="mt-4 rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 sm:p-5">
-            <form method="GET" action="{{ route('audits.search') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
+            <form method="GET" action="{{ route('audits.search') }}"
+                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
                 <div>
-                    <label for="per_page" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Mostrar</label>
+                    <label for="per_page"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Mostrar</label>
                     <select name="per_page" id="per_page"
-                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                            onchange="this.form.submit()">
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        onchange="this.form.submit()">
                         <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
                         <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
                         <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
@@ -67,10 +97,11 @@
                     </select>
                 </div>
                 <div class="sm:col-span-2">
-                    <label for="causer_id" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Usuario</label>
+                    <label for="causer_id"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Usuario</label>
                     <select name="causer_id" id="causer_id"
-                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                            onchange="this.form.submit()">
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        onchange="this.form.submit()">
                         <option value="">Todos los usuarios</option>
                         @foreach ($allCausers as $causer)
                             <option value="{{ $causer->id }}" {{ request('causer_id') == $causer->id ? 'selected' : '' }}>
@@ -80,10 +111,11 @@
                     </select>
                 </div>
                 <div>
-                    <label for="event" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Evento</label>
+                    <label for="event"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Evento</label>
                     <select name="event" id="event"
-                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                            onchange="this.form.submit()">
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        onchange="this.form.submit()">
                         <option value="">Todos los eventos</option>
                         <option value="created" {{ request('event') == 'created' ? 'selected' : '' }}>Creado</option>
                         <option value="updated" {{ request('event') == 'updated' ? 'selected' : '' }}>Actualizado</option>
@@ -91,10 +123,11 @@
                     </select>
                 </div>
                 <div>
-                    <label for="model" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Registro</label>
+                    <label for="model"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Registro</label>
                     <select name="model" id="model"
-                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                            onchange="this.form.submit()">
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        onchange="this.form.submit()">
                         <option value="">Todos los registros</option>
                         @foreach ($allModels as $modelType)
                             @if ($modelType)
@@ -102,7 +135,8 @@
                                     $base = class_basename($modelType);
                                     $translation = $modelTranslations[$base] ?? $base;
                                 @endphp
-                                <option value="{{ $modelType }}" {{ request('model') == $modelType ? 'selected' : '' }}>
+                                <option value="{{ $modelType }}"
+                                    {{ request('model') == $modelType ? 'selected' : '' }}>
                                     {{ $translation }}
                                 </option>
                             @endif
@@ -110,20 +144,23 @@
                     </select>
                 </div>
                 <div>
-                    <label for="range" class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Rango</label>
+                    <label for="range"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Rango</label>
                     <select name="range" id="range"
-                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                            onchange="this.form.submit()">
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        onchange="this.form.submit()">
                         <option value="">Rango de tiempo</option>
                         <option value="hoy" {{ request('range') == 'hoy' ? 'selected' : '' }}>Hoy</option>
                         <option value="semana" {{ request('range') == 'semana' ? 'selected' : '' }}>Esta semana</option>
                         <option value="mes" {{ request('range') == 'mes' ? 'selected' : '' }}>Este mes</option>
-                        <option value="historico" {{ request('range') == 'historico' ? 'selected' : '' }}>Histórico</option>
+                        <option value="historico" {{ request('range') == 'historico' ? 'selected' : '' }}>Histórico
+                        </option>
                     </select>
                 </div>
                 <div class="sm:col-span-2 lg:col-span-6 flex gap-2">
-                    @if(request()->hasAny(['per_page','causer_id','event','model','range']))
-                        <a href="{{ route('audits.index') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
+                    @if (request()->hasAny(['per_page', 'causer_id', 'event', 'model', 'range']))
+                        <a href="{{ route('audits.index') }}"
+                            class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
                             <i class="fas fa-undo"></i>
                             Limpiar
                         </a>
@@ -136,7 +173,8 @@
             <div class="w-full overflow-x-auto">
                 <table class="w-full text-left">
                     <thead class="bg-gray-50 dark:bg-gray-800">
-                        <tr class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase border-b border-gray-200 dark:border-gray-700">
+                        <tr
+                            class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase border-b border-gray-200 dark:border-gray-700">
                             <th class="px-4 py-3">
                                 <x-table-sort-header field="id" label="ID" route="audits.search" :params="request()->except(['sort', 'direction'])"
                                     icon="<i class='fas fa-hashtag mr-2'></i>" />
@@ -146,8 +184,8 @@
                                     :params="request()->except(['sort', 'direction'])" icon="<i class='fas fa-user mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="event" label="Evento" route="audits.search" :params="request()->except(['sort', 'direction'])"
-                                    icon="<i class='fas fa-bolt mr-2'></i>" />
+                                <x-table-sort-header field="event" label="Evento" route="audits.search"
+                                    :params="request()->except(['sort', 'direction'])" icon="<i class='fas fa-bolt mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
                                 <x-table-sort-header field="subject_type" label="Registro" route="audits.search"
@@ -167,7 +205,8 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
                         @forelse ($activities as $activity)
-                            <tr class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
+                            <tr
+                                class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
                                 <td class="px-4 py-3 text-xs">{{ $activity->id }}</td>
 
                                 <td class="px-4 py-3 text-sm">
