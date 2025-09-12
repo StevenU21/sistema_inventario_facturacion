@@ -23,6 +23,7 @@ use App\Models\Size;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class PurchaseController extends Controller
@@ -36,9 +37,15 @@ class PurchaseController extends Controller
 
         // Filtro por nombre de producto únicamente
         if ($search = $request->input('search')) {
-            $like = "%$search%";
-            $query->whereHas('details.productVariant.product', function ($qq) use ($like) {
-                $qq->where('name', 'like', $like);
+            $driver = DB::getDriverName();
+            $collation = 'utf8mb4_unicode_ci';
+            $query->whereHas('details.productVariant.product', function ($qq) use ($search, $driver, $collation) {
+                $like = "%$search%";
+                if ($driver === 'mysql') {
+                    $qq->whereRaw("name COLLATE $collation LIKE ?", [$like]);
+                } else {
+                    $qq->where('name', 'like', $like);
+                }
             });
         }
         if ($entityId = $request->input('entity_id')) {
@@ -275,14 +282,20 @@ class PurchaseController extends Controller
             ->whereIn('id', ProductVariant::whereIn('id', $productIds)->pluck('product_id')->unique());
 
         if ($term !== '') {
-            $productsQuery->where('name', 'like', "%$term%");
+            $driver = DB::getDriverName();
+            $collation = 'utf8mb4_unicode_ci';
+            if ($driver === 'mysql') {
+                $productsQuery->whereRaw("name COLLATE $collation LIKE ?", ["%$term%"]);
+            } else {
+                $productsQuery->where('name', 'like', "%$term%");
+            }
         }
 
         $products = $productsQuery->select(['id', 'name'])->orderBy('name')->limit($limit)->get();
 
         $suggestions = $products->map(function ($p) {
             return [
-                'id' => $p->name,
+                'id' => $p->id,
                 'text' => $p->name,
             ];
         });
@@ -298,9 +311,15 @@ class PurchaseController extends Controller
         $query = Purchase::with(['entity', 'warehouse', 'user', 'paymentMethod', 'details.productVariant.product']);
 
         if ($search = $request->input('search')) {
-            $like = "%$search%";
-            $query->whereHas('details.productVariant.product', function ($qq) use ($like) {
-                $qq->where('name', 'like', $like);
+            $driver = DB::getDriverName();
+            $collation = 'utf8mb4_unicode_ci';
+            $query->whereHas('details.productVariant.product', function ($qq) use ($search, $driver, $collation) {
+                $like = "%$search%";
+                if ($driver === 'mysql') {
+                    $qq->whereRaw("name COLLATE $collation LIKE ?", [$like]);
+                } else {
+                    $qq->where('name', 'like', $like);
+                }
             });
         }
         if ($entityId = $request->input('entity_id')) {
@@ -370,12 +389,21 @@ class PurchaseController extends Controller
             $q->where('brand_id', $brandId);
         }
         if ($term = trim((string) $request->input('q'))) {
-            $q->where(function ($sub) use ($term) {
+            $driver = DB::getDriverName();
+            $collation = 'utf8mb4_unicode_ci';
+            $q->where(function ($sub) use ($term, $driver, $collation) {
                 $like = "%$term%";
-                $sub->where('name', 'like', $like)
+                if ($driver === 'mysql') {
+                    $sub->whereRaw("name COLLATE $collation LIKE ?", [$like])
+                        ->orWhere('code', 'like', $like)
+                        ->orWhere('sku', 'like', $like)
+                        ->orWhere('barcode', 'like', $like);
+                } else {
+                    $sub->where('name', 'like', $like)
                     ->orWhere('code', 'like', $like)
                     ->orWhere('sku', 'like', $like)
-                    ->orWhere('barcode', 'like', $like);
+                        ->orWhere('barcode', 'like', $like);
+                }
             });
         }
 

@@ -11,6 +11,7 @@ use App\Http\Requests\EntityRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EntityController extends Controller
 {
@@ -35,17 +36,21 @@ class EntityController extends Controller
         if ($request->filled('search')) {
             $search = trim((string) $request->input('search'));
             $tokens = array_values(array_filter(preg_split('/\s+/', $search)));
+            $driver = DB::getDriverName();
+            $collation = 'utf8mb4_unicode_ci';
 
-            $query->where(function ($q) use ($tokens) {
-                if (empty($tokens)) {
-                    return;
-                }
-                // Require all tokens to appear in either first_name or last_name
+            $query->where(function ($q) use ($tokens, $driver, $collation) {
+                if (empty($tokens)) return;
                 foreach ($tokens as $token) {
                     $like = "%$token%";
-                    $q->where(function ($sub) use ($like) {
-                        $sub->where('first_name', 'like', $like)
-                            ->orWhere('last_name', 'like', $like);
+                    $q->where(function ($sub) use ($like, $driver, $collation) {
+                        if ($driver === 'mysql') {
+                            $sub->whereRaw("first_name COLLATE $collation LIKE ?", [$like])
+                                ->orWhereRaw("last_name COLLATE $collation LIKE ?", [$like]);
+                        } else {
+                            $sub->where('first_name', 'like', $like)
+                                ->orWhere('last_name', 'like', $like);
+                        }
                     });
                 }
             });
@@ -93,12 +98,19 @@ class EntityController extends Controller
         $query = Entity::query();
         if ($term !== '') {
             $tokens = array_values(array_filter(preg_split('/\s+/', $term)));
-            $query->where(function ($q) use ($tokens) {
+            $driver = DB::getDriverName();
+            $collation = 'utf8mb4_unicode_ci';
+            $query->where(function ($q) use ($tokens, $driver, $collation) {
                 foreach ($tokens as $token) {
                     $like = "%$token%";
-                    $q->where(function ($sub) use ($like) {
-                        $sub->where('first_name', 'like', $like)
-                            ->orWhere('last_name', 'like', $like);
+                    $q->where(function ($sub) use ($like, $driver, $collation) {
+                        if ($driver === 'mysql') {
+                            $sub->whereRaw("first_name COLLATE $collation LIKE ?", [$like])
+                                ->orWhereRaw("last_name COLLATE $collation LIKE ?", [$like]);
+                        } else {
+                            $sub->where('first_name', 'like', $like)
+                                ->orWhere('last_name', 'like', $like);
+                        }
                     });
                 }
             });
