@@ -10,73 +10,17 @@
     'product' => null,
 ])
 
-<fieldset x-ref="newFields" x-bind:disabled="mode === 'existing'" {{ $attributes }}>
-    <!-- Datos de la compra (para guardar) -->
-    <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-4">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-200">Proveedor</span>
-                <select name="entity_id" required
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('entity_id') border-red-600 @enderror"
-                    >
-                    <option value="">Seleccionar Proveedor</option>
-                    @foreach ($entities ?? [] as $id => $name)
-                        <option value="{{ $id }}"
-                            {{ (string) old('entity_id', $purchase->entity_id ?? '') === (string) $id ? 'selected' : '' }}>
-                            {{ $name }}</option>
-                    @endforeach
-                </select>
-                @error('entity_id')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
-            </label>
-            <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-200">Almacén</span>
-                <select name="warehouse_id" required
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('warehouse_id') border-red-600 @enderror"
-                    >
-                    <option value="">Seleccionar Almacén</option>
-                    @foreach ($warehouses ?? [] as $id => $name)
-                        <option value="{{ $id }}"
-                            {{ (string) old('warehouse_id', $purchase->warehouse_id ?? '') === (string) $id ? 'selected' : '' }}>
-                            {{ $name }}</option>
-                    @endforeach
-                </select>
-                @error('warehouse_id')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
-            </label>
-            <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-200">Método de pago</span>
-                <select name="payment_method_id" required
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('payment_method_id') border-red-600 @enderror"
-                    >
-                    <option value="">Seleccionar Método de Pago</option>
-                    @foreach ($methods ?? [] as $id => $name)
-                        <option value="{{ $id }}"
-                            {{ (string) old('payment_method_id', $purchase->payment_method_id ?? '') === (string) $id ? 'selected' : '' }}>
-                            {{ $name }}</option>
-                    @endforeach
-                </select>
-                @error('payment_method_id')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
-            </label>
-            <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-200">Referencia</span>
-                <input type="text" name="reference"
-                    value="{{ old('reference', $purchase->reference ?? '') }}"
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('reference') border-red-600 @enderror"
-                    placeholder="Opcional...">
-                @error('reference')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
-            </label>
-        </div>
-    </div>
-
-    <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-        <!-- Fila 1: Nombre -->
+<fieldset x-ref="newFields" x-bind:disabled="$el.dataset.mode === 'existing'" {{ $attributes }}>
+    <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+        x-data="{
+            newPurchase: {
+                entity_id: @js(old('new.entity_id', old('entity_id', $purchase->entity_id ?? ''))),
+                warehouse_id: @js(old('new.warehouse_id', old('warehouse_id', $purchase->warehouse_id ?? ''))),
+                payment_method_id: @js(old('new.payment_method_id', old('payment_method_id', $purchase->payment_method_id ?? ''))),
+                reference: @js(old('new.reference', old('reference', $purchase->reference ?? ''))),
+            }
+        }">
+        <!-- Fila 1: Nombre - Proveedor - Almacén -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Nombre del producto</span>
@@ -85,9 +29,41 @@
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
                     placeholder="Nombre del producto">
             </label>
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Proveedor</span>
+                <select name="new[entity_id]" x-model="newPurchase.entity_id" required
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('new.entity_id') || $errors->has('entity_id') ? 'border-red-600' : '' }}">
+                    <option value="">Seleccionar Proveedor</option>
+                    @foreach ($entities ?? [] as $id => $name)
+                        <option value="{{ $id }}"
+                            {{ (string) old('new.entity_id', $purchase->entity_id ?? '') === (string) $id ? 'selected' : '' }}>
+                            {{ $name }}</option>
+                    @endforeach
+                </select>
+                @php($entityError = $errors->first('new.entity_id') ?: $errors->first('entity_id'))
+                @if($entityError)
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $entityError }}</span>
+                @endif
+            </label>
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Almacén</span>
+                <select name="new[warehouse_id]" x-model="newPurchase.warehouse_id" required
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('new.warehouse_id') || $errors->has('warehouse_id') ? 'border-red-600' : '' }}">
+                    <option value="">Seleccionar Almacén</option>
+                    @foreach ($warehouses ?? [] as $id => $name)
+                        <option value="{{ $id }}"
+                            {{ (string) old('new.warehouse_id', $purchase->warehouse_id ?? '') === (string) $id ? 'selected' : '' }}>
+                            {{ $name }}</option>
+                    @endforeach
+                </select>
+                @php($warehouseError = $errors->first('new.warehouse_id') ?: $errors->first('warehouse_id'))
+                @if($warehouseError)
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $warehouseError }}</span>
+                @endif
+            </label>
         </div>
 
-        <!-- Fila 2: Categoría - Marca -->
+        <!-- Fila 2: Categoría - Marca - Referencia -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Categoría</span>
@@ -101,7 +77,6 @@
                     @endforeach
                 </select>
             </label>
-
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Marca</span>
                 <select name="product[brand_id]"
@@ -114,46 +89,80 @@
                     @endforeach
                 </select>
             </label>
-
-            <!-- La referencia está arriba como dato de la compra -->
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Referencia</span>
+                <input type="text" name="new[reference]" x-model="newPurchase.reference"
+                    value="{{ old('new.reference', old('reference', $purchase->reference ?? '')) }}"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('new.reference') || $errors->has('reference') ? 'border-red-600' : '' }}"
+                    placeholder="Opcional...">
+                @php($referenceError = $errors->first('new.reference') ?: $errors->first('reference'))
+                @if($referenceError)
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $referenceError }}</span>
+                @endif
+            </label>
         </div>
 
-        <!-- Descripción -->
-        <div class="mt-4">
+        <!-- Fila 3: Método de pago - Impuesto - Unidad de Medida -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Método de pago</span>
+                <select name="new[payment_method_id]" x-model="newPurchase.payment_method_id" required
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('new.payment_method_id') || $errors->has('payment_method_id') ? 'border-red-600' : '' }}">
+                    <option value="">Seleccionar Método de Pago</option>
+                    @foreach ($methods ?? [] as $id => $name)
+                        <option value="{{ $id }}"
+                            {{ (string) old('new.payment_method_id', $purchase->payment_method_id ?? '') === (string) $id ? 'selected' : '' }}>
+                            {{ $name }}</option>
+                    @endforeach
+                </select>
+                @php($methodError = $errors->first('new.payment_method_id') ?: $errors->first('payment_method_id'))
+                @if($methodError)
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $methodError }}</span>
+                @endif
+            </label>
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Impuesto</span>
+                <select name="product[tax_id]"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">Seleccionar Impuesto</option>
+                    @foreach ($taxes ?? [] as $id => $name)
+                        <option value="{{ $id }}"
+                            {{ old('product.tax_id', optional($product)->tax_id) == $id ? 'selected' : '' }}>
+                            {{ $name }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Unidad de medida</span>
+                <select name="product[unit_measure_id]"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">Seleccionar Unidad de Medida</option>
+                    @foreach ($units ?? [] as $id => $name)
+                        <option value="{{ $id }}"
+                            {{ old('product.unit_measure_id', optional($product)->unit_measure_id) == $id ? 'selected' : '' }}>
+                            {{ $name }}</option>
+                    @endforeach
+                </select>
+            </label>
+        </div>
+
+        <!-- Fila 4: Descripción -->
+        <div class="mt-6">
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Descripción</span>
                 <textarea name="product[description]" rows="3" placeholder="Opcional..."
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">{{ old('product.description', optional($product)->description) }}</textarea>
             </label>
         </div>
-    </div>
 
-    <!-- Impuesto y unidad de medida -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Impuesto</span>
-            <select name="product[tax_id]"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                <option value="">Seleccionar Impuesto</option>
-                @foreach ($taxes ?? [] as $id => $name)
-                    <option value="{{ $id }}"
-                        {{ old('product.tax_id', optional($product)->tax_id) == $id ? 'selected' : '' }}>
-                        {{ $name }}</option>
-                @endforeach
-            </select>
-        </label>
-
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Unidad de medida</span>
-            <select name="product[unit_measure_id]"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                <option value="">Seleccionar Unidad de Medida</option>
-                @foreach ($units ?? [] as $id => $name)
-                    <option value="{{ $id }}"
-                        {{ old('product.unit_measure_id', optional($product)->unit_measure_id) == $id ? 'selected' : '' }}>
-                        {{ $name }}</option>
-                @endforeach
-            </select>
-        </label>
+        <!-- Campos ocultos canónicos cuando el modo es 'new' -->
+        <template x-if="$el.closest('fieldset')?.dataset?.mode === 'new'">
+            <div>
+                <input type="hidden" name="entity_id" :value="newPurchase.entity_id">
+                <input type="hidden" name="warehouse_id" :value="newPurchase.warehouse_id">
+                <input type="hidden" name="payment_method_id" :value="newPurchase.payment_method_id">
+                <input type="hidden" name="reference" :value="newPurchase.reference">
+            </div>
+        </template>
     </div>
 </fieldset>

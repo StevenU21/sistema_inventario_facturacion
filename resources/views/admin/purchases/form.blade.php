@@ -55,12 +55,12 @@
 
         <!-- Producto existente: filtros + resultados extraídos a componente -->
         <x-admin.purchases.product-existing :entities="$entities ?? []" :warehouses="$warehouses ?? []" :methods="$methods ?? []" :categories="$categories ?? []"
-            :brands="$brands ?? []" :purchase="$purchase ?? null" x-show="mode==='existing'" x-cloak />
+            :brands="$brands ?? []" :purchase="$purchase ?? null" x-show="mode==='existing'" x-bind:data-mode="mode" x-cloak />
 
         <!-- Campos de producto nuevo extraídos a componente -->
         <x-admin.purchases.product-new :entities="$entities ?? []" :warehouses="$warehouses ?? []" :methods="$methods ?? []" :categories="$categories ?? []"
             :brands="$brands ?? []" :taxes="$taxes ?? []" :units="$units ?? []" :purchase="$purchase ?? null" :product="$product ?? null"
-            x-show="mode==='new'" x-cloak />
+            x-show="mode==='new'" x-bind:data-mode="mode" x-cloak />
     </div>
     <!-- Variantes/Líneas extraídas a componente -->
     <x-admin.purchases.variants-lines :colors="$colors ?? []" :sizes="$sizes ?? []" :old-details="old('details')" :prefill-details="isset($prefillDetails) ? $prefillDetails : null" />
