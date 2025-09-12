@@ -12,7 +12,7 @@
 @endphp
 
 <div x-data="autocompleteComponent({ url: '{{ $url }}', min: {{ (int) $min }}, debounce: {{ (int) $debounce }}, initial: @js($value) })" @click.away="open = false" {{ $attributes->merge(['class' => 'relative w-full']) }}>
-    <input id="{{ $id }}" name="{{ $name }}" type="text" x-model="query" x-on:input="onInput"
+    <input id="{{ $id }}" name="{{ $name }}" type="text" x-model="query" x-ref="input" x-on:input="onInput"
         x-on:keydown.arrow-down.prevent="highlightNext()" x-on:keydown.arrow-up.prevent="highlightPrev()"
         x-on:keydown.enter.prevent="applyHighlighted()" placeholder="{{ $placeholder }}"
         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
@@ -78,15 +78,20 @@
                     }, debounce);
                 },
                 select(item) {
-                    this.query = item.text || '';
+                    const value = item.text || '';
+                    this.query = value;
                     this.open = false;
                     this.suggestions = [];
-                    // Submit surrounding form if any
-                    const form = this.$el.closest('form');
-                    if (form) {
-                        if (typeof form.requestSubmit === 'function') form.requestSubmit();
-                        else form.submit();
-                    }
+                    this.highlighted = -1;
+                    // Ensure input value is updated before submitting the form
+                    this.$nextTick(() => {
+                        if (this.$refs.input) this.$refs.input.value = value;
+                        const form = this.$el.closest('form');
+                        if (form) {
+                            if (typeof form.requestSubmit === 'function') form.requestSubmit();
+                            else form.submit();
+                        }
+                    });
                 },
                 highlightNext() {
                     if (!this.open) return;
