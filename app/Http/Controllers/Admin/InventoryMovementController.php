@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\InventoryMovementsExport;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\DB;
 
 class InventoryMovementController extends Controller
 {
@@ -71,16 +72,8 @@ class InventoryMovementController extends Controller
         }
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('reference', 'like', "%$search%")
-                    ->orWhere('notes', 'like', "%$search%")
-                    ->orWhereHas('user', function ($uq) use ($search) {
-                        $uq->where('first_name', 'like', "%$search%")
-                            ->orWhere('last_name', 'like', "%$search%");
-                    })
-                    ->orWhereHas('inventory.productVariant.product', function ($pq) use ($search) {
-                        $pq->where('name', 'like', "%$search%");
-                    });
+            $query->whereHas('inventory.productVariant.product', function ($pq) use ($search) {
+                $pq->where('name', 'like', "%$search%");
             });
         }
 
@@ -144,16 +137,8 @@ class InventoryMovementController extends Controller
         }
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('reference', 'like', "%$search%")
-                    ->orWhere('notes', 'like', "%$search%")
-                    ->orWhereHas('user', function ($uq) use ($search) {
-                        $uq->where('first_name', 'like', "%$search%")
-                            ->orWhere('last_name', 'like', "%$search%");
-                    })
-                    ->orWhereHas('inventory.productVariant.product', function ($pq) use ($search) {
-                        $pq->where('name', 'like', "%$search%");
-                    });
+            $query->whereHas('inventory.productVariant.product', function ($pq) use ($search) {
+                $pq->where('name', 'like', "%$search%");
             });
         }
 
@@ -169,5 +154,48 @@ class InventoryMovementController extends Controller
         $timestamp = now()->format('Ymd_His');
         $filename = "movimientos_inventario_{$timestamp}.xlsx";
         return Excel::download(new InventoryMovementsExport($query), $filename);
+    }
+
+    // Endpoint para autocompletar búsquedas de movimientos
+    public function autocomplete(Request $request)
+    {
+        $this->authorize('viewAny', InventoryMovement::class);
+        $term = trim((string) $request->input('q', ''));
+        $limit = max(1, min(20, (int) $request->input('limit', 10)));
+
+        // Autocomplete basado en productos, como en ProductController
+        $q = \App\Models\Product::query();
+        if ($term !== '') {
+            $tokens = array_values(array_filter(preg_split('/\s+/', $term)));
+            $driver = DB::getDriverName();
+            $collation = 'utf8mb4_unicode_ci';
+            $q->where(function ($qb) use ($tokens, $driver, $collation) {
+                foreach ($tokens as $token) {
+                    $like = "%$token%";
+                    $qb->where(function ($sub) use ($like, $driver, $collation) {
+                        if ($driver === 'mysql') {
+                            $sub->whereRaw("name COLLATE $collation LIKE ?", [$like]);
+                        } else {
+                            $sub->where('name', 'like', $like);
+                        }
+                    });
+                }
+            });
+        }
+
+        $products = $q->select(['id', 'name'])
+            ->orderBy('name')
+            ->limit($limit)
+            ->get();
+
+        $suggestions = $products->map(function ($p) {
+            return [
+                'id' => $p->id,
+                'text' => $p->name,
+                'type' => 'producto',
+            ];
+        });
+
+        return response()->json(['data' => $suggestions]);
     }
 }

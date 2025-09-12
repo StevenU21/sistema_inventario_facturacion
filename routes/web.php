@@ -125,6 +125,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Inventory Movements
     Route::get('inventory_movements/search', [InventoryMovementController::class, 'search'])->name('inventory_movements.search');
+    Route::get('inventory_movements/autocomplete', [InventoryMovementController::class, 'autocomplete'])->name('inventory_movements.autocomplete');
     Route::get('inventory_movements/export', [InventoryMovementController::class, 'export'])->name('inventory_movements.export');
     Route::resource('inventory_movements', InventoryMovementController::class);
 
