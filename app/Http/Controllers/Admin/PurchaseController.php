@@ -311,6 +311,7 @@ class PurchaseController extends Controller
         $with = [
             'brand:id,name',
             'category:id,name',
+            'entity:id,first_name,last_name',
             'variants.inventories' => function ($inv) use ($warehouseId) {
                 $inv->select('id', 'product_variant_id', 'warehouse_id', 'stock');
                 if ($warehouseId) {
@@ -358,13 +359,15 @@ class PurchaseController extends Controller
         ]);
 
         // Salida estructurada: cada campo en su propiedad, sin mezclar en "text"
-    $data = $items->map(function ($p) use ($warehouseId) {
+        $data = $items->map(function ($p) use ($warehouseId) {
             $stock = 0;
             foreach ($p->variants as $variant) {
                 foreach ($variant->inventories as $inv) {
                     $stock += (int) $inv->stock;
                 }
             }
+            $entity = $p->relationLoaded('entity') ? $p->entity : null;
+            $entityName = $entity ? (trim($entity->short_name) ?: trim($entity->first_name)) : null;
             return [
                 'id' => $p->id,
                 'name' => $p->name,
@@ -377,6 +380,7 @@ class PurchaseController extends Controller
                 'barcode' => $p->barcode,
                 'stock' => $stock,
                 'entity_id' => $p->entity_id,
+                'entity_name' => $entityName,
                 // útil para el front cuando ya hay un almacén filtrado
                 'warehouse_id' => $warehouseId ? (int) $warehouseId : null,
             ];

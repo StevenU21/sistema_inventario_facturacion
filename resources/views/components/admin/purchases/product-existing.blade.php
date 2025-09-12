@@ -67,6 +67,7 @@
                     barcode: raw?.barcode ?? (raw?.product && raw.product.barcode) ?? null,
                     stock: raw?.stock ?? raw?.current_stock ?? raw?.quantity ?? (raw?.inventory && raw.inventory.stock) ?? raw?.total_stock ?? 0,
                     entity_id: raw?.entity_id ?? raw?.supplier_id ?? raw?.provider_id ?? (raw?.product && raw.product.entity_id) ?? null,
+                    entity_name: raw?.entity_name ?? raw?.entity_short_name ?? raw?.entity_first_name ?? null,
                     warehouse_id: raw?.warehouse_id ??
                         raw?.inventory_warehouse_id ??
                         (raw?.inventory && raw.inventory.warehouse_id) ??
@@ -282,6 +283,7 @@
                             <tr class="text-left text-gray-600 dark:text-gray-300">
                                 <th class="px-4 py-2 font-semibold">ID</th>
                                 <th class="px-4 py-2 font-semibold">Nombre</th>
+                                <th class="px-4 py-2 font-semibold">Proveedor</th>
                                 <th class="px-4 py-2 font-semibold">Categoría</th>
                                 <th class="px-4 py-2 font-semibold">Marca</th>
                                 <th class="px-4 py-2 font-semibold">Stock actual</th>
@@ -302,6 +304,7 @@
                                         <div class="font-medium text-gray-900 dark:text-gray-100" x-text="p.name">
                                         </div>
                                     </td>
+                                    <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.entity_name"></td>
                                     <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.category"></td>
                                     <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.brand"></td>
                                     <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.stock"></td>
