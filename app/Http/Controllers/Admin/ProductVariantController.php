@@ -13,6 +13,7 @@ use App\Models\Product;
 use App\Models\Color;
 use App\Models\Size;
 use App\Http\Requests\ProductVariantRequest;
+use Illuminate\Support\Facades\DB;
 
 class ProductVariantController extends Controller
 {
@@ -138,5 +139,60 @@ class ProductVariantController extends Controller
         $this->authorize('destroy', $product_variant);
         $product_variant->delete();
         return redirect()->route('product_variants.index')->with('success', 'Variante eliminada correctamente.');
+    }
+
+    // Endpoint para autocompletar variantes por SKU, código de barras o producto
+    public function autocomplete(Request $request)
+    {
+        $this->authorize('viewAny', ProductVariant::class);
+        $term = trim((string) $request->input('q', ''));
+        $limit = max(1, min(20, (int) $request->input('limit', 10)));
+
+        $query = ProductVariant::query()->with('product');
+        if ($term !== '') {
+            $tokens = array_values(array_filter(preg_split('/\s+/', $term)));
+            $driver = DB::getDriverName();
+            $collation = 'utf8mb4_unicode_ci';
+            $query->where(function ($q) use ($tokens, $driver, $collation) {
+                foreach ($tokens as $token) {
+                    $like = "%$token%";
+                    $q->where(function ($sub) use ($like, $driver, $collation) {
+                        if ($driver === 'mysql') {
+                            $sub->whereRaw("sku COLLATE $collation LIKE ?", [$like])
+                                ->orWhereRaw("barcode COLLATE $collation LIKE ?", [$like])
+                                ->orWhereHas('product', function ($p) use ($like, $collation) {
+                                    $p->whereRaw("name COLLATE $collation LIKE ?", [$like]);
+                                });
+                        } else {
+                            $sub->where('sku', 'like', $like)
+                                ->orWhere('barcode', 'like', $like)
+                                ->orWhereHas('product', function ($p) use ($like) {
+                                    $p->where('name', 'like', $like);
+                                });
+                        }
+                    });
+                }
+            });
+        }
+
+        $variants = $query->select(['id', 'sku', 'barcode', 'product_id'])
+            ->orderBy('sku')
+            ->limit($limit)
+            ->get();
+
+        $data = $variants->map(function ($v) {
+            $parts = array_filter([
+                $v->sku,
+                $v->barcode ? "[{$v->barcode}]" : null,
+                optional($v->product)->name,
+            ]);
+            return [
+                'id' => $v->id,
+                'text' => trim(implode(' - ', $parts)),
+                'type' => 'variante',
+            ];
+        });
+
+        return response()->json(['data' => $data]);
     }
 }

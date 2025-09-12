@@ -105,6 +105,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Product Variants
     Route::get('product_variants/search', [ProductVariantController::class, 'search'])->name('product_variants.search');
+    Route::get('product_variants/autocomplete', [ProductVariantController::class, 'autocomplete'])->name('product_variants.autocomplete');
     Route::get('product_variants/export', [ProductVariantController::class, 'export'])->name('product_variants.export');
     Route::resource('product_variants', ProductVariantController::class);
 
