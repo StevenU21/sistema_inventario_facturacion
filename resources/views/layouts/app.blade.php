@@ -12,8 +12,6 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    {{-- @vite(['resources/js/app.js', 'resources/css/app.css']) --}}
-
     <!-- FontAwesome CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
@@ -29,7 +27,7 @@
     <script src="{{ asset('js/charts-lines.js') }}" defer></script>
     <script src="{{ asset('js/charts-pie.js') }}" defer></script>
 </head>
- 
+
 <body>
     <!-- Loading Screen -->
     <div id="app-loader"

@@ -304,7 +304,8 @@
                                         <div class="font-medium text-gray-900 dark:text-gray-100" x-text="p.name">
                                         </div>
                                     </td>
-                                    <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.entity_name"></td>
+                                    <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.entity_name">
+                                    </td>
                                     <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.category"></td>
                                     <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.brand"></td>
                                     <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.stock"></td>
