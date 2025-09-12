@@ -99,6 +99,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Products
     Route::get('products/search', [ProductController::class, 'search'])->name('products.search');
+    Route::get('products/autocomplete', [ProductController::class, 'autocomplete'])->name('products.autocomplete');
     Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
     Route::resource('products', ProductController::class);
 

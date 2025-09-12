@@ -232,4 +232,35 @@ class ProductController extends Controller
             return redirect()->route('products.index')->with('deleted', 'Producto descontinuado correctamente.');
         }
     }
+
+    // Endpoint para autocompletar productos por nombre
+    public function autocomplete(Request $request)
+    {
+        $this->authorize('viewAny', Product::class);
+        $term = trim((string) $request->input('q', ''));
+        $limit = (int) $request->input('limit', 10);
+        $limit = max(1, min(20, $limit));
+
+        $q = Product::query();
+        if ($term !== '') {
+            $q->where('name', 'like', "%$term%");
+        }
+
+        // Opcional: solo disponibles en listado
+        $q->where('status', 'available');
+
+        $products = $q->select(['id', 'name'])
+            ->orderBy('name')
+            ->limit($limit)
+            ->get();
+
+        $suggestions = $products->map(function ($p) {
+            return [
+                'id' => $p->name,
+                'text' => $p->name,
+            ];
+        });
+
+        return response()->json(['data' => $suggestions]);
+    }
 }
