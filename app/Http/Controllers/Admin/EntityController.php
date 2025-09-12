@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\EntitiesExport;
 use App\Models\Department;
 use App\Models\Entity;
 use App\Models\Municipality;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EntityRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
 
 class EntityController extends Controller
 {
@@ -30,11 +33,21 @@ class EntityController extends Controller
         $query = Entity::with('municipality');
         // Filtros básicos
         if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $like = "%$search%";
-                $q->where('first_name', 'like', $like)
-                  ->orWhere('last_name', 'like', $like);
+            $search = trim((string) $request->input('search'));
+            $tokens = array_values(array_filter(preg_split('/\s+/', $search)));
+
+            $query->where(function ($q) use ($tokens) {
+                if (empty($tokens)) {
+                    return;
+                }
+                // Require all tokens to appear in either first_name or last_name
+                foreach ($tokens as $token) {
+                    $like = "%$token%";
+                    $q->where(function ($sub) use ($like) {
+                        $sub->where('first_name', 'like', $like)
+                            ->orWhere('last_name', 'like', $like);
+                    });
+                }
             });
         }
         if ($request->filled('is_client')) {
@@ -70,7 +83,7 @@ class EntityController extends Controller
     }
 
     // Endpoint para autocompletar entidades por nombre
-    public function autocomplete(\Illuminate\Http\Request $request)
+    public function autocomplete(Request $request)
     {
         $this->authorize('viewAny', Entity::class);
         $term = trim((string) $request->input('q', ''));
@@ -79,10 +92,15 @@ class EntityController extends Controller
 
         $query = Entity::query();
         if ($term !== '') {
-            $like = "%$term%";
-            $query->where(function ($q) use ($like) {
-                $q->where('first_name', 'like', $like)
-                  ->orWhere('last_name', 'like', $like);
+            $tokens = array_values(array_filter(preg_split('/\s+/', $term)));
+            $query->where(function ($q) use ($tokens) {
+                foreach ($tokens as $token) {
+                    $like = "%$token%";
+                    $q->where(function ($sub) use ($like) {
+                        $sub->where('first_name', 'like', $like)
+                            ->orWhere('last_name', 'like', $like);
+                    });
+                }
             });
         }
 
@@ -94,7 +112,7 @@ class EntityController extends Controller
         $suggestions = $entities->map(function ($e) {
             $full = trim($e->first_name . ' ' . $e->last_name);
             return [
-                'id' => $full,
+                'id' => $e->id,
                 'text' => $full,
             ];
         });
@@ -104,7 +122,7 @@ class EntityController extends Controller
         ]);
     }
 
-    public function export(\Illuminate\Http\Request $request)
+    public function export(Request $request)
     {
         $this->authorize('viewAny', Entity::class);
         $filters = $request->only(['search', 'is_client', 'is_supplier', 'is_active', 'municipality_id']);
@@ -114,7 +132,7 @@ class EntityController extends Controller
         });
         $timestamp = now()->format('Ymd_His');
         $filename = "entidades_filtradas_{$timestamp}.xlsx";
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\EntitiesExport($filters), $filename);
+        return Excel::download(new EntitiesExport($filters), $filename);
     }
 
     public function create()

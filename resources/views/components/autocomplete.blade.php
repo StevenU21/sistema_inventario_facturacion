@@ -12,16 +12,17 @@
 @endphp
 
 <div x-data="autocompleteComponent({ url: '{{ $url }}', min: {{ (int) $min }}, debounce: {{ (int) $debounce }}, initial: @js($value) })" @click.away="open = false" {{ $attributes->merge(['class' => 'relative w-full']) }}>
-    <input id="{{ $id }}" name="{{ $name }}" type="text" x-model="query" x-ref="input" x-on:input="onInput"
-        x-on:keydown.arrow-down.prevent="highlightNext()" x-on:keydown.arrow-up.prevent="highlightPrev()"
-        x-on:keydown.enter.prevent="applyHighlighted()" placeholder="{{ $placeholder }}"
+    <input id="{{ $id }}" name="{{ $name }}" type="text" x-model="query" x-ref="input"
+        x-on:input="onInput" x-on:keydown.arrow-down.prevent="highlightNext()"
+        x-on:keydown.arrow-up.prevent="highlightPrev()" x-on:keydown.enter.prevent="applyHighlighted()"
+        placeholder="{{ $placeholder }}"
         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
         autocomplete="off" />
 
     <template x-if="open && suggestions.length">
         <ul
             class="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto">
-            <template x-for="(item, index) in suggestions" :key="item.text">
+            <template x-for="(item, index) in suggestions" :key="item.id ?? item.text">
                 <li :class="{ 'bg-purple-50 dark:bg-gray-700': index === highlighted }"
                     class="px-3 py-2 text-sm text-gray-800 dark:text-gray-100 cursor-pointer hover:bg-purple-50 dark:hover:bg-gray-700"
                     x-on:click="select(item)">
