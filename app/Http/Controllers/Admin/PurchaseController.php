@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PurchaseDetailRequest;
 use App\Http\Requests\PurchaseRequest;
 use App\Exports\PurchasesExport;
 use App\Exports\PurchaseDetailsExport;
@@ -23,7 +22,6 @@ use App\Models\Color;
 use App\Models\Size;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -36,10 +34,11 @@ class PurchaseController extends Controller
         $this->authorize('viewAny', Purchase::class);
         $query = Purchase::with(['entity', 'warehouse', 'user', 'paymentMethod', 'details.productVariant.product']);
 
-        // Filtros básicos
+        // Filtro por nombre de producto únicamente
         if ($search = $request->input('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('reference', 'like', "%$search%");
+            $like = "%$search%";
+            $query->whereHas('details.productVariant.product', function ($qq) use ($like) {
+                $qq->where('name', 'like', $like);
             });
         }
         if ($entityId = $request->input('entity_id')) {
@@ -257,14 +256,55 @@ class PurchaseController extends Controller
         return Excel::download(new PurchaseDetailsExport($purchase), $filename);
     }
 
+    // Endpoint para autocompletar en índices (compras)
+    public function autocomplete(Request $request)
+    {
+        $this->authorize('viewAny', Purchase::class);
+        $term = trim((string) $request->input('q', ''));
+        $limit = (int) $request->input('limit', 10);
+        $limit = max(1, min(20, $limit));
+
+        $query = Purchase::query()
+            ->with(['details.productVariant.product'])
+            ->latest();
+
+        if ($term !== '') {
+            $like = "%$term%";
+            $query->whereHas('details.productVariant.product', function ($qq) use ($like) {
+                $qq->where('name', 'like', $like);
+            });
+        }
+
+        // Generar sugerencias únicas y ligeras
+        $purchases = $query->take($limit)->get();
+        $suggestions = collect();
+
+        foreach ($purchases as $purchase) {
+            foreach ($purchase->details as $detail) {
+                $name = optional(optional($detail->productVariant)->product)->name;
+                if ($name) {
+                    $suggestions->push(['id' => $name, 'text' => $name]);
+                }
+            }
+        }
+
+        // Dejar solo valores únicos por texto
+        $unique = $suggestions->unique('text')->take($limit)->values();
+
+        return response()->json([
+            'data' => $unique,
+        ]);
+    }
+
     // Construye la consulta con todos los filtros soportados
     private function buildPurchasesQuery(Request $request)
     {
         $query = Purchase::with(['entity', 'warehouse', 'user', 'paymentMethod', 'details.productVariant.product']);
 
         if ($search = $request->input('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('reference', 'like', "%$search%");
+            $like = "%$search%";
+            $query->whereHas('details.productVariant.product', function ($qq) use ($like) {
+                $qq->where('name', 'like', $like);
             });
         }
         if ($entityId = $request->input('entity_id')) {
