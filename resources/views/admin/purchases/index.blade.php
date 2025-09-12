@@ -16,6 +16,7 @@
                 0% {
                     background-position: 100% 50%;
                 }
+
                 100% {
                     background-position: 0% 50%;
                 }
@@ -138,18 +139,21 @@
                     </select>
                 </div>
                 <div>
-                    <label for="payment_method_id"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Método</label>
-                    <select name="payment_method_id" id="payment_method_id"
+                    <label for="product_id"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Producto
+                        (solo comprados)</label>
+                    <select name="product_id" id="product_id"
                         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         onchange="this.form.submit()">
-                        <option value="">Todos los métodos</option>
-                        @isset($methods)
-                            @foreach ($methods as $id => $name)
-                                <option value="{{ $id }}"
-                                    {{ request('payment_method_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                        <option value="">Todos los productos</option>
+                        @if (isset($products) && count($products))
+                            @foreach ($products as $id => $name)
+                                <option value="{{ $id }}" {{ request('product_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
                             @endforeach
-                        @endisset
+                        @else
+                            <option value="" disabled>No hay productos comprados</option>
+                        @endif
                     </select>
                 </div>
                 <div>
@@ -183,21 +187,18 @@
                     </select>
                 </div>
                 <div>
-                    <label for="product_id"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Producto
-                        (solo comprados)</label>
-                    <select name="product_id" id="product_id"
+                    <label for="payment_method_id"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Método</label>
+                    <select name="payment_method_id" id="payment_method_id"
                         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         onchange="this.form.submit()">
-                        <option value="">Todos los productos</option>
-                        @if (isset($products) && count($products))
-                            @foreach ($products as $id => $name)
-                                <option value="{{ $id }}" {{ request('product_id') == $id ? 'selected' : '' }}>
-                                    {{ $name }}</option>
+                        <option value="">Todos los métodos</option>
+                        @isset($methods)
+                            @foreach ($methods as $id => $name)
+                                <option value="{{ $id }}"
+                                    {{ request('payment_method_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
                             @endforeach
-                        @else
-                            <option value="" disabled>No hay productos comprados</option>
-                        @endif
+                        @endisset
                     </select>
                 </div>
             </form>
