@@ -250,18 +250,30 @@
                     this.linesEl.appendChild(node);
 
                     // Prefill opcional
-                    if (prefill.quantity) node.querySelector(`[name="details[${this.idx}][quantity]"]`).value = prefill
-                        .quantity;
-                    if (prefill.unit_price) node.querySelector(`[name="details[${this.idx}][unit_price]"]`).value = prefill
-                        .unit_price;
-                    if (prefill.sale_price) node.querySelector(`[name="details[${this.idx}][sale_price]"]`).value = prefill
-                        .sale_price;
-                    if (prefill.color_id) node.querySelector(`[name="details[${this.idx}][color_id]"]`).value = prefill
-                        .color_id;
-                    if (prefill.size_id) node.querySelector(`[name="details[${this.idx}][size_id]"]`).value = prefill
-                        .size_id;
-                    if (prefill.min_stock) node.querySelector(`[name="details[${this.idx}][min_stock]"]`).value = prefill
-                        .min_stock;
+                    if (prefill.quantity) {
+                        const el = node.querySelector(`[name="details[${this.idx}][quantity]"]`);
+                        if (el) el.value = prefill.quantity;
+                    }
+                    if (prefill.unit_price) {
+                        const el = node.querySelector(`[name="details[${this.idx}][unit_price]"]`);
+                        if (el) el.value = prefill.unit_price;
+                    }
+                    if (prefill.sale_price) {
+                        const el = node.querySelector(`[name="details[${this.idx}][sale_price]"]`);
+                        if (el) el.value = prefill.sale_price;
+                    }
+                    if (prefill.color_id) {
+                        const el = node.querySelector(`[name="details[${this.idx}][color_id]"]`);
+                        if (el) el.value = prefill.color_id;
+                    }
+                    if (prefill.size_id) {
+                        const el = node.querySelector(`[name="details[${this.idx}][size_id]"]`);
+                        if (el) el.value = prefill.size_id;
+                    }
+                    if (prefill.min_stock) {
+                        const el = node.querySelector(`[name="details[${this.idx}][min_stock]"]`);
+                        if (el) el.value = prefill.min_stock;
+                    }
 
                     this.idx++;
                 }

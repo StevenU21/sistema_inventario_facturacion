@@ -7,8 +7,7 @@
     'purchase' => null,
 ])
 
-<div x-ref="existingFields"
-    x-effect="Array.from($refs.existingFields.querySelectorAll('input, select, textarea')).forEach(el => el.disabled = (mode === 'new'))"
+<fieldset x-ref="existingFields" x-bind:disabled="mode === 'new'"
     {{ $attributes->merge(['class' => 'mt-4']) }}>
     <div x-data="{
         filters: {
@@ -43,9 +42,9 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Proveedor</span>
-                <select name="entity_id" x-model="filters.entity_id"
+                <select name="entity_id" x-model="filters.entity_id" required
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('entity_id') border-red-600 @enderror"
-                    required>
+                    >
                     <option value="">Seleccionar Proveedor</option>
                     @foreach ($entities ?? [] as $id => $name)
                         <option value="{{ $id }}"
@@ -59,9 +58,9 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Almacén</span>
-                <select name="warehouse_id" x-model="filters.warehouse_id"
+                <select name="warehouse_id" x-model="filters.warehouse_id" required
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('warehouse_id') border-red-600 @enderror"
-                    required>
+                    >
                     <option value="">Seleccionar Almacén</option>
                     @foreach ($warehouses ?? [] as $id => $name)
                         <option value="{{ $id }}"
@@ -75,9 +74,9 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Método de pago</span>
-                <select name="payment_method_id"
+                <select name="payment_method_id" required
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 @error('payment_method_id') border-red-600 @enderror"
-                    required>
+                    >
                     <option value="">Seleccionar Método de Pago</option>
                     @foreach ($methods ?? [] as $id => $name)
                         <option value="{{ $id }}"
@@ -157,4 +156,4 @@
         </div>
     </div>
     </div>
-</div>
+</fieldset>
