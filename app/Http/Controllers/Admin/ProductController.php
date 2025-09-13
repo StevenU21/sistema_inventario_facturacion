@@ -54,7 +54,7 @@ class ProductController extends Controller
         $this->authorize('viewAny', Product::class);
         $params = $request->all();
         // Sanitizar ordenamientos permitidos para evitar errores
-    $allowedSorts = ['id', 'name', 'brand_id', 'tax_id', 'unit_measure_id', 'entity_id', 'status', 'created_at'];
+        $allowedSorts = ['id', 'name', 'brand_id', 'tax_id', 'unit_measure_id', 'entity_id', 'status', 'created_at'];
         if (!empty($params['sort']) && !in_array($params['sort'], $allowedSorts)) {
             unset($params['sort']); // Dejar que el servicio use el default
         }
@@ -111,8 +111,8 @@ class ProductController extends Controller
     public function export(Request $request)
     {
         $this->authorize('viewAny', Product::class);
-    $brandId = $request->input('brand_id');
-    $categoryId = $request->input('category_id');
+        $brandId = $request->input('brand_id');
+        $categoryId = $request->input('category_id');
         $unitId = $request->input('unit_measure_id');
         $taxId = $request->input('tax_id');
         $entityId = $request->input('entity_id');
@@ -120,7 +120,7 @@ class ProductController extends Controller
         $search = $request->input('search');
         $sort = $request->input('sort', 'id');
         $direction = $request->input('direction', 'desc');
-    $query = Product::with(['brand.category', 'tax', 'unitMeasure', 'entity']);
+        $query = Product::with(['brand.category', 'tax', 'unitMeasure', 'entity']);
         if (!empty($brandId)) {
             $query->where('brand_id', $brandId);
         }
@@ -152,7 +152,7 @@ class ProductController extends Controller
                     });
             });
         }
-    $allowedSorts = ['id', 'name', 'brand_id', 'tax_id', 'unit_measure_id', 'entity_id', 'status', 'created_at'];
+        $allowedSorts = ['id', 'name', 'brand_id', 'tax_id', 'unit_measure_id', 'entity_id', 'status', 'created_at'];
         if (in_array($sort, $allowedSorts)) {
             $query->orderBy($sort, $direction);
         } else {
@@ -166,6 +166,7 @@ class ProductController extends Controller
     public function create()
     {
         $this->authorize("create", Product::class);
+        $product = new Product();
         $categories = Category::pluck('name', 'id');
         $brands = Brand::pluck('name', 'id');
         $brandsByCategory = Brand::with('category')
@@ -181,7 +182,7 @@ class ProductController extends Controller
                 return $entity->first_name . ' ' . $entity->last_name;
             }, 'id');
         $taxes = Tax::pluck('name', 'id');
-        return view('admin.products.create', compact('categories', 'brands', 'units', 'entities', 'taxes', 'brandsByCategory'));
+        return view('admin.products.create', compact('product', 'categories', 'brands', 'units', 'entities', 'taxes', 'brandsByCategory'));
     }
 
     public function store(ProductRequest $request, FileService $fileService)

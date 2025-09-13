@@ -2,17 +2,7 @@
 @section('title', 'Productos')
 
 @section('content')
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8" x-data="{
-        isModalOpen: false,
-        isEditModalOpen: false,
-        isShowModalOpen: false,
-        editAction: '',
-        showProduct: { id: '', name: '', description: '', barcode: '', category: '', brand: '', unit: '', provider: '', tax: '', status: '', formatted_created_at: '', formatted_updated_at: '' },
-        editProduct: { id: '', name: '', description: '', barcode: '', category_id: null, brand_id: null, unit_measure_id: null, entity_id: null, tax_id: null, status: '', image_url: '' },
-        closeModal() { this.isModalOpen = false },
-        closeEditModal() { this.isEditModalOpen = false },
-        closeShowModal() { this.isShowModalOpen = false }
-    }">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Breadcrumbs -->
         <nav class="mt-4 mb-2 text-sm text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
             <ol class="flex items-center gap-2">
@@ -83,11 +73,11 @@
                                 Exportar Excel
                             </button>
                         </form>
-                        <button type="button" @click="isModalOpen = true"
+                        <a href="{{ route('products.create') }}"
                             class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
                             <i class="fas fa-plus"></i>
                             Crear producto
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -107,13 +97,8 @@
                     <div class="flex-1">
                         <label for="search"
                             class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
-                        <x-autocomplete
-                            name="search"
-                            :value="request('search')"
-                            url="{{ route('products.autocomplete') }}"
-                            placeholder="Nombre..."
-                            id="search"
-                        />
+                        <x-autocomplete name="search" :value="request('search')" url="{{ route('products.autocomplete') }}"
+                            placeholder="Nombre..." id="search" />
                     </div>
                     <div class="flex flex-row gap-2 items-end">
                         <button type="submit"
@@ -233,126 +218,6 @@
             </form>
         </section>
 
-
-        <!-- Modales: Editar, Crear, Ver -->
-        <x-edit-modal :title="'Editar Producto'" :description="'Modifica los datos del producto seleccionado.'">
-            <form :action="editAction" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
-                <input type="hidden" name="id" :value="editProduct.id">
-                @include('admin.products.form', ['alpine' => true])
-            </form>
-        </x-edit-modal>
-
-        <x-modal :title="'Crear Producto'" :description="'Agrega un nuevo producto al sistema.'">
-            <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @include('admin.products.form', ['alpine' => false])
-            </form>
-        </x-modal>
-
-
-        <x-show-modal :title="'Detalle de Producto'" :description="'Consulta los datos del producto seleccionado.'">
-            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Imagen del producto -->
-                <div class="flex justify-center items-start">
-                    <div class="rounded-xl overflow-hidden shadow-md border bg-white dark:bg-gray-800 flex items-center justify-center"
-                        style="width:200px; height:200px;">
-                        <img :src="showProduct.image_url ? showProduct.image_url : '/img/image03.png'"
-                            alt="Imagen del producto" class="object-contain mx-auto"
-                            style="width:200px; height:auto; max-height:200px;">
-                    </div>
-                </div>
-
-                <!-- Información principal -->
-                <div class="md:col-span-2 space-y-4">
-                    <div class="border-b pb-3">
-                        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <i class="fas fa-box text-purple-600 dark:text-purple-400"></i>
-                            <span x-text="showProduct.name"></span>
-                        </h2>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm" x-text="showProduct.description"></p>
-                    </div>
-
-                    <!-- Datos en 2 columnas -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                            <i class="fas fa-hashtag text-purple-600 dark:text-purple-400"></i>
-                            <strong>ID:</strong> <span x-text="showProduct.id"></span>
-                        </div>
-                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                            <i class="fas fa-barcode text-purple-600 dark:text-purple-400"></i>
-                            <strong>Código:</strong> <span x-text="showProduct.barcode"></span>
-                        </div>
-                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                            <i class="fas fa-list-alt text-purple-600 dark:text-purple-400"></i>
-                            <strong>Categoría:</strong> <span x-text="showProduct.category"></span>
-                        </div>
-                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                            <i class="fas fa-tags text-purple-600 dark:text-purple-400"></i>
-                            <strong>Marca:</strong> <span x-text="showProduct.brand"></span>
-                        </div>
-                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                            <i class="fas fa-balance-scale text-purple-600 dark:text-purple-400"></i>
-                            <strong>Medida:</strong> <span x-text="showProduct.unit"></span>
-                        </div>
-                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                            <i class="fas fa-user-tie text-purple-600 dark:text-purple-400"></i>
-                            <strong>Proveedor:</strong> <span x-text="showProduct.provider"></span>
-                        </div>
-                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                            <i class="fas fa-percent text-purple-600 dark:text-purple-400"></i>
-                            <strong>Impuesto:</strong>
-                            <span x-text="showProduct.tax"></span>
-                            <template
-                                x-if="showProduct.tax_percentage !== undefined && showProduct.tax_percentage !== null && showProduct.tax_percentage !== ''">
-                                <span>(<span x-text="showProduct.tax_percentage"></span>%)</span>
-                            </template>
-                        </div>
-                        <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                            <i class="fas fa-money-bill-wave text-purple-600 dark:text-purple-400"></i>
-                            <strong>Estado:</strong>
-                            <template x-if="showProduct.status === 'available'">
-                                <span
-                                    class="px-2 py-1 font-semibold leading-tight text-white rounded-full bg-green-600 dark:bg-green-700">Disponible</span>
-                            </template>
-                            <template x-if="showProduct.status === 'discontinued'">
-                                <span
-                                    class="px-2 py-1 font-semibold leading-tight text-white rounded-full bg-gray-500 dark:bg-gray-600">Descontinuado</span>
-                            </template>
-                            <template x-if="showProduct.status === 'out_of_stock'">
-                                <span
-                                    class="px-2 py-1 font-semibold leading-tight text-white rounded-full bg-red-600 dark:bg-red-700">Sin
-                                    stock</span>
-                            </template>
-                            <template x-if="showProduct.status === 'reserved'">
-                                <span
-                                    class="px-2 py-1 font-semibold leading-tight text-white rounded-full bg-yellow-500 dark:bg-yellow-600">Reservado</span>
-                            </template>
-                            <template
-                                x-if="!['available','discontinued','out_of_stock','reserved'].includes(showProduct.status)">
-                                <span class="px-2 py-1 font-semibold leading-tight text-white rounded-full bg-gray-400"
-                                    x-text="showProduct.status"></span>
-                            </template>
-                        </div>
-                    </div>
-
-                    <!-- Fechas -->
-                    <div
-                        class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t pt-3 text-xs text-gray-500 dark:text-gray-400">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-calendar-alt text-purple-500"></i>
-                            <strong>Registro:</strong> <span x-text="showProduct.formatted_created_at"></span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-clock text-purple-500"></i>
-                            <strong>Actualización:</strong> <span x-text="showProduct.formatted_updated_at"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </x-show-modal>
-
         <div class="mt-4 w-full overflow-hidden rounded-xl shadow-md bg-white dark:bg-gray-800">
             <div class="w-full overflow-x-auto">
                 <table class="w-full text-left">
@@ -364,7 +229,8 @@
                             <th class="px-4 py-3"><i class="fas fa-image mr-2"></i>Imagen</th>
                             <th class="px-4 py-3"><x-table-sort-header field="name" label="Nombre"
                                     route="products.search" icon="<i class='fas fa-box mr-2'></i>" /></th>
-                <th class="px-4 py-3"><span class="inline-flex items-center"><i class="fas fa-list-alt mr-2"></i>Categoría</span></th>
+                            <th class="px-4 py-3"><span class="inline-flex items-center"><i
+                                        class="fas fa-list-alt mr-2"></i>Categoría</span></th>
                             <th class="px-4 py-3"><x-table-sort-header field="brand_id" label="Marca"
                                     route="products.search" icon="<i class='fas fa-tags mr-2'></i>" /></th>
                             <th class="px-4 py-3"><x-table-sort-header field="unit_measure_id" label="Medida"
@@ -422,43 +288,16 @@
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2 text-sm">
                                         @if (in_array($product->status, ['available', 'out_of_stock']))
-                                            <div x-data="{ isModalOpen: false, closeModal() { this.isModalOpen = false } }">
-                                                <button @click="isModalOpen = true" title="Ver"
-                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                    aria-label="Ver">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <x-modal maxWidth="md">
-                                                    <x-slot name="title">Detalle del Producto
-                                                        #{{ $product->id }}</x-slot>
-                                                    <x-slot name="description"></x-slot>
-                                                    @include('admin.products.partials.show_card', [
-                                                        'product' => $product,
-                                                    ])
-                                                </x-modal>
-                                            </div>
-                                            <button type="button" title="Editar"
-                                                @click="
-                                                            editProduct = {
-                                                                id: {{ $product->id }},
-                                                                name: '{{ addslashes($product->name) }}',
-                                                                description: '{{ addslashes($product->description) }}',
-                                                                barcode: '{{ addslashes($product->barcode) }}',
-                                                                category_id: {{ $product->category_id ?? 'null' }},
-                                                                brand_id: {{ $product->brand_id ?? 'null' }},
-                                                                unit_measure_id: {{ $product->unit_measure_id ?? 'null' }},
-                                                                entity_id: {{ $product->entity_id ?? 'null' }},
-                                                                tax_id: {{ $product->tax_id ?? 'null' }},
-                                                                status: '{{ addslashes($product->status) }}',
-                                                                image_url: '{{ addslashes($product->image_url) }}'
-                                                            };
-                                                            editAction = '{{ route('products.update', $product) }}';
-                                                            isEditModalOpen = true;
-                                                        "
+                                            <a href="{{ route('products.show', $product) }}" title="Ver"
                                                 class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                aria-label="Editar Modal">
+                                                aria-label="Ver">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('products.edit', $product) }}" title="Editar"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                aria-label="Editar">
                                                 <i class="fas fa-edit"></i>
-                                            </button>
+                                            </a>
                                         @endif
                                         <form action="{{ route('products.destroy', $product) }}" method="POST"
                                             onsubmit="return confirm('{{ $product->status === 'discontinued' ? '¿Seguro de rehabilitar este producto?' : '¿Seguro de descontinuar este producto?' }}\n\n¿Está seguro que desea realizar esta acción?');">
