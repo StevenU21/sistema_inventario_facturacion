@@ -79,8 +79,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Taxes
     Route::get('taxes/search', [TaxController::class, 'search'])->name('taxes.search');
-
-    // Taxes
     Route::resource('taxes', TaxController::class);
 
     // Colors

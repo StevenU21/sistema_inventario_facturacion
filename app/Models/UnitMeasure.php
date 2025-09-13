@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\CacheClearable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class UnitMeasure extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity, CacheClearable;
     protected $fillable = [
         'name',
         'abbreviation',

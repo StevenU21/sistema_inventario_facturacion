@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\CacheClearable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\LogOptions;
@@ -10,7 +11,7 @@ use App\Models\ProductVariant;
 
 class Product extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, CacheClearable;
 
     protected $fillable = [
         'name',

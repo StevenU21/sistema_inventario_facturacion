@@ -3,7 +3,6 @@
 namespace App\Traits;
 
 use Spatie\ResponseCache\Facades\ResponseCache;
-use Illuminate\Support\Facades\Log;
 
 trait CacheClearable
 {
