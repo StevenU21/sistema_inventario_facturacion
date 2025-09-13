@@ -418,8 +418,7 @@ class InventoryController extends Controller
             ->with(['product.brand', 'product.category'])
             ->whereHas('product', function ($q2) {
                 $q2->where('status', 'available');
-            })
-            ->whereDoesntHave('inventories');
+            });
 
         if (!empty($productId)) {
             $query->where('product_id', $productId);
@@ -446,12 +445,8 @@ class InventoryController extends Controller
             });
         }
         if (!empty($q)) {
-            $query->where(function ($sub) use ($q) {
-                $sub->whereHas('product', function ($sp) use ($q) {
-                    $sp->where('name', 'like', "%{$q}%");
-                })
-                    ->orWhere('sku', 'like', "%{$q}%")
-                    ->orWhere('barcode', 'like', "%{$q}%");
+            $query->whereHas('product', function ($sp) use ($q) {
+                $sp->where('name', 'like', "%{$q}%");
             });
         }
 
@@ -475,18 +470,8 @@ class InventoryController extends Controller
                 'size_name' => $v->size_id ? ($sizes[$v->size_id] ?? null) : null,
                 'category_name' => optional($v->product?->category)->name,
                 'brand_name' => optional($v->product?->brand)->name,
-                'label' => trim(sprintf(
-                    '%s%s%s',
-                    optional($v->product)->name,
-                    $v->color_id ? (' - ' . ($colors[$v->color_id] ?? '-')) : '',
-                    $v->size_id ? (' / ' . ($sizes[$v->size_id] ?? '-')) : ''
-                )),
-                'text' => trim(sprintf(
-                    '%s%s%s',
-                    optional($v->product)->name,
-                    $v->color_id ? (' - ' . ($colors[$v->color_id] ?? '-')) : '',
-                    $v->size_id ? (' / ' . ($sizes[$v->size_id] ?? '-')) : ''
-                )),
+                'label' => optional($v->product)->name,
+                'text' => optional($v->product)->name,
             ];
         })->values();
 

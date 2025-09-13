@@ -88,12 +88,34 @@
         <section class="mt-4 rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 sm:p-5">
             <form method="GET" action="{{ route('inventories.search') }}"
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
-                <div class="sm:col-span-2 lg:col-span-3">
-                    <label for="search"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
-                    <x-autocomplete id="inventory_search" name="search"
-                        url="{{ route('inventories.variantSearch') }}"
-                        :value="request('search')" placeholder="Producto, SKU o código de barras" min="2" debounce="250" submit="true" />
+                <div class="col-span-1 sm:col-span-3 lg:col-span-6 flex flex-row gap-2 items-end col-span-full">
+                    <div class="flex-1">
+                        <label for="search"
+                            class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
+                        <x-autocomplete id="inventory_search" name="search" url="{{ route('inventories.variantSearch') }}"
+                            :value="request('search')" placeholder="Producto, SKU o código de barras" min="2" debounce="250" />
+                    </div>
+                    <div class="flex flex-row gap-2 items-end">
+                        <button type="submit"
+                            class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white shadow">
+                            <i class="fas fa-search"></i>
+                            Buscar
+                        </button>
+                        @if (request()->hasAny([
+                                'search',
+                                'per_page',
+                                'product_id',
+                                'color_id',
+                                'size_id',
+                                'warehouse_id',
+                            ]))
+                            <a href="{{ route('inventories.index') }}"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
+                                <i class="fas fa-undo"></i>
+                                Limpiar
+                            </a>
+                        @endif
+                    </div>
                 </div>
                 <div>
                     <label for="per_page"
@@ -191,8 +213,8 @@
                                     icon="<i class='fas fa-hashtag mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="product_variant_id" label="Variante" route="inventories.search"
-                                    icon="<i class='fas fa-box mr-2'></i>" />
+                                <x-table-sort-header field="product_variant_id" label="Variante"
+                                    route="inventories.search" icon="<i class='fas fa-box mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3"><i class="fas fa-image mr-2"></i>Imagen</th>
                             <th class="px-4 py-3">
