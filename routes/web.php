@@ -120,6 +120,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Inventories
     Route::get('inventories/search', [InventoryController::class, 'search'])->name('inventories.search');
     Route::get('inventories/export', [InventoryController::class, 'export'])->name('inventories.export');
+    Route::get('inventories/variant-search', [InventoryController::class, 'variantSearch'])->name('inventories.variantSearch');
     Route::resource('inventories', InventoryController::class);
 
     // Inventory Movements

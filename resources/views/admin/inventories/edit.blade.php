@@ -65,7 +65,7 @@
                     </div>
                     <a href="{{ route('inventories.index') }}"
                         class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                        <i class="fas fa-eye"></i> Volver
+                        <i class="fas fa-arrow-left"></i> Volver
                     </a>
                 </div>
             </div>

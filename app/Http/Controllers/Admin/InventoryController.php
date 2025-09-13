@@ -385,4 +385,79 @@ class InventoryController extends Controller
         $inventory->delete();
         return redirect()->route('inventories.index')->with('deleted', 'Inventario eliminado correctamente.');
     }
+
+    /**
+     * JSON search for Product Variants to pick before creating an inventory record.
+     */
+    public function variantSearch(Request $request)
+    {
+        $this->authorize('viewAny', Inventory::class);
+
+        $q = $request->string('q')->toString();
+        $productId = $request->input('product_id');
+        $colorId = $request->input('color_id');
+        $sizeId = $request->input('size_id');
+        $perPage = (int) $request->input('per_page', 10);
+
+        $query = ProductVariant::query()
+            ->with(['product'])
+            ->whereHas('product', function ($q2) {
+                $q2->where('status', 'available');
+            });
+
+        if (!empty($productId)) {
+            $query->where('product_id', $productId);
+        }
+        if (!empty($colorId)) {
+            $query->where('color_id', $colorId);
+        }
+        if (!empty($sizeId)) {
+            $query->where('size_id', $sizeId);
+        }
+        if (!empty($q)) {
+            $query->where(function ($sub) use ($q) {
+                $sub->whereHas('product', function ($sp) use ($q) {
+                    $sp->where('name', 'like', "%{$q}%");
+                })
+                ->orWhere('sku', 'like', "%{$q}%")
+                ->orWhere('barcode', 'like', "%{$q}%");
+            });
+        }
+
+        $variants = $query->latest()->paginate($perPage);
+
+        $colors = Color::whereIn('id', $variants->pluck('color_id')->filter()->unique()->values())
+            ->pluck('name', 'id');
+        $sizes = Size::whereIn('id', $variants->pluck('size_id')->filter()->unique()->values())
+            ->pluck('name', 'id');
+
+        $data = $variants->getCollection()->map(function ($v) use ($colors, $sizes) {
+            return [
+                'id' => $v->id,
+                'product_id' => $v->product_id,
+                'product_name' => optional($v->product)->name,
+                'sku' => $v->sku ?? null,
+                'barcode' => $v->barcode ?? null,
+                'color_id' => $v->color_id,
+                'color_name' => $v->color_id ? ($colors[$v->color_id] ?? null) : null,
+                'size_id' => $v->size_id,
+                'size_name' => $v->size_id ? ($sizes[$v->size_id] ?? null) : null,
+                'label' => trim(sprintf('%s%s%s',
+                    optional($v->product)->name,
+                    $v->color_id ? (' - ' . ($colors[$v->color_id] ?? '-')) : '',
+                    $v->size_id ? (' / ' . ($sizes[$v->size_id] ?? '-')) : ''
+                )),
+            ];
+        })->values();
+
+        return response()->json([
+            'data' => $data,
+            'meta' => [
+                'current_page' => $variants->currentPage(),
+                'last_page' => $variants->lastPage(),
+                'per_page' => $variants->perPage(),
+                'total' => $variants->total(),
+            ],
+        ]);
+    }
 }
