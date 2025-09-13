@@ -73,7 +73,7 @@
                         <form method="GET" action="{{ route('products.export') }}">
                             <input type="hidden" name="search" value="{{ request('search') }}">
                             <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
-                            <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                            {{-- <input type="hidden" name="category_id" value="{{ request('category_id') }}"> --}}
                             <input type="hidden" name="unit_measure_id" value="{{ request('unit_measure_id') }}">
                             <input type="hidden" name="tax_id" value="{{ request('tax_id') }}">
                             <input type="hidden" name="status" value="{{ request('status') }}">
@@ -152,7 +152,7 @@
                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                     </select>
                 </div>
-                <div>
+                {{-- <div>
                     <label for="category_id"
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Categoría</label>
                     <select name="category_id" id="category_id"
@@ -164,7 +164,7 @@
                                 {{ $name }}</option>
                         @endforeach
                     </select>
-                </div>
+                </div> --}}
                 <div>
                     <label for="brand_id"
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Marca</label>
@@ -364,8 +364,7 @@
                             <th class="px-4 py-3"><i class="fas fa-image mr-2"></i>Imagen</th>
                             <th class="px-4 py-3"><x-table-sort-header field="name" label="Nombre"
                                     route="products.search" icon="<i class='fas fa-box mr-2'></i>" /></th>
-                            <th class="px-4 py-3"><x-table-sort-header field="category_id" label="Categoría"
-                                    route="products.search" icon="<i class='fas fa-list-alt mr-2'></i>" /></th>
+                <th class="px-4 py-3"><span class="inline-flex items-center"><i class="fas fa-list-alt mr-2"></i>Categoría</span></th>
                             <th class="px-4 py-3"><x-table-sort-header field="brand_id" label="Marca"
                                     route="products.search" icon="<i class='fas fa-tags mr-2'></i>" /></th>
                             <th class="px-4 py-3"><x-table-sort-header field="unit_measure_id" label="Medida"
@@ -393,7 +392,7 @@
                                     <img src="{{ $product->image_url }}" alt="Imagen" width="50" class="rounded">
                                 </td>
                                 <td class="px-4 py-3 text-sm">{{ $product->name }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $product->category->name ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $product->brand->category->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $product->brand->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $product->unitMeasure->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm font-medium">

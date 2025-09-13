@@ -29,7 +29,6 @@ class ProductFactory extends Factory
             // App uses 'available' | 'discontinued'
             'status' => 'available',
             'brand_id' => Brand::inRandomOrder()->first()?->id,
-            'category_id' => Category::inRandomOrder()->first()?->id,
             'tax_id' => Tax::inRandomOrder()->first()?->id,
             'unit_measure_id' => UnitMeasure::inRandomOrder()->first()?->id,
             'entity_id' => Entity::inRandomOrder()->first()?->id

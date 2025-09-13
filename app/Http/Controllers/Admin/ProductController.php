@@ -26,7 +26,7 @@ class ProductController extends Controller
     public function index()
     {
         $this->authorize("viewAny", Product::class);
-        $products = Product::with(['brand', 'category', 'tax', 'unitMeasure', 'entity'])
+        $products = Product::with(['brand.category', 'tax', 'unitMeasure', 'entity'])
             ->where('status', 'available')
             ->latest()
             ->paginate(15);
@@ -34,6 +34,11 @@ class ProductController extends Controller
         // Solo consulta catálogos una vez
         $brands = Brand::pluck('name', 'id');
         $categories = Category::pluck('name', 'id');
+        $brandsByCategory = Brand::with('category')
+            ->get()
+            ->groupBy('category_id')
+            ->map(fn($grp) => $grp->pluck('name', 'id'))
+            ->toArray();
         $units = UnitMeasure::pluck('name', 'id');
         $taxes = Tax::pluck('name', 'id');
         $entities = Entity::where('is_active', true)
@@ -41,7 +46,7 @@ class ProductController extends Controller
             ->get()
             ->pluck(fn($entity) => $entity->first_name . ' ' . $entity->last_name, 'id');
 
-        return view('admin.products.index', compact('products', 'brands', 'categories', 'units', 'taxes', 'entities'));
+        return view('admin.products.index', compact('products', 'brands', 'categories', 'units', 'taxes', 'entities', 'brandsByCategory'));
     }
 
     public function search(Request $request, ModelSearchService $searchService)
@@ -49,7 +54,7 @@ class ProductController extends Controller
         $this->authorize('viewAny', Product::class);
         $params = $request->all();
         // Sanitizar ordenamientos permitidos para evitar errores
-        $allowedSorts = ['id', 'name', 'brand_id', 'category_id', 'tax_id', 'unit_measure_id', 'entity_id', 'status', 'created_at'];
+    $allowedSorts = ['id', 'name', 'brand_id', 'tax_id', 'unit_measure_id', 'entity_id', 'status', 'created_at'];
         if (!empty($params['sort']) && !in_array($params['sort'], $allowedSorts)) {
             unset($params['sort']); // Dejar que el servicio use el default
         }
@@ -60,14 +65,16 @@ class ProductController extends Controller
             // Campos de búsqueda (incluye relación)
             ['name', 'description', 'barcode', 'brand.name'],
             // Relaciones a cargar
-            ['brand', 'category', 'tax', 'unitMeasure', 'entity'],
+            ['brand.category', 'tax', 'unitMeasure', 'entity'],
             // Filtros personalizados
             function ($query, $p) {
                 if (!empty($p['brand_id'])) {
                     $query->where('brand_id', $p['brand_id']);
                 }
                 if (!empty($p['category_id'])) {
-                    $query->where('category_id', $p['category_id']);
+                    $query->whereHas('brand', function ($b) use ($p) {
+                        $b->where('category_id', $p['category_id']);
+                    });
                 }
                 if (!empty($p['unit_measure_id'])) {
                     $query->where('unit_measure_id', $p['unit_measure_id']);
@@ -85,6 +92,11 @@ class ProductController extends Controller
         );
         $brands = Brand::pluck('name', 'id');
         $categories = Category::pluck('name', 'id');
+        $brandsByCategory = Brand::with('category')
+            ->get()
+            ->groupBy('category_id')
+            ->map(fn($grp) => $grp->pluck('name', 'id'))
+            ->toArray();
         $units = UnitMeasure::pluck('name', 'id');
         $taxes = Tax::pluck('name', 'id');
         $entities = Entity::where('is_active', true)
@@ -93,14 +105,14 @@ class ProductController extends Controller
             ->pluck(function ($entity) {
                 return $entity->first_name . ' ' . $entity->last_name;
             }, 'id');
-        return view('admin.products.index', compact('products', 'brands', 'categories', 'units', 'taxes', 'entities'));
+        return view('admin.products.index', compact('products', 'brands', 'categories', 'units', 'taxes', 'entities', 'brandsByCategory'));
     }
 
     public function export(Request $request)
     {
         $this->authorize('viewAny', Product::class);
-        $brandId = $request->input('brand_id');
-        $categoryId = $request->input('category_id');
+    $brandId = $request->input('brand_id');
+    $categoryId = $request->input('category_id');
         $unitId = $request->input('unit_measure_id');
         $taxId = $request->input('tax_id');
         $entityId = $request->input('entity_id');
@@ -108,12 +120,14 @@ class ProductController extends Controller
         $search = $request->input('search');
         $sort = $request->input('sort', 'id');
         $direction = $request->input('direction', 'desc');
-        $query = Product::with(['brand', 'category', 'tax', 'unitMeasure', 'entity']);
+    $query = Product::with(['brand.category', 'tax', 'unitMeasure', 'entity']);
         if (!empty($brandId)) {
             $query->where('brand_id', $brandId);
         }
         if (!empty($categoryId)) {
-            $query->where('category_id', $categoryId);
+            $query->whereHas('brand', function ($b) use ($categoryId) {
+                $b->where('category_id', $categoryId);
+            });
         }
         if (!empty($unitId)) {
             $query->where('unit_measure_id', $unitId);
@@ -138,7 +152,7 @@ class ProductController extends Controller
                     });
             });
         }
-        $allowedSorts = ['id', 'name', 'brand_id', 'category_id', 'tax_id', 'unit_measure_id', 'entity_id', 'status', 'created_at'];
+    $allowedSorts = ['id', 'name', 'brand_id', 'tax_id', 'unit_measure_id', 'entity_id', 'status', 'created_at'];
         if (in_array($sort, $allowedSorts)) {
             $query->orderBy($sort, $direction);
         } else {
@@ -154,6 +168,11 @@ class ProductController extends Controller
         $this->authorize("create", Product::class);
         $categories = Category::pluck('name', 'id');
         $brands = Brand::pluck('name', 'id');
+        $brandsByCategory = Brand::with('category')
+            ->get()
+            ->groupBy('category_id')
+            ->map(fn($grp) => $grp->pluck('name', 'id'))
+            ->toArray();
         $units = UnitMeasure::pluck('name', 'id');
         $entities = Entity::where('is_active', true)
             ->where('is_supplier', true)
@@ -162,7 +181,7 @@ class ProductController extends Controller
                 return $entity->first_name . ' ' . $entity->last_name;
             }, 'id');
         $taxes = Tax::pluck('name', 'id');
-        return view('admin.products.create', compact('categories', 'brands', 'units', 'entities', 'taxes'));
+        return view('admin.products.create', compact('categories', 'brands', 'units', 'entities', 'taxes', 'brandsByCategory'));
     }
 
     public function store(ProductRequest $request, FileService $fileService)
@@ -186,9 +205,9 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-    $this->authorize("view", $product);
-    $product->load(['brand', 'category', 'tax', 'unitMeasure', 'entity']);
-    return view('admin.products.show', compact('product'));
+        $this->authorize("view", $product);
+        $product->load(['brand.category', 'tax', 'unitMeasure', 'entity']);
+        return view('admin.products.show', compact('product'));
     }
 
     public function edit(Product $product)
@@ -196,6 +215,11 @@ class ProductController extends Controller
         $this->authorize("update", $product);
         $categories = Category::pluck('name', 'id');
         $brands = Brand::pluck('name', 'id');
+        $brandsByCategory = Brand::with('category')
+            ->get()
+            ->groupBy('category_id')
+            ->map(fn($grp) => $grp->pluck('name', 'id'))
+            ->toArray();
         $units = UnitMeasure::pluck('name', 'id');
         $entities = Entity::where('is_active', true)
             ->where('is_supplier', true)
@@ -204,7 +228,7 @@ class ProductController extends Controller
                 return $entity->first_name . ' ' . $entity->last_name;
             }, 'id');
         $taxes = Tax::pluck('name', 'id');
-        return view('admin.products.edit', compact('product', 'categories', 'brands', 'units', 'entities', 'taxes'));
+        return view('admin.products.edit', compact('product', 'categories', 'brands', 'units', 'entities', 'taxes', 'brandsByCategory'));
     }
 
     public function update(ProductRequest $request, Product $product, FileService $fileService)

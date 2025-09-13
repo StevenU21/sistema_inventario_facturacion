@@ -36,7 +36,7 @@ class ProductsExport implements FromCollection, WithHeadings
 
         return $products->map(function ($product) use ($statusLabels) {
             $brand = $product->brand->name ?? '-';
-            $category = $product->category->name ?? '-';
+            $category = optional($product->brand->category)->name ?? '-';
             $unit = $product->unitMeasure->name ?? '-';
             $tax = $product->tax->name . ' ' . ($product->tax->percentage ?? '-') . '%';
             $provider = $product->entity

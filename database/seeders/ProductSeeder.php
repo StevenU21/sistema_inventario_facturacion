@@ -23,7 +23,6 @@ class ProductSeeder extends Seeder
                 'image' => null,
                 'status' => 'available',
                 'brand_id' => 2, // Nike
-                'category_id' => 6, // Ropa
                 'tax_id' => 1, // IVA
                 'unit_measure_id' => 1, // Unidad
                 'entity_id' => 2, // Cliente ejemplo
@@ -35,7 +34,6 @@ class ProductSeeder extends Seeder
                 'image' => null,
                 'status' => 'available',
                 'brand_id' => 4, // Samsung
-                'category_id' => 5, // Electrónica
                 'tax_id' => 1, // IVA
                 'unit_measure_id' => 1, // Unidad
                 'entity_id' => 1, // Proveedor ejemplo
@@ -47,7 +45,6 @@ class ProductSeeder extends Seeder
                 'image' => null,
                 'status' => 'available',
                 'brand_id' => 8, // Colgate
-                'category_id' => 4, // Higiene Personal
                 'tax_id' => 2, // Exento
                 'unit_measure_id' => 1, // Unidad
                 'entity_id' => 3, // Mixto ejemplo

@@ -86,7 +86,7 @@
                     </p>
                     <p class="flex items-center"><span class="w-20 text-gray-500 dark:text-gray-400">Categoría:</span>
                         <span
-                            class="font-medium">{{ optional(optional($inventory->productVariant->product)->category)->name ?? '-' }}</span>
+                            class="font-medium">{{ optional(optional(optional($inventory->productVariant->product)->brand)->category)->name ?? '-' }}</span>
                     </p>
                     <p class="flex items-center"><span class="w-20 text-gray-500 dark:text-gray-400">Impuesto:</span>
                         <span

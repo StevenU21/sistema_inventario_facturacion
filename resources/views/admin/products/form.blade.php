@@ -89,11 +89,15 @@
 </script>
 
 <!-- Marca, Categoría, Impuesto -->
+<script>
+    // Asegura que el mapa esté disponible globalmente antes de que Alpine lo use
+    window.brandsByCategory = window.brandsByCategory || @json($brandsByCategory ?? []);
+ </script>
 <div class="flex flex-col md:flex-row gap-4 mt-4">
     <label class="block text-sm w-full">
         <span class="text-gray-700 dark:text-gray-400">Categoría</span>
         <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-            <select name="category_id"
+            <select name="category_id" id="{{ isset($alpine) && $alpine ? 'category_id_select_edit' : 'category_id_select_create' }}"
                 class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('category_id') border-red-600 @enderror"
                 @if (isset($alpine) && $alpine) x-model="editProduct.category_id" @endif required>
                 <option value="">Seleccione</option>
@@ -114,15 +118,15 @@
     <label class="block text-sm w-full">
         <span class="text-gray-700 dark:text-gray-400">Marca</span>
         <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-            <select name="brand_id"
+            <select name="brand_id" id="{{ isset($alpine) && $alpine ? 'brand_id_select_edit' : 'brand_id_select_create' }}"
                 class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('brand_id') border-red-600 @enderror"
                 @if (isset($alpine) && $alpine) x-model="editProduct.brand_id" @endif required>
                 <option value="">Seleccione</option>
-                @foreach ($brands as $id => $name)
-                    <option value="{{ $id }}"
-                        @if (!isset($alpine) || !$alpine) {{ old('brand_id', $product->brand_id ?? '') == $id ? 'selected' : '' }} @endif>
-                        {{ $name }}</option>
-                @endforeach
+                @if (isset($alpine) && $alpine)
+                    <template x-for="([id, name]) in Object.entries((window.brandsByCategory || {})[editProduct.category_id] || {})" :key="id">
+                        <option :value="id" x-text="name"></option>
+                    </template>
+                @endif
             </select>
             <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                 <i class="fas fa-tags w-5 h-5"></i>
@@ -154,6 +158,55 @@
         @enderror
     </label>
 </div>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        // Para el modal de edición, Alpine ya maneja x-model y la vista trae todas las marcas.
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Poblar marcas en base a categoría para ambos modos (create/edit)
+        const pairs = [
+            { catId: 'category_id_select_create', brandId: 'brand_id_select_create', preCat: '{{ old('category_id', $product->category_id ?? '') }}', preBrand: '{{ old('brand_id', $product->brand_id ?? '') }}' },
+            { catId: 'category_id_select_edit', brandId: 'brand_id_select_edit', preCat: null, preBrand: null },
+        ];
+
+        // window.brandsByCategory ya fue inyectado arriba
+
+        function populateBrandsFor(catSelect, brandSelect, preselected) {
+            if (!catSelect || !brandSelect) return;
+            const map = window.brandsByCategory || {};
+            const options = map[catSelect.value] || {};
+            const current = brandSelect.value;
+            brandSelect.innerHTML = '<option value="">Seleccione</option>';
+            Object.entries(options).forEach(([id, name]) => {
+                const opt = document.createElement('option');
+                opt.value = id;
+                opt.textContent = name;
+                brandSelect.appendChild(opt);
+            });
+            const toSelect = preselected ?? current;
+            if (toSelect && brandSelect.querySelector(`option[value="${toSelect}"]`)) {
+                brandSelect.value = String(toSelect);
+                brandSelect.dispatchEvent(new Event('change'));
+            }
+        }
+
+        pairs.forEach(({ catId, brandId, preCat, preBrand }) => {
+            const catSelect = document.getElementById(catId);
+            const brandSelect = document.getElementById(brandId);
+            if (!catSelect || !brandSelect) return;
+            // Si hay categoría precargada, poblar
+            const initialCat = preCat ?? catSelect.value;
+            if (initialCat) {
+                populateBrandsFor(catSelect, brandSelect, preBrand);
+            }
+            catSelect.addEventListener('change', function() {
+                populateBrandsFor(catSelect, brandSelect, null);
+            });
+        });
+    });
+</script>
 
 <!-- Unidad de Medida, Proveedor, Estado -->
 <div class="flex flex-col md:flex-row gap-4 mt-4">

@@ -28,7 +28,7 @@ class EntityController extends Controller
         return view('admin.entities.index', compact('entities', 'departments', 'municipalities', 'departmentsByMunicipality'));
     }
 
-    public function search(\Illuminate\Http\Request $request)
+    public function search(Request $request)
     {
         $this->authorize('viewAny', Entity::class);
         $query = Entity::with('municipality');

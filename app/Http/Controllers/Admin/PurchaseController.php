@@ -436,7 +436,7 @@ class PurchaseController extends Controller
                 // compat con consumidores tipo select2
                 'text' => $p->name,
                 'brand_name' => optional($p->brand)->name,
-                'category_name' => optional($p->category)->name,
+                'category_name' => optional(optional($p->brand)->category)->name,
                 'code' => $p->code,
                 'sku' => $p->sku,
                 'barcode' => $p->barcode,

@@ -25,7 +25,6 @@ return new class extends Migration {
             }
             // Foreign key filters
             $table->index('brand_id', 'products_brand_id_index');
-            $table->index('category_id', 'products_category_id_index');
             $table->index('tax_id', 'products_tax_id_index');
             $table->index('unit_measure_id', 'products_unit_measure_id_index');
             $table->index('entity_id', 'products_entity_id_index');

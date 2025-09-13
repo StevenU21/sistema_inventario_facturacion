@@ -38,8 +38,8 @@
         <div class="mt-3 grid grid-cols-2 md:grid-cols-3 gap-2">
             <div class="p-2 rounded border dark:border-gray-700">
                 <p class="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Categoría</p>
-                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 flex items-center"><i
-                        class="fas fa-cubes text-purple-600 dark:text-purple-400 mr-2"></i>{{ optional($product->category)->name ?? '-' }}
+        <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 flex items-center"><i
+            class="fas fa-cubes text-purple-600 dark:text-purple-400 mr-2"></i>{{ optional(optional($product->brand)->category)->name ?? '-' }}
                 </p>
             </div>
             <div class="p-2 rounded border dark:border-gray-700">
