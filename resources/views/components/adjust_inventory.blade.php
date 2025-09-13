@@ -43,14 +43,16 @@
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select"
                     x-model="reason">
                     <option value="">Seleccionar razón</option>
-                    <option value="correction">Corrección</option>
-                    <option value="physical_count">Conteo físico</option>
+                    <option value="correction">Corrección Física</option>
                     <option value="damage">Daño</option>
                     <option value="theft">Robo</option>
                     <option value="purchase_price">Precio de compra</option>
                     <option value="sale_price">Precio de venta</option>
                 </select>
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none"></div>
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <i class="fas fa-clipboard-list text-gray-400"></i>
+                </div>
             </div>
             @error('adjustment_reason')
                 <span class="text-xs text-red-600">{{ $message }}</span>

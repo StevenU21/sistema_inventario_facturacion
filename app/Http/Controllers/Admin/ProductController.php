@@ -197,6 +197,8 @@ class ProductController extends Controller
     {
         $this->authorize("create", Product::class);
         $data = $request->validated();
+        // Forzar estado a 'available' al crear
+        $data['status'] = 'available';
         DB::transaction(function () use ($request, $fileService, $data) {
             $product = new Product($data);
             // Derivar category_id desde la marca seleccionada para cumplir NOT NULL en DB
@@ -209,9 +211,7 @@ class ProductController extends Controller
             }
             $product->save();
 
-            $warehouseId = (int) ($data['warehouse_id'] ?? 0);
-            $userId = optional($request->user())->getAuthIdentifier();
-            if (!empty($data['details']) && $warehouseId) {
+            if (!empty($data['details'])) {
                 foreach ($data['details'] as $row) {
                     $variant = ProductVariant::firstOrCreate(
                         [
@@ -229,32 +229,6 @@ class ProductController extends Controller
                         'code' => $row['code'] ?? $variant->code,
                     ]);
                     $variant->save();
-
-                    $quantity = (int) ($row['quantity'] ?? 0);
-                    $purchasePrice = (float) ($row['unit_price'] ?? 0);
-                    $salePrice = (float) ($row['sale_price'] ?? 0);
-                    $minStock = (int) ($row['min_stock'] ?? 0);
-
-                    $inventory = Inventory::firstOrNew([
-                        'product_variant_id' => $variant->id,
-                        'warehouse_id' => $warehouseId,
-                    ]);
-                    $inventory->stock = ($inventory->exists ? $inventory->stock : 0) + $quantity;
-                    $inventory->purchase_price = $purchasePrice;
-                    $inventory->sale_price = $salePrice;
-                    $inventory->min_stock = $minStock;
-                    $inventory->save();
-
-                    InventoryMovement::create([
-                        'inventory_id' => $inventory->id,
-                        'type' => 'in',
-                        'quantity' => $quantity,
-                        'unit_price' => $purchasePrice,
-                        'total_price' => $purchasePrice * $quantity,
-                        'reference' => 'Alta de producto',
-                        'notes' => 'Ingreso inicial al crear producto',
-                        'user_id' => $userId,
-                    ]);
                 }
             } else {
                 $variant = new ProductVariant([
@@ -324,6 +298,7 @@ class ProductController extends Controller
             $product->category_id = $brand->category_id;
         }
         $product->save();
+        // No modificar inventario ni movimientos
         return redirect()->route('products.index')->with('updated', 'Producto actualizado correctamente.');
     }
 

@@ -87,7 +87,14 @@
         <!-- Filtros -->
         <section class="mt-4 rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 sm:p-5">
             <form method="GET" action="{{ route('inventories.search') }}"
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
+                <div class="sm:col-span-2 lg:col-span-3">
+                    <label for="search"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
+                    <x-autocomplete id="inventory_search" name="search"
+                        url="{{ route('inventories.variantSearch') }}"
+                        :value="request('search')" placeholder="Producto, SKU o código de barras" min="2" debounce="250" submit="true" />
+                </div>
                 <div>
                     <label for="per_page"
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Mostrar</label>

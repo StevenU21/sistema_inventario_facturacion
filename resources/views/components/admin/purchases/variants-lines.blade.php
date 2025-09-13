@@ -3,6 +3,7 @@
     'sizes' => [],
     'oldDetails' => null,
     'prefillDetails' => null,
+    'onlyColorSize' => false,
 ])
 @php
     $oldDetails = $oldDetails ?? old('details');
@@ -32,7 +33,8 @@
         <!-- Lines will be added here -->
         @if (is_array($detailsToShow) && count($detailsToShow))
             @foreach ($detailsToShow as $i => $line)
-                <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end border rounded p-3" data-line>
+                <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end border border-gray-300 dark:border-gray-600 rounded p-3"
+                    data-line>
                     <div class="col-span-1">
                         <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Color</span>
                             <select name="details[{{ $i }}][color_id]"
@@ -67,54 +69,59 @@
                             <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
                         @enderror
                     </div>
-                    <div class="col-span-1">
-                        <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Cantidad</span>
-                            <input type="number" min="1" step="1"
-                                name="details[{{ $i }}][quantity]"
-                                value="{{ old("details.$i.quantity", $line['quantity'] ?? '') }}"
-                                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                                placeholder="Cantidad">
-                        </label>
-                        @error('details.' . $i . '.quantity')
-                            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="col-span-1">
-                        <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio unitario</span>
-                            <input type="number" min="0" step="0.01"
-                                name="details[{{ $i }}][unit_price]"
-                                value="{{ old("details.$i.unit_price", $line['unit_price'] ?? '') }}"
-                                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                                placeholder="Precio unitario">
-                        </label>
-                        @error('details.' . $i . '.unit_price')
-                            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="col-span-1">
-                        <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio venta</span>
-                            <input type="number" min="0" step="0.01"
-                                name="details[{{ $i }}][sale_price]"
-                                value="{{ old("details.$i.sale_price", $line['sale_price'] ?? '') }}"
-                                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                                placeholder="Precio venta">
-                        </label>
-                        @error('details.' . $i . '.sale_price')
-                            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="col-span-1">
-                        <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Stock mínimo</span>
-                            <input type="number" min="0" step="1"
-                                name="details[{{ $i }}][min_stock]"
-                                value="{{ old("details.$i.min_stock", $line['min_stock'] ?? '') }}"
-                                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                                placeholder="Stock mínimo (opcional)">
-                        </label>
-                        @error('details.' . $i . '.min_stock')
-                            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                        @enderror
-                    </div>
+                    @if (!$onlyColorSize)
+                        <div class="col-span-1">
+                            <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Cantidad</span>
+                                <input type="number" min="1" step="1"
+                                    name="details[{{ $i }}][quantity]"
+                                    value="{{ old("details.$i.quantity", $line['quantity'] ?? '') }}"
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                    placeholder="Cantidad">
+                            </label>
+                            @error('details.' . $i . '.quantity')
+                                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="col-span-1">
+                            <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio
+                                    unitario</span>
+                                <input type="number" min="0" step="0.01"
+                                    name="details[{{ $i }}][unit_price]"
+                                    value="{{ old("details.$i.unit_price", $line['unit_price'] ?? '') }}"
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                    placeholder="Precio unitario">
+                            </label>
+                            @error('details.' . $i . '.unit_price')
+                                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="col-span-1">
+                            <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio
+                                    venta</span>
+                                <input type="number" min="0" step="0.01"
+                                    name="details[{{ $i }}][sale_price]"
+                                    value="{{ old("details.$i.sale_price", $line['sale_price'] ?? '') }}"
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                    placeholder="Precio venta">
+                            </label>
+                            @error('details.' . $i . '.sale_price')
+                                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="col-span-1">
+                            <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Stock
+                                    mínimo</span>
+                                <input type="number" min="0" step="1"
+                                    name="details[{{ $i }}][min_stock]"
+                                    value="{{ old("details.$i.min_stock", $line['min_stock'] ?? '') }}"
+                                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                    placeholder="Stock mínimo (opcional)">
+                            </label>
+                            @error('details.' . $i . '.min_stock')
+                                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    @endif
                     <div class="col-span-1 flex gap-2">
                         <button type="button"
                             class="remove-line w-full px-0 py-0 text-sm rounded-lg bg-red-600 hover:bg-red-700 text-white flex items-center justify-center gap-2 font-semibold min-h-[36px]">
@@ -127,7 +134,8 @@
     </div>
     <!-- Template must be inside the Alpine component to be accessible via $refs -->
     <template id="line-template" x-ref="tpl">
-        <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end border rounded p-3" data-line>
+        <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end border border-gray-300 dark:border-gray-600 rounded p-3"
+            data-line>
             <div class="col-span-1">
                 <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Color</span>
                     <select name="details[__INDEX__][color_id]"
@@ -152,34 +160,36 @@
                     </select>
                 </label>
             </div>
-            <div class="col-span-1">
-                <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Cantidad</span>
-                    <input type="number" min="1" step="1" name="details[__INDEX__][quantity]"
-                        class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                        placeholder="Cantidad">
-                </label>
-            </div>
-            <div class="col-span-1">
-                <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio unitario</span>
-                    <input type="number" min="0" step="0.01" name="details[__INDEX__][unit_price]"
-                        class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                        placeholder="Precio unitario">
-                </label>
-            </div>
-            <div class="col-span-1">
-                <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio venta</span>
-                    <input type="number" min="0" step="0.01" name="details[__INDEX__][sale_price]"
-                        class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                        placeholder="Precio venta">
-                </label>
-            </div>
-            <div class="col-span-1">
-                <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Stock mínimo</span>
-                    <input type="number" min="0" step="1" name="details[__INDEX__][min_stock]"
-                        class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                        placeholder="Stock mínimo (opcional)">
-                </label>
-            </div>
+            @if (!$onlyColorSize)
+                <div class="col-span-1">
+                    <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Cantidad</span>
+                        <input type="number" min="1" step="1" name="details[__INDEX__][quantity]"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            placeholder="Cantidad">
+                    </label>
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio unitario</span>
+                        <input type="number" min="0" step="0.01" name="details[__INDEX__][unit_price]"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            placeholder="Precio unitario">
+                    </label>
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Precio venta</span>
+                        <input type="number" min="0" step="0.01" name="details[__INDEX__][sale_price]"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            placeholder="Precio venta">
+                    </label>
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-sm"><span class="text-gray-700 dark:text-gray-200">Stock mínimo</span>
+                        <input type="number" min="0" step="1" name="details[__INDEX__][min_stock]"
+                            class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            placeholder="Stock mínimo (opcional)">
+                    </label>
+                </div>
+            @endif
             <div class="col-span-1 flex gap-2">
                 <button type="button"
                     class="remove-line w-full px-0 py-0 text-sm rounded-lg bg-red-600 hover:bg-red-700 text-white flex items-center justify-center gap-2 font-semibold min-h-[40px]">

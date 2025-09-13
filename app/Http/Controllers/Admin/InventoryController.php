@@ -219,13 +219,13 @@ class InventoryController extends Controller
         $this->authorize('create', Inventory::class);
         // Catálogo de productos para etiquetas sin recargar relaciones
         $products = Product::where('status', 'available')->pluck('name', 'id');
-    $variantsAll = ProductVariant::whereHas('product', function ($q) {
+        $variantsAll = ProductVariant::whereHas('product', function ($q) {
             $q->where('status', 'available');
-    })->get();
-    $colorIds = $variantsAll->pluck('color_id')->filter()->unique()->values();
-    $sizeIds = $variantsAll->pluck('size_id')->filter()->unique()->values();
-    $colors = Color::whereIn('id', $colorIds)->pluck('name', 'id');
-    $sizes = Size::whereIn('id', $sizeIds)->pluck('name', 'id');
+        })->get();
+        $colorIds = $variantsAll->pluck('color_id')->filter()->unique()->values();
+        $sizeIds = $variantsAll->pluck('size_id')->filter()->unique()->values();
+        $colors = Color::whereIn('id', $colorIds)->pluck('name', 'id');
+        $sizes = Size::whereIn('id', $sizeIds)->pluck('name', 'id');
         $variants = $variantsAll->mapWithKeys(function ($variant) use ($products, $colors, $sizes) {
             $label = $products->get($variant->product_id, (string) $variant->product_id);
             if ($variant->name)
@@ -405,20 +405,21 @@ class InventoryController extends Controller
     {
         $this->authorize('viewAny', Inventory::class);
 
-    $q = $request->string('q')->toString();
+        $q = $request->string('q')->toString();
         $productId = $request->input('product_id');
         $colorId = $request->input('color_id');
         $sizeId = $request->input('size_id');
-    $categoryId = $request->input('category_id');
-    $brandId = $request->input('brand_id');
-    $entityId = $request->input('entity_id');
+        $categoryId = $request->input('category_id');
+        $brandId = $request->input('brand_id');
+        $entityId = $request->input('entity_id');
         $perPage = (int) $request->input('per_page', 10);
 
         $query = ProductVariant::query()
-            ->with(['product'])
+            ->with(['product.brand', 'product.category'])
             ->whereHas('product', function ($q2) {
                 $q2->where('status', 'available');
-            });
+            })
+            ->whereDoesntHave('inventories');
 
         if (!empty($productId)) {
             $query->where('product_id', $productId);
@@ -449,8 +450,8 @@ class InventoryController extends Controller
                 $sub->whereHas('product', function ($sp) use ($q) {
                     $sp->where('name', 'like', "%{$q}%");
                 })
-                ->orWhere('sku', 'like', "%{$q}%")
-                ->orWhere('barcode', 'like', "%{$q}%");
+                    ->orWhere('sku', 'like', "%{$q}%")
+                    ->orWhere('barcode', 'like', "%{$q}%");
             });
         }
 
@@ -472,7 +473,16 @@ class InventoryController extends Controller
                 'color_name' => $v->color_id ? ($colors[$v->color_id] ?? null) : null,
                 'size_id' => $v->size_id,
                 'size_name' => $v->size_id ? ($sizes[$v->size_id] ?? null) : null,
-                'label' => trim(sprintf('%s%s%s',
+                'category_name' => optional($v->product?->category)->name,
+                'brand_name' => optional($v->product?->brand)->name,
+                'label' => trim(sprintf(
+                    '%s%s%s',
+                    optional($v->product)->name,
+                    $v->color_id ? (' - ' . ($colors[$v->color_id] ?? '-')) : '',
+                    $v->size_id ? (' / ' . ($sizes[$v->size_id] ?? '-')) : ''
+                )),
+                'text' => trim(sprintf(
+                    '%s%s%s',
                     optional($v->product)->name,
                     $v->color_id ? (' - ' . ($colors[$v->color_id] ?? '-')) : '',
                     $v->size_id ? (' / ' . ($sizes[$v->size_id] ?? '-')) : ''

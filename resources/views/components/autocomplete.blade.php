@@ -5,13 +5,15 @@
     'url' => null,
     'min' => 2,
     'debounce' => 250,
+    'submit' => true, // si true, busca y envía el form al seleccionar
+    'event' => null,  // si se provee, despacha este evento personalizado al seleccionar
 ])
 
 @php
     $id = $attributes->get('id') ?: 'ac_' . \Illuminate\Support\Str::random(6);
 @endphp
 
-<div x-data="autocompleteComponent({ url: '{{ $url }}', min: {{ (int) $min }}, debounce: {{ (int) $debounce }}, initial: @js($value) })" @click.away="open = false" {{ $attributes->merge(['class' => 'relative w-full']) }}>
+<div x-data="autocompleteComponent({ url: '{{ $url }}', min: {{ (int) $min }}, debounce: {{ (int) $debounce }}, initial: @js($value), submit: {{ $submit ? 'true' : 'false' }}, event: @js($event) })" @click.away="open = false" {{ $attributes->merge(['class' => 'relative w-full']) }}>
     <input id="{{ $id }}" name="{{ $name }}" type="text" x-model="query" x-ref="input"
         x-on:input="onInput" x-on:keydown.arrow-down.prevent="highlightNext()"
         x-on:keydown.arrow-up.prevent="highlightPrev()" x-on:keydown.enter.prevent="applyHighlighted()"
@@ -36,21 +38,26 @@
 
 @once
     <script>
-        function autocompleteComponent({
-            url,
-            min,
-            debounce,
-            initial
-        }) {
+        function autocompleteComponent({ url, min, debounce, initial, submit, event }) {
             return {
                 query: initial || '',
                 open: false,
                 suggestions: [],
                 highlighted: -1,
                 timer: null,
+                async fetchData(q) {
+                    if (!url) return [];
+                    const params = new URLSearchParams({ q });
+                    const res = await fetch(`${url}?${params.toString()}`, { headers: { 'Accept': 'application/json' } });
+                    if (!res.ok) return [];
+                    const data = await res.json();
+                    const items = (data.data || data || []);
+                    return items
+                        .map(it => ({ id: it.id ?? it.value ?? it.text, text: it.text ?? it.name ?? it.label ?? String(it) }))
+                        .filter(it => it.text && it.text.length);
+                },
                 onInput(e) {
                     this.highlighted = -1;
-                    if (!url) return;
                     const q = this.query.trim();
                     if (q.length < min) {
                         this.open = false;
@@ -60,17 +67,7 @@
                     clearTimeout(this.timer);
                     this.timer = setTimeout(async () => {
                         try {
-                            const params = new URLSearchParams({
-                                q
-                            });
-                            const res = await fetch(`${url}?${params.toString()}`, {
-                                headers: {
-                                    'Accept': 'application/json'
-                                }
-                            });
-                            if (!res.ok) throw new Error('Network');
-                            const data = await res.json();
-                            this.suggestions = (data.data || []).slice(0, 10);
+                            this.suggestions = await this.fetchData(q);
                             this.open = this.suggestions.length > 0;
                         } catch (err) {
                             this.open = false;
@@ -84,13 +81,17 @@
                     this.open = false;
                     this.suggestions = [];
                     this.highlighted = -1;
-                    // Ensure input value is updated before submitting the form
                     this.$nextTick(() => {
                         if (this.$refs.input) this.$refs.input.value = value;
-                        const form = this.$el.closest('form');
-                        if (form) {
-                            if (typeof form.requestSubmit === 'function') form.requestSubmit();
-                            else form.submit();
+                        if (event) {
+                            this.$dispatch(event, { text: value, item });
+                        }
+                        if (submit) {
+                            const form = this.$el.closest('form');
+                            if (form) {
+                                if (typeof form.requestSubmit === 'function') form.requestSubmit();
+                                else form.submit();
+                            }
                         }
                     });
                 },

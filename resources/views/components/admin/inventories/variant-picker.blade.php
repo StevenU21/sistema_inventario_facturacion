@@ -60,14 +60,16 @@
         const badge = this.$refs.variantBadge;
         if (badge) badge.textContent = row?.label || `${row?.product_name || ''}`;
     },
-}" class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+}" @variant-search.window="filters.q = ($event.detail?.text || ''); search(1)"
+    class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
     <div class="flex flex-col gap-2">
         <div class="flex flex-row gap-2 items-end">
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Buscar producto/variante</span>
-                <input type="text" x-model="filters.q" @keydown.enter.prevent="search(1)"
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                    placeholder="Nombre, SKU o barras">
+                <x-autocomplete id="variant_search" name="variant_search"
+                    url="{{ route('inventories.variantSearch') }}"
+                    placeholder="Nombre, SKU o barras" min="2" debounce="250" submit="0"
+                    event="variant-search" />
             </label>
             <button type="button" @click="search(1)"
                 class="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[40px] font-semibold">

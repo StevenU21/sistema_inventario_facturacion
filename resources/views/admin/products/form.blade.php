@@ -1,6 +1,6 @@
 <!-- Nombre y Imagen -->
 <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-    <label class="block text-sm w-full">
+    <label class="block text-sm w-full md:col-span-2">
         <span class="text-gray-700 dark:text-gray-400">Nombre</span>
         <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
             <input name="name" type="text"
@@ -18,28 +18,6 @@
             <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
         @enderror
     </label>
-    @if (Route::currentRouteNamed('products.create'))
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-400">Almacén destino</span>
-            <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-                <select name="warehouse_id"
-                    class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('warehouse_id') border-red-600 @enderror"
-                    required>
-                    <option value="">Seleccione</option>
-                    @foreach ($warehouses ?? [] as $id => $name)
-                        <option value="{{ $id }}" {{ old('warehouse_id') == $id ? 'selected' : '' }}>
-                            {{ $name }}</option>
-                    @endforeach
-                </select>
-                <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                    <i class="fas fa-warehouse w-5 h-5"></i>
-                </div>
-            </div>
-            @error('warehouse_id')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-    @endif
 </div>
 <div class="mb-4">
     <label class="block text-sm w-full">
@@ -288,34 +266,6 @@
             <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
         @enderror
     </label>
-    <label class="block text-sm w-full">
-        <span class="text-gray-700 dark:text-gray-400">Estado</span>
-        <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
-            <select name="status"
-                class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('status') border-red-600 @enderror"
-                @if (isset($alpine) && $alpine) x-model="editProduct.status" @endif required>
-                <option value="">Seleccione</option>
-                <option value="available"
-                    @if (!isset($alpine) || !$alpine) {{ old('status', $product->status ?? '') == 'available' ? 'selected' : '' }} @endif>
-                    Disponible
-                </option>
-                <option value="discontinued"
-                    @if (!isset($alpine) || !$alpine) {{ old('status', $product->status ?? '') == 'discontinued' ? 'selected' : '' }} @endif>
-                    Descontinuado
-                </option>
-                <option value="out_of_stock"
-                    @if (!isset($alpine) || !$alpine) {{ old('status', $product->status ?? '') == 'out_of_stock' ? 'selected' : '' }} @endif>
-                    Sin stock
-                </option>
-            </select>
-            <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
-                <i class="fas fa-check w-5 h-5"></i>
-            </div>
-        </div>
-        @error('status')
-            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-        @enderror
-    </label>
 </div>
 
 <!-- Descripción -->
@@ -339,7 +289,9 @@
     @enderror
 </label>
 
-<x-admin.purchases.variants-lines :colors="$colors ?? []" :sizes="$sizes ?? []" :old-details="old('details')" :prefill-details="$prefillDetails ?? []" />
+<!-- Variantes: solo color y talla -->
+<x-admin.purchases.variants-lines :colors="$colors ?? []" :sizes="$sizes ?? []" :old-details="old('details')" :prefill-details="$prefillDetails ?? []"
+    :only-color-size="true" />
 
 <!-- Submit Button -->
 <div class="mt-6">
