@@ -11,6 +11,9 @@ use App\Models\Product;
 use App\Models\Color;
 use App\Models\Size;
 use App\Models\Warehouse;
+use App\Models\Category;
+use App\Models\Brand;
+use App\Models\Entity;
 use App\Classes\InventoryMovementManager;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -252,10 +255,19 @@ class InventoryController extends Controller
                 })->values();
             });
         $warehouses = Warehouse::pluck('name', 'id');
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $entities = Entity::where('is_active', true)->where('is_supplier', true)
+            ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         return view('admin.inventories.create', [
             'products' => $products,
             'variantsByProduct' => $variantsByProduct,
-            'warehouses' => $warehouses
+            'warehouses' => $warehouses,
+            'categories' => $categories,
+            'brands' => $brands,
+            'colors' => $colors,
+            'sizes' => $sizes,
+            'entities' => $entities,
         ]);
     }
 
@@ -393,10 +405,13 @@ class InventoryController extends Controller
     {
         $this->authorize('viewAny', Inventory::class);
 
-        $q = $request->string('q')->toString();
+    $q = $request->string('q')->toString();
         $productId = $request->input('product_id');
         $colorId = $request->input('color_id');
         $sizeId = $request->input('size_id');
+    $categoryId = $request->input('category_id');
+    $brandId = $request->input('brand_id');
+    $entityId = $request->input('entity_id');
         $perPage = (int) $request->input('per_page', 10);
 
         $query = ProductVariant::query()
@@ -413,6 +428,21 @@ class InventoryController extends Controller
         }
         if (!empty($sizeId)) {
             $query->where('size_id', $sizeId);
+        }
+        if (!empty($categoryId)) {
+            $query->whereHas('product', function ($sp) use ($categoryId) {
+                $sp->where('category_id', $categoryId);
+            });
+        }
+        if (!empty($brandId)) {
+            $query->whereHas('product', function ($sp) use ($brandId) {
+                $sp->where('brand_id', $brandId);
+            });
+        }
+        if (!empty($entityId)) {
+            $query->whereHas('product', function ($sp) use ($entityId) {
+                $sp->where('entity_id', $entityId);
+            });
         }
         if (!empty($q)) {
             $query->where(function ($sub) use ($q) {

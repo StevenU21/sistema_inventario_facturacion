@@ -1,7 +1,9 @@
 @props([
     'colors' => [],
     'sizes' => [],
-    'warehouses' => [],
+    'categories' => [],
+    'brands' => [],
+    'entities' => [],
 ])
 
 <fieldset x-data="{
@@ -10,6 +12,9 @@
         q: @js(old('filter.q')),
         color_id: @js(old('filter.color_id')),
         size_id: @js(old('filter.size_id')),
+        category_id: @js(old('filter.category_id')),
+        brand_id: @js(old('filter.brand_id')),
+        entity_id: @js(old('filter.entity_id')),
     },
     results: [],
     loading: false,
@@ -50,47 +55,82 @@
     selectVariant(row) {
         this.selectedVariantId = row?.id ?? null;
         // Escribir al input oculto de variant + mostrar etiqueta
-        const hidden = $refs.variantHidden;
+        const hidden = this.$refs.variantHidden;
         if (hidden) hidden.value = this.selectedVariantId ?? '';
-        const badge = $refs.variantBadge;
+        const badge = this.$refs.variantBadge;
         if (badge) badge.textContent = row?.label || `${row?.product_name || ''}`;
     },
-}"
-class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-        <label class="block text-sm w-full md:col-span-2">
-            <span class="text-gray-700 dark:text-gray-200">Buscar producto/variante</span>
-            <input type="text" x-model="filters.q" @keydown.enter.prevent="search(1)"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                placeholder="Nombre, SKU o barras">
-        </label>
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Color</span>
-            <select x-model="filters.color_id" class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                <option value="">Todos</option>
-                @foreach ($colors as $id => $name)
-                    <option value="{{ $id }}">{{ $name }}</option>
-                @endforeach
-            </select>
-        </label>
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Talla</span>
-            <select x-model="filters.size_id" class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                <option value="">Todas</option>
-                @foreach ($sizes as $id => $name)
-                    <option value="{{ $id }}">{{ $name }}</option>
-                @endforeach
-            </select>
-        </label>
-    </div>
-    <div class="mt-3 flex items-center gap-2">
-        <button type="button" @click="search(1)"
-            class="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[40px] font-semibold">
-            <i class="fas fa-search fa-sm mr-1"></i> Buscar
-        </button>
-        <template x-if="selectedVariantId">
-            <span class="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-200" x-ref="variantBadge"></span>
-        </template>
+}" class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+    <div class="flex flex-col gap-2">
+        <div class="flex flex-row gap-2 items-end">
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Buscar producto/variante</span>
+                <input type="text" x-model="filters.q" @keydown.enter.prevent="search(1)"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                    placeholder="Nombre, SKU o barras">
+            </label>
+            <button type="button" @click="search(1)"
+                class="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[40px] font-semibold">
+                <i class="fas fa-search fa-sm mr-1"></i> Buscar
+            </button>
+            <template x-if="selectedVariantId">
+                <span
+                    class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                    x-ref="variantBadge"></span>
+            </template>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Categoría</span>
+                <select x-model="filters.category_id" @change="search(1)"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">Todas</option>
+                    @foreach ($categories as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Marca</span>
+                <select x-model="filters.brand_id" @change="search(1)"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">Todas</option>
+                    @foreach ($brands as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Color</span>
+                <select x-model="filters.color_id" @change="search(1)"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">Todos</option>
+                    @foreach ($colors as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Talla</span>
+                <select x-model="filters.size_id" @change="search(1)"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">Todas</option>
+                    @foreach ($sizes as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Proveedor</span>
+                <select x-model="filters.entity_id" @change="search(1)"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">Todos</option>
+                    @foreach ($entities as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+            </label>
+        </div>
     </div>
 
     <div class="mt-4">
@@ -99,9 +139,10 @@ class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
                 <thead class="bg-gray-50 dark:bg-gray-800/50">
                     <tr class="text-left text-gray-600 dark:text-gray-300">
                         <th class="px-3 py-2">Producto</th>
-                        <th class="px-3 py-2">Variante</th>
-                        <th class="px-3 py-2">SKU</th>
-                        <th class="px-3 py-2">Barras</th>
+                        <th class="px-3 py-2">Color</th>
+                        <th class="px-3 py-2">Talla</th>
+                        <th class="px-3 py-2">Categoría</th>
+                        <th class="px-3 py-2">Marca</th>
                         <th class="px-3 py-2">Acción</th>
                     </tr>
                 </thead>
@@ -113,15 +154,25 @@ class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
                     </template>
                     <template x-for="row in results" :key="row.id">
                         <tr>
-                            <td class="px-3 py-2" x-text="row.product_name"></td>
-                            <td class="px-3 py-2" x-text="row.label"></td>
-                            <td class="px-3 py-2" x-text="row.sku || '-' "></td>
-                            <td class="px-3 py-2" x-text="row.barcode || '-' "></td>
+                            <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.product_name"></td>
+                            <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.color_name || '-' "></td>
+                            <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.size_name || '-' "></td>
+                            <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.category_name || '-' ">
+                            </td>
+                            <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.brand_name || '-' "></td>
                             <td class="px-3 py-2">
-                                <button type="button" @click="selectVariant(row)"
-                                    class="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-md bg-purple-600 hover:bg-purple-700 text-white">
-                                    <i class="fas fa-check"></i> Seleccionar
-                                </button>
+                                <template x-if="selectedVariantId == row.id">
+                                    <span
+                                        class="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-md bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100 font-semibold">
+                                        <i class='fas fa-check-circle'></i> Seleccionado
+                                    </span>
+                                </template>
+                                <template x-if="selectedVariantId != row.id">
+                                    <button type="button" @click="selectVariant(row)"
+                                        class="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-md bg-purple-600 hover:bg-purple-700 text-white">
+                                        <i class="fas fa-check"></i> Seleccionar
+                                    </button>
+                                </template>
                             </td>
                         </tr>
                     </template>
