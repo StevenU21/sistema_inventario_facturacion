@@ -70,7 +70,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(ProductSeeder::class);
         // Warehouse::factory()->count(3)->create();
 
-        Product::factory()->count(50)->create()->each(function ($product) {
+        Product::factory()->count(400)->create()->each(function ($product) {
 
             ProductVariant::factory()->simple()->create([
                 'product_id' => $product->id,
