@@ -2,7 +2,7 @@
 @section('title', 'Inventarios')
 
 @section('content')
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8" x-data="{ isModalOpen: false, closeModal() { this.isModalOpen = false } }">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Breadcrumbs -->
         <nav class="mt-4 mb-2 text-sm text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
             <ol class="flex items-center gap-2">
@@ -69,26 +69,15 @@
                                 Exportar Excel
                             </button>
                         </form>
-                        <!-- Create Modal Trigger (modal moved outside header section) -->
-                        <button @click="isModalOpen = true"
+                        <a href="{{ route('inventories.create') }}"
                             class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
                             <i class="fas fa-plus"></i>
                             Nuevo Inventario
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
         </section>
-
-        <!-- Create Modal (placed outside header section to avoid overflow clipping) -->
-        <x-modal maxWidth="md">
-            <x-slot name="title">Nuevo Inventario</x-slot>
-            <x-slot name="description"></x-slot>
-            <form action="{{ route('inventories.store') }}" method="POST">
-                @csrf
-                @include('admin.inventories.form_create')
-            </form>
-        </x-modal>
 
         <!-- Mensajes de éxito -->
         <div class="mt-4">
@@ -195,8 +184,8 @@
                                     icon="<i class='fas fa-hashtag mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3">
-                                <x-table-sort-header field="product_variant_id" label="Variante"
-                                    route="inventories.search" icon="<i class='fas fa-box mr-2'></i>" />
+                                <x-table-sort-header field="product_variant_id" label="Variante" route="inventories.search"
+                                    icon="<i class='fas fa-box mr-2'></i>" />
                             </th>
                             <th class="px-4 py-3"><i class="fas fa-image mr-2"></i>Imagen</th>
                             <th class="px-4 py-3">
@@ -261,43 +250,18 @@
                                 <td class="px-4 py-3 text-sm">C$ {{ number_format($inventory->sale_price, 2) }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2 text-sm">
-                                        <!-- Edit/Movement Modal per row -->
-                                        <div x-data="{ isModalOpen: false, closeModal() { this.isModalOpen = false } }">
-                                            <button @click="isModalOpen = true" title="Movimiento"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                aria-label="Realizar Movimiento">
-                                                <i class="fas fa-exchange-alt"></i>
-                                            </button>
-                                            <x-modal maxWidth="lg">
-                                                <x-slot name="title">Registrar Movimiento</x-slot>
-                                                <x-slot name="description"></x-slot>
-                                                <form action="{{ route('inventories.update', $inventory) }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    @include('admin.inventories.form_edit', [
-                                                        'inventory' => $inventory,
-                                                        'warehouses' => $warehouses,
-                                                    ])
-                                                </form>
-                                            </x-modal>
-                                        </div>
-                                        <!-- Show Modal per row -->
-                                        <div x-data="{ isModalOpen: false, closeModal() { this.isModalOpen = false } }">
-                                            <button @click="isModalOpen = true" title="Ver"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                aria-label="Ver">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <x-modal maxWidth="md">
-                                                <x-slot name="title">Detalle de Inventario
-                                                    #{{ $inventory->id }}</x-slot>
-                                                <x-slot name="description"></x-slot>
-                                                @include('admin.inventories.partials.show_card', [
-                                                    'inventory' => $inventory,
-                                                ])
-                                            </x-modal>
-                                        </div>
+                                        <!-- Movement/Edit Page link -->
+                                        <a href="{{ route('inventories.edit', $inventory) }}" title="Movimiento"
+                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                            aria-label="Realizar Movimiento">
+                                            <i class="fas fa-exchange-alt"></i>
+                                        </a>
+                                        <!-- Show Page link -->
+                                        <a href="{{ route('inventories.show', $inventory) }}" title="Ver"
+                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                            aria-label="Ver">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                         <form action="{{ route('inventories.destroy', $inventory) }}" method="POST"
                                             onsubmit="return confirm('¿Seguro de eliminar este inventario?');">
                                             @csrf
