@@ -13,13 +13,14 @@ class Brand extends Model
     use HasFactory, LogsActivity, CacheClearable;
     protected $fillable = [
         'name',
-        'description'
+        'description',
+        'category_id'
     ];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'description']);
+            ->logOnly(['name', 'description', 'category_id']);
     }
 
     public function getFormattedCreatedAtAttribute(): ?string
@@ -30,6 +31,11 @@ class Brand extends Model
     public function getFormattedUpdatedAtAttribute(): ?string
     {
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
     public function products()

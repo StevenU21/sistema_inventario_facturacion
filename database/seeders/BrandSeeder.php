@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Brand;
+use App\Models\Category;
 use Illuminate\Database\Seeder;
 
 class BrandSeeder extends Seeder
@@ -12,19 +13,23 @@ class BrandSeeder extends Seeder
      */
     public function run(): void
     {
-        $brands = [
-            'HP',
-            'Dell',
-            'Acer',
-            'Nike',
-            'Gucci',
-            'Prada',
-            'Chanel',
-            'Louis Vuitton',
+        $brandData = [
+            ['name' => 'HP', 'category' => 'Electrónica'],
+            ['name' => 'Dell', 'category' => 'Electrónica'],
+            ['name' => 'Acer', 'category' => 'Electrónica'],
+            ['name' => 'Nike', 'category' => 'Calzado'],
+            ['name' => 'Gucci', 'category' => 'Ropa'],
+            ['name' => 'Prada', 'category' => 'Ropa'],
+            ['name' => 'Chanel', 'category' => 'Belleza'],
+            ['name' => 'Louis Vuitton', 'category' => 'Accesorios'],
         ];
 
-        foreach ($brands as $brand) {
-            Brand::firstOrCreate(['name' => $brand]);
+        foreach ($brandData as $data) {
+            $category = Category::where('name', $data['category'])->first();
+            Brand::firstOrCreate(
+                ['name' => $data['name']],
+                ['category_id' => $category ? $category->id : null]
+            );
         }
     }
 }

@@ -32,8 +32,8 @@ class Category extends Model
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
     }
 
-    public function products()
+    public function brands()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Brand::class);
     }
 }

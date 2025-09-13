@@ -14,6 +14,9 @@ return new class extends Migration {
             $table->increments('id');
             $table->string('name');
             $table->string('description')->nullable();
+
+            $table->integer('category_id')->unsigned();
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

@@ -186,6 +186,8 @@
                                     icon="<i class='fas fa-hashtag mr-2'></i>" /></th>
                             <th class="px-4 py-3"><x-table-sort-header field="name" label="Nombre" route="brands.search"
                                     icon="<i class='fas fa-tag mr-2'></i>" /></th>
+                            <th class="px-4 py-3"><x-table-sort-header field="category_id" label="Categoría"
+                                    route="brands.search" icon="<i class='fas fa-list mr-2'></i>" /></th>
                             <th class="px-4 py-3"><x-table-sort-header field="description" label="Descripción"
                                     route="brands.search" icon="<i class='fas fa-align-left mr-2'></i>" /></th>
                             <th class="px-4 py-3"><x-table-sort-header field="created_at" label="Fecha de Registro"
@@ -209,6 +211,9 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $brand->name }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $brand->category->name ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $brand->description ?? '-' }}

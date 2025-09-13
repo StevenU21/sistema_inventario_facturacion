@@ -1,4 +1,5 @@
 <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+
     <!-- Name Field -->
     <label class="block text-sm">
         <span class="text-gray-700 dark:text-gray-400">Nombre</span>
@@ -14,6 +15,33 @@
             </div>
         </div>
         @error('name')
+            <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+        @enderror
+    </label>
+
+    <!-- Category Field -->
+    <label class="block text-sm mb-4">
+        <span class="text-gray-700 dark:text-gray-400">Categoría</span>
+        <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+            <select name="category_id"
+                class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                @if (isset($alpine) && $alpine) x-model="editBrand.category_id" :value="editBrand.category_id" @else @endif
+                required>
+                <option value="">Seleccione una categoría</option>
+                @foreach ($categories as $category)
+                    <option value="{{ $category->id }}" @if (
+                        (isset($alpine) && $alpine && (isset($editBrand['category_id']) && $editBrand['category_id'] == $category->id)) ||
+                            ((!isset($alpine) || !$alpine) &&
+                                old('category_id', isset($brand) ? $brand->category_id : '') == $category->id)) selected @endif>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
+            </select>
+            <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
+                <i class="fas fa-list w-5 h-5"></i>
+            </div>
+        </div>
+        @error('category_id')
             <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
         @enderror
     </label>

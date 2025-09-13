@@ -48,7 +48,6 @@ class ProductRequest extends FormRequest
             'code' => ['nullable', 'string', 'max:255', Rule::unique('products')->ignore($this->route('product'))],
             'sku' => ['nullable', 'string', 'max:255', Rule::unique('products')->ignore($this->route('product'))],
             'brand_id' => ['required', 'exists:brands,id'],
-            'category_id' => ['required', 'exists:categories,id'],
             'tax_id' => ['required', 'exists:taxes,id'],
             'unit_measure_id' => ['required', 'exists:unit_measures,id'],
             'entity_id' => ['required', 'exists:entities,id'],

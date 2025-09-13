@@ -60,7 +60,6 @@ class PurchaseRequest extends FormRequest
             'product.status' => ['nullable', 'in:available,discontinued,out_of_stock'],
             // Estos campos son obligatorios cuando se crea un producto nuevo (no se envía product.id)
             'product.brand_id' => ['required_if:product_mode,new', 'prohibited_if:product_mode,existing', 'exists:brands,id'],
-            'product.category_id' => ['required_if:product_mode,new', 'prohibited_if:product_mode,existing', 'exists:categories,id'],
             'product.tax_id' => ['required_if:product_mode,new', 'prohibited_if:product_mode,existing', 'exists:taxes,id'],
             'product.unit_measure_id' => ['required_if:product_mode,new', 'prohibited_if:product_mode,existing', 'exists:unit_measures,id'],
 
