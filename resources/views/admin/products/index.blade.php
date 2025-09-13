@@ -152,7 +152,7 @@
                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                     </select>
                 </div>
-                {{-- <div>
+                <div>
                     <label for="category_id"
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Categoría</label>
                     <select name="category_id" id="category_id"
@@ -164,7 +164,7 @@
                                 {{ $name }}</option>
                         @endforeach
                     </select>
-                </div> --}}
+                </div>
                 <div>
                     <label for="brand_id"
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Marca</label>
