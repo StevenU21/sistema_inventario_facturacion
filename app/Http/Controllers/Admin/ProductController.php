@@ -12,6 +12,11 @@ use App\Models\Entity;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\UnitMeasure;
+use App\Models\Warehouse;
+use App\Models\Color;
+use App\Models\Size;
+use App\Models\Inventory;
+use App\Models\InventoryMovement;
 use App\Services\FileService;
 use App\Services\ModelSearchService;
 use App\Http\Requests\ProductRequest;
@@ -182,25 +187,86 @@ class ProductController extends Controller
                 return $entity->first_name . ' ' . $entity->last_name;
             }, 'id');
         $taxes = Tax::pluck('name', 'id');
-        return view('admin.products.create', compact('product', 'categories', 'brands', 'units', 'entities', 'taxes', 'brandsByCategory'));
+        $colors = Color::pluck('name', 'id');
+        $sizes = Size::pluck('name', 'id');
+        $warehouses = Warehouse::pluck('name', 'id');
+        return view('admin.products.create', compact('product', 'categories', 'brands', 'units', 'entities', 'taxes', 'brandsByCategory', 'colors', 'sizes', 'warehouses'));
     }
 
     public function store(ProductRequest $request, FileService $fileService)
     {
         $this->authorize("create", Product::class);
         $data = $request->validated();
-        $product = new Product($data);
-        if ($request->hasFile('image')) {
-            $product->image = $fileService->storeLocal($product, $request->file('image'));
-        }
-        $product->save();
-        // Crear variante simple sin color ni talla
-        $variant = new ProductVariant([
-            'product_id' => $product->id,
-            'color_id' => null,
-            'size_id' => null,
-        ]);
-        $variant->save();
+        DB::transaction(function () use ($request, $fileService, $data) {
+            $product = new Product($data);
+            // Derivar category_id desde la marca seleccionada para cumplir NOT NULL en DB
+            $brand = Brand::find($data['brand_id'] ?? null);
+            if ($brand) {
+                $product->category_id = $brand->category_id;
+            }
+            if ($request->hasFile('image')) {
+                $product->image = $fileService->storeLocal($product, $request->file('image'));
+            }
+            $product->save();
+
+            $warehouseId = (int) ($data['warehouse_id'] ?? 0);
+            $userId = optional($request->user())->getAuthIdentifier();
+            if (!empty($data['details']) && $warehouseId) {
+                foreach ($data['details'] as $row) {
+                    $variant = ProductVariant::firstOrCreate(
+                        [
+                            'product_id' => $product->id,
+                            'color_id' => $row['color_id'] ?? null,
+                            'size_id' => $row['size_id'] ?? null,
+                        ],
+                        [
+                            'sku' => $row['sku'] ?? null,
+                            'code' => $row['code'] ?? null,
+                        ]
+                    );
+                    $variant->fill([
+                        'sku' => $row['sku'] ?? $variant->sku,
+                        'code' => $row['code'] ?? $variant->code,
+                    ]);
+                    $variant->save();
+
+                    $quantity = (int) ($row['quantity'] ?? 0);
+                    $purchasePrice = (float) ($row['unit_price'] ?? 0);
+                    $salePrice = (float) ($row['sale_price'] ?? 0);
+                    $minStock = (int) ($row['min_stock'] ?? 0);
+
+                    $inventory = Inventory::firstOrNew([
+                        'product_variant_id' => $variant->id,
+                        'warehouse_id' => $warehouseId,
+                    ]);
+                    $inventory->stock = ($inventory->exists ? $inventory->stock : 0) + $quantity;
+                    $inventory->purchase_price = $purchasePrice;
+                    $inventory->sale_price = $salePrice;
+                    $inventory->min_stock = $minStock;
+                    $inventory->save();
+
+                    InventoryMovement::create([
+                        'inventory_id' => $inventory->id,
+                        'type' => 'in',
+                        'quantity' => $quantity,
+                        'unit_price' => $purchasePrice,
+                        'total_price' => $purchasePrice * $quantity,
+                        'reference' => 'Alta de producto',
+                        'notes' => 'Ingreso inicial al crear producto',
+                        'user_id' => $userId,
+                    ]);
+                }
+            } else {
+                $variant = new ProductVariant([
+                    'product_id' => $product->id,
+                    'sku' => $data['sku'] ?? null,
+                    'code' => $data['code'] ?? null,
+                    'color_id' => null,
+                    'size_id' => null,
+                ]);
+                $variant->save();
+            }
+        });
         return redirect()->route('products.index')->with('success', 'Producto creado correctamente.');
     }
 
@@ -229,7 +295,18 @@ class ProductController extends Controller
                 return $entity->first_name . ' ' . $entity->last_name;
             }, 'id');
         $taxes = Tax::pluck('name', 'id');
-        return view('admin.products.edit', compact('product', 'categories', 'brands', 'units', 'entities', 'taxes', 'brandsByCategory'));
+        $colors = Color::pluck('name', 'id');
+        $sizes = Size::pluck('name', 'id');
+        $warehouses = Warehouse::pluck('name', 'id');
+        // Prefill de variantes existentes del producto (solo color/talla)
+        $prefillDetails = $product->variants()->get()->map(function ($v) {
+            return [
+                'color_id' => $v->color_id,
+                'size_id' => $v->size_id,
+                // Otros campos (cantidad/precios) se dejan vacíos en edición de producto
+            ];
+        })->toArray();
+        return view('admin.products.edit', compact('product', 'categories', 'brands', 'units', 'entities', 'taxes', 'brandsByCategory', 'colors', 'sizes', 'warehouses', 'prefillDetails'));
     }
 
     public function update(ProductRequest $request, Product $product, FileService $fileService)
@@ -240,7 +317,13 @@ class ProductController extends Controller
         if ($imagePath) {
             $data['image'] = $imagePath;
         }
-        $product->update($data);
+        // Rellenar y sincronizar category_id con la marca seleccionada
+        $product->fill($data);
+        $brand = Brand::find($product->brand_id);
+        if ($brand) {
+            $product->category_id = $brand->category_id;
+        }
+        $product->save();
         return redirect()->route('products.index')->with('updated', 'Producto actualizado correctamente.');
     }
 

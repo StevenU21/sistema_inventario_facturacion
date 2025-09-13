@@ -31,7 +31,7 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['required', 'string', 'min:3', 'max:255'],
             'image' => [
                 'nullable',
@@ -52,5 +52,48 @@ class ProductRequest extends FormRequest
             'unit_measure_id' => ['required', 'exists:unit_measures,id'],
             'entity_id' => ['required', 'exists:entities,id'],
         ];
+
+        // Reglas adicionales sólo en creación para variantes e inventario inicial
+        if ($this->isMethod('post')) {
+            $rules = array_merge($rules, [
+                'warehouse_id' => ['required', 'exists:warehouses,id'],
+                'details' => ['required', 'array', 'min:1'],
+                'details.*.color_id' => ['nullable', 'exists:colors,id'],
+                'details.*.size_id' => ['nullable', 'exists:sizes,id'],
+                'details.*.quantity' => ['required', 'integer', 'min:1'],
+                'details.*.unit_price' => [
+                    'required',
+                    'numeric',
+                    'min:0',
+                    function ($attribute, $value, $fail) {
+                        $index = explode('.', $attribute)[1] ?? null;
+                        if ($index === null) return;
+                        $salePrice = $this->input("details.{$index}.sale_price");
+                        if ($salePrice !== null && $value > $salePrice) {
+                            $fail('El precio unitario no puede ser mayor al precio de venta.');
+                        }
+                    }
+                ],
+                'details.*.sale_price' => [
+                    'nullable',
+                    'numeric',
+                    'min:0',
+                    function ($attribute, $value, $fail) {
+                        if ($value === null) return;
+                        $index = explode('.', $attribute)[1] ?? null;
+                        if ($index === null) return;
+                        $unitPrice = $this->input("details.{$index}.unit_price");
+                        if ($unitPrice !== null && $value < $unitPrice) {
+                            $fail('El precio de venta no puede ser menor al precio unitario.');
+                        }
+                    }
+                ],
+                'details.*.min_stock' => ['nullable', 'integer', 'min:0'],
+                'details.*.sku' => ['nullable', 'string', 'max:255'],
+                'details.*.code' => ['nullable', 'string', 'max:255'],
+            ]);
+        }
+
+        return $rules;
     }
 }
