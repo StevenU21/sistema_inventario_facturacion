@@ -54,18 +54,24 @@
                     x-transition:leave-end="opacity-0 transform scale-95"
                     class="mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 dark:text-gray-400">
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('purchases.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('purchases.index') }}">
-                            <i class="fas fa-shopping-cart w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('purchases.index')"
+                            :active-class="Route::is('purchases.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-shopping-cart"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Compras</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('entities.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('entities.index') }}">
-                            <i class="fas fa-users w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('entities.index')"
+                            :active-class="Route::is('entities.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-users"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Clientes & Proveedores</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                 </ul>
             </li>
@@ -91,40 +97,55 @@
                     x-transition:leave-end="opacity-0 transform scale-95"
                     class="mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 dark:text-gray-400">
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('products.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('products.index') }}">
-                            <i class="fas fa-tags w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('products.index')"
+                            :active-class="Route::is('products.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-tags"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Productos</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('inventories.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('inventories.index') }}">
-                            <i class="fas fa-warehouse w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('inventories.index')"
+                            :active-class="Route::is('inventories.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-warehouse"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Inventarios</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('inventory_movements.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('inventory_movements.index') }}">
-                            <i class="fas fa-exchange-alt w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('inventory_movements.index')"
+                            :active-class="Route::is('inventory_movements.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-exchange-alt"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Movimientos</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('warehouses.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('warehouses.index') }}">
-                            <i class="fas fa-warehouse w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('warehouses.index')"
+                            :active-class="Route::is('warehouses.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-warehouse"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Almacenes</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
 
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('kardex.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('kardex.index') }}">
-                            <i class="fas fa-book w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('kardex.index')"
+                            :active-class="Route::is('kardex.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-book"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Reporte Kardex</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                 </ul>
             </li>
@@ -148,53 +169,74 @@
                     x-transition:leave-end="opacity-0 transform scale-95"
                     class="mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 dark:text-gray-400">
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('categories.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('categories.index') }}">
-                            <i class="fas fa-th-list w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('categories.index')"
+                            :active-class="Route::is('categories.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-th-list"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Categorías</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('brands.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('brands.index') }}">
-                            <i class="fas fa-tags w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('brands.index')"
+                            :active-class="Route::is('brands.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-tags"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Marcas</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('colors.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('colors.index') }}">
-                            <i class="fas fa-paint-brush w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('colors.index')"
+                            :active-class="Route::is('colors.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-paint-brush"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Colores</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('sizes.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('sizes.index') }}">
-                            <i class="fas fa-ruler-combined w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('sizes.index')"
+                            :active-class="Route::is('sizes.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-ruler-combined"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Tallas</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('unit_measures.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('unit_measures.index') }}">
-                            <i class="fas fa-balance-scale w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('unit_measures.index')"
+                            :active-class="Route::is('unit_measures.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-balance-scale"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Unidades de Medida</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('payment_methods.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('payment_methods.index') }}">
-                            <i class="fas fa-credit-card w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('payment_methods.index')"
+                            :active-class="Route::is('payment_methods.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-credit-card"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Métodos de Pago</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('taxes.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('taxes.index') }}">
-                            <i class="fas fa-percent w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('taxes.index')"
+                            :active-class="Route::is('taxes.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-percent"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Impuestos</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                 </ul>
             </li>
@@ -218,25 +260,34 @@
                     x-transition:leave-end="opacity-0 transform scale-95"
                     class="mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 dark:text-gray-400">
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('users.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('users.index') }}">
-                            <i class="fas fa-users-cog w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('users.index')"
+                            :active-class="Route::is('users.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-users-cog"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Usuarios</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('roles.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('roles.index') }}">
-                            <i class="fas fa-user-shield w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('roles.index')"
+                            :active-class="Route::is('roles.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-user-shield"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Roles & Permisos</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
-                        <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('audits.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                            href="{{ route('audits.index') }}">
-                            <i class="fas fa-clipboard-list w-5 h-5"></i>
+                        <x-ui.submit-link
+                            :href="route('audits.index')"
+                            :active-class="Route::is('audits.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-clipboard-list"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
                             <span class="ml-4">Auditoría</span>
-                        </a>
+                        </x-ui.submit-link>
                     </li>
                     {{-- <li class="px-6 py-2">
                         <a class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('backups.*') ? 'text-gray-800 dark:text-gray-100' : '' }}"
