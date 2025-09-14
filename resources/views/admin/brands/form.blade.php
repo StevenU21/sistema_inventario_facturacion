@@ -25,8 +25,7 @@
         <div class="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
             <select name="category_id"
                 class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray"
-                @if (isset($alpine) && $alpine) x-model="editBrand.category_id" :value="editBrand.category_id" @else @endif
-                required>
+                @if (isset($alpine) && $alpine) x-model="editBrand.category_id" @endif required>
                 <option value="">Seleccione una categoría</option>
                 @foreach ($categories as $category)
                     <option value="{{ $category->id }}" @if (

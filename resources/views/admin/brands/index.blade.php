@@ -162,6 +162,10 @@
                     <strong>Nombre:</strong> <span x-text="showBrand.name"></span>
                 </p>
                 <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 mt-2">
+                    <i class="fas fa-list text-purple-600 dark:text-purple-400"></i>
+                    <strong>Categoría:</strong> <span x-text="showBrand.category_name"></span>
+                </p>
+                <p class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 mt-2">
                     <i class="fas fa-align-left text-purple-600 dark:text-purple-400"></i>
                     <strong>Descripción:</strong> <span x-text="showBrand.description"></span>
                 </p>
@@ -228,7 +232,7 @@
                                     <div class="flex items-center gap-2 text-sm">
                                         @can('read brands')
                                             <button type="button" title="Ver"
-                                                @click="showBrand = { id: {{ $brand->id }}, name: '{{ $brand->name }}', description: '{{ $brand->description }}', formatted_created_at: '{{ $brand->formatted_created_at }}', formatted_updated_at: '{{ $brand->formatted_updated_at }}' }; isShowModalOpen = true;"
+                                                @click="showBrand = { id: {{ $brand->id }}, name: '{{ addslashes($brand->name) }}', description: '{{ addslashes($brand->description) }}', category_name: '{{ addslashes(optional($brand->category)->name) }}', formatted_created_at: '{{ $brand->formatted_created_at }}', formatted_updated_at: '{{ $brand->formatted_updated_at }}' }; isShowModalOpen = true;"
                                                 class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                 aria-label="Ver Modal">
                                                 <i class="fas fa-eye"></i>
@@ -236,7 +240,7 @@
                                         @endcan
                                         @can('update brands')
                                             <button type="button" title="Editar"
-                                                @click="editBrand = { id: {{ $brand->id }}, name: '{{ addslashes($brand->name) }}', description: '{{ addslashes($brand->description) }}' }; editAction = '{{ route('brands.update', $brand) }}'; isEditModalOpen = true;"
+                                                @click="editBrand = { id: {{ $brand->id }}, name: '{{ addslashes($brand->name) }}', description: '{{ addslashes($brand->description) }}', category_id: {{ $brand->category_id ?? 'null' }} }; editAction = '{{ route('brands.update', $brand) }}'; isEditModalOpen = true;"
                                                 class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
                                                 aria-label="Editar Modal">
                                                 <i class="fas fa-edit"></i>
