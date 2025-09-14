@@ -123,7 +123,7 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Proveedor</span>
-                <select name="new[entity_id]" x-model="newPurchase.entity_id"
+                <select name="new[entity_id]" x-model="newPurchase.entity_id" required
                     x-bind:required="$el.closest('fieldset')?.dataset?.mode === 'new'"
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('new.entity_id') || $errors->has('entity_id') ? 'border-red-600' : '' }}">
@@ -141,7 +141,7 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Almacén</span>
-                <select name="new[warehouse_id]" x-model="newPurchase.warehouse_id"
+                <select name="new[warehouse_id]" x-model="newPurchase.warehouse_id" required
                     x-bind:required="$el.closest('fieldset')?.dataset?.mode === 'new'"
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('new.warehouse_id') || $errors->has('warehouse_id') ? 'border-red-600' : '' }}">
@@ -163,7 +163,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Categoría</span>
-                <select x-model="productCategoryId" @change="refreshBrands()"
+                <select x-model="productCategoryId" @change="refreshBrands()" required
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('product.category_id') ? 'border-red-600' : '' }}">
                     <option value="">Seleccionar Categoría</option>
@@ -179,7 +179,7 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Marca</span>
-                <select name="product[brand_id]" x-model="productBrandId"
+                <select name="product[brand_id]" x-model="productBrandId" required
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('product.brand_id') ? 'border-red-600' : '' }}">
                     <option value="">Seleccionar Marca</option>
@@ -211,7 +211,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Método de pago</span>
-                <select name="new[payment_method_id]" x-model="newPurchase.payment_method_id"
+                <select name="new[payment_method_id]" x-model="newPurchase.payment_method_id" required
                     x-bind:required="$el.closest('fieldset')?.dataset?.mode === 'new'"
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('new.payment_method_id') || $errors->has('payment_method_id') ? 'border-red-600' : '' }}">
@@ -231,7 +231,7 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Impuesto</span>
-                <select name="product[tax_id]"
+                <select name="product[tax_id]" required
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('product.tax_id') ? 'border-red-600' : '' }}">
                     <option value="">Seleccionar Impuesto</option>
@@ -247,7 +247,7 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Unidad de medida</span>
-                <select name="product[unit_measure_id]"
+                <select name="product[unit_measure_id]" required
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('product.unit_measure_id') ? 'border-red-600' : '' }}">
                     <option value="">Seleccionar Unidad de Medida</option>
