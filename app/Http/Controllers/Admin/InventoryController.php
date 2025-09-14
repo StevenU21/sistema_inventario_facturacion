@@ -35,7 +35,7 @@ class InventoryController extends Controller
             'productVariant.product.category',
             'warehouse'
         ])->latest()->paginate($perPage);
-        // Catálogo de productos para usar sus nombres sin recargar relaciones en variantes
+        // Catálogos
         $products = Product::where('status', 'available')->pluck('name', 'id');
         // Evitar eager load duplicado en variantes: no cargamos relaciones; resolveremos nombres vía catálogos
         $variants = ProductVariant::whereHas('product', function ($q) {
@@ -63,6 +63,10 @@ class InventoryController extends Controller
         });
         // $colors y $sizes ya calculados arriba
         $warehouses = Warehouse::pluck('name', 'id');
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $entities = Entity::where('is_active', true)->where('is_supplier', true)
+            ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         return view('admin.inventories.index', [
             'inventories' => $inventories,
             'variants' => $variants,
@@ -70,7 +74,10 @@ class InventoryController extends Controller
             'variantsByProduct' => $variantsByProduct,
             'colors' => $colors,
             'sizes' => $sizes,
-            'warehouses' => $warehouses
+            'warehouses' => $warehouses,
+            'categories' => $categories,
+            'brands' => $brands,
+            'entities' => $entities,
         ]);
     }
 
@@ -85,9 +92,19 @@ class InventoryController extends Controller
             'warehouse'
         ]);
         // Filtros
-        if ($request->filled('product_id')) {
-            $query->whereHas('productVariant', function ($q) use ($request) {
-                $q->where('product_id', $request->input('product_id'));
+        if ($request->filled('entity_id')) {
+            $query->whereHas('productVariant.product', function ($q) use ($request) {
+                $q->where('entity_id', $request->input('entity_id'));
+            });
+        }
+        if ($request->filled('category_id')) {
+            $query->whereHas('productVariant.product', function ($q) use ($request) {
+                $q->where('category_id', $request->input('category_id'));
+            });
+        }
+        if ($request->filled('brand_id')) {
+            $query->whereHas('productVariant.product', function ($q) use ($request) {
+                $q->where('brand_id', $request->input('brand_id'));
             });
         }
         if ($request->filled('color_id')) {
@@ -160,13 +177,20 @@ class InventoryController extends Controller
         });
         // $colors y $sizes ya calculados arriba
         $warehouses = Warehouse::pluck('name', 'id');
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $entities = Entity::where('is_active', true)->where('is_supplier', true)
+            ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         return view('admin.inventories.index', [
             'inventories' => $inventories,
             'products' => $products,
             'variantsByProduct' => $variantsByProduct,
             'colors' => $colors,
             'sizes' => $sizes,
-            'warehouses' => $warehouses
+            'warehouses' => $warehouses,
+            'categories' => $categories,
+            'brands' => $brands,
+            'entities' => $entities,
         ]);
     }
 
