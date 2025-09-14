@@ -94,6 +94,11 @@ class PurchaseController extends Controller
         $methods = PaymentMethod::pluck('name', 'id');
         $categories = Category::pluck('name', 'id');
         $brands = Brand::pluck('name', 'id');
+        $brandsByCategory = Brand::with('category')
+            ->get()
+            ->groupBy('category_id')
+            ->map(fn($grp) => $grp->pluck('name', 'id'))
+            ->toArray();
         $units = UnitMeasure::pluck('name', 'id');
         $taxes = Tax::pluck('name', 'id');
         $colors = Color::pluck('name', 'id');
@@ -102,7 +107,7 @@ class PurchaseController extends Controller
         $details = [];
         $prefillDetails = [];
         $allProducts = Product::pluck('name', 'id');
-        return view('admin.purchases.create', compact('entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes', 'product', 'details', 'prefillDetails', 'allProducts'));
+        return view('admin.purchases.create', compact('entities', 'warehouses', 'methods', 'categories', 'brands', 'brandsByCategory', 'units', 'taxes', 'colors', 'sizes', 'product', 'details', 'prefillDetails', 'allProducts'));
     }
 
     public function store(PurchaseRequest $request, PurchaseService $purchaseService)
@@ -159,11 +164,16 @@ class PurchaseController extends Controller
         $methods = PaymentMethod::pluck('name', 'id');
         $categories = Category::pluck('name', 'id');
         $brands = Brand::pluck('name', 'id');
+        $brandsByCategory = Brand::with('category')
+            ->get()
+            ->groupBy('category_id')
+            ->map(fn($grp) => $grp->pluck('name', 'id'))
+            ->toArray();
         $units = UnitMeasure::pluck('name', 'id');
         $taxes = Tax::pluck('name', 'id');
         $colors = Color::pluck('name', 'id');
         $sizes = Size::pluck('name', 'id');
-        return view('admin.purchases.show', compact('purchase', 'product', 'details', 'prefillDetails', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes'));
+        return view('admin.purchases.show', compact('purchase', 'product', 'details', 'prefillDetails', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'brandsByCategory', 'units', 'taxes', 'colors', 'sizes'));
     }
 
     public function edit(Purchase $purchase)
@@ -193,12 +203,17 @@ class PurchaseController extends Controller
         $methods = PaymentMethod::pluck('name', 'id');
         $categories = Category::pluck('name', 'id');
         $brands = Brand::pluck('name', 'id');
+        $brandsByCategory = Brand::with('category')
+            ->get()
+            ->groupBy('category_id')
+            ->map(fn($grp) => $grp->pluck('name', 'id'))
+            ->toArray();
         $units = UnitMeasure::pluck('name', 'id');
         $taxes = Tax::pluck('name', 'id');
         $colors = Color::pluck('name', 'id');
         $sizes = Size::pluck('name', 'id');
         $allProducts = Product::pluck('name', 'id');
-        return view('admin.purchases.edit', compact('purchase', 'product', 'details', 'prefillDetails', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'units', 'taxes', 'colors', 'sizes', 'allProducts'));
+        return view('admin.purchases.edit', compact('purchase', 'product', 'details', 'prefillDetails', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'brandsByCategory', 'units', 'taxes', 'colors', 'sizes', 'allProducts'));
     }
 
     public function update(PurchaseRequest $request, Purchase $purchase, PurchaseService $purchaseService)

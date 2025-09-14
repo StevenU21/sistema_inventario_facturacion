@@ -37,7 +37,10 @@ class ProductController extends Controller
             ->paginate(15);
 
         // Solo consulta catálogos una vez
-        $brands = Brand::pluck('name', 'id');
+        $categoryId = request('category_id');
+        $brands = $categoryId
+            ? Brand::where('category_id', $categoryId)->pluck('name', 'id')
+            : Brand::pluck('name', 'id');
         $categories = Category::pluck('name', 'id');
         $brandsByCategory = Brand::with('category')
             ->get()
@@ -95,7 +98,11 @@ class ProductController extends Controller
                 }
             }
         );
-        $brands = Brand::pluck('name', 'id');
+        // Marcas dependientes de la categoría seleccionada
+        $categoryId = $request->input('category_id');
+        $brands = $categoryId
+            ? Brand::where('category_id', $categoryId)->pluck('name', 'id')
+            : Brand::pluck('name', 'id');
         $categories = Category::pluck('name', 'id');
         $brandsByCategory = Brand::with('category')
             ->get()

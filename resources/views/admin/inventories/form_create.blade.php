@@ -3,7 +3,7 @@
     <div class="mb-4">
         <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3">Selecciona la variante</h3>
         <x-admin.inventories.variant-picker :colors="$colors ?? []" :sizes="$sizes ?? []" :categories="$categories ?? []" :brands="$brands ?? []"
-            :entities="$entities ?? []" />
+            :brands-by-category="$brandsByCategory ?? []" :entities="$entities ?? []" />
     </div>
 
     <!-- Bodega -->

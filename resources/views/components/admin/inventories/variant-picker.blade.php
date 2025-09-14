@@ -3,6 +3,7 @@
     'sizes' => [],
     'categories' => [],
     'brands' => [],
+    'brandsByCategory' => [],
     'entities' => [],
 ])
 
@@ -23,6 +24,10 @@
     total: 0,
     perPage: 10,
     selectedVariantId: @js(old('product_variant_id')) || null,
+    // Dep. categoría -> marcas
+    brandsByCategory: @js($brandsByCategory ?? []),
+    allBrands: @js($brands ?? []),
+    brandsList: [],
     async search(page = null) {
         if (page) this.page = page;
         this.loading = true;
@@ -60,6 +65,21 @@
         const badge = this.$refs.variantBadge;
         if (badge) badge.textContent = row?.label || `${row?.product_name || ''}`;
     },
+    init() {
+        this.refreshBrands();
+    },
+    refreshBrands() {
+        const catId = this.filters.category_id ? String(this.filters.category_id) : '';
+        const source = (catId && this.brandsByCategory && this.brandsByCategory[catId])
+            ? this.brandsByCategory[catId]
+            : this.allBrands;
+        const obj = source || {};
+        this.brandsList = Object.entries(obj).map(([id, name]) => ({ id, name }));
+        const bId = this.filters.brand_id ? String(this.filters.brand_id) : '';
+        if (!bId || !this.brandsList.some(o => String(o.id) === bId)) {
+            this.filters.brand_id = '';
+        }
+    }
 }" @variant-search.window="filters.q = ($event.detail?.text || ''); search(1)"
     class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
     <div class="flex flex-col gap-2">
@@ -84,7 +104,7 @@
         <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Categoría</span>
-                <select x-model="filters.category_id" @change="search(1)"
+                <select x-model="filters.category_id" @change="refreshBrands(); search(1)"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Todas</option>
                     @foreach ($categories as $id => $name)
@@ -97,9 +117,9 @@
                 <select x-model="filters.brand_id" @change="search(1)"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Todas</option>
-                    @foreach ($brands as $id => $name)
-                        <option value="{{ $id }}">{{ $name }}</option>
-                    @endforeach
+                    <template x-for="opt in brandsList" :key="opt.id">
+                        <option :value="opt.id" x-text="opt.name"></option>
+                    </template>
                 </select>
             </label>
             <label class="block text-sm w-full">

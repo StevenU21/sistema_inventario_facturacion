@@ -63,7 +63,7 @@
                         <form method="GET" action="{{ route('products.export') }}">
                             <input type="hidden" name="search" value="{{ request('search') }}">
                             <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
-                            {{-- <input type="hidden" name="category_id" value="{{ request('category_id') }}"> --}}
+                            <input type="hidden" name="category_id" value="{{ request('category_id') }}">
                             <input type="hidden" name="unit_measure_id" value="{{ request('unit_measure_id') }}">
                             <input type="hidden" name="tax_id" value="{{ request('tax_id') }}">
                             <input type="hidden" name="status" value="{{ request('status') }}">
@@ -142,7 +142,7 @@
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Categoría</label>
                     <select name="category_id" id="category_id"
                         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                        onchange="this.form.submit()">
+                        onchange="document.getElementById('brand_id').value=''; this.form.submit()">
                         <option value="">Todas las categorías</option>
                         @foreach ($categories as $id => $name)
                             <option value="{{ $id }}" {{ request('category_id') == $id ? 'selected' : '' }}>

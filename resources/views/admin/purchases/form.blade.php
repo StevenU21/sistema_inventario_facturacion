@@ -62,7 +62,7 @@
         <!-- Producto nuevo: render condicional con x-if para evitar validaciones en campos ocultos -->
         <template x-if="mode==='new'">
             <x-admin.purchases.product-new :entities="$entities ?? []" :warehouses="$warehouses ?? []" :methods="$methods ?? []" :categories="$categories ?? []"
-                :brands="$brands ?? []" :taxes="$taxes ?? []" :units="$units ?? []" :purchase="$purchase ?? null" :product="$product ?? null"
+                :brands="$brands ?? []" :brands-by-category="$brandsByCategory ?? []" :taxes="$taxes ?? []" :units="$units ?? []" :purchase="$purchase ?? null" :product="$product ?? null"
                 x-bind:data-mode="mode" />
         </template>
     </div>

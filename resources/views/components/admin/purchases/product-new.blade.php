@@ -4,6 +4,7 @@
     'methods' => [],
     'categories' => [],
     'brands' => [],
+    'brandsByCategory' => [],
     'taxes' => [],
     'units' => [],
     'purchase' => null,
@@ -83,6 +84,29 @@
             warehouse_id: @js(old('new.warehouse_id', old('warehouse_id', $purchase->warehouse_id ?? ''))),
             payment_method_id: @js(old('new.payment_method_id', old('payment_method_id', $purchase->payment_method_id ?? ''))),
             reference: @js(old('new.reference', old('reference', $purchase->reference ?? ''))),
+        },
+        // Dependencias categoría -> marcas
+        productCategoryId: @js(old('product.category_id', optional($product)->category_id)),
+        productBrandId: @js(old('product.brand_id', optional($product)->brand_id)),
+        brandsByCategory: @js($brandsByCategory ?? []),
+    allBrands: @js($brands ?? []),
+    brandsList: [],
+        init() {
+            this.refreshBrands();
+        },
+        refreshBrands() {
+            const catId = this.productCategoryId?.toString() || '';
+            const source = (catId && this.brandsByCategory && this.brandsByCategory[catId])
+                ? this.brandsByCategory[catId]
+                : this.allBrands;
+            const obj = source || {};
+            // Convertir objeto {id: name} a arreglo [{id, name}]
+            this.brandsList = Object.entries(obj).map(([id, name]) => ({ id, name }));
+            // Reset brand if it's not in the filtered list
+            const bId = this.productBrandId?.toString() || '';
+            if (!bId || !this.brandsList.some(o => o.id.toString() === bId)) {
+                this.productBrandId = '';
+            }
         }
     }">
         <!-- Fila 1: Nombre - Proveedor - Almacén -->
@@ -136,7 +160,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Categoría</span>
-                <select name="product[category_id]"
+                <select name="product[category_id]" x-model="productCategoryId" @change="refreshBrands()"
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Seleccionar Categoría</option>
@@ -149,15 +173,13 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Marca</span>
-                <select name="product[brand_id]"
+                <select name="product[brand_id]" x-model="productBrandId"
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Seleccionar Marca</option>
-                    @foreach ($brands ?? [] as $id => $name)
-                        <option value="{{ $id }}"
-                            {{ old('product.brand_id', optional($product)->brand_id) == $id ? 'selected' : '' }}>
-                            {{ $name }}</option>
-                    @endforeach
+                    <template x-for="opt in brandsList" :key="opt.id">
+                        <option :value="opt.id" x-text="opt.name"></option>
+                    </template>
                 </select>
             </label>
             <label class="block text-sm w-full">

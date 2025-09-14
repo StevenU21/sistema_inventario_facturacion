@@ -257,6 +257,11 @@ class InventoryController extends Controller
         $warehouses = Warehouse::pluck('name', 'id');
         $categories = Category::pluck('name', 'id');
         $brands = Brand::pluck('name', 'id');
+        $brandsByCategory = Brand::with('category')
+            ->get()
+            ->groupBy('category_id')
+            ->map(fn($grp) => $grp->pluck('name', 'id'))
+            ->toArray();
         $entities = Entity::where('is_active', true)->where('is_supplier', true)
             ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         return view('admin.inventories.create', [
@@ -265,6 +270,7 @@ class InventoryController extends Controller
             'warehouses' => $warehouses,
             'categories' => $categories,
             'brands' => $brands,
+            'brandsByCategory' => $brandsByCategory,
             'colors' => $colors,
             'sizes' => $sizes,
             'entities' => $entities,
