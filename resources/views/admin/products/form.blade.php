@@ -122,11 +122,12 @@
                 <option value="">Seleccione</option>
                 @php
                     $selectedCategory = old('category_id', optional($product->brand)->category_id ?? '');
-                    $brandsForCategory = ($brandsByCategory[$selectedCategory] ?? []);
+                    $brandsForCategory = $brandsByCategory[$selectedCategory] ?? [];
                     $selectedBrand = old('brand_id', $product->brand_id ?? '');
                 @endphp
                 @foreach ($brandsForCategory as $id => $name)
-                    <option value="{{ $id }}" {{ $selectedBrand == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    <option value="{{ $id }}" {{ $selectedBrand == $id ? 'selected' : '' }}>
+                        {{ $name }}</option>
                 @endforeach
             </select>
             <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
@@ -296,8 +297,5 @@
 
 <!-- Submit Button -->
 <div class="mt-6">
-    <button type="submit"
-        class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple active:bg-purple-600">
-        <i class="fas fa-paper-plane mr-2"></i> {{ isset($product) ? 'Actualizar' : 'Guardar' }}
-    </button>
+    <x-ui.submit-button :data-label="isset($color) ? 'Actualizar' : 'Guardar'" />
 </div>

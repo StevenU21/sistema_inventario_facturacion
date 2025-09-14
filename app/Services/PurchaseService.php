@@ -73,12 +73,22 @@ class PurchaseService
             'sku' => $data['product']['sku'] ?? null,
             'status' => $data['product']['status'] ?? 'available',
             'brand_id' => $data['product']['brand_id'] ?? null,
-            'category_id' => $data['product']['category_id'] ?? null,
+            // category_id no se toma del formulario; se deriva de la marca para compatibilidad
+            // 'category_id' => $data['product']['category_id'] ?? null,
             'tax_id' => $data['product']['tax_id'] ?? null,
             'unit_measure_id' => $data['product']['unit_measure_id'] ?? null,
             'entity_id' => $data['product']['entity_id'] ?? $data['entity_id'] ?? null,
         ];
-        return Product::create($productPayload);
+        // Crear el producto y asignar category_id desde la marca si la BD aún lo requiere
+        $product = new Product($productPayload);
+        if (!empty($productPayload['brand_id'])) {
+            $brand = \App\Models\Brand::find($productPayload['brand_id']);
+            if ($brand && \Schema::hasColumn('products', 'category_id')) {
+                $product->category_id = $brand->category_id;
+            }
+        }
+        $product->save();
+        return $product;
     }
 
     /**

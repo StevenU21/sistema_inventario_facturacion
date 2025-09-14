@@ -160,7 +160,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Categoría</span>
-                <select name="product[category_id]" x-model="productCategoryId" @change="refreshBrands()"
+                <select x-model="productCategoryId" @change="refreshBrands()"
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Seleccionar Categoría</option>
@@ -181,6 +181,10 @@
                         <option :value="opt.id" x-text="opt.name"></option>
                     </template>
                 </select>
+                    @php($brandError = $errors->first('product.brand_id') ?: $errors->first('brand_id'))
+                    @if ($brandError)
+                        <span class="text-xs text-red-600 dark:text-red-400">{{ $brandError }}</span>
+                    @endif
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Referencia</span>
