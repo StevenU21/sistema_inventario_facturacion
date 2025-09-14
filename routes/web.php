@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\UnitMeasureController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Admin\KardexController;
+use App\Http\Controllers\Cashier\SaleController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,8 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+
+    // Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
     // Profile Routes
     Route::prefix('/profile')->name('profile.')->group(function () {
@@ -145,6 +148,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+
+    // Cashier Routes
+    Route::resource('sales', SaleController::class);
+
+    // Admin Routes
+    Route::resource('sales', SaleController::class);
 });
 
 require __DIR__ . '/auth.php';
