@@ -66,7 +66,10 @@
                             <input type="hidden" name="warehouse_id" value="{{ request('warehouse_id') }}">
                             <input type="hidden" name="from" value="{{ request('from') }}">
                             <input type="hidden" name="to" value="{{ request('to') }}">
-                            <input type="hidden" name="product_id" value="{{ request('product_id') }}">
+                            <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                            <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
+                            <input type="hidden" name="color_id" value="{{ request('color_id') }}">
+                            <input type="hidden" name="size_id" value="{{ request('size_id') }}">
                             <button type="submit"
                                 class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
                                 <i class="fas fa-file-excel"></i>
@@ -112,9 +115,12 @@
                                 'payment_method_id',
                                 'entity_id',
                                 'warehouse_id',
-                                'product_id',
                                 'from',
                                 'to',
+                                'category_id',
+                                'brand_id',
+                                'color_id',
+                                'size_id',
                             ]))
                             <a href="{{ route('purchases.index') }}"
                                 class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
@@ -138,21 +144,59 @@
                     </select>
                 </div>
                 <div>
-                    <label for="product_id"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Producto
-                        (solo comprados)</label>
-                    <select name="product_id" id="product_id"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                        onchange="this.form.submit()">
-                        <option value="">Todos los productos</option>
-                        @if (isset($products) && count($products))
-                            @foreach ($products as $id => $name)
-                                <option value="{{ $id }}" {{ request('product_id') == $id ? 'selected' : '' }}>
+                    <label for="category_id"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Categoría</label>
+                    <select name="category_id" id="category_id"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <option value="">Todas las categorías</option>
+                        @isset($categories)
+                            @foreach ($categories as $id => $name)
+                                <option value="{{ $id }}" {{ request('category_id') == $id ? 'selected' : '' }}>
                                     {{ $name }}</option>
                             @endforeach
-                        @else
-                            <option value="" disabled>No hay productos comprados</option>
-                        @endif
+                        @endisset
+                    </select>
+                </div>
+                <div>
+                    <label for="brand_id"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Marca</label>
+                    <select name="brand_id" id="brand_id"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <option value="">Todas las marcas</option>
+                        @isset($brandsList)
+                            @foreach ($brandsList as $b)
+                                <option value="{{ $b->id }}" data-category-id="{{ $b->category_id }}" {{ request('brand_id') == $b->id ? 'selected' : '' }}>
+                                    {{ $b->name }}</option>
+                            @endforeach
+                        @endisset
+                    </select>
+                </div>
+                <div>
+                    <label for="color_id"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Color</label>
+                    <select name="color_id" id="color_id"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <option value="">Todos los colores</option>
+                        @isset($colors)
+                            @foreach ($colors as $id => $name)
+                                <option value="{{ $id }}" {{ request('color_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        @endisset
+                    </select>
+                </div>
+                <div>
+                    <label for="size_id"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Talla</label>
+                    <select name="size_id" id="size_id"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <option value="">Todas las tallas</option>
+                        @isset($sizes)
+                            @foreach ($sizes as $id => $name)
+                                <option value="{{ $id }}" {{ request('size_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        @endisset
                     </select>
                 </div>
                 <div>
@@ -202,6 +246,59 @@
                 </div>
             </form>
         </section>
+        <script>
+            // Dependencia de marcas por categoría en el filtro
+            (function () {
+                const categorySelect = document.getElementById('category_id');
+                const brandSelect = document.getElementById('brand_id');
+                if (!categorySelect || !brandSelect) return;
+
+                const originalOptions = Array.from(brandSelect.options);
+
+                function filterBrands() {
+                    const catId = categorySelect.value;
+                    const current = "{{ request('brand_id') }}";
+                    // Limpiar
+                    while (brandSelect.firstChild) brandSelect.removeChild(brandSelect.firstChild);
+                    // Opción default
+                    const optAll = document.createElement('option');
+                    optAll.value = '';
+                    optAll.textContent = 'Todas las marcas';
+                    brandSelect.appendChild(optAll);
+                    // Reconstruir según categoría
+                    originalOptions.forEach(opt => {
+                        if (!opt.value) return; // skip default original
+                        const optCat = opt.getAttribute('data-category-id');
+                        if (!catId || (optCat === catId)) {
+                            brandSelect.appendChild(opt.cloneNode(true));
+                        }
+                    });
+                    // Restaurar selección si aplica
+                    if (current) {
+                        brandSelect.value = current;
+                    }
+                }
+
+                categorySelect.addEventListener('change', function () {
+                    filterBrands();
+                    // Enviar el formulario después de ajustar las opciones
+                    categorySelect.form.submit();
+                });
+
+                brandSelect.addEventListener('change', function () {
+                    brandSelect.form.submit();
+                });
+
+                // Envío automático para color y talla
+                const colorSelect = document.getElementById('color_id');
+                const sizeSelect = document.getElementById('size_id');
+                if (colorSelect) colorSelect.addEventListener('change', () => colorSelect.form.submit());
+                if (sizeSelect) sizeSelect.addEventListener('change', () => sizeSelect.form.submit());
+
+                // Inicializar al cargar
+                filterBrands();
+            })();
+        </script>
 
         <!-- Tabla -->
         <div class="mt-4 w-full overflow-hidden rounded-xl shadow-md bg-white dark:bg-gray-800">

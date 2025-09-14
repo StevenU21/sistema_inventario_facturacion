@@ -48,6 +48,7 @@ class PurchaseController extends Controller
                 }
             });
         }
+        // Filtros adicionales
         if ($entityId = $request->input('entity_id')) {
             $query->where('entity_id', $entityId);
         }
@@ -63,6 +64,26 @@ class PurchaseController extends Controller
         if ($to = $request->input('to')) {
             $query->whereDate('created_at', '<=', $to);
         }
+            if ($categoryId = $request->input('category_id')) {
+                $query->whereHas('details.productVariant.product.brand', function ($q) use ($categoryId) {
+                    $q->where('category_id', $categoryId);
+                });
+        }
+        if ($brandId = $request->input('brand_id')) {
+            $query->whereHas('details.productVariant.product', function ($q) use ($brandId) {
+                $q->where('brand_id', $brandId);
+            });
+        }
+        if ($colorId = $request->input('color_id')) {
+            $query->whereHas('details.productVariant', function ($q) use ($colorId) {
+                $q->where('color_id', $colorId);
+            });
+        }
+        if ($sizeId = $request->input('size_id')) {
+            $query->whereHas('details.productVariant', function ($q) use ($sizeId) {
+                $q->where('size_id', $sizeId);
+            });
+        }
 
         $perPage = (int) ($request->input('per_page', 10));
         $purchases = $query->latest()->paginate($perPage)->appends($request->all());
@@ -71,18 +92,19 @@ class PurchaseController extends Controller
             ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         $warehouses = Warehouse::pluck('name', 'id');
         $methods = PaymentMethod::pluck('name', 'id');
-        // Solo productos que han sido comprados (existen en detalles de compras)
-        $productIds = PurchaseDetail::query()
-            ->select('product_variant_id')
-            ->whereNotNull('product_variant_id')
-            ->distinct()
-            ->pluck('product_variant_id');
-        $products = Product::whereIn(
-            'id',
-            ProductVariant::whereIn('id', $productIds)->pluck('product_id')->unique()
-        )->pluck('name', 'id');
+        // Catálogo para filtros
+    $categories = Category::pluck('name', 'id');
+    $brands = Brand::pluck('name', 'id');
+    $brandsList = Brand::select('id', 'name', 'category_id')->get();
+        $brandsByCategory = Brand::with('category')
+            ->get()
+            ->groupBy('category_id')
+            ->map(fn($grp) => $grp->pluck('name', 'id'))
+            ->toArray();
+        $colors = Color::pluck('name', 'id');
+        $sizes = Size::pluck('name', 'id');
 
-        return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods', 'products'));
+    return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'brandsList', 'brandsByCategory', 'colors', 'sizes'));
     }
 
     public function create()
@@ -92,8 +114,9 @@ class PurchaseController extends Controller
             ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         $warehouses = Warehouse::pluck('name', 'id');
         $methods = PaymentMethod::pluck('name', 'id');
-        $categories = Category::pluck('name', 'id');
-        $brands = Brand::pluck('name', 'id');
+    $categories = Category::pluck('name', 'id');
+    $brands = Brand::pluck('name', 'id');
+    $brandsList = Brand::select('id', 'name', 'category_id')->get();
         $brandsByCategory = Brand::with('category')
             ->get()
             ->groupBy('category_id')
@@ -247,18 +270,19 @@ class PurchaseController extends Controller
             ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         $warehouses = Warehouse::pluck('name', 'id');
         $methods = PaymentMethod::pluck('name', 'id');
-        // Solo productos que han sido comprados (existen en detalles de compras)
-        $productIds = PurchaseDetail::query()
-            ->select('product_variant_id')
-            ->whereNotNull('product_variant_id')
-            ->distinct()
-            ->pluck('product_variant_id');
-        $products = Product::whereIn(
-            'id',
-            ProductVariant::whereIn('id', $productIds)->pluck('product_id')->unique()
-        )->pluck('name', 'id');
+        // Catálogo para filtros
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $brandsList = Brand::select('id', 'name', 'category_id')->get();
+        $brandsByCategory = Brand::with('category')
+            ->get()
+            ->groupBy('category_id')
+            ->map(fn($grp) => $grp->pluck('name', 'id'))
+            ->toArray();
+        $colors = Color::pluck('name', 'id');
+        $sizes = Size::pluck('name', 'id');
 
-        return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods', 'products'));
+    return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'brandsList', 'brandsByCategory', 'colors', 'sizes'));
     }
 
     // Exportación a Excel usando los mismos filtros
@@ -336,7 +360,9 @@ class PurchaseController extends Controller
             $query->where('entity_id', $entityId);
         }
         if ($categoryId = $request->input('category_id')) {
-            $query->where('category_id', $categoryId);
+            $query->whereHas('brand', function ($b) use ($categoryId) {
+                $b->where('category_id', $categoryId);
+            });
         }
         if ($brandId = $request->input('brand_id')) {
             $query->where('brand_id', $brandId);
@@ -406,8 +432,29 @@ class PurchaseController extends Controller
             $query->whereDate('created_at', '<=', $to);
         }
         if ($productId = $request->input('product_id')) {
+            // Compatibilidad con enlaces/params antiguos; ya no se muestra en UI
             $query->whereHas('details.productVariant.product', function ($q) use ($productId) {
                 $q->where('id', $productId);
+            });
+        }
+        if ($categoryId = $request->input('category_id')) {
+            $query->whereHas('details.productVariant.product.brand', function ($q) use ($categoryId) {
+                $q->where('category_id', $categoryId);
+            });
+        }
+        if ($brandId = $request->input('brand_id')) {
+            $query->whereHas('details.productVariant.product', function ($q) use ($brandId) {
+                $q->where('brand_id', $brandId);
+            });
+        }
+        if ($colorId = $request->input('color_id')) {
+            $query->whereHas('details.productVariant', function ($q) use ($colorId) {
+                $q->where('color_id', $colorId);
+            });
+        }
+        if ($sizeId = $request->input('size_id')) {
+            $query->whereHas('details.productVariant', function ($q) use ($sizeId) {
+                $q->where('size_id', $sizeId);
             });
         }
 
@@ -451,7 +498,9 @@ class PurchaseController extends Controller
             $q->where('entity_id', $entityId);
         }
         if ($categoryId = $request->input('category_id')) {
-            $q->where('category_id', $categoryId);
+            $q->whereHas('brand', function ($b) use ($categoryId) {
+                $b->where('category_id', $categoryId);
+            });
         }
         if ($brandId = $request->input('brand_id')) {
             $q->where('brand_id', $brandId);
