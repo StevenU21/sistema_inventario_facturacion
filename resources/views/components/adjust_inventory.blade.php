@@ -1,14 +1,14 @@
-<div x-data="{
-    reason: @json(old('adjustment_reason')),
-    get showInfo() { return ['correction', 'physical_count', 'damage', 'theft'].includes(this.reason); },
-    isQtyReason() { return ['correction', 'physical_count', 'damage', 'theft'].includes(this.reason); },
-    isPurchasePriceReason() { return this.reason === 'purchase_price'; },
-    isSalePriceReason() { return this.reason === 'sale_price'; }
-}">
+<div x-data='{
+    reason: @json(old("adjustment_reason")),
+    showInfo() { return ["correction", "physical_count", "damage", "theft"].includes(this.reason); },
+    isQtyReason() { return ["correction", "physical_count", "damage", "theft"].includes(this.reason); },
+    isPurchasePriceReason() { return this.reason === "purchase_price"; },
+    isSalePriceReason() { return this.reason === "sale_price"; }
+}'>
 
 
     <div class="flex flex-col gap-4 mt-4">
-        <div x-show="showInfo"
+        <div x-show="showInfo()"
             class="relative mb-4 text-sm font-medium text-green-700 bg-green-100 rounded-lg dark:bg-green-700 dark:text-green-100 px-4 py-3 flex items-center justify-between">
             <div>
                 <i class="fas fa-info-circle mr-2"></i>

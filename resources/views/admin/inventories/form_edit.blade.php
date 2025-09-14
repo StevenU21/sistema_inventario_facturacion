@@ -11,7 +11,7 @@
     <!-- Selector de modo (ajuste/transferencia) -->
     <div class="mt-2 mb-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <label class="relative cursor-pointer">
+            <label class="relative cursor-pointer" @click="mode='adjustment'">
                 <input type="radio" name="movement_type" value="adjustment" x-model="mode" class="sr-only" />
                 <div class="rounded-lg border p-4 h-full transition-colors select-none"
                     :class="mode === 'adjustment' ?
@@ -29,7 +29,7 @@
                     </div>
                 </div>
             </label>
-            <label class="relative cursor-pointer">
+            <label class="relative cursor-pointer" @click="mode='transfer'">
                 <input type="radio" name="movement_type" value="transfer" x-model="mode" class="sr-only" />
                 <div class="rounded-lg border p-4 h-full transition-colors select-none"
                     :class="mode === 'transfer' ?
