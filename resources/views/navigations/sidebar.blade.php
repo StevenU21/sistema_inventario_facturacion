@@ -220,16 +220,6 @@
                     </li>
                     <li class="px-6 py-2">
                         <x-ui.submit-link
-                            :href="route('payment_methods.index')"
-                            :active-class="Route::is('payment_methods.*') ? 'text-gray-800 dark:text-gray-100' : ''"
-                            icon="fas fa-credit-card"
-                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
-                        >
-                            <span class="ml-4">Métodos de Pago</span>
-                        </x-ui.submit-link>
-                    </li>
-                    <li class="px-6 py-2">
-                        <x-ui.submit-link
                             :href="route('taxes.index')"
                             :active-class="Route::is('taxes.*') ? 'text-gray-800 dark:text-gray-100' : ''"
                             icon="fas fa-percent"

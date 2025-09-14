@@ -248,10 +248,9 @@
 
     <!-- Botón enviar -->
     <div class="mt-6">
-        <button type="submit"
-            class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple active:bg-purple-600">
+        <x-ui.submit-button>
             <i class="fas fa-paper-plane mr-2"></i> {{ isset($entity) ? 'Actualizar' : 'Guardar' }}
-        </button>
+        </x-ui.submit-button>
     </div>
 </div>
 
