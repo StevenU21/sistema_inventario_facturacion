@@ -6,7 +6,8 @@
                 <input name="name" type="text"
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('name') border-red-600 @enderror"
                     placeholder="Nombre..."
-                    @if (isset($alpine) && $alpine) x-model="editWarehouse.name" :value="editWarehouse.name" @else value="{{ old('name', $warehouse->name ?? '') }}" @endif required />
+                    @if (isset($alpine) && $alpine) x-model="editWarehouse.name" :value="editWarehouse.name" @else value="{{ old('name', $warehouse->name ?? '') }}" @endif
+                    required />
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                     <i class="fas fa-warehouse w-5 h-5"></i>
                 </div>
@@ -22,7 +23,8 @@
             <input name="address" type="text"
                 class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('address') border-red-600 @enderror"
                 placeholder="Dirección..."
-                @if (isset($alpine) && $alpine) x-model="editWarehouse.address" :value="editWarehouse.address" @else value="{{ old('address', $warehouse->address ?? '') }}" @endif required />
+                @if (isset($alpine) && $alpine) x-model="editWarehouse.address" :value="editWarehouse.address" @else value="{{ old('address', $warehouse->address ?? '') }}" @endif
+                required />
             <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                 <i class="fas fa-map-marker-alt w-5 h-5"></i>
             </div>
@@ -61,9 +63,8 @@
     </label>
     --}}
     <div class="mt-6">
-        <button type="submit"
-            class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple active:bg-purple-600">
-            <i class="fas fa-paper-plane mr-2"></i> {{ isset($warehouse) ? 'Actualizar' : 'Guardar' }}
-        </button>
+        <x-ui.submit-button>
+            <i class="fas fa-paper-plane mr-2"></i> {{ isset($entity) ? 'Actualizar' : 'Guardar' }}
+        </x-ui.submit-button>
     </div>
 </div>

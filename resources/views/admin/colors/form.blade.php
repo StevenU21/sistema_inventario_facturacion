@@ -29,8 +29,7 @@
             @if (isset($alpine) && $alpine) x-model="editColor.hex_code"
                 :value="editColor.hex_code"
             @else
-                value="{{ old('hex_code', isset($color) && is_object($color) ? $color->hex_code : '') }}" @endif
-             />
+                value="{{ old('hex_code', isset($color) && is_object($color) ? $color->hex_code : '') }}" @endif />
         <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
             <i class="fas fa-user w-5 h-5"></i>
         </div>
@@ -42,8 +41,7 @@
 
 <!-- Submit Button -->
 <div class="mt-6 flex space-x-4">
-    <button type="submit"
-        class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple active:bg-purple-600">
-        <i class="fas fa-paper-plane mr-2"></i> {{ isset($color) ? 'Actualizar' : 'Guardar' }}
-    </button>
+    <x-ui.submit-button>
+        <i class="fas fa-paper-plane mr-2"></i> {{ isset($entity) ? 'Actualizar' : 'Guardar' }}
+    </x-ui.submit-button>
 </div>

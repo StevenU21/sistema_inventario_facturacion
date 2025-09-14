@@ -30,13 +30,11 @@
                                         class="flex items-center space-x-2 font-semibold text-gray-700 dark:text-gray-300">
                                         <input type="checkbox" name="permissions[]" value="{{ $permission->id }}"
                                             class="form-checkbox text-purple-600"
-                                            @if(is_array(old('permissions')))
-                                                {{ in_array($permission->id, old('permissions')) ? 'checked' : '' }}
+                                            @if (is_array(old('permissions'))) {{ in_array($permission->id, old('permissions')) ? 'checked' : '' }}
                                             @elseif(isset($rolePermissions) && in_array($permission->id, $rolePermissions))
-                                                checked
-                                            @endif
-                                        >
-                                        <span class="uppercase">{{ $translatedPermissions[$permission->name] ?? $permission->name }}</span>
+                                                checked @endif>
+                                        <span
+                                            class="uppercase">{{ $translatedPermissions[$permission->name] ?? $permission->name }}</span>
                                     </label>
                                 </td>
                             @endforeach
@@ -55,9 +53,8 @@
 
     <!-- Submit Button -->
     <div class="mt-6">
-        <button type="submit"
-            class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple active:bg-purple-600">
-            <i class="fas fa-paper-plane mr-2"></i> {{ isset($role) ? 'Actualizar' : 'Guardar' }}
-        </button>
+        <x-ui.submit-button>
+            <i class="fas fa-paper-plane mr-2"></i> {{ isset($entity) ? 'Actualizar' : 'Guardar' }}
+        </x-ui.submit-button>
     </div>
 </div>

@@ -9,7 +9,7 @@
                 <input name="first_name" type="text"
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('first_name') border-red-600 @enderror"
                     placeholder="Nombre..."
-                    @if (isset($alpine) && $alpine) x-model="editUser.first_name" @else value="{{ old('first_name', isset($user) ? ($user->first_name ?? '') : '') }}" @endif />
+                    @if (isset($alpine) && $alpine) x-model="editUser.first_name" @else value="{{ old('first_name', isset($user) ? $user->first_name ?? '' : '') }}" @endif />
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                     <i class="fas fa-user w-5 h-5"></i>
                 </div>
@@ -25,7 +25,7 @@
                 <input name="last_name" type="text"
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('last_name') border-red-600 @enderror"
                     placeholder="Apellido..."
-                    @if (isset($alpine) && $alpine) x-model="editUser.last_name" @else value="{{ old('last_name', isset($user) ? ($user->last_name ?? '') : '') }}" @endif />
+                    @if (isset($alpine) && $alpine) x-model="editUser.last_name" @else value="{{ old('last_name', isset($user) ? $user->last_name ?? '' : '') }}" @endif />
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                     <i class="fas fa-user-tag w-5 h-5"></i>
                 </div>
@@ -45,7 +45,7 @@
                 <input name="identity_card" type="text"
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('identity_card') border-red-600 @enderror"
                     placeholder="Cédula..."
-                    @if (isset($alpine) && $alpine) x-model="editUser.identity_card" @else value="{{ old('identity_card', isset($user) && isset($user->profile) ? ($user->profile->identity_card ?? '') : '') }}" @endif />
+                    @if (isset($alpine) && $alpine) x-model="editUser.identity_card" @else value="{{ old('identity_card', isset($user) && isset($user->profile) ? $user->profile->identity_card ?? '' : '') }}" @endif />
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                     <i class="fas fa-id-card w-5 h-5"></i>
                 </div>
@@ -61,7 +61,7 @@
                 <input name="phone" type="text"
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('phone') border-red-600 @enderror"
                     placeholder="Teléfono..."
-                    @if (isset($alpine) && $alpine) x-model="editUser.phone" @else value="{{ old('phone', isset($user) && isset($user->profile) ? ($user->profile->phone ?? '') : '') }}" @endif />
+                    @if (isset($alpine) && $alpine) x-model="editUser.phone" @else value="{{ old('phone', isset($user) && isset($user->profile) ? $user->profile->phone ?? '' : '') }}" @endif />
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                     <i class="fas fa-phone w-5 h-5"></i>
                 </div>
@@ -78,9 +78,11 @@
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('gender') border-red-600 @enderror"
                     @if (isset($alpine) && $alpine) x-model="editUser.gender" @endif>
                     <option value="">Selecciona un género</option>
-                    <option value="male" @if (!isset($alpine) || !$alpine) {{ old('gender', isset($user) && isset($user->profile) ? ($user->profile->gender ?? '') : '') == 'male' ? 'selected' : '' }} @endif>
+                    <option value="male"
+                        @if (!isset($alpine) || !$alpine) {{ old('gender', isset($user) && isset($user->profile) ? $user->profile->gender ?? '' : '') == 'male' ? 'selected' : '' }} @endif>
                         Masculino</option>
-                    <option value="female" @if (!isset($alpine) || !$alpine) {{ old('gender', isset($user) && isset($user->profile) ? ($user->profile->gender ?? '') : '') == 'female' ? 'selected' : '' }} @endif>
+                    <option value="female"
+                        @if (!isset($alpine) || !$alpine) {{ old('gender', isset($user) && isset($user->profile) ? $user->profile->gender ?? '' : '') == 'female' ? 'selected' : '' }} @endif>
                         Femenino</option>
                 </select>
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
@@ -102,7 +104,7 @@
                 <input name="email" type="email"
                     class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('email') border-red-600 @enderror"
                     placeholder="Correo electrónico..."
-                    @if (isset($alpine) && $alpine) x-model="editUser.email" @else value="{{ old('email', isset($user) ? ($user->email ?? '') : '') }}" @endif />
+                    @if (isset($alpine) && $alpine) x-model="editUser.email" @else value="{{ old('email', isset($user) ? $user->email ?? '' : '') }}" @endif />
                 <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                     <i class="fas fa-envelope w-5 h-5"></i>
                 </div>
@@ -121,7 +123,7 @@
                     <option value="">Selecciona un rol</option>
                     @foreach ($roles as $role)
                         <option value="{{ $role->name }}"
-                            @if (!isset($alpine) || !$alpine) {{ old('role', isset($user) ? (optional($user->roles->first())->name ?? '') : '') == $role->name ? 'selected' : '' }} @endif>
+                            @if (!isset($alpine) || !$alpine) {{ old('role', isset($user) ? optional($user->roles->first())->name ?? '' : '') == $role->name ? 'selected' : '' }} @endif>
                             @if ($role->name === 'admin')
                                 Administrador
                             @elseif($role->name === 'cashier')
@@ -145,7 +147,8 @@
     <!-- Avatar -->
     <label class="block mt-4 text-sm w-full">
         <span class="text-gray-700 dark:text-gray-400">Avatar (imagen)</span>
-        <div class="relative flex items-center text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400 mt-1">
+        <div
+            class="relative flex items-center text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400 mt-1">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <i class="fas fa-image w-5 h-5"></i>
             </div>
@@ -166,20 +169,28 @@
         @enderror
     </label>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const pairs = [
-                { inputId: 'avatarInputCreate', previewId: 'avatarPreviewCreate' },
-                { inputId: 'avatarInputEdit', previewId: 'avatarPreviewEdit' },
+        document.addEventListener('DOMContentLoaded', function() {
+            const pairs = [{
+                    inputId: 'avatarInputCreate',
+                    previewId: 'avatarPreviewCreate'
+                },
+                {
+                    inputId: 'avatarInputEdit',
+                    previewId: 'avatarPreviewEdit'
+                },
             ];
-            pairs.forEach(({ inputId, previewId }) => {
+            pairs.forEach(({
+                inputId,
+                previewId
+            }) => {
                 const input = document.getElementById(inputId);
                 const preview = document.getElementById(previewId);
                 if (input && preview) {
-                    input.addEventListener('change', function (e) {
+                    input.addEventListener('change', function(e) {
                         const file = e.target.files[0];
                         if (file) {
                             const reader = new FileReader();
-                            reader.onload = function (ev) {
+                            reader.onload = function(ev) {
                                 preview.src = ev.target.result;
                                 if (preview.hasAttribute('x-show')) {
                                     // Alpine controla la visibilidad; solo se asigna el src
@@ -207,7 +218,7 @@
             <input name="address" type="text"
                 class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-input focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('address') border-red-600 @enderror"
                 placeholder="Dirección..."
-                @if (isset($alpine) && $alpine) x-model="editUser.address" @else value="{{ old('address', isset($user) && isset($user->profile) ? ($user->profile->address ?? '') : '') }}" @endif />
+                @if (isset($alpine) && $alpine) x-model="editUser.address" @else value="{{ old('address', isset($user) && isset($user->profile) ? $user->profile->address ?? '' : '') }}" @endif />
             <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                 <i class="fas fa-map-marker-alt w-5 h-5"></i>
             </div>
@@ -251,9 +262,8 @@
 
     <!-- Botón enviar -->
     <div class="mt-6">
-        <button type="submit"
-            class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple active:bg-purple-600">
-            <i class="fas fa-paper-plane mr-2"></i> {{ isset($alpine) && $alpine ? 'Actualizar' : 'Guardar' }}
-        </button>
+        <x-ui.submit-button>
+            <i class="fas fa-paper-plane mr-2"></i> {{ isset($entity) ? 'Actualizar' : 'Guardar' }}
+        </x-ui.submit-button>
     </div>
 </div>

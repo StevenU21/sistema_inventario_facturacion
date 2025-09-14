@@ -298,4 +298,5 @@
 <!-- Submit Button -->
 <div class="mt-6">
     <x-ui.submit-button :data-label="isset($color) ? 'Actualizar' : 'Guardar'" />
+
 </div>
