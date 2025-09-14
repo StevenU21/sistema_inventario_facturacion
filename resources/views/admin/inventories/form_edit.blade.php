@@ -2,6 +2,8 @@
     class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-full"
     x-effect="if(!productId||!(variantsByProduct[productId]||[]).some(v=>String(v.id)===String(variantId))){variantId='';}">
 
+    <style>[x-cloak]{display:none!important}</style>
+
     <hr class="my-6 border-gray-200 dark:border-gray-700">
 
     <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3">Movimiento de Inventario</h3>
@@ -49,23 +51,20 @@
             <div class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</div>
         @enderror
 
-        <!-- Montar un solo fieldset a la vez para evitar duplicación y efectos cruzados -->
-        <template x-if="mode==='adjustment'">
-            <fieldset>
-                @include('components.adjust_inventory', [
-                    'warehouses' => $warehouses,
-                    'inventory' => $inventory ?? null,
-                ])
-            </fieldset>
-        </template>
-        <template x-if="mode==='transfer'">
-            <fieldset>
-                @include('components.transfer_inventory', [
-                    'warehouses' => $warehouses,
-                    'inventory' => $inventory ?? null,
-                ])
-            </fieldset>
-        </template>
+        <!-- Mantener ambos fieldsets en el DOM, pero mostrar/ocultar y deshabilitar el inactivo para evitar duplicaciones -->
+        <fieldset x-show="mode==='adjustment'" x-cloak :disabled="mode!=='adjustment'">
+            @include('components.adjust_inventory', [
+                'warehouses' => $warehouses,
+                'inventory' => $inventory ?? null,
+            ])
+        </fieldset>
+
+        <fieldset x-show="mode==='transfer'" x-cloak :disabled="mode!=='transfer'">
+            @include('components.transfer_inventory', [
+                'warehouses' => $warehouses,
+                'inventory' => $inventory ?? null,
+            ])
+        </fieldset>
     </div>
 
     <div class="mt-6 flex gap-2">
