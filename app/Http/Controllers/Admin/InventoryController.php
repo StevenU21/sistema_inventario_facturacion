@@ -178,7 +178,9 @@ class InventoryController extends Controller
         // $colors y $sizes ya calculados arriba
         $warehouses = Warehouse::pluck('name', 'id');
         $categories = Category::pluck('name', 'id');
-        $brands = Brand::pluck('name', 'id');
+        $brands = $request->filled('category_id')
+            ? Brand::where('category_id', $request->input('category_id'))->pluck('name', 'id')
+            : Brand::pluck('name', 'id');
         $entities = Entity::where('is_active', true)->where('is_supplier', true)
             ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         return view('admin.inventories.index', [
