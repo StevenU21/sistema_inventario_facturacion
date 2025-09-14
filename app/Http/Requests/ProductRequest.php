@@ -57,8 +57,73 @@ class ProductRequest extends FormRequest
             'details.*.code' => ['nullable', 'string', 'max:255'],
         ]);
 
-        \Log::info('[ProductRequest@rules] Datos del request', $this->all());
-        \Log::info('[ProductRequest@rules] Reglas de validación', $rules);
         return $rules;
+
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string' => 'El nombre debe ser una cadena de texto.',
+            'name.min' => 'El nombre debe tener al menos :min caracteres.',
+            'name.max' => 'El nombre no debe exceder de :max caracteres.',
+            'image.image' => 'La imagen debe ser un archivo de imagen.',
+            'image.max' => 'La imagen no debe superar los :max kilobytes.',
+            'image.mimes' => 'La imagen debe ser de tipo: :values.',
+            'description.string' => 'La descripción debe ser una cadena de texto.',
+            'description.max' => 'La descripción no debe exceder de :max caracteres.',
+            'code.string' => 'El código debe ser una cadena de texto.',
+            'code.max' => 'El código no debe exceder de :max caracteres.',
+            'code.unique' => 'El código ya está en uso.',
+            'sku.string' => 'El SKU debe ser una cadena de texto.',
+            'sku.max' => 'El SKU no debe exceder de :max caracteres.',
+            'sku.unique' => 'El SKU ya está en uso.',
+            'brand_id.required' => 'La marca es obligatoria.',
+            'brand_id.exists' => 'La marca seleccionada no existe.',
+            'tax_id.required' => 'El impuesto es obligatorio.',
+            'tax_id.exists' => 'El impuesto seleccionado no existe.',
+            'unit_measure_id.required' => 'La unidad de medida es obligatoria.',
+            'unit_measure_id.exists' => 'La unidad de medida seleccionada no existe.',
+            'entity_id.required' => 'El proveedor es obligatorio.',
+            'entity_id.exists' => 'El proveedor seleccionado no existe.',
+            'details.array' => 'Los detalles deben ser un arreglo.',
+            'details.*.color_id.exists' => 'El color seleccionado no existe.',
+            'details.*.size_id.exists' => 'La talla seleccionada no existe.',
+            'details.*.sku.string' => 'El SKU debe ser una cadena de texto.',
+            'details.*.sku.max' => 'El SKU no debe exceder de :max caracteres.',
+            'details.*.code.string' => 'El código debe ser una cadena de texto.',
+            'details.*.code.max' => 'El código no debe exceder de :max caracteres.',
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nombre',
+            'image' => 'imagen',
+            'description' => 'descripción',
+            'code' => 'código',
+            'sku' => 'SKU',
+            'brand_id' => 'marca',
+            'tax_id' => 'impuesto',
+            'unit_measure_id' => 'unidad de medida',
+            'entity_id' => 'proveedor',
+            'details' => 'detalles',
+            'details.*.color_id' => 'color',
+            'details.*.size_id' => 'talla',
+            'details.*.sku' => 'SKU',
+            'details.*.code' => 'código',
+        ];
     }
 }

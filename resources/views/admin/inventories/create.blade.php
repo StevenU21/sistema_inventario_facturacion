@@ -72,10 +72,6 @@
             </div>
         </section>
 
-        <div class="mt-4">
-            <x-session-message />
-        </div>
-
         <form action="{{ route('inventories.store') }}" method="POST" class="mt-4">
             @csrf
             @include('admin.inventories.form_create')

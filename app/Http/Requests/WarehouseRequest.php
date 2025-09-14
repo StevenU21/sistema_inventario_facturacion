@@ -36,4 +36,35 @@ class WarehouseRequest extends FormRequest
             'description' => ['nullable', 'string'],
         ];
     }
+
+    /**
+     * Mensajes personalizados de validación en español.
+     *
+     * @return array
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string' => 'El nombre debe ser una cadena de texto.',
+            'name.max' => 'El nombre no debe exceder de :max caracteres.',
+            'address.string' => 'La dirección debe ser una cadena de texto.',
+            'address.max' => 'La dirección no debe exceder de :max caracteres.',
+            'description.string' => 'La descripción debe ser una cadena de texto.',
+        ];
+    }
+
+    /**
+     * Atributos personalizados para los mensajes de validación.
+     *
+     * @return array
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nombre',
+            'address' => 'dirección',
+            'description' => 'descripción',
+        ];
+    }
 }

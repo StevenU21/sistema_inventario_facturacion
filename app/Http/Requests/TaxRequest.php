@@ -37,4 +37,38 @@ class TaxRequest extends FormRequest
             'is_default' => ['nullable', 'boolean']
         ];
     }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string' => 'El nombre debe ser una cadena de texto.',
+            'name.max' => 'El nombre no debe exceder de :max caracteres.',
+            'name.unique' => 'El nombre ya está en uso.',
+            'percentage.required' => 'El porcentaje es obligatorio.',
+            'percentage.numeric' => 'El porcentaje debe ser un valor numérico.',
+            'percentage.min' => 'El porcentaje no puede ser menor que :min.',
+            'percentage.max' => 'El porcentaje no puede ser mayor que :max.',
+            'is_default.boolean' => 'El valor de "por defecto" debe ser verdadero o falso.',
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nombre',
+            'percentage' => 'porcentaje',
+            'is_default' => 'por defecto',
+        ];
+    }
 }

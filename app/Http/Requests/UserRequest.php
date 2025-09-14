@@ -46,4 +46,45 @@ class UserRequest extends FormRequest
 
         return $rules;
     }
+
+    /**
+     * Mensajes personalizados de validación en español.
+     *
+     * @return array
+     */
+    public function messages(): array
+    {
+        return [
+            'first_name.required' => 'El nombre es obligatorio.',
+            'first_name.string' => 'El nombre debe ser una cadena de texto.',
+            'first_name.min' => 'El nombre debe tener al menos :min caracteres.',
+            'first_name.max' => 'El nombre no debe exceder de :max caracteres.',
+            'last_name.required' => 'El apellido es obligatorio.',
+            'last_name.string' => 'El apellido debe ser una cadena de texto.',
+            'last_name.min' => 'El apellido debe tener al menos :min caracteres.',
+            'last_name.max' => 'El apellido no debe exceder de :max caracteres.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.string' => 'El correo electrónico debe ser una cadena de texto.',
+            'email.email' => 'El correo electrónico debe ser válido.',
+            'email.max' => 'El correo electrónico no debe exceder de :max caracteres.',
+            'email.unique' => 'El correo electrónico ya está en uso.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+        ];
+    }
+
+    /**
+     * Atributos personalizados para los mensajes de validación.
+     *
+     * @return array
+     */
+    public function attributes(): array
+    {
+        return [
+            'first_name' => 'nombre',
+            'last_name' => 'apellido',
+            'email' => 'correo electrónico',
+            'password' => 'contraseña',
+        ];
+    }
 }

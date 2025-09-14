@@ -37,4 +37,38 @@ class UnitMeasureRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:255'],
         ];
     }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string' => 'El nombre debe ser una cadena de texto.',
+            'name.max' => 'El nombre no debe exceder de :max caracteres.',
+            'name.unique' => 'El nombre ya está en uso.',
+            'abbreviation.required' => 'La abreviatura es obligatoria.',
+            'abbreviation.string' => 'La abreviatura debe ser una cadena de texto.',
+            'abbreviation.max' => 'La abreviatura no debe exceder de :max caracteres.',
+            'description.string' => 'La descripción debe ser una cadena de texto.',
+            'description.max' => 'La descripción no debe exceder de :max caracteres.',
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nombre',
+            'abbreviation' => 'abreviatura',
+            'description' => 'descripción',
+        ];
+    }
 }

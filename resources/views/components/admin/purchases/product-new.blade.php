@@ -115,8 +115,11 @@
                 <span class="text-gray-700 dark:text-gray-200">Nombre del producto</span>
                 <input type="text" name="product[name]" value="{{ old('product.name', optional($product)->name) }}"
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('product.name') ? 'border-red-600' : '' }}"
                     placeholder="Nombre del producto">
+                @error('product.name')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Proveedor</span>
@@ -162,7 +165,7 @@
                 <span class="text-gray-700 dark:text-gray-200">Categoría</span>
                 <select x-model="productCategoryId" @change="refreshBrands()"
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('product.category_id') ? 'border-red-600' : '' }}">
                     <option value="">Seleccionar Categoría</option>
                     @foreach ($categories ?? [] as $id => $name)
                         <option value="{{ $id }}"
@@ -170,21 +173,23 @@
                             {{ $name }}</option>
                     @endforeach
                 </select>
+                @error('product.category_id')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Marca</span>
                 <select name="product[brand_id]" x-model="productBrandId"
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('product.brand_id') ? 'border-red-600' : '' }}">
                     <option value="">Seleccionar Marca</option>
                     <template x-for="opt in brandsList" :key="opt.id">
                         <option :value="opt.id" x-text="opt.name"></option>
                     </template>
                 </select>
-                    @php($brandError = $errors->first('product.brand_id') ?: $errors->first('brand_id'))
-                    @if ($brandError)
-                        <span class="text-xs text-red-600 dark:text-red-400">{{ $brandError }}</span>
-                    @endif
+                @error('product.brand_id')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Referencia</span>
@@ -193,10 +198,12 @@
                     value="{{ old('new.reference', old('reference', $purchase->reference ?? '')) }}"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('new.reference') || $errors->has('reference') ? 'border-red-600' : '' }}"
                     placeholder="Opcional...">
-                @php($referenceError = $errors->first('new.reference') ?: $errors->first('reference'))
-                @if ($referenceError)
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $referenceError }}</span>
-                @endif
+                @error('new.reference')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
+                @error('reference')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
             </label>
         </div>
 
@@ -215,16 +222,18 @@
                             {{ $name }}</option>
                     @endforeach
                 </select>
-                @php($methodError = $errors->first('new.payment_method_id') ?: $errors->first('payment_method_id'))
-                @if ($methodError)
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $methodError }}</span>
-                @endif
+                @error('new.payment_method_id')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
+                @error('payment_method_id')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Impuesto</span>
                 <select name="product[tax_id]"
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('product.tax_id') ? 'border-red-600' : '' }}">
                     <option value="">Seleccionar Impuesto</option>
                     @foreach ($taxes ?? [] as $id => $name)
                         <option value="{{ $id }}"
@@ -232,12 +241,15 @@
                             {{ $name }}</option>
                     @endforeach
                 </select>
+                @error('product.tax_id')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Unidad de medida</span>
                 <select name="product[unit_measure_id]"
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('product.unit_measure_id') ? 'border-red-600' : '' }}">
                     <option value="">Seleccionar Unidad de Medida</option>
                     @foreach ($units ?? [] as $id => $name)
                         <option value="{{ $id }}"
@@ -245,6 +257,9 @@
                             {{ $name }}</option>
                     @endforeach
                 </select>
+                @error('product.unit_measure_id')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
             </label>
         </div>
 
@@ -254,7 +269,10 @@
                 <span class="text-gray-700 dark:text-gray-200">Descripción</span>
                 <textarea name="product[description]" rows="3" placeholder="Opcional..."
                     x-bind:disabled="$el.closest('fieldset')?.dataset?.mode !== 'new'"
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">{{ old('product.description', optional($product)->description) }}</textarea>
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('product.description') ? 'border-red-600' : '' }}">{{ old('product.description', optional($product)->description) }}</textarea>
+                @error('product.description')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
             </label>
         </div>
 

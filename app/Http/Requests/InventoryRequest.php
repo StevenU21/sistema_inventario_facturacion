@@ -7,6 +7,27 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class InventoryRequest extends FormRequest
 {
+    /**
+     * Atributos personalizados para los mensajes de validación.
+     *
+     * @return array
+     */
+    public function attributes(): array
+    {
+        return [
+            'stock' => 'stock',
+            'min_stock' => 'stock mínimo',
+            'purchase_price' => 'precio de compra',
+            'sale_price' => 'precio de venta',
+            'product_variant_id' => 'variante de producto',
+            'warehouse_id' => 'almacén',
+            'movement_type' => 'tipo de movimiento',
+            'destination_warehouse_id' => 'almacén de destino',
+            'quantity' => 'cantidad',
+            'adjustment_reason' => 'motivo de ajuste',
+            'product_id' => 'producto',
+        ];
+    }
     protected function prepareForValidation()
     {
         if ($this->has('quantity') && $this->input('quantity') === '') {
@@ -27,14 +48,31 @@ class InventoryRequest extends FormRequest
     public function messages()
     {
         return [
-            'required' => 'Este campo es obligatorio.',
-            'integer' => 'Debe ser un número entero.',
-            'numeric' => 'Debe ser un valor numérico.',
-            'min' => 'El valor mínimo permitido es :min.',
-            'max' => 'El valor máximo permitido es :max.',
-            'gte' => 'El valor debe ser mayor o igual que :value.',
-            'lte' => 'El valor debe ser menor o igual que :value.',
-            'exists' => 'El valor seleccionado no es válido.',
+            'stock.required' => 'El stock es obligatorio.',
+            'stock.integer' => 'El stock debe ser un número entero.',
+            'stock.min' => 'El stock no puede ser menor que :min.',
+            'min_stock.required' => 'El stock mínimo es obligatorio.',
+            'min_stock.integer' => 'El stock mínimo debe ser un número entero.',
+            'min_stock.min' => 'El stock mínimo no puede ser menor que :min.',
+            'min_stock.lte' => 'El stock mínimo no puede ser mayor que el stock.',
+            'purchase_price.required' => 'El precio de compra es obligatorio.',
+            'purchase_price.numeric' => 'El precio de compra debe ser un valor numérico.',
+            'purchase_price.min' => 'El precio de compra no puede ser menor que :min.',
+            'sale_price.required' => 'El precio de venta es obligatorio.',
+            'sale_price.numeric' => 'El precio de venta debe ser un valor numérico.',
+            'sale_price.min' => 'El precio de venta no puede ser menor que :min.',
+            'sale_price.gte' => 'El precio de venta no puede ser menor que el precio de compra.',
+            'product_variant_id.required' => 'La variante de producto es obligatoria.',
+            'product_variant_id.exists' => 'La variante de producto seleccionada no existe.',
+            'warehouse_id.required' => 'El almacén es obligatorio.',
+            'warehouse_id.exists' => 'El almacén seleccionado no existe.',
+            'movement_type.required' => 'El tipo de movimiento es obligatorio.',
+            'destination_warehouse_id.required' => 'El almacén de destino es obligatorio.',
+            'destination_warehouse_id.exists' => 'El almacén de destino seleccionado no existe.',
+            'quantity.required' => 'La cantidad es obligatoria.',
+            'quantity.integer' => 'La cantidad debe ser un número entero.',
+            'quantity.min' => 'La cantidad debe ser al menos :min.',
+            'adjustment_reason.required' => 'El motivo de ajuste es obligatorio.',
             'prohibited' => 'Este campo no debe estar presente.',
             'nullable' => 'Este campo puede estar vacío.',
             'unique' => 'Este valor ya está registrado.',
@@ -122,7 +160,7 @@ class InventoryRequest extends FormRequest
                     function ($attribute, $value, $fail) {
                         $inventory = $this->route('inventory');
                         if ($inventory && $value > $inventory->stock) {
-                            $fail('No puedes registrar una cantidad mayor al stock disponible ('.$inventory->stock.').');
+                            $fail('No puedes registrar una cantidad mayor al stock disponible (' . $inventory->stock . ').');
                         }
                     }
                 ];

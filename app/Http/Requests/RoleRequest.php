@@ -37,4 +37,38 @@ class RoleRequest extends FormRequest
             'permissions.*' => ['exists:permissions,id'],
         ];
     }
+
+    /**
+     * Mensajes personalizados de validación en español.
+     *
+     * @return array
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string' => 'El nombre debe ser una cadena de texto.',
+            'name.min' => 'El nombre debe tener al menos :min caracteres.',
+            'name.max' => 'El nombre no debe exceder de :max caracteres.',
+            'name.unique' => 'El nombre ya está en uso.',
+            'permissions.required' => 'Debe seleccionar al menos un permiso.',
+            'permissions.array' => 'Los permisos deben ser un arreglo.',
+            'permissions.min' => 'Debe seleccionar al menos un permiso.',
+            'permissions.*.exists' => 'El permiso seleccionado no existe.',
+        ];
+    }
+
+    /**
+     * Atributos personalizados para los mensajes de validación.
+     *
+     * @return array
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nombre',
+            'permissions' => 'permisos',
+            'permissions.*' => 'permiso',
+        ];
+    }
 }
