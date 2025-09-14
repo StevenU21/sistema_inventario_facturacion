@@ -173,7 +173,6 @@ class ProductController extends Controller
         $this->authorize("create", Product::class);
         $product = new Product();
         $categories = Category::pluck('name', 'id');
-        $brands = Brand::pluck('name', 'id');
         $brandsByCategory = Brand::with('category')
             ->get()
             ->groupBy('category_id')
@@ -189,8 +188,7 @@ class ProductController extends Controller
         $taxes = Tax::pluck('name', 'id');
         $colors = Color::pluck('name', 'id');
         $sizes = Size::pluck('name', 'id');
-        $warehouses = Warehouse::pluck('name', 'id');
-        return view('admin.products.create', compact('product', 'categories', 'brands', 'units', 'entities', 'taxes', 'brandsByCategory', 'colors', 'sizes', 'warehouses'));
+        return view('admin.products.create', compact('product', 'categories', 'brandsByCategory', 'units', 'entities', 'taxes', 'colors', 'sizes'));
     }
 
     public function store(ProductRequest $request, FileService $fileService)
@@ -255,7 +253,6 @@ class ProductController extends Controller
     {
         $this->authorize("update", $product);
         $categories = Category::pluck('name', 'id');
-        $brands = Brand::pluck('name', 'id');
         $brandsByCategory = Brand::with('category')
             ->get()
             ->groupBy('category_id')
@@ -271,16 +268,14 @@ class ProductController extends Controller
         $taxes = Tax::pluck('name', 'id');
         $colors = Color::pluck('name', 'id');
         $sizes = Size::pluck('name', 'id');
-        $warehouses = Warehouse::pluck('name', 'id');
         // Prefill de variantes existentes del producto (solo color/talla)
         $prefillDetails = $product->variants()->get()->map(function ($v) {
             return [
                 'color_id' => $v->color_id,
                 'size_id' => $v->size_id,
-                // Otros campos (cantidad/precios) se dejan vacíos en edición de producto
             ];
         })->toArray();
-        return view('admin.products.edit', compact('product', 'categories', 'brands', 'units', 'entities', 'taxes', 'brandsByCategory', 'colors', 'sizes', 'warehouses', 'prefillDetails'));
+        return view('admin.products.edit', compact('product', 'categories', 'brandsByCategory', 'units', 'entities', 'taxes', 'colors', 'sizes', 'prefillDetails'));
     }
 
     public function update(ProductRequest $request, Product $product, FileService $fileService)
@@ -291,13 +286,63 @@ class ProductController extends Controller
         if ($imagePath) {
             $data['image'] = $imagePath;
         }
-        // Rellenar y sincronizar category_id con la marca seleccionada
-        $product->fill($data);
-        $brand = Brand::find($product->brand_id);
-        if ($brand) {
-            $product->category_id = $brand->category_id;
-        }
-        $product->save();
+        DB::transaction(function () use ($request, $fileService, $data, $product) {
+            // Rellenar y sincronizar category_id con la marca seleccionada
+            $product->fill($data);
+            $brand = Brand::find($product->brand_id);
+            if ($brand) {
+                $product->category_id = $brand->category_id;
+            }
+            $product->save();
+
+            // Manejo de variantes (detalles)
+            $details = $data['details'] ?? [];
+            $existingVariants = $product->variants()->get();
+            $keepIds = [];
+            if (!empty($details)) {
+                foreach ($details as $row) {
+                    $variant = ProductVariant::firstOrCreate(
+                        [
+                            'product_id' => $product->id,
+                            'color_id' => $row['color_id'] ?? null,
+                            'size_id' => $row['size_id'] ?? null,
+                        ],
+                        [
+                            'sku' => $row['sku'] ?? null,
+                            'code' => $row['code'] ?? null,
+                        ]
+                    );
+                    $variant->fill([
+                        'sku' => $row['sku'] ?? $variant->sku,
+                        'code' => $row['code'] ?? $variant->code,
+                    ]);
+                    $variant->save();
+                    $keepIds[] = $variant->id;
+                }
+                // Eliminar variantes que ya no están en detalles
+                $product->variants()->whereNotIn('id', $keepIds)->delete();
+            } else {
+                // Si no hay detalles, asegurarse de que exista una variante "base" sin color ni talla
+                $variant = ProductVariant::firstOrCreate(
+                    [
+                        'product_id' => $product->id,
+                        'color_id' => null,
+                        'size_id' => null,
+                    ],
+                    [
+                        'sku' => $data['sku'] ?? null,
+                        'code' => $data['code'] ?? null,
+                    ]
+                );
+                $variant->fill([
+                    'sku' => $data['sku'] ?? $variant->sku,
+                    'code' => $data['code'] ?? $variant->code,
+                ]);
+                $variant->save();
+                // Eliminar variantes que no sean la "base"
+                $product->variants()->where('id', '!=', $variant->id)->delete();
+            }
+        });
         // No modificar inventario ni movimientos
         return redirect()->route('products.index')->with('updated', 'Producto actualizado correctamente.');
     }
@@ -309,7 +354,7 @@ class ProductController extends Controller
         if ($product->status === 'discontinued') {
             $product->status = 'available';
             $product->save();
-            return redirect()->route('products.index')->with('deleted', 'Producto rehabilitado correctamente.');
+            return redirect()->route('products.index')->with('success', 'Producto rehabilitado correctamente.');
         } else {
             $product->status = 'discontinued';
             $product->save();

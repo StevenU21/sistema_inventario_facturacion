@@ -66,6 +66,8 @@
                     sku: raw?.sku ?? (raw?.product && raw.product.sku) ?? null,
                     barcode: raw?.barcode ?? (raw?.product && raw.product.barcode) ?? null,
                     stock: raw?.stock ?? raw?.current_stock ?? raw?.quantity ?? (raw?.inventory && raw.inventory.stock) ?? raw?.total_stock ?? 0,
+                    purchase_price: raw?.purchase_price ?? raw?.inventory?.purchase_price ?? null,
+                    sale_price: raw?.sale_price ?? raw?.inventory?.sale_price ?? null,
                     entity_id: raw?.entity_id ?? raw?.supplier_id ?? raw?.provider_id ?? (raw?.product && raw.product.entity_id) ?? null,
                     entity_name: raw?.entity_name ?? raw?.entity_short_name ?? raw?.entity_first_name ?? null,
                     warehouse_id: raw?.warehouse_id ??
@@ -119,11 +121,12 @@
         <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <!-- Buscador + botón filtros -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <label class="block text-sm w-full md:col-span-2">
+                <label class="block text-sm w-full md:col-span-2"
+                    x-on:ac-input="filters.q = $event.detail">
                     <span class="text-gray-700 dark:text-gray-200">Buscar producto</span>
-                    <input type="text" x-model="filters.q" @keydown.enter.prevent="searchProducts(1)"
-                        class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
-                        placeholder="Nombre, código, SKU o barras">
+                    <x-autocomplete name="filter[q]" :value="old('filter.q', old('q', $purchase->product->name ?? ''))" placeholder="Nombre del producto..."
+                        url="{{ route('purchases.productsAutocomplete') }}" min="2" debounce="250" :submit="false"
+                        class="block w-full mt-1" />
                 </label>
                 <div class="flex items-end gap-2">
                     <button type="button" @click="searchProducts(1)"
@@ -280,6 +283,8 @@
                                 <th class="px-4 py-2 font-semibold">Categoría</th>
                                 <th class="px-4 py-2 font-semibold">Marca</th>
                                 <th class="px-4 py-2 font-semibold">Stock actual</th>
+                                <th class="px-4 py-2 font-semibold">Precio compra</th>
+                                <th class="px-4 py-2 font-semibold">Precio venta</th>
                                 <th class="px-4 py-2"></th>
                             </tr>
                         </thead>
@@ -302,6 +307,8 @@
                                     <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.category"></td>
                                     <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.brand"></td>
                                     <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.stock"></td>
+                                    <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.purchase_price ?? '-' "></td>
+                                    <td class="px-4 py-2 text-gray-900 dark:text-gray-100" x-text="p.sale_price ?? '-' "></td>
                                     <td class="px-4 py-2">
                                         <button type="button" @click="selectProduct(p)"
                                             :class="{

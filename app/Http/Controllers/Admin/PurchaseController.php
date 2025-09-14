@@ -305,6 +305,59 @@ class PurchaseController extends Controller
         ]);
     }
 
+    // Endpoint de autocomplete específico para la vista de crear/editar compras (modo productos existentes)
+    public function productsAutocomplete(Request $request)
+    {
+        $this->authorize('viewAny', Purchase::class);
+        // Acepta q, term o search
+        $term = trim((string) ($request->input('q') ?? $request->input('term') ?? $request->input('search') ?? ''));
+        $limit = (int) $request->input('limit', 10);
+        $limit = max(1, min(20, $limit));
+
+        $query = Product::query()->select(['id', 'name', 'code', 'sku', 'barcode']);
+
+        // Filtros opcionales (por si el front los envía)
+        if ($entityId = $request->input('entity_id')) {
+            $query->where('entity_id', $entityId);
+        }
+        if ($categoryId = $request->input('category_id')) {
+            $query->where('category_id', $categoryId);
+        }
+        if ($brandId = $request->input('brand_id')) {
+            $query->where('brand_id', $brandId);
+        }
+
+        if ($term !== '') {
+            $driver = DB::getDriverName();
+            $collation = 'utf8mb4_unicode_ci';
+            $like = "%$term%";
+            $query->where(function ($sub) use ($driver, $collation, $like) {
+                if ($driver === 'mysql') {
+                    $sub->whereRaw("name COLLATE $collation LIKE ?", [$like])
+                        ->orWhere('code', 'like', $like)
+                        ->orWhere('sku', 'like', $like)
+                        ->orWhere('barcode', 'like', $like);
+                } else {
+                    $sub->where('name', 'like', $like)
+                        ->orWhere('code', 'like', $like)
+                        ->orWhere('sku', 'like', $like)
+                        ->orWhere('barcode', 'like', $like);
+                }
+            });
+        }
+
+        $products = $query->orderBy('name')->limit($limit)->get();
+
+        $suggestions = $products->map(fn($p) => [
+            'id' => $p->id,
+            'text' => $p->name,
+        ]);
+
+        return response()->json([
+            'data' => $suggestions,
+        ]);
+    }
+
     // Construye la consulta con todos los filtros soportados
     private function buildPurchasesQuery(Request $request)
     {
@@ -370,7 +423,7 @@ class PurchaseController extends Controller
             'category:id,name',
             'entity:id,first_name,last_name',
             'variants.inventories' => function ($inv) use ($warehouseId) {
-                $inv->select('id', 'product_variant_id', 'warehouse_id', 'stock');
+                $inv->select('id', 'product_variant_id', 'warehouse_id', 'stock', 'purchase_price', 'sale_price');
                 if ($warehouseId) {
                     $inv->where('warehouse_id', $warehouseId);
                 }
@@ -423,9 +476,17 @@ class PurchaseController extends Controller
         $collection = $paginator->getCollection();
         $transformed = $collection->map(function ($p) use ($warehouseId) {
             $stock = 0;
+            $purchasePrice = null;
+            $salePrice = null;
             foreach ($p->variants as $variant) {
                 foreach ($variant->inventories as $inv) {
                     $stock += (int) $inv->stock;
+                    if ($purchasePrice === null && $inv->purchase_price !== null) {
+                        $purchasePrice = (float) $inv->purchase_price;
+                    }
+                    if ($salePrice === null && $inv->sale_price !== null) {
+                        $salePrice = (float) $inv->sale_price;
+                    }
                 }
             }
             $entity = $p->relationLoaded('entity') ? $p->entity : null;
@@ -441,6 +502,8 @@ class PurchaseController extends Controller
                 'sku' => $p->sku,
                 'barcode' => $p->barcode,
                 'stock' => $stock,
+                'purchase_price' => $purchasePrice,
+                'sale_price' => $salePrice,
                 'entity_id' => $p->entity_id,
                 'entity_name' => $entityName,
                 // útil para el front cuando ya hay un almacén filtrado

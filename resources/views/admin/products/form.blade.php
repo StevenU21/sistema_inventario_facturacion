@@ -103,7 +103,7 @@
                 <option value="">Seleccione</option>
                 @foreach ($categories as $id => $name)
                     <option value="{{ $id }}"
-                        @if (!isset($alpine) || !$alpine) {{ old('category_id', optional($product->brand)->category_id ?? '') == $id ? 'selected' : '' }} @endif>
+                        @if (!isset($alpine) || !$alpine) {{ old('category_id', old('category_id', optional($product->brand)->category_id ?? '')) == $id ? 'selected' : '' }} @endif>
                         {{ $name }}</option>
                 @endforeach
             </select>
@@ -120,13 +120,14 @@
                 class="block w-full pl-10 mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:shadow-outline-purple dark:focus:shadow-outline-gray @error('brand_id') border-red-600 @enderror"
                 @if (isset($alpine) && $alpine) x-model="editProduct.brand_id" @endif required>
                 <option value="">Seleccione</option>
-                @if (isset($alpine) && $alpine)
-                    <template
-                        x-for="([id, name]) in Object.entries((window.brandsByCategory || {})[editProduct.category_id] || {})"
-                        :key="id">
-                        <option :value="id" x-text="name"></option>
-                    </template>
-                @endif
+                @php
+                    $selectedCategory = old('category_id', optional($product->brand)->category_id ?? '');
+                    $brandsForCategory = ($brandsByCategory[$selectedCategory] ?? []);
+                    $selectedBrand = old('brand_id', $product->brand_id ?? '');
+                @endphp
+                @foreach ($brandsForCategory as $id => $name)
+                    <option value="{{ $id }}" {{ $selectedBrand == $id ? 'selected' : '' }}>{{ $name }}</option>
+                @endforeach
             </select>
             <div class="absolute inset-y-0 flex items-center ml-3 pointer-events-none">
                 <i class="fas fa-tags w-5 h-5"></i>

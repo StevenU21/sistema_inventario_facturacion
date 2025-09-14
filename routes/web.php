@@ -137,6 +137,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('purchases/search', [PurchaseController::class, 'search'])->name('purchases.search');
     Route::get('purchases/autocomplete', [PurchaseController::class, 'autocomplete'])->name('purchases.autocomplete');
     Route::get('purchases/product-search', [PurchaseController::class, 'productSearch'])->name('purchases.productSearch');
+    // Autocomplete específico para productos existentes en la vista de compras (crear/editar)
+    Route::get('purchases/products-autocomplete', [PurchaseController::class, 'productsAutocomplete'])->name('purchases.productsAutocomplete');
     Route::get('purchases/export', [PurchaseController::class, 'export'])->name('purchases.export');
     Route::get('purchases/{purchase}/export', [PurchaseController::class, 'exportDetails'])->name('purchases.exportDetails');
     Route::resource('purchases', PurchaseController::class);

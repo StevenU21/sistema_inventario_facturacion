@@ -40,11 +40,6 @@ class ProductRequest extends FormRequest
                 'mimes:jpeg,png,jpg,webp',
             ],
             'description' => ['nullable', 'string', 'max:255'],
-            'status' => [
-                'required',
-                'string',
-                'in:available,discontinued,out_of_stock'
-            ],
             'code' => ['nullable', 'string', 'max:255', Rule::unique('products')->ignore($this->route('product'))],
             'sku' => ['nullable', 'string', 'max:255', Rule::unique('products')->ignore($this->route('product'))],
             'brand_id' => ['required', 'exists:brands,id'],
@@ -53,16 +48,17 @@ class ProductRequest extends FormRequest
             'entity_id' => ['required', 'exists:entities,id'],
         ];
 
-        if ($this->isMethod('post')) {
-            $rules = array_merge($rules, [
-                'details' => ['nullable', 'array'],
-                'details.*.color_id' => ['nullable', 'exists:colors,id'],
-                'details.*.size_id' => ['nullable', 'exists:sizes,id'],
-                'details.*.sku' => ['nullable', 'string', 'max:255'],
-                'details.*.code' => ['nullable', 'string', 'max:255'],
-            ]);
-        }
+        // Permitir detalles y variantes tanto en create (POST) como en update (PUT/PATCH)
+        $rules = array_merge($rules, [
+            'details' => ['nullable', 'array'],
+            'details.*.color_id' => ['nullable', 'exists:colors,id'],
+            'details.*.size_id' => ['nullable', 'exists:sizes,id'],
+            'details.*.sku' => ['nullable', 'string', 'max:255'],
+            'details.*.code' => ['nullable', 'string', 'max:255'],
+        ]);
 
+        \Log::info('[ProductRequest@rules] Datos del request', $this->all());
+        \Log::info('[ProductRequest@rules] Reglas de validación', $rules);
         return $rules;
     }
 }
