@@ -1,12 +1,3 @@
-@if ($errors->any())
-    <div class="mb-4">
-        <ul class="text-sm text-red-600">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
 <div class="flex flex-col md:flex-row gap-4 mt-4">
     <label class="block text-sm w-full md:w-1/2">
         <span class="text-gray-700 dark:text-gray-400">Bodega actual (Solo lectura)</span>

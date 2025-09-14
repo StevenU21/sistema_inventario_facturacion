@@ -114,7 +114,21 @@ class InventoryRequest extends FormRequest
                 'movement_type' => ['required'],
                 'adjustment_reason' => ['required'],
             ];
-            if (in_array($reason, ['correction', 'physical_count', 'damage', 'theft'])) {
+            if (in_array($reason, ['damage', 'theft'])) {
+                $rules['quantity'] = [
+                    'required',
+                    'integer',
+                    'min:1',
+                    function ($attribute, $value, $fail) {
+                        $inventory = $this->route('inventory');
+                        if ($inventory && $value > $inventory->stock) {
+                            $fail('No puedes registrar una cantidad mayor al stock disponible ('.$inventory->stock.').');
+                        }
+                    }
+                ];
+                $rules['purchase_price'] = ['nullable', 'prohibited'];
+                $rules['sale_price'] = ['nullable', 'prohibited'];
+            } elseif (in_array($reason, ['correction', 'physical_count'])) {
                 $rules['quantity'] = ['required', 'integer', 'min:1'];
                 $rules['purchase_price'] = ['nullable', 'prohibited'];
                 $rules['sale_price'] = ['nullable', 'prohibited'];

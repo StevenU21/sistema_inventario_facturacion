@@ -49,7 +49,7 @@
             <div class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</div>
         @enderror
 
-        <!-- Ajuste: render condicional con x-if para evitar validaciones en campos ocultos -->
+        <!-- Montar un solo fieldset a la vez para evitar duplicación y efectos cruzados -->
         <template x-if="mode==='adjustment'">
             <fieldset>
                 @include('components.adjust_inventory', [
@@ -58,8 +58,6 @@
                 ])
             </fieldset>
         </template>
-
-        <!-- Transferencia: render condicional con x-if para evitar validaciones en campos ocultos -->
         <template x-if="mode==='transfer'">
             <fieldset>
                 @include('components.transfer_inventory', [

@@ -5,24 +5,7 @@
     isPurchasePriceReason() { return this.reason === 'purchase_price'; },
     isSalePriceReason() { return this.reason === 'sale_price'; }
 }">
-    @if ($errors->any())
-        <div x-data="{ show: true }" x-show="show"
-            class="relative mb-4 text-sm font-medium text-red-700 bg-red-100 rounded-lg dark:bg-red-700 dark:text-red-100 px-4 py-3 flex items-center justify-between">
-            <div>
-                <i class="fas fa-exclamation-circle mr-2"></i>
-                <span class="font-semibold">Error:</span>
-                <ul class="list-disc ml-4">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            <button @click="show = false"
-                class="text-red-700 dark:text-red-100 hover:text-red-900 dark:hover:text-red-300 focus:outline-none transition-colors duration-150 ml-2">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    @endif
+
 
     <div class="flex flex-col gap-4 mt-4">
         <div x-show="showInfo"
