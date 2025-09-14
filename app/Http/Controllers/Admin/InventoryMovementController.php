@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\InventoryMovement;
 use App\Models\Product;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Entity;
 use App\Models\User;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
@@ -21,12 +24,16 @@ class InventoryMovementController extends Controller
     {
         $this->authorize('viewAny', InventoryMovement::class);
         $perPage = request('per_page', 10);
-    $inventoryMovements = InventoryMovement::with(['inventory.productVariant.product', 'user', 'inventory.warehouse'])
+        $inventoryMovements = InventoryMovement::with(['inventory.productVariant.product', 'user', 'inventory.warehouse'])
             ->latest()
             ->paginate($perPage);
         $users = User::pluck('first_name', 'id');
-        $products = Product::pluck('name', 'id');
+        $products = Product::pluck('name', 'id'); // mantenido para posibles usos en tabla
         $warehouses = Warehouse::pluck('name', 'id');
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $entities = Entity::where('is_active', true)->where('is_supplier', true)
+            ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         // Obtener colores y tallas globales
         $variants = \App\Models\ProductVariant::with(['color', 'size'])->get();
         $colors = $variants->pluck('color')->filter()->unique('id')->mapWithKeys(function ($color) {
@@ -35,21 +42,31 @@ class InventoryMovementController extends Controller
         $sizes = $variants->pluck('size')->filter()->unique('id')->mapWithKeys(function ($size) {
             return [$size->id => $size->name];
         });
-        return view('admin.inventory_movements.index', compact('inventoryMovements', 'users', 'products', 'warehouses', 'colors', 'sizes'));
+        return view('admin.inventory_movements.index', compact('inventoryMovements', 'users', 'products', 'warehouses', 'colors', 'sizes', 'categories', 'brands', 'entities'));
     }
 
     public function search(Request $request)
     {
         $this->authorize('viewAny', InventoryMovement::class);
-    $query = InventoryMovement::with(['inventory.productVariant.product', 'inventory.warehouse', 'user']);
+        $query = InventoryMovement::with(['inventory.productVariant.product', 'inventory.warehouse', 'user']);
 
         // Filtros
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->input('user_id'));
         }
-        if ($request->filled('product_id')) {
-            $query->whereHas('inventory.productVariant', function ($q) use ($request) {
-                $q->where('product_id', $request->input('product_id'));
+        if ($request->filled('entity_id')) {
+            $query->whereHas('inventory.productVariant.product', function ($q) use ($request) {
+                $q->where('entity_id', $request->input('entity_id'));
+            });
+        }
+        if ($request->filled('category_id')) {
+            $query->whereHas('inventory.productVariant.product', function ($q) use ($request) {
+                $q->where('category_id', $request->input('category_id'));
+            });
+        }
+        if ($request->filled('brand_id')) {
+            $query->whereHas('inventory.productVariant.product', function ($q) use ($request) {
+                $q->where('brand_id', $request->input('brand_id'));
             });
         }
         if ($request->filled('color_id')) {
@@ -93,6 +110,12 @@ class InventoryMovementController extends Controller
         $users = User::pluck('first_name', 'id');
         $products = Product::pluck('name', 'id');
         $warehouses = Warehouse::pluck('name', 'id');
+        $categories = Category::pluck('name', 'id');
+        $brands = $request->filled('category_id')
+            ? Brand::where('category_id', $request->input('category_id'))->pluck('name', 'id')
+            : Brand::pluck('name', 'id');
+        $entities = Entity::where('is_active', true)->where('is_supplier', true)
+            ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         $variants = \App\Models\ProductVariant::with(['color', 'size'])->get();
         $colors = $variants->pluck('color')->filter()->unique('id')->mapWithKeys(function ($color) {
             return [$color->id => $color->name];
@@ -100,21 +123,31 @@ class InventoryMovementController extends Controller
         $sizes = $variants->pluck('size')->filter()->unique('id')->mapWithKeys(function ($size) {
             return [$size->id => $size->name];
         });
-        return view('admin.inventory_movements.index', compact('inventoryMovements', 'users', 'products', 'warehouses', 'colors', 'sizes'));
+        return view('admin.inventory_movements.index', compact('inventoryMovements', 'users', 'products', 'warehouses', 'colors', 'sizes', 'categories', 'brands', 'entities'));
     }
 
     public function export(Request $request)
     {
         $this->authorize('viewAny', InventoryMovement::class);
-    $query = InventoryMovement::with(['inventory.productVariant.product', 'inventory.warehouse', 'user']);
+        $query = InventoryMovement::with(['inventory.productVariant.product', 'inventory.warehouse', 'user']);
 
         // Mismos filtros que search
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->input('user_id'));
         }
-        if ($request->filled('product_id')) {
-            $query->whereHas('inventory.productVariant', function ($q) use ($request) {
-                $q->where('product_id', $request->input('product_id'));
+        if ($request->filled('entity_id')) {
+            $query->whereHas('inventory.productVariant.product', function ($q) use ($request) {
+                $q->where('entity_id', $request->input('entity_id'));
+            });
+        }
+        if ($request->filled('category_id')) {
+            $query->whereHas('inventory.productVariant.product', function ($q) use ($request) {
+                $q->where('category_id', $request->input('category_id'));
+            });
+        }
+        if ($request->filled('brand_id')) {
+            $query->whereHas('inventory.productVariant.product', function ($q) use ($request) {
+                $q->where('brand_id', $request->input('brand_id'));
             });
         }
         if ($request->filled('color_id')) {

@@ -63,7 +63,9 @@
                         <form method="GET" action="{{ route('inventory_movements.export') }}">
                             <input type="hidden" name="per_page" value="{{ request('per_page') }}">
                             <input type="hidden" name="user_id" value="{{ request('user_id') }}">
-                            <input type="hidden" name="product_id" value="{{ request('product_id') }}">
+                            <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
+                            <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                            <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
                             <input type="hidden" name="warehouse_id" value="{{ request('warehouse_id') }}">
                             <input type="hidden" name="color_id" value="{{ request('color_id') }}">
                             <input type="hidden" name="size_id" value="{{ request('size_id') }}">
@@ -111,7 +113,7 @@
                             <i class="fas fa-search"></i>
                             Buscar
                         </button>
-                        @if (request()->hasAny(['search', 'per_page', 'user_id', 'product_id', 'warehouse_id', 'color_id', 'size_id', 'type']))
+                        @if (request()->hasAny(['search', 'per_page', 'user_id', 'entity_id', 'category_id', 'brand_id', 'warehouse_id', 'color_id', 'size_id', 'type']))
                             <a href="{{ route('inventory_movements.index') }}"
                                 class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
                                 <i class="fas fa-undo"></i>
@@ -149,15 +151,45 @@
                     </select>
                 </div>
                 <div>
-                    <label for="product_id"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Producto</label>
-                    <select name="product_id" id="product_id"
+                    <label for="entity_id"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Proveedor</label>
+                    <select name="entity_id" id="entity_id"
                         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         onchange="this.form.submit()">
-                        <option value="">Todos los productos</option>
-                        @isset($products)
-                            @foreach ($products as $id => $name)
-                                <option value="{{ $id }}" {{ request('product_id') == $id ? 'selected' : '' }}>
+                        <option value="">Todos los proveedores</option>
+                        @isset($entities)
+                            @foreach ($entities as $id => $name)
+                                <option value="{{ $id }}" {{ request('entity_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        @endisset
+                    </select>
+                </div>
+                <div>
+                    <label for="category_id"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Categoría</label>
+                    <select name="category_id" id="category_id"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        onchange="document.getElementById('brand_id').selectedIndex = 0; this.form.submit()">
+                        <option value="">Todas las categorías</option>
+                        @isset($categories)
+                            @foreach ($categories as $id => $name)
+                                <option value="{{ $id }}" {{ request('category_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        @endisset
+                    </select>
+                </div>
+                <div>
+                    <label for="brand_id"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Marca</label>
+                    <select name="brand_id" id="brand_id"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        onchange="this.form.submit()">
+                        <option value="">Todas las marcas</option>
+                        @isset($brands)
+                            @foreach ($brands as $id => $name)
+                                <option value="{{ $id }}" {{ request('brand_id') == $id ? 'selected' : '' }}>
                                     {{ $name }}</option>
                             @endforeach
                         @endisset
