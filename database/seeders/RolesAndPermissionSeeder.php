@@ -33,6 +33,9 @@ class RolesAndPermissionSeeder extends Seeder
         'colors' => [],
         'purchases' => [],
         'kardex' => ['read'],
+        'sales' => ['read', 'create', 'update'],
+        'account_receivables' => ['read', 'create', 'update'],
+        'payments' => ['read', 'create', 'update'],
     ];
 
     const SPECIAL_PERMISSIONS = [
@@ -46,6 +49,9 @@ class RolesAndPermissionSeeder extends Seeder
         'inventories' => ['export inventories'],
         'kardex' => ['export kardex', 'generate kardex'],
         'purchases' => ['export purchases'],
+        'sales' => ['export sales', 'generate invoice'],
+        'account_receivables' => ['export account_receivables'],
+        'payments' => ['export payments'],
     ];
 
     /**
@@ -105,6 +111,10 @@ class RolesAndPermissionSeeder extends Seeder
             $this->filterPermissions('colors')->only(['read colors'])->get(),
             $this->filterPermissions('product_variants')->only(['read product_variants'])->get(),
             $this->filterPermissions('purchases')->only(['read purchases'])->get(),
+            $this->filterPermissions('kardex')->only(['read kardex', 'generate kardex'])->get(),
+            $this->filterPermissions('sales')->only(['read sales', 'create sales', 'update sales'])->get(),
+            $this->filterPermissions('account_receivables')->only(['read account_receivables', 'create account_receivables', 'update account_receivables'])->get(),
+            $this->filterPermissions('payments')->only(['read payments', 'create payments', 'update payments'])->get()
         );
 
         $cashierRole->givePermissionTo($cashierPermissions);
