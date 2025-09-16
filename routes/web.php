@@ -164,6 +164,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [AdminPaymentController::class, 'index'])->name('index');
         Route::get('/search', [AdminPaymentController::class, 'search'])->name('search');
         Route::get('/export', [AdminPaymentController::class, 'export'])->name('export');
+        Route::get('/autocomplete', [AdminPaymentController::class, 'autocomplete'])->name('autocomplete');
         Route::get('/export-pdf', [AdminPaymentController::class, 'exportPdf'])->name('exportPdf');
     });
 
@@ -171,6 +172,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('admin/accounts-receivable')->name('admin.accounts_receivable.')->group(function () {
         Route::get('/', [AdminAccountReceivableController::class, 'index'])->name('index');
         Route::get('/search', [AdminAccountReceivableController::class, 'search'])->name('search');
+        Route::get('/autocomplete', [AdminAccountReceivableController::class, 'autocomplete'])->name('autocomplete');
         Route::get('/export', [AdminAccountReceivableController::class, 'export'])->name('export');
         Route::get('/{accountReceivable}', [AdminAccountReceivableController::class, 'show'])->name('show');
         Route::get('/{accountReceivable}/export-pdf', [AdminAccountReceivableController::class, 'exportPdf'])->name('exportPdf');

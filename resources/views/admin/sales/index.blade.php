@@ -92,9 +92,8 @@
                     <div class="flex-1">
                         <label for="search"
                             class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
-                        <input type="text" name="search" id="search" value="{{ request('search') }}"
-                            placeholder="Nombre del producto..."
-                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500" />
+                        <x-autocomplete name="search" :value="request('search')" url="{{ route('admin.sales.autocomplete') }}"
+                            placeholder="Nombre producto..." id="search" />
                     </div>
                     <div class="flex flex-row gap-2 items-end">
                         <button type="submit"

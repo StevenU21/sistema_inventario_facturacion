@@ -63,6 +63,48 @@ class PaymentController extends Controller
         return $pdf->download('pagos_' . now()->format('Ymd_His') . '.pdf');
     }
 
+    // Endpoint para autocompletar clientes en pagos
+    public function autocomplete(Request $request)
+    {
+        $this->authorize('viewAny', Payment::class);
+        $term = trim((string) $request->input('q', ''));
+        $limit = (int) $request->input('limit', 10);
+        $limit = max(1, min(20, $limit));
+
+        // Solo clientes que han realizado pagos
+        $entityIds = Payment::query()
+            ->whereHas('entity')
+            ->pluck('entity_id')
+            ->unique()
+            ->values();
+
+        $entitiesQuery = Entity::query()->whereIn('id', $entityIds);
+
+        if ($term !== '') {
+            $like = "%{$term}%";
+            $entitiesQuery->where(function ($q) use ($like) {
+                $q->whereRaw("TRIM(COALESCE(first_name,'') || ' ' || COALESCE(last_name,'')) LIKE ?", [$like])
+                    ->orWhere('short_name', 'like', $like);
+            });
+        }
+
+        $entities = $entitiesQuery->select(['id', 'first_name', 'last_name', 'short_name'])
+            ->orderBy('first_name')
+            ->limit($limit)
+            ->get();
+
+        $suggestions = $entities->map(function ($e) {
+            $name = trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')) ?: ($e->short_name ?? '');
+            return [
+                'id' => $e->id,
+                'text' => $name,
+            ];
+        });
+
+        return response()->json([
+            'data' => $suggestions,
+        ]);
+    }
     private function buildPaymentsQuery(Request $request)
     {
         $query = Payment::with([
@@ -79,8 +121,8 @@ class PaymentController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('id', $search)
                     ->orWhereHas('entity', function ($qe) use ($search) {
-                        $qe->whereRaw("TRIM(CONCAT(COALESCE(first_name,''),' ',COALESCE(last_name,''))) LIKE ?", ['%' . $search . '%'])
-                           ->orWhere('short_name', 'like', '%' . $search . '%');
+                        $qe->whereRaw("TRIM(COALESCE(first_name,'') || ' ' || COALESCE(last_name,'')) LIKE ?", ['%' . $search . '%'])
+                            ->orWhere('short_name', 'like', '%' . $search . '%');
                     })
                     ->orWhereHas('accountReceivable.sale', function ($qs) use ($search) {
                         $qs->where('id', $search);

@@ -25,15 +25,25 @@
                 filter: saturate(1.2) contrast(1.05);
                 will-change: background-position;
             }
+
             @keyframes gradientShift {
-                0% { background-position: 100% 50%; }
-                100% { background-position: 0% 50%; }
+                0% {
+                    background-position: 100% 50%;
+                }
+
+                100% {
+                    background-position: 0% 50%;
+                }
             }
+
             @media (prefers-reduced-motion: reduce) {
-                .animate-gradient { animation: none; }
+                .animate-gradient {
+                    animation: none;
+                }
             }
         </style>
-        <section class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg animate-gradient">
+        <section
+            class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg animate-gradient">
             <div class="absolute inset-0 opacity-20 pointer-events-none"
                 style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.35), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.25), transparent 40%);">
             </div>
@@ -79,9 +89,8 @@
                     <div class="flex-1">
                         <label for="search"
                             class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
-                        <input type="text" name="search" id="search" value="{{ request('search') }}"
-                            placeholder="Cliente, ID cuenta o ID venta"
-                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
+                        <x-autocomplete name="search" :value="request('search')" url="{{ route('admin.accounts_receivable.autocomplete') }}"
+                            placeholder="Nombre del cliente..." id="search" />
                     </div>
                     <div class="flex flex-row gap-2 items-end">
                         <button type="submit"
@@ -115,7 +124,8 @@
                         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         onchange="this.form.submit()">
                         @foreach ([10, 25, 50, 100] as $n)
-                            <option value="{{ $n }}" {{ request('per_page', 10) == $n ? 'selected' : '' }}>{{ $n }}</option>
+                            <option value="{{ $n }}" {{ request('per_page', 10) == $n ? 'selected' : '' }}>
+                                {{ $n }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -127,7 +137,8 @@
                         onchange="this.form.submit()">
                         <option value="">Todos</option>
                         @foreach ($entities as $id => $name)
-                            <option value="{{ $id }}" {{ request('entity_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                            <option value="{{ $id }}" {{ request('entity_id') == $id ? 'selected' : '' }}>
+                                {{ $name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -139,13 +150,15 @@
                         onchange="this.form.submit()">
                         <option value="">Todos</option>
                         @foreach ($statuses as $key => $label)
-                            <option value="{{ $key }}" {{ request('status') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                            <option value="{{ $key }}" {{ request('status') == $key ? 'selected' : '' }}>
+                                {{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div>
                     <label for="sale_id"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Venta ID</label>
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Venta
+                        ID</label>
                     <input type="number" min="1" name="sale_id" id="sale_id" value="{{ request('sale_id') }}"
                         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
                 </div>
@@ -165,14 +178,18 @@
                 </div>
                 <div>
                     <label for="min_balance"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Saldo mín.</label>
-                    <input type="number" step="0.01" name="min_balance" id="min_balance" value="{{ request('min_balance') }}"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Saldo
+                        mín.</label>
+                    <input type="number" step="0.01" name="min_balance" id="min_balance"
+                        value="{{ request('min_balance') }}"
                         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
                 </div>
                 <div>
                     <label for="max_balance"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Saldo máx.</label>
-                    <input type="number" step="0.01" name="max_balance" id="max_balance" value="{{ request('max_balance') }}"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Saldo
+                        máx.</label>
+                    <input type="number" step="0.01" name="max_balance" id="max_balance"
+                        value="{{ request('max_balance') }}"
                         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
                 </div>
             </form>
@@ -202,17 +219,23 @@
                                 $sale = $ar->sale;
                                 $firstDetail = $sale?->saleDetails->first();
                                 $firstProductName = optional($firstDetail?->productVariant?->product)->name;
-                                $client = $ar->entity?->short_name ?: trim(($ar->entity->first_name ?? '') . ' ' . ($ar->entity->last_name ?? ''));
+                                $client =
+                                    $ar->entity?->short_name ?:
+                                    trim(($ar->entity->first_name ?? '') . ' ' . ($ar->entity->last_name ?? ''));
                                 $totalQty = $sale?->saleDetails->sum('quantity');
                                 $firstUnitPrice = $firstDetail?->unit_price;
                                 $taxAmount = $sale?->tax_amount ?? 0;
                                 $total = $sale?->total ?? 0;
                             @endphp
-                            <tr class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
-                                <td class="px-4 py-3 text-xs"><span class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700">{{ $ar->id }}</span></td>
+                            <tr
+                                class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
+                                <td class="px-4 py-3 text-xs"><span
+                                        class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700">{{ $ar->id }}</span>
+                                </td>
                                 <td class="px-4 py-3 text-sm">
                                     @if ($firstDetail?->productVariant)
-                                        <span class="font-semibold">{{ $firstDetail->productVariant->product->name ?? '-' }}</span><br>
+                                        <span
+                                            class="font-semibold">{{ $firstDetail->productVariant->product->name ?? '-' }}</span><br>
                                         <span class="text-xs text-gray-500">
                                             {{ $colors[$firstDetail->productVariant->color_id] ?? '-' }}
                                             /
@@ -226,7 +249,8 @@
                                 <td class="px-4 py-3 text-sm">{{ $sale?->paymentMethod?->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $sale?->is_credit ? 'Crédito' : 'Contado' }}</td>
                                 <td class="px-4 py-3 text-sm text-right">{{ $totalQty > 0 ? $totalQty : '-' }}</td>
-                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($firstUnitPrice ?? 0, 2) }}</td>
+                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($firstUnitPrice ?? 0, 2) }}
+                                </td>
                                 <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($taxAmount, 2) }}</td>
                                 <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($total, 2) }}</td>
                                 <td class="px-4 py-3">
@@ -244,7 +268,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="12" class="px-4 py-3 text-center text-gray-400 dark:text-gray-500">No hay cuentas por cobrar registradas.</td>
+                                <td colspan="12" class="px-4 py-3 text-center text-gray-400 dark:text-gray-500">No hay
+                                    cuentas por cobrar registradas.</td>
                             </tr>
                         @endforelse
                     </tbody>
