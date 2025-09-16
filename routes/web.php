@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Admin\KardexController;
 use App\Http\Controllers\Cashier\SaleController;
+use App\Http\Controllers\Admin\SaleController as AdminSaleController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -145,6 +146,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('purchases/export', [PurchaseController::class, 'export'])->name('purchases.export');
     Route::get('purchases/{purchase}/export', [PurchaseController::class, 'exportDetails'])->name('purchases.exportDetails');
     Route::resource('purchases', PurchaseController::class);
+
+    // Sales (Admin)
+    Route::prefix('admin/sales')->name('admin.sales.')->group(function () {
+        Route::get('/', [AdminSaleController::class, 'index'])->name('index');
+        Route::get('/search', [AdminSaleController::class, 'search'])->name('search');
+        Route::get('/export', [AdminSaleController::class, 'export'])->name('export');
+        Route::get('/autocomplete', [AdminSaleController::class, 'autocomplete'])->name('autocomplete');
+        Route::get('/{sale}/export', [AdminSaleController::class, 'exportDetails'])->name('exportDetails');
+        Route::get('/{sale}/pdf', [AdminSaleController::class, 'pdf'])->name('pdf');
+    });
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');

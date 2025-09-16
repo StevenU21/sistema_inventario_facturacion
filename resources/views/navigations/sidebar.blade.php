@@ -78,6 +78,36 @@
         </ul>
 
         <ul>
+            <!-- Dropdown Gestión de Ventas -->
+            <li class="relative px-6 py-3" x-data="salesDropdownMenu()" x-init="initSalesDropdown()">
+                <button
+                    class="inline-flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none"
+                    @click="toggleSalesDropdown" aria-haspopup="true">
+                    <span class="inline-flex items-center">
+                        <i class="fas fa-cash-register w-5 h-5"></i>
+                        <span class="ml-4">Gestión de Ventas</span>
+                    </span>
+                    <i class="fas" :class="{ 'fa-chevron-down': !isOpen, 'fa-chevron-up': isOpen }"></i>
+                </button>
+                <ul x-show="isOpen" x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-300"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95"
+                    class="mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <li class="px-6 py-2">
+                        <x-ui.submit-link
+                            :href="route('admin.sales.index')"
+                            :active-class="Route::is('admin.sales.*') ? 'text-gray-800 dark:text-gray-100' : ''"
+                            icon="fas fa-receipt"
+                            class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold"
+                        >
+                            <span class="ml-4">Ventas</span>
+                        </x-ui.submit-link>
+                    </li>
+                </ul>
+            </li>
             <!-- Dropdown Gestión de Inventario -->
             <li class="relative px-6 py-3" x-data="inventoryDropdownMenu()" x-init="initInventoryDropdown()">
                 <button
@@ -304,6 +334,18 @@
     </div>
 </aside>
 <script>
+    function salesDropdownMenu() {
+        return {
+            isOpen: localStorage.getItem('salesDropdownOpen') === 'true',
+            toggleSalesDropdown() {
+                this.isOpen = !this.isOpen;
+                localStorage.setItem('salesDropdownOpen', this.isOpen);
+            },
+            initSalesDropdown() {
+                this.isOpen = localStorage.getItem('salesDropdownOpen') === 'true';
+            }
+        }
+    }
     function dropdownMenu() {
         return {
             isOpen: localStorage.getItem('catalogDropdownOpen') === 'true',
