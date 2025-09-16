@@ -94,25 +94,66 @@
             margin-top: 2px;
         }
 
+        .items th,
         .items td {
-            padding: 2px 0;
-            vertical-align: top;
+            padding: 3px 0;
+            vertical-align: middle;
+        }
+
+        .items thead th {
+            font-size: 10.5px;
+            /* ligeramente menor que el cuerpo */
+            font-weight: 400;
+            /* sin bold en encabezados */
+            color: inherit;
+            /* sin color especial, usa el estándar del documento */
+        }
+
+        /* divisor punteado entre encabezado (thead) y cuerpo (tbody) */
+        .items tbody tr:first-child td {
+            border-top: 1px dashed #222;
+        }
+
+        .cell {
+            font-size: 11px;
+            /* armoniza con el tamaño base del documento */
+        }
+
+        .col-center {
+            text-align: center;
+        }
+
+        .col-right {
+            text-align: right;
         }
 
         .item-desc {
             font-size: 10.5px;
             word-break: break-word;
             padding-right: 6px;
+            width: 32mm;
+            max-width: 32mm;
+        }
+
+        .num {
+            font-size: 10px;
+            /* un poco más grande para números sueltos */
         }
 
         .item-qty {
-            width: 20mm;
+            width: 8mm;
             text-align: center;
             font-size: 10px;
         }
 
-        .item-price {
-            width: 26mm;
+        .item-unit {
+            width: 12mm;
+            text-align: right;
+            font-size: 10px;
+        }
+
+        .item-subtotal {
+            width: 13mm;
             text-align: right;
             font-size: 10px;
         }
@@ -156,12 +197,10 @@
         <div class="center tiny muted">{{ $company->address ?? '' }}</div>
         <div class="center tiny">Tel: {{ $company->phone ?? '' }} RUC: {{ $company->tax_id ?? '' }}</div>
 
-        <div class="divider"></div>
-
-        <div class="center small bold">FACTURA: {{ $sale->id }}</div>
+        <div class="center bold" style="font-size:14px;">FACTURA: {{ $sale->id }}</div>
         <div class="center tiny">
             Contado:
-            @if($sale->is_credit == true || $sale->is_credit == '1' || $sale->is_credit == 1)
+            @if ($sale->is_credit == true || $sale->is_credit == '1' || $sale->is_credit == 1)
                 [ ]
                 &nbsp;&nbsp;
                 Crédito: [X]
@@ -175,38 +214,49 @@
             Fecha: {{ \Carbon\Carbon::parse($sale->sale_date ?? $sale->created_at)->format('d/m/Y h:i a') }}
         </div>
         <div class="center tiny mb-2">Vendedor: {{ $sale->user?->full_name ?? '-' }}</div>
+        <br>
+        <div class="small"><strong>Cliente:</strong> {{ $sale->entity?->full_name ?? 'CLIENTE DE CONTADO' }}</div>
 
         <div class="divider"></div>
 
-        <div class="small"><strong>Cliente:</strong> {{ $sale->entity?->full_name ?? 'CLIENTE DE CONTADO' }}</div>
+        <div class="bold" style="margin-bottom:2px;">Nombre</div>
 
         <table class="items">
+            <colgroup>
+                <col style="width:26%">
+                <col style="width:18%">
+                <col style="width:14%">
+                <col style="width:21%">
+                <col style="width:21%">
+            </colgroup>
+            <thead>
+                <tr class="col-header">
+                    <th class="col-center">Color</th>
+                    <th class="col-center">Talla</th>
+                    <th class="col-center">Cantidad</th>
+                    <th class="col-right">Precio</th>
+                    <th class="col-right">Subtotal</th>
+                </tr>
+            </thead>
+
             <tbody>
                 @foreach ($details as $d)
                     <tr>
-                        <td class="item-desc left">
+                        <td colspan="5" class="item-desc left">
                             <span
                                 class="bold">{{ $d->productVariant?->product?->name ?? ($d->productVariant?->sku ?? '-') }}</span>
-                            @php
-                                $color = $d->productVariant?->color?->name;
-                                $size = $d->productVariant?->size?->name;
-                            @endphp
-                            @if ($color || $size)
-                                <div class="tiny muted">
-                                    @if ($color)
-                                        Color: {{ $color }}
-                                    @endif
-                                    @if ($color && $size)
-                                        &nbsp;|&nbsp;
-                                    @endif
-                                    @if ($size)
-                                        Talla: {{ $size }}
-                                    @endif
-                                </div>
-                            @endif
                         </td>
-                        <td class="item-qty">{{ intval($d->quantity) }}</td>
-                        <td class="item-price">{{ $currency }}{{ number_format($d->sub_total, 2) }}</td>
+                    </tr>
+                    <tr>
+                        @php
+                            $color = $d->productVariant?->color?->name;
+                            $size = $d->productVariant?->size?->name;
+                        @endphp
+                        <td class="cell col-center">{{ $color ?? '-' }}</td>
+                        <td class="cell col-center">{{ $size ?? '-' }}</td>
+                        <td class="cell col-center">{{ intval($d->quantity) }}</td>
+                        <td class="cell col-right">{{ $currency }}{{ number_format($d->unit_price, 2) }}</td>
+                        <td class="cell col-right">{{ $currency }}{{ number_format($d->sub_total, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
