@@ -160,8 +160,16 @@
 
         <div class="center small bold">FACTURA: {{ $sale->id }}</div>
         <div class="center tiny">
-            Contado: {!! !$sale->is_credit ? '&#9745;' : '&#9744;' !!} &nbsp;&nbsp;
-            Crédito: {!! $sale->is_credit ? '&#9745;' : '&#9744;' !!}
+            Contado:
+            @if($sale->is_credit == true || $sale->is_credit == '1' || $sale->is_credit == 1)
+                [ ]
+                &nbsp;&nbsp;
+                Crédito: [X]
+            @else
+                [X]
+                &nbsp;&nbsp;
+                Crédito: [ ]
+            @endif
         </div>
         <div class="center tiny">
             Fecha: {{ \Carbon\Carbon::parse($sale->sale_date ?? $sale->created_at)->format('d/m/Y h:i a') }}
@@ -229,6 +237,23 @@
 
         <div class="center tiny">{{ $company->name ?? 'EMPRESA' }}</div>
         <div class="center tiny muted">Gracias por su compra, es un placer servirle.</div>
+
+        <div class="divider"></div>
+        <div class="small" style="margin-top:8px;">
+            <table style="width:90%;margin:0 auto;">
+                <tr>
+                    <td style="width:45%;text-align:center;">
+                        <span style="display:inline-block;width:90%;border-bottom:1px solid #222;">&nbsp;</span><br>
+                        <span class="tiny">Firma Vendedor</span>
+                    </td>
+                    <td style="width:10%;"></td>
+                    <td style="width:45%;text-align:center;">
+                        <span style="display:inline-block;width:90%;border-bottom:1px solid #222;">&nbsp;</span><br>
+                        <span class="tiny">Firma Cliente</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 </body>
 
