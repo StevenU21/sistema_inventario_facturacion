@@ -17,6 +17,8 @@ return new class extends Migration {
             $table->decimal('tax_percentage', 5, 2)->nullable();
             $table->decimal('tax_amount', 10, 2)->nullable();
 
+            $table->date('sale_date')->nullable();
+
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
 

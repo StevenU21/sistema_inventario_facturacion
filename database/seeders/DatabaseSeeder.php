@@ -15,6 +15,7 @@ use App\Models\ProductVariant;
 use App\Models\Profile;
 use App\Models\Purchase;
 use App\Models\PurchaseDetail;
+use App\Models\Sale;
 use App\Models\Size;
 use App\Models\Tax;
 use App\Models\UnitMeasure;
@@ -67,74 +68,84 @@ class DatabaseSeeder extends Seeder
         $this->call(ColorSeeder::class);
         $this->call(CompanySeeder::class);
         $this->call(EntitySeeder::class);
-        // $this->call(ProductSeeder::class);
+        $this->call(ProductSeeder::class);
         // Warehouse::factory()->count(3)->create();
 
-        Product::factory()->count(500)->create()->each(function ($product) {
+        // Product::factory()->count(500)->create()->each(function ($product) {
 
-            ProductVariant::factory()->simple()->create([
-                'product_id' => $product->id,
-            ]);
+        //     ProductVariant::factory()->simple()->create([
+        //         'product_id' => $product->id,
+        //     ]);
 
-            $variantsCount = rand(0, 4);
-            for ($i = 0; $i < $variantsCount; $i++) {
-                ProductVariant::factory()->withColorSize()->create([
-                    'product_id' => $product->id,
-                ]);
-            }
-        });
+        //     $variantsCount = rand(0, 4);
+        //     for ($i = 0; $i < $variantsCount; $i++) {
+        //         ProductVariant::factory()->withColorSize()->create([
+        //             'product_id' => $product->id,
+        //         ]);
+        //     }
+        // });
 
-        Purchase::factory()->count(3000)->create()->each(function ($purchase) {
-            $detailsCount = rand(1, 5);
-            $subtotal = 0;
-            for ($i = 0; $i < $detailsCount; $i++) {
-                $variant = ProductVariant::inRandomOrder()->first();
-                $quantity = rand(1, 10);
+        // Purchase::factory()->count(3000)->create()->each(function ($purchase) {
+        //     $detailsCount = rand(1, 5);
+        //     $subtotal = 0;
+        //     for ($i = 0; $i < $detailsCount; $i++) {
+        //         $variant = ProductVariant::inRandomOrder()->first();
+        //         $quantity = rand(1, 10);
 
-                $inv = Inventory::where('product_variant_id', $variant->id)
-                    ->where('warehouse_id', $purchase->warehouse_id)
-                    ->first();
-                $unitPrice = $inv?->purchase_price ?? rand(10, 100);
-                $lineTotal = $quantity * $unitPrice;
-                $subtotal += $lineTotal;
-                PurchaseDetail::factory()->create([
-                    'purchase_id' => $purchase->id,
-                    'product_variant_id' => $variant->id,
-                    'quantity' => $quantity,
-                    'unit_price' => $unitPrice,
-                ]);
+        //         $inv = Inventory::where('product_variant_id', $variant->id)
+        //             ->where('warehouse_id', $purchase->warehouse_id)
+        //             ->first();
+        //         $unitPrice = $inv?->purchase_price ?? rand(10, 100);
+        //         $lineTotal = $quantity * $unitPrice;
+        //         $subtotal += $lineTotal;
+        //         PurchaseDetail::factory()->create([
+        //             'purchase_id' => $purchase->id,
+        //             'product_variant_id' => $variant->id,
+        //             'quantity' => $quantity,
+        //             'unit_price' => $unitPrice,
+        //         ]);
 
-                $inventory = Inventory::firstOrCreate(
-                    [
-                        'product_variant_id' => $variant->id,
-                        'warehouse_id' => $purchase->warehouse_id,
-                    ],
-                    [
-                        'stock' => 0,
-                        'min_stock' => rand(0, 10),
-                        'purchase_price' => $unitPrice,
-                        'sale_price' => round($unitPrice * 1.3, 2),
-                    ]
-                );
+        //         $inventory = Inventory::firstOrCreate(
+        //             [
+        //                 'product_variant_id' => $variant->id,
+        //                 'warehouse_id' => $purchase->warehouse_id,
+        //             ],
+        //             [
+        //                 'stock' => 0,
+        //                 'min_stock' => rand(0, 10),
+        //                 'purchase_price' => $unitPrice,
+        //                 'sale_price' => round($unitPrice * 1.3, 2),
+        //             ]
+        //         );
 
-                $inventory->stock += $quantity;
-                $inventory->purchase_price = $unitPrice;
-                $inventory->save();
-                InventoryMovement::create([
-                    'type' => 'in',
-                    'adjustment_reason' => null,
-                    'quantity' => $quantity,
-                    'unit_price' => $unitPrice,
-                    'total_price' => $lineTotal,
-                    'reference' => $purchase->reference,
-                    'notes' => 'Entrada por compra',
-                    'user_id' => $purchase->user_id ?? User::query()->value('id'),
-                    'inventory_id' => $inventory->id,
-                ]);
-            }
-            $purchase->subtotal = $subtotal;
-            $purchase->total = $subtotal;
-            $purchase->save();
-        });
+        //         $inventory->stock += $quantity;
+        //         $inventory->purchase_price = $unitPrice;
+        //         $inventory->save();
+        //         InventoryMovement::create([
+        //             'type' => 'in',
+        //             'adjustment_reason' => null,
+        //             'quantity' => $quantity,
+        //             'unit_price' => $unitPrice,
+        //             'total_price' => $lineTotal,
+        //             'reference' => $purchase->reference,
+        //             'notes' => 'Entrada por compra',
+        //             'user_id' => $purchase->user_id ?? User::query()->value('id'),
+        //             'inventory_id' => $inventory->id,
+        //         ]);
+        //     }
+        //     $purchase->subtotal = $subtotal;
+        //     $purchase->total = $subtotal;
+        //     $purchase->save();
+        // });
+
+        // Generar ventas de ejemplo (contado y crédito)
+        $ventasContado = 60;
+        $ventasCredito = 40;
+
+        // Ventas al contado
+        Sale::factory()->count($ventasContado)->state(['is_credit' => false])->create();
+
+        // Ventas a crédito (con cuentas por cobrar y pagos automáticos)
+        Sale::factory()->count($ventasCredito)->state(['is_credit' => true])->create();
     }
 }

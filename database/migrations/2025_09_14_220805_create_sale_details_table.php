@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->unsignedInteger('quantity');
             $table->decimal('unit_price', 10, 2);
             $table->decimal('sub_total', 10, 2);
-            $table->boolean('discount')->default(false);
-            $table->decimal('discount_amount', 10, 2)->default(0);
+            $table->boolean('discount')->default(false)->nullable();
+            $table->decimal('discount_amount', 10, 2)->default(0)->nullable();
 
             $table->integer('product_variant_id')->unsigned();
             $table->foreign('product_variant_id')->references('id')->on('product_variants')->onDelete('cascade')->onUpdate('cascade');

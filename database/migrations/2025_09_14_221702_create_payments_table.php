@@ -14,6 +14,8 @@ return new class extends Migration {
             $table->increments('id');
             $table->decimal('amount', 10, 2);
 
+            $table->date('payment_date')->nullable();
+
             $table->integer('account_receivable_id')->unsigned();
             $table->foreign('account_receivable_id')->references('id')->on('account_receivables')->onDelete('cascade')->onUpdate('cascade');
 
@@ -26,7 +28,7 @@ return new class extends Migration {
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
-        }); 
+        });
     }
 
     /**
