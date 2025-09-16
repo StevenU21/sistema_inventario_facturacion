@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Factura #{{ $sale->id }}</title>
     <style>
-        /* tamaño de página: 80mm pero con margen de seguridad */
         @page {
             size: 80mm auto;
             margin: 2mm;
@@ -21,7 +20,6 @@
 
         body {
             margin-top: 10mm;
-            /* margen superior para separar del borde */
         }
 
         body {
@@ -31,17 +29,12 @@
             -webkit-print-color-adjust: exact;
         }
 
-        /* voucher centrado y con espacio interior seguro */
         .voucher-box {
             width: 65mm;
-            /* < 80mm para evitar recorte */
             max-width: 65mm;
             margin: 0 auto;
-            /* centrado en la página */
             box-sizing: border-box;
-            /* padding incluido en el ancho */
             padding: 6px 6px 12px 6px;
-            /* espacio interior para que no esté pegado */
             background: #fff;
         }
 
