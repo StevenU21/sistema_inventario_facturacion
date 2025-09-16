@@ -1,66 +1,189 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proforma</title>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 6px; }
-        th { background: #f5f5f5; text-align: left; }
-        .text-right { text-align: right; }
-        .mb-2 { margin-bottom: 8px; }
-        .mb-4 { margin-bottom: 16px; }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            color: #222;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .invoice-box {
+            max-width: 800px;
+            margin: 18px auto;
+            background: #fff;
+            border: 1.5px solid #222;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 16px 18px 12px 18px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            border-bottom: 1.5px solid #222;
+            padding-bottom: 4px;
+        }
+
+        .company {
+            font-size: 22px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .company img {
+            margin-bottom: 0;
+            filter: grayscale(100%);
+            height: 100px !important;
+            display: block;
+        }
+
+        .meta {
+            text-align: right;
+            font-size: 14px;
+            color: #222;
+        }
+
+        .client {
+            margin-bottom: 18px;
+            font-size: 15px;
+            color: #222;
+        }
+
+        .fiscal {
+            font-size: 13px;
+            color: #444;
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid #222;
+            padding: 8px 6px;
+        }
+
+        th {
+            background: #e9ecef;
+            color: #222;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .totals {
+            margin-top: 18px;
+            width: 100%;
+        }
+
+        .totals td {
+            padding: 6px 8px;
+            font-size: 14px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .footer {
+            margin-top: 32px;
+            text-align: left;
+            color: #222;
+            font-size: 13px;
+            border-top: 1px solid #222;
+            padding-top: 12px;
+        }
+
+        .legal {
+            font-size: 12px;
+            color: #555;
+            margin-top: 18px;
+        }
     </style>
-    </head>
+    @php
+        $currency = '$';
+    @endphp
+</head>
+
 <body>
-    <h2 class="mb-2">Proforma</h2>
-    <div class="mb-4">
-        <div><strong>Empresa:</strong> {{ $company?->name ?? 'Mi Empresa' }}</div>
-        <div><strong>Cliente:</strong> {{ $entity?->name ?? 'N/D' }}</div>
-        <div><strong>Fecha:</strong> {{ \Illuminate\Support\Carbon::parse($quotation_date)->format('d/m/Y') }}</div>
-        <div><strong>Vendedor:</strong> {{ $user?->name ?? 'N/D' }}</div>
-    </div>
-
-    <table class="mb-4">
-        <thead>
-            <tr>
-                <th>Producto</th>
-                <th>Variante</th>
-                <th class="text-right">Cantidad</th>
-                <th class="text-right">Precio unit.</th>
-                <th class="text-right">Impuesto unit.</th>
-                <th class="text-right">Descuento</th>
-                <th class="text-right">Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($details as $d)
+    <div class="invoice-box">
+        <div class="header">
+            <div class="company">
+                <img src="{{ public_path('img/logo_factura.png') }}" alt="logo" height="100">
+                <div>{{ $company->name ?? 'Empresa' }}</div>
+                <div class="fiscal">Correo: {{ $company->email ?? 'N/A' }}</div>
+                <div style="font-size:13px; font-weight:normal; color:#222;">{{ $company->address ?? '' }}</div>
+                <div style="font-size:13px; font-weight:normal; color:#222;">Tel: {{ $company->phone ?? '' }}</div>
+            </div>
+            <div class="meta">
+                <div><strong>Proforma No.:</strong> {{ $quotation?->id ?? '' }}</div>
+                <div><strong>Fecha:</strong>
+                    {{ \Carbon\Carbon::parse($quotation_date ?? $quotation?->created_at)->format('d/m/Y H:i:s') }}</div>
+                <div><strong>Vendedor:</strong> {{ $user?->name ?? 'N/D' }}</div>
+            </div>
+        </div>
+        <div class="client">
+            <strong>Cliente:</strong> {{ $entity?->name ?? 'N/D' }}<br>
+        </div>
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $d['variant']->product?->name ?? 'Producto' }}</td>
-                    <td>{{ $d['variant']->sku ?? $d['variant']->code ?? 'Variante' }}</td>
-                    <td class="text-right">{{ number_format($d['quantity'], 0) }}</td>
-                    <td class="text-right">{{ number_format($d['unit_price'] - $d['unit_tax_amount'], 2) }}</td>
-                    <td class="text-right">{{ number_format($d['unit_tax_amount'], 2) }}</td>
-                    <td class="text-right">{{ $d['discount'] ? number_format($d['discount_amount'], 2) : '0.00' }}</td>
-                    <td class="text-right">{{ number_format($d['sub_total'], 2) }}</td>
+                    <th>#</th>
+                    <th>Producto</th>
+                    <th>Color</th>
+                    <th>Talla</th>
+                    <th class="right">Cant</th>
+                    <th class="right">P. Unit</th>
+                    <th class="right">Desc</th>
+                    <th class="right">Sub Total</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <table>
-        <tbody>
+            </thead>
+            <tbody>
+                @php $i=1; @endphp
+                @foreach ($details as $d)
+                    @php
+                        $prod = $d['variant']->product ?? null;
+                        $color = $d['variant']->color->name ?? '';
+                        $size = $d['variant']->size->name ?? '';
+                    @endphp
+                    <tr>
+                        <td>{{ $i++ }}</td>
+                        <td>{{ $prod?->name ?? 'Producto' }}</td>
+                        <td>{{ $color ? $color : 'N/A' }}</td>
+                        <td>{{ $size ? $size : 'N/A' }}</td>
+                        <td class="right">{{ $d['quantity'] }}</td>
+                        <td class="right">{{ $currency }} {{ number_format($d['unit_price'], 2) }}</td>
+                        <td class="right">{{ $currency }} {{ number_format($d['discount_amount'] ?? 0, 2) }}</td>
+                        <td class="right">{{ $currency }} {{ number_format($d['sub_total'], 2) }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <table class="totals">
             <tr>
-                <th style="border:none">Impuestos</th>
-                <td class="text-right">{{ number_format($totals['totalTax'] ?? 0, 2) }}</td>
+                <td class="right"><strong>Subtotal:</strong></td>
+                <td class="right" style="width:120px;">{{ $currency }}
+                    {{ number_format($totals['sub_total'] ?? 0, 2) }}</td>
             </tr>
-            <tr>
-                <th style="border:none">Total</th>
-                <td class="text-right"><strong>{{ number_format($totals['total'] ?? 0, 2) }}</strong></td>
-            </tr>
-        </tbody>
-    </table>
+        </table>
+        <div class="footer">
+            <p style="color:#b91c1c;"><strong>Esta proforma solo es válida por 8 días.</strong></p>
+        </div>
+    </div>
 </body>
+
 </html>

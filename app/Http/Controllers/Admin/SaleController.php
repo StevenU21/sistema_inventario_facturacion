@@ -83,11 +83,26 @@ class SaleController extends Controller
     {
         $this->authorize('view', $sale);
         $sale->load(['saleDetails.productVariant.product.tax', 'user', 'entity', 'paymentMethod']);
+
+        $company = Company::first();
+        $details = $sale->saleDetails;
+
+        $headerMm = 40;
+        $footerMm = 30;
+        $rowMm = 8;
+        $rows = $details->count();
+        $totalMm = $headerMm + ($rows * $rowMm) + $footerMm;
+
+        $ptPerMm = 72 / 25.4;
+        $widthPt = 80 * $ptPerMm;
+        $heightPt = $totalMm * $ptPerMm;
+
+        $heightPt += 40 * $ptPerMm;
         $pdf = Pdf::loadView('cashier.sales.invoice', [
             'sale' => $sale,
-            'company' => Company::first(),
-            'details' => $sale->saleDetails,
-        ])->setPaper('letter');
+            'company' => $company,
+            'details' => $details,
+        ])->setPaper([0, 0, $widthPt, $heightPt], 'portrait');
 
         return $pdf->stream('venta_' . $sale->id . '.pdf');
     }

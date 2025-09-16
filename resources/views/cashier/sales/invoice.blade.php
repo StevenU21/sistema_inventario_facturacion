@@ -2,140 +2,234 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Factura #{{ $sale->id }}</title>
     <style>
+        /* tamaño de página: 80mm pero con margen de seguridad */
+        @page {
+            size: 80mm auto;
+            margin: 2mm;
+        }
+
+        html,
         body {
-            font-family: DejaVu Sans, Arial, Helvetica, sans-serif;
-            font-size: 12px;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+        }
+
+        body {
+            margin-top: 10mm;
+            /* margen superior para separar del borde */
+        }
+
+        body {
+            font-family: "Courier New", Courier, monospace;
             color: #111;
+            font-size: 11px;
+            -webkit-print-color-adjust: exact;
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
+        /* voucher centrado y con espacio interior seguro */
+        .voucher-box {
+            width: 65mm;
+            /* < 80mm para evitar recorte */
+            max-width: 65mm;
+            margin: 0 auto;
+            /* centrado en la página */
+            box-sizing: border-box;
+            /* padding incluido en el ancho */
+            padding: 6px 6px 12px 6px;
+            /* espacio interior para que no esté pegado */
+            background: #fff;
         }
 
-        .company {
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .meta {
-            text-align: right;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 6px;
-        }
-
-        th {
-            background: #f5f5f5;
-        }
-
-        .totals {
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        .totals td {
-            padding: 4px 6px;
+        .center {
+            text-align: center;
         }
 
         .right {
             text-align: right;
         }
+
+        .left {
+            text-align: left;
+        }
+
+        .bold {
+            font-weight: 700;
+        }
+
+        .muted {
+            font-size: 9px;
+            color: #333;
+        }
+
+        .small {
+            font-size: 9.5px;
+        }
+
+        .tiny {
+            font-size: 8.5px;
+        }
+
+        .company-title {
+            font-size: 22px;
+            /* mucho más grande */
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            /* todo en mayúsculas */
+        }
+
+        .divider {
+            border-top: 1px dashed #222;
+            margin: 6px 0;
+            height: 0;
+        }
+
+        .items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2px;
+        }
+
+        .items td {
+            padding: 2px 0;
+            vertical-align: top;
+        }
+
+        .item-desc {
+            font-size: 10.5px;
+            word-break: break-word;
+            padding-right: 6px;
+        }
+
+        .item-qty {
+            width: 20mm;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .item-price {
+            width: 26mm;
+            text-align: right;
+            font-size: 10px;
+        }
+
+        .totals {
+            margin-top: 6px;
+            width: 100%;
+        }
+
+        .totals .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 0;
+            font-size: 10.5px;
+        }
+
+        .totals .total-amount {
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+
+        .tear {
+            border-top: 1px dotted #222;
+            margin: 8px 0 6px 0;
+        }
+
+        @media print {
+            .voucher-box {
+                box-shadow: none;
+            }
+        }
     </style>
-    @php
-        $currency = '$';
-    @endphp
+    @php $currency = 'C$'; @endphp
 </head>
 
 <body>
-    <div class="header">
-        <div class="company">
-            @if ($company?->logo)
-                <img src="{{ public_path('storage/' . $company->logo) }}" alt="logo" height="50">
+    <div class="voucher-box">
+        <div class="center company-title bold">{{ strtoupper($company->name ?? 'EMPRESA') }}</div>
+        <div class="center tiny muted">{{ $company->address ?? '' }}</div>
+        <div class="center tiny">Tel: {{ $company->phone ?? '' }} RUC: {{ $company->tax_id ?? '' }}</div>
+
+        <div class="divider"></div>
+
+        <div class="center small bold">FACTURA: {{ $sale->id }}</div>
+        <div class="center tiny">
+            Contado: {!! !$sale->is_credit ? '&#9745;' : '&#9744;' !!} &nbsp;&nbsp;
+            Crédito: {!! $sale->is_credit ? '&#9745;' : '&#9744;' !!}
+        </div>
+        <div class="center tiny">
+            Fecha: {{ \Carbon\Carbon::parse($sale->sale_date ?? $sale->created_at)->format('d/m/Y h:i a') }}
+        </div>
+        <div class="center tiny mb-2">Vendedor: {{ $sale->user?->full_name ?? '-' }}</div>
+
+        <div class="divider"></div>
+
+        <div class="small"><strong>Cliente:</strong> {{ $sale->entity?->full_name ?? 'CLIENTE DE CONTADO' }}</div>
+
+        <table class="items">
+            <tbody>
+                @foreach ($details as $d)
+                    <tr>
+                        <td class="item-desc left">
+                            <span
+                                class="bold">{{ $d->productVariant?->product?->name ?? ($d->productVariant?->sku ?? '-') }}</span>
+                            @php
+                                $color = $d->productVariant?->color?->name;
+                                $size = $d->productVariant?->size?->name;
+                            @endphp
+                            @if ($color || $size)
+                                <div class="tiny muted">
+                                    @if ($color)
+                                        Color: {{ $color }}
+                                    @endif
+                                    @if ($color && $size)
+                                        &nbsp;|&nbsp;
+                                    @endif
+                                    @if ($size)
+                                        Talla: {{ $size }}
+                                    @endif
+                                </div>
+                            @endif
+                        </td>
+                        <td class="item-qty">{{ intval($d->quantity) }}</td>
+                        <td class="item-price">{{ $currency }}{{ number_format($d->sub_total, 2) }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <div class="divider"></div>
+
+        <div class="totals">
+            <div class="row">
+                <div class="left small bold">Total:</div>
+                <div class="right small bold total-amount">{{ $currency }}{{ number_format($sale->total, 2) }}
+                </div>
+            </div>
+
+            @if (!empty($sale->tax_amount) && $sale->tax_amount != 0)
+                <div class="row small">
+                    <div class="left">IVA:</div>
+                    <div class="right">{{ $currency }}{{ number_format($sale->tax_amount, 2) }}</div>
+                </div>
             @endif
-            <div>{{ $company->name ?? 'Empresa' }}</div>
-            <div>{{ $company->address ?? '' }}</div>
-            <div>{{ $company->phone ?? '' }}</div>
         </div>
-        <div class="meta">
-            <div><strong>Factura:</strong> #{{ $sale->id }}</div>
-            <div><strong>Fecha:</strong>
-                {{ \Carbon\Carbon::parse($sale->sale_date ?? $sale->created_at)->format('d/m/Y') }}</div>
-            <div><strong>Cajero:</strong> {{ $sale->user?->name }}</div>
-        </div>
+
+        <div class="small meta">Cantidad de Artículos: {{ $details->sum('quantity') }}</div>
+        <div class="small">Paga con: </div>
+        <div class="small mb-2">Vuelto: </div>
+
+        <div class="tear"></div>
+
+        <div class="center tiny">{{ $company->name ?? 'EMPRESA' }}</div>
+        <div class="center tiny muted">Gracias por su compra, es un placer servirle.</div>
     </div>
-    <div>
-        <strong>Cliente:</strong> {{ $sale->entity?->name }}<br>
-    </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Producto</th>
-                <th>Variante</th>
-                <th class="right">Cant</th>
-                <th class="right">P. Unit</th>
-                <th class="right">Desc</th>
-                <th class="right">Sub Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php $i=1; @endphp
-            @foreach ($details as $d)
-                @php
-                    $prod = $d->productVariant?->product;
-                    $variantLabel = trim(
-                        ($d->productVariant?->color?->name ?? '') . ' ' . ($d->productVariant?->size?->name ?? ''),
-                    );
-                @endphp
-                <tr>
-                    <td>{{ $i++ }}</td>
-                    <td>{{ $prod?->name }}</td>
-                    <td>{{ $variantLabel }}</td>
-                    <td class="right">{{ $d->quantity }}</td>
-                    <td class="right">{{ $currency }} {{ number_format($d->unit_price, 2) }}</td>
-                    <td class="right">{{ $currency }} {{ number_format($d->discount_amount ?? 0, 2) }}</td>
-                    <td class="right">{{ $currency }} {{ number_format($d->sub_total, 2) }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <table class="totals">
-        <tr>
-            <td class="right"><strong>Impuesto:</strong></td>
-            <td class="right" style="width:120px;">{{ $currency }} {{ number_format($sale->tax_amount ?? 0, 2) }}
-            </td>
-        </tr>
-        <tr>
-            <td class="right"><strong>Total:</strong></td>
-            <td class="right">{{ $currency }} {{ number_format($sale->total, 2) }}</td>
-        </tr>
-        @if ($sale->is_credit)
-            <tr>
-                <td class="right"><strong>Condición:</strong></td>
-                <td class="right">Crédito</td>
-            </tr>
-        @endif
-    </table>
-
-    <p style="margin-top: 20px;">Gracias por su compra.</p>
 </body>
 
 </html>
