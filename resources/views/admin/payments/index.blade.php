@@ -257,7 +257,22 @@
                                 <td class="px-4 py-3 text-xs"><span
                                         class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700">{{ $p->id }}</span>
                                 </td>
-                                <td class="px-4 py-3 text-sm">{{ $firstProductName ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm">
+                                    @php
+                                        $firstDetail = $sale?->saleDetails->first();
+                                        $variant = $firstDetail?->productVariant;
+                                        $productName = $variant?->product?->name ?? '-';
+                                        $colorName = isset($variant) ? $colors[$variant->color_id] ?? '-' : '-';
+                                        $sizeName = isset($variant) ? $sizes[$variant->size_id] ?? '-' : '-';
+                                    @endphp
+                                    @if ($variant)
+                                        <span class="font-semibold">{{ $productName }}</span><br>
+                                        <span class="text-xs text-gray-500">{{ $colorName }} /
+                                            {{ $sizeName }}</span>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3 text-sm">{{ $client ?: '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $p->paymentMethod->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $sale?->is_credit ? 'Crédito' : 'Contado' }}</td>

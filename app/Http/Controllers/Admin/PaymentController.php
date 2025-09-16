@@ -65,7 +65,14 @@ class PaymentController extends Controller
 
     private function buildPaymentsQuery(Request $request)
     {
-        $query = Payment::with(['entity', 'paymentMethod', 'user', 'accountReceivable.sale']);
+        $query = Payment::with([
+            'entity',
+            'paymentMethod',
+            'user',
+            'accountReceivable.sale.saleDetails.productVariant.product',
+            'accountReceivable.sale.saleDetails.productVariant.color',
+            'accountReceivable.sale.saleDetails.productVariant.size',
+        ]);
 
         // Búsqueda general por cliente, ID de pago o ID de venta
         if ($search = trim((string) $request->input('search', ''))) {
