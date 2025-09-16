@@ -14,9 +14,8 @@ class PaymentMethodSeeder extends Seeder
     {
         $methods = [
             'Efectivo',
-            'Tarjeta de Crédito',
-            'Tarjeta de Débito',
-            'Transferencia Bancaria',
+            'Tarjeta de crédito',
+            'Tarjeta de débito',
         ];
 
         foreach ($methods as $method) {

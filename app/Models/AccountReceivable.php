@@ -56,4 +56,14 @@ class AccountReceivable extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function getTranslatedStatusAttribute(): string
+    {
+        return match ($this->status) {
+            'pending' => __('Pendiente'),
+            'partially_paid' => __('Parcialmente pagado'),
+            'paid' => __('Pagado'),
+            default => $this->status,
+        };
+    }
 }

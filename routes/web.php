@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Admin\KardexController;
 use App\Http\Controllers\Cashier\SaleController;
 use App\Http\Controllers\Admin\SaleController as AdminSaleController;
+use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -155,6 +156,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/autocomplete', [AdminSaleController::class, 'autocomplete'])->name('autocomplete');
         Route::get('/{sale}/export', [AdminSaleController::class, 'exportDetails'])->name('exportDetails');
         Route::get('/{sale}/pdf', [AdminSaleController::class, 'pdf'])->name('pdf');
+    });
+
+    // Payments (Admin)
+    Route::prefix('admin/payments')->name('admin.payments.')->group(function () {
+        Route::get('/', [AdminPaymentController::class, 'index'])->name('index');
+        Route::get('/search', [AdminPaymentController::class, 'search'])->name('search');
+        Route::get('/export', [AdminPaymentController::class, 'export'])->name('export');
+        Route::get('/export-pdf', [AdminPaymentController::class, 'exportPdf'])->name('exportPdf');
     });
 
     // Dashboard
