@@ -149,10 +149,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
-    // Cashier Routes
-    Route::resource('sales', SaleController::class);
-
-    // Admin Routes
+    // Sales (Cashier)
     Route::resource('sales', SaleController::class);
 });
 

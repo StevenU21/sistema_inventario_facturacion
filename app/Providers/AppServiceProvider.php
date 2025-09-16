@@ -6,9 +6,11 @@ use App\Models\Color;
 use App\Models\Entity;
 use App\Models\Inventory;
 use App\Models\InventoryMovement;
+use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\Sale;
 use App\Models\Size;
 use App\Models\Tax;
 use App\Models\User;
@@ -25,9 +27,11 @@ use App\Policies\EntityPolicy;
 use App\Policies\InventoryMovementPolicy;
 use App\Policies\InventoryPolicy;
 use App\Policies\PaymentMethodPolicy;
+use App\Policies\PaymentPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\ProductVariantPolicy;
 use App\Policies\RolePolicy;
+use App\Policies\SalePolicy;
 use App\Policies\SizePolicy;
 use App\Policies\TaxPolicy;
 use App\Policies\UnitMeasurePolicy;
@@ -85,5 +89,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(ProductVariant::class, ProductVariantPolicy::class);
         Gate::policy(Purchase::class, PurchasePolicy::class);
         Gate::policy(PurchaseDetail::class, PurchaseDetailPolicy::class);
+        Gate::policy(Sale::class, SalePolicy::class);
+        Gate::policy(Payment::class, PaymentPolicy::class);
     }
 }

@@ -16,6 +16,7 @@ class Sale extends Model
         'is_credit',
         'tax_percentage',
         'tax_amount',
+        'sale_date',
         'user_id',
         'entity_id',
         'payment_method_id',
