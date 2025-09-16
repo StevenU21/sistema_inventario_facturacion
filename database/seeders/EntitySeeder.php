@@ -92,7 +92,7 @@ class EntitySeeder extends Seeder
                 'phone' => '+505 85852004',
                 'address' => 'Sin dirección',
                 'description' => 'Entidad nicaragüense',
-                'is_client' => false,
+                'is_client' => true,
                 'is_supplier' => true,
                 'is_active' => true,
                 'municipality_id' => 1,

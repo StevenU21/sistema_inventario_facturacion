@@ -267,11 +267,19 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm">
                                         @php
-                                            $firstProductName = optional(
-                                                $sale->saleDetails->first()?->productVariant?->product,
-                                            )->name;
+                                            $firstDetail = $sale->saleDetails->first();
+                                            $variant = $firstDetail?->productVariant;
+                                            $productName = $variant?->product?->name ?? '-';
+                                            $colorName = isset($variant) ? $colors[$variant->color_id] ?? '-' : '-';
+                                            $sizeName = isset($variant) ? $sizes[$variant->size_id] ?? '-' : '-';
                                         @endphp
-                                        {{ $firstProductName ?? '-' }}
+                                        @if ($variant)
+                                            <span class="font-semibold">{{ $productName }}</span><br>
+                                            <span class="text-xs text-gray-500">{{ $colorName }} /
+                                                {{ $sizeName }}</span>
+                                        @else
+                                            -
+                                        @endif
                                     </td>
                                     <td class="px-4 py-3 text-sm">
                                         {{ trim(($sale->entity?->first_name ?? '') . ' ' . ($sale->entity?->last_name ?? '')) ?: '-' }}

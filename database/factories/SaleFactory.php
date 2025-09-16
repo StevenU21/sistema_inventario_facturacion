@@ -31,7 +31,7 @@ class SaleFactory extends Factory
             'tax_percentage' => null,
             'tax_amount' => null,
             'user_id' => User::inRandomOrder()->first()->id,
-            'entity_id' => Entity::inRandomOrder()->first()->id,
+            'entity_id' => Entity::where('is_client', true)->inRandomOrder()->first()->id,
             'payment_method_id' => PaymentMethod::inRandomOrder()->first()->id,
             // Asignar sale_date entre el inicio del año y hoy
             'sale_date' => fake()->dateTimeBetween(date('Y-01-01'), 'now')->format('Y-m-d'),

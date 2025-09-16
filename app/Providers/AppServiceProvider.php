@@ -43,6 +43,8 @@ use App\Policies\PermissionPolicy;
 use App\Policies\WarehousePolicy;
 use App\Policies\PurchasePolicy;
 use App\Policies\PurchaseDetailPolicy;
+use App\Policies\AccountReceivablePolicy;
+use App\Models\AccountReceivable;
 use App\Models\Purchase;
 use App\Models\PurchaseDetail;
 use Illuminate\Pagination\Paginator;
@@ -91,5 +93,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(PurchaseDetail::class, PurchaseDetailPolicy::class);
         Gate::policy(Sale::class, SalePolicy::class);
         Gate::policy(Payment::class, PaymentPolicy::class);
+        Gate::policy(AccountReceivable::class, AccountReceivablePolicy::class);
     }
 }

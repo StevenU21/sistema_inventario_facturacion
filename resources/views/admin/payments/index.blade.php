@@ -227,38 +227,56 @@
                         <tr
                             class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase border-b border-gray-200 dark:border-gray-700">
                             <th class="px-4 py-3">ID</th>
-                            <th class="px-4 py-3">Cajero</th>
+                            <th class="px-4 py-3">Producto</th>
                             <th class="px-4 py-3">Cliente</th>
-                            <th class="px-4 py-3">Venta</th>
-                            <th class="px-4 py-3">Monto Debe</th>
-                            <th class="px-4 py-3">Monto Pagado</th>
-                            <th class="px-4 py-3">Estado</th>
-                            <th class="px-4 py-3">Método</th>
-                            <th class="px-4 py-3">Monto</th>
-                            <th class="px-4 py-3">Fecha Pago</th>
+                            <th class="px-4 py-3">Método de pago</th>
+                            <th class="px-4 py-3">Tipo de pago</th>
+                            <th class="px-4 py-3 text-right">Cantidad</th>
+                            <th class="px-4 py-3 text-right">Precio Unitario</th>
+                            <th class="px-4 py-3 text-right">Impuesto</th>
+                            <th class="px-4 py-3 text-right">Total</th>
+                            <th class="px-4 py-3">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
                         @forelse($payments as $p)
+                            @php
+                                $sale = $p->accountReceivable?->sale;
+                                $firstDetail = $sale?->saleDetails->first();
+                                $firstProductName = optional($firstDetail?->productVariant?->product)->name;
+                                $client =
+                                    $p->entity?->short_name ?:
+                                    trim(($p->entity->first_name ?? '') . ' ' . ($p->entity->last_name ?? ''));
+                                $totalQty = $sale?->saleDetails->sum('quantity');
+                                $firstUnitPrice = $firstDetail?->unit_price;
+                                $taxAmount = $sale?->tax_amount ?? 0;
+                                $total = $sale?->total ?? 0;
+                            @endphp
                             <tr
                                 class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
                                 <td class="px-4 py-3 text-xs"><span
                                         class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700">{{ $p->id }}</span>
                                 </td>
-                                <td class="px-4 py-3 text-sm">{{ $p->user?->short_name ?? '-' }}</td>
-                                <td class="px-4 py-3 text-sm">
-                                    {{ $p->entity?->short_name ?: trim(($p->entity->first_name ?? '') . ' ' . ($p->entity->last_name ?? '')) }}
-                                </td>
-                                <td class="px-4 py-3 text-sm">#{{ optional($p->accountReceivable?->sale)->id }}</td>
-                                <td class="px-4 py-3 text-sm text-right">
-                                    ${{ number_format($p->accountReceivable?->amount_due ?? 0, 2) }}</td>
-                                <td class="px-4 py-3 text-sm text-right">
-                                    ${{ number_format($p->accountReceivable?->amount_paid ?? 0, 2) }}</td>
-                                <td class="px-4 py-3 text-sm">{{ __($p->accountReceivable?->translated_status ?? '-') }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $firstProductName ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $client ?: '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $p->paymentMethod->name ?? '-' }}</td>
-                                <td class="px-4 py-3 text-sm text-right">${{ number_format($p->amount, 2) }}</td>
-                                <td class="px-4 py-3 text-sm">
-                                    {{ $p->payment_date ? \Carbon\Carbon::parse($p->payment_date)->format('d/m/Y') : '' }}
+                                <td class="px-4 py-3 text-sm">{{ $sale?->is_credit ? 'Crédito' : 'Contado' }}</td>
+                                <td class="px-4 py-3 text-sm text-right">{{ $totalQty > 0 ? $totalQty : '-' }}</td>
+                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($firstUnitPrice ?? 0, 2) }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($taxAmount, 2) }}</td>
+                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($total, 2) }}</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <a href="#" title="Ver detalle"
+                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="#" title="PDF"
+                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @empty

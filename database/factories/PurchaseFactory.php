@@ -24,7 +24,7 @@ class PurchaseFactory extends Factory
             'reference' => fake()->unique()->bothify('PUR-########'),
             'subtotal' => 0,
             'total' => 0,
-            'entity_id' => Entity::inRandomOrder()->first()?->id,
+            'entity_id' => Entity::where('is_supplier', true)->inRandomOrder()->first()?->id,
             'warehouse_id' => Warehouse::inRandomOrder()->first()?->id,
             'user_id' => User::inRandomOrder()->first()?->id,
             'payment_method_id' => PaymentMethod::inRandomOrder()->first()?->id,
