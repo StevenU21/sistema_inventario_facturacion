@@ -16,4 +16,24 @@ class Payment extends Model
         'entity_id',
         'user_id',
     ];
+
+    public function accountReceivable()
+    {
+        return $this->belongsTo(AccountReceivable::class);
+    }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
+    }
+
+    public function entity()
+    {
+        return $this->belongsTo(Entity::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

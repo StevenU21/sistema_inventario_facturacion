@@ -31,4 +31,19 @@ class PaymentMethod extends Model
     {
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
     }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
+
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

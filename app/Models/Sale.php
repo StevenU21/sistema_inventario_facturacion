@@ -59,4 +59,14 @@ class Sale extends Model
     {
         return $this->belongsTo(PaymentMethod::class);
     }
+
+    public function saleDetails()
+    {
+        return $this->hasMany(SaleDetail::class);
+    }
+
+    public function accountReceivable()
+    {
+        return $this->hasOne(AccountReceivable::class);
+    }
 }
