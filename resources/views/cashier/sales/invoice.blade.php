@@ -266,7 +266,7 @@
 
         <div class="totals">
             <div class="row">
-                <div class="left small bold">Total:</div>
+                <div class="left bold">Total:</div>
                 <div class="right small bold total-amount">{{ $currency }}{{ number_format($sale->total, 2) }}
                 </div>
             </div>
