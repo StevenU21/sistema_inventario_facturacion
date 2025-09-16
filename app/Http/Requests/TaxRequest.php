@@ -33,8 +33,7 @@ class TaxRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('taxes')->ignore($this->tax)],
-            'percentage' => ['required', 'numeric', 'min:0', 'max:100'],
-            'is_default' => ['nullable', 'boolean']
+            'percentage' => ['required', 'numeric', 'min:0', 'max:100']
         ];
     }
 
@@ -54,7 +53,6 @@ class TaxRequest extends FormRequest
             'percentage.numeric' => 'El porcentaje debe ser un valor numérico.',
             'percentage.min' => 'El porcentaje no puede ser menor que :min.',
             'percentage.max' => 'El porcentaje no puede ser mayor que :max.',
-            'is_default.boolean' => 'El valor de "por defecto" debe ser verdadero o falso.',
         ];
     }
 

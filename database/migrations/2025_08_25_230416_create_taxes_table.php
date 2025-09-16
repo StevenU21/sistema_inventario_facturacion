@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->increments('id');
             $table->string('name');
             $table->decimal('percentage', 8, 2);
-            $table->boolean('is_default')->default(true);
             $table->timestamps();
         });
     }

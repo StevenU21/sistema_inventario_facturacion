@@ -15,7 +15,6 @@ class TaxSeeder extends Seeder
         $taxes = [
             ['name' => 'IVA', 'percentage' => 15],
             ['name' => 'Exento', 'percentage' => 0],
-            ['name' => 'ISC', 'percentage' => 10],
         ];
 
         foreach ($taxes as $tax) {
