@@ -58,24 +58,32 @@ class SaleService
             $unitSale = (float) ($inventory->sale_price ?? 0);
             $product = $variant->product;
             $tax = $product?->tax;
-            $unitTaxAmount = 0.0;
+            $unitTaxAmount = 0.0; // impuesto por unidad
             $taxPercentageApplied = null;
             if ($tax) {
-                $percentage = (float) $tax->percentage;
+                $percentage = (float) $tax->percentage; // 0 para Exento, 15 para IVA, etc.
                 $taxPercentageApplied = $percentage;
                 $unitTaxAmount = round($unitSale * ($percentage / 100), 2);
             }
-            $unitPriceWithTax = $unitSale + $unitTaxAmount;
+            // Precio unitario mostrado en cliente es sin impuestos (unitSale). Aquí definimos:
+            // - base por línea (antes de impuesto) = unitSale * qty - descuento
+            // - impuesto por línea = base * %
+            // - subtotal por línea = base + impuesto (total con impuesto)
+            $unitPriceWithTax = $unitSale + $unitTaxAmount; // unitario con impuesto (si aplica)
             $hasDiscount = (bool) ($row['discount'] ?? false);
             $discountAmount = (float) ($row['discount_amount'] ?? 0);
             if (!$hasDiscount) {
                 $discountAmount = 0;
             }
-            $lineSubtotal = round(($unitPriceWithTax * $qty) - $discountAmount, 2);
+            // base antes de impuesto considerando descuento
+            $lineBase = max(0, ($unitSale * $qty) - $discountAmount);
+            $lineTax = round($lineBase * (($taxPercentageApplied ?? 0) / 100), 2);
+            $lineSubtotal = round($lineBase + $lineTax, 2);
             $detailsData[] = [
                 'variant' => $variant,
                 'inventory' => $inventory,
                 'quantity' => $qty,
+                // Guardamos unit_price como precio unitario con impuesto para mantener compatibilidad de vistas existentes
                 'unit_price' => round($unitPriceWithTax, 2),
                 'sub_total' => $lineSubtotal,
                 'discount' => $hasDiscount,

@@ -256,6 +256,7 @@
                             <th class="px-4 py-3">Tipo de pago</th>
                             <th class="px-4 py-3 text-right">Cantidad</th>
                             <th class="px-4 py-3 text-right">Precio Unitario</th>
+                            <th class="px-4 py-3 text-right">Descuento</th>
                             <th class="px-4 py-3 text-right">Impuesto</th>
                             <th class="px-4 py-3 text-right">Total</th>
                             <th class="px-4 py-3">Acciones</th>
@@ -298,6 +299,7 @@
                                         @php $firstUnitPrice = optional($sale->saleDetails->first())->unit_price; @endphp
                                         {{ number_format($firstUnitPrice ?? 0, 2) }}
                                     </td>
+                                    <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($sale->discount_total ?? 0, 2) }}</td>
                                     <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($sale->tax_amount ?? 0, 2) }}
                                     </td>
                                     <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($sale->total ?? 0, 2) }}</td>

@@ -249,7 +249,12 @@
                         <td class="cell col-center">{{ $size ?? '-' }}</td>
                         <td class="cell col-center">{{ intval($d->quantity) }}</td>
                         <td class="cell col-right">{{ $currency }}{{ number_format($d->unit_price, 2) }}</td>
-                        <td class="cell col-right">{{ $currency }}{{ number_format($d->sub_total, 2) }}</td>
+                        <td class="cell col-right">
+                            {{ $currency }}{{ number_format($d->sub_total, 2) }}
+                            @if ($d->discount && $d->discount_amount > 0)
+                                <div class="tiny muted">Desc: -{{ $currency }}{{ number_format($d->discount_amount, 2) }}</div>
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
@@ -258,6 +263,15 @@
         <div class="divider"></div>
 
         <div class="totals">
+            @php
+                $discountTotal = (float) ($sale->discount_total ?? 0);
+            @endphp
+            @if ($discountTotal > 0)
+                <div class="row small">
+                    <div class="left">Descuento:</div>
+                    <div class="right">-{{ $currency }}{{ number_format($discountTotal, 2) }}</div>
+                </div>
+            @endif
             <div class="row">
                 <div class="left bold">Total:</div>
                 <div class="right small bold total-amount">{{ $currency }}{{ number_format($sale->total, 2) }}

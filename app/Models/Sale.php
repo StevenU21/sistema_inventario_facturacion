@@ -71,4 +71,14 @@ class Sale extends Model
     {
         return $this->hasOne(AccountReceivable::class);
     }
+
+    // Total de descuento aplicado en la venta (suma de discount_amount en detalles)
+    public function getDiscountTotalAttribute(): float
+    {
+        if ($this->relationLoaded('saleDetails')) {
+            return (float) $this->saleDetails->sum('discount_amount');
+        }
+        // fallback si no está cargado el relation
+        return (float) $this->saleDetails()->sum('discount_amount');
+    }
 }
