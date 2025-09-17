@@ -98,8 +98,8 @@
                         <label
                             class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Monto
                             a pagar</label>
-                        <input type="number" step="0.01" min="0.01" name="amount" x-model="paymentForm.amount" placeholder="Ingrese el monto a pagar"
-                            required
+                        <input type="number" step="0.01" min="0.01" name="amount" x-model="paymentForm.amount"
+                            placeholder="Ingrese el monto a pagar" required
                             class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
                         <p class="mt-1 text-xs text-gray-500" x-text="remainingText"></p>
                     </div>
@@ -203,13 +203,6 @@
                     </select>
                 </div>
                 <div>
-                    <label for="sale_id"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Venta
-                        ID</label>
-                    <input type="number" min="1" name="sale_id" id="sale_id" value="{{ request('sale_id') }}"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
-                </div>
-                <div>
                     <label for="from"
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Desde</label>
                     <input type="date" name="from" id="from" value="{{ request('from') }}"
@@ -271,6 +264,7 @@
                                 $firstUnitPrice = $firstDetail?->unit_price;
                                 $taxAmount = $sale?->tax_amount ?? 0;
                                 $total = $sale?->total ?? 0;
+                                $remaining = max(0, round(($ar->amount_due ?? 0) - ($ar->amount_paid ?? 0), 2));
                             @endphp
                             <tr
                                 class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
@@ -296,8 +290,7 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($ar->amount_paid ?? 0, 2) }}
                                 </td>
-                                <td class="px-4 py-3 text-sm text-right">C$
-                                    {{ number_format(($ar->amount_due ?? 0) - ($ar->amount_paid ?? 0), 2) }}</td>
+                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($remaining, 2) }}</td>
                                 <td class="px-4 py-3 text-sm text-right">{{ $ar->formatted_created_at }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2 text-sm">
