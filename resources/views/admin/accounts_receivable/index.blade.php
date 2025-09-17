@@ -90,7 +90,7 @@
             </div>
         </section>
 
-        <x-modal :title="'Registrar pago'" :description="'Ingrese el monto y método de pago'">
+    <x-modal :title="'Registrar pago'" :description="'Ingrese el monto y método de pago'">
             <form :action="paymentForm.action" method="POST">
                 @csrf
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -118,8 +118,7 @@
                 <div class="mt-6 flex justify-end gap-3">
                     <button type="button" @click="closeModal()"
                         class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">Cancelar</button>
-                    <button type="submit"
-                        class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold">Registrar</button>
+                    <x-ui.submit-button data-label="Registrar" />
                 </div>
             </form>
         </x-modal>
@@ -297,7 +296,7 @@
                                         @if (in_array($ar->status, ['pending', 'partially_paid']))
                                             @php $remaining = max(0, round(($ar->amount_due ?? 0) - ($ar->amount_paid ?? 0), 2)); @endphp
                                             <button type="button" title="Registrar pago"
-                                                class="inline-flex items-center justify-center h-9 px-3 text-white bg-green-600 hover:bg-green-700 rounded-lg focus:outline-none gap-2"
+                                                class="inline-flex items-center justify-center h-9 px-3 text-white bg-purple-600 hover:bg-purple-700 rounded-lg focus:outline-none gap-2"
                                                 @click="openPaymentModal('{{ route('admin.accounts_receivable.payments.store', $ar) }}', '{{ number_format($remaining, 2, '.', '') }}', '{{ array_key_first($methods->toArray()) }}')">
                                                 <i class="fas fa-cash-register"></i>
                                                 <span class="hidden sm:inline">Pagar</span>
