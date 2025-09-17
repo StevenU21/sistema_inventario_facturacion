@@ -133,6 +133,11 @@
                 <div><strong>Proforma No.:</strong> {{ $quotation?->id ?? '' }}</div>
                 <div><strong>Fecha:</strong>
                     {{ \Carbon\Carbon::parse($quotation_date ?? $quotation?->created_at)->format('d/m/Y H:i:s') }}</div>
+                @if(isset($quotation) && $quotation?->valid_until)
+                    <div><strong>Válida hasta:</strong> {{ \Carbon\Carbon::parse($quotation->valid_until)->format('d/m/Y') }}</div>
+                @else
+                    <div><strong>Válida hasta:</strong> {{ \Carbon\Carbon::parse(($quotation_date ?? now()->toDateString()))->addDays(7)->format('d/m/Y') }}</div>
+                @endif
                 <div><strong>Vendedor:</strong> {{ $user?->name ?? 'N/D' }}</div>
             </div>
         </div>
@@ -181,7 +186,7 @@
             </tr>
         </table>
         <div class="footer">
-            <p style="color:#b91c1c;"><strong>Esta proforma solo es válida por 8 días.</strong></p>
+            <p style="color:#b91c1c;"><strong>Esta proforma es válida por 7 días y únicamente con los precios y descuentos aquí detallados.</strong></p>
         </div>
     </div>
 </body>

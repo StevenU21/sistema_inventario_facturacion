@@ -195,9 +195,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Quotations (Admin)
     Route::prefix('admin/quotations')->name('admin.quotations.')->group(function () {
         Route::get('/', [QuotationController::class, 'index'])->name('index');
+        Route::get('/create', [QuotationController::class, 'create'])->name('create');
+        Route::post('/', [QuotationController::class, 'store'])->name('store');
         Route::get('/search', [QuotationController::class, 'search'])->name('search');
+        Route::get('/product-search', [QuotationController::class, 'productSearch'])->name('productSearch');
         Route::get('/export', [QuotationController::class, 'exportPdf'])->name('export');
         Route::get('/autocomplete', [QuotationController::class, 'autocomplete'])->name('autocomplete');
+        Route::get('/{quotation}/pdf', [QuotationController::class, 'pdf'])->name('pdf');
     });
 
     // Dashboard

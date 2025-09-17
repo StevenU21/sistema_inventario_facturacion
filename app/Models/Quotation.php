@@ -13,6 +13,7 @@ class Quotation extends Model
 
     protected $fillable = [
         'total',
+        'valid_until',
         'status',
         'user_id',
         'entity_id',
@@ -23,6 +24,7 @@ class Quotation extends Model
         return LogOptions::defaults()
             ->logOnly([
                 'total',
+                'valid_until',
                 'status',
                 'user_id',
                 'entity_id',
@@ -52,5 +54,10 @@ class Quotation extends Model
     public function QuotationDetails()
     {
         return $this->hasMany(QuotationDetail::class);
+    }
+
+    public function getIsExpiredAttribute(): bool
+    {
+        return $this->valid_until ? now()->startOfDay()->gt($this->valid_until) : false;
     }
 }

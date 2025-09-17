@@ -59,6 +59,11 @@
                         <p class="mt-1 text-white/80 text-sm">Lista y exporta tus cotizaciones.</p>
                     </div>
                     <div class="flex items-center gap-2">
+                        <a href="{{ route('admin.quotations.create') }}"
+                           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/90 hover:bg-white text-purple-700 text-sm font-medium transition">
+                            <i class="fas fa-plus"></i>
+                            Nueva cotización
+                        </a>
                         <form method="GET" action="{{ route('admin.quotations.export') }}">
                             <input type="hidden" name="search" value="{{ request('search') }}">
                             <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">

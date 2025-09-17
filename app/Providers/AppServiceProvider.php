@@ -10,6 +10,7 @@ use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\Quotation;
 use App\Models\Sale;
 use App\Models\Size;
 use App\Models\Tax;
@@ -30,6 +31,7 @@ use App\Policies\PaymentMethodPolicy;
 use App\Policies\PaymentPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\ProductVariantPolicy;
+use App\Policies\QuotationPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\SalePolicy;
 use App\Policies\SizePolicy;
@@ -94,5 +96,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Sale::class, SalePolicy::class);
         Gate::policy(Payment::class, PaymentPolicy::class);
         Gate::policy(AccountReceivable::class, AccountReceivablePolicy::class);
+        Gate::policy(Payment::class, PaymentPolicy::class);
+        Gate::policy(Quotation::class, QuotationPolicy::class);
     }
 }
