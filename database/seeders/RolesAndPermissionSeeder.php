@@ -36,6 +36,7 @@ class RolesAndPermissionSeeder extends Seeder
         'sales' => ['read', 'create', 'update'],
         'account_receivables' => ['read', 'create', 'update'],
         'payments' => ['read', 'create', 'update'],
+        'quotations' => ['read', 'create', 'update'],
     ];
 
     const SPECIAL_PERMISSIONS = [
@@ -52,6 +53,7 @@ class RolesAndPermissionSeeder extends Seeder
         'sales' => ['export sales', 'generate invoice'],
         'account_receivables' => ['export account_receivables'],
         'payments' => ['export payments'],
+        'quotations' => ['export quotations'],
     ];
 
     /**

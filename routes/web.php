@@ -26,6 +26,7 @@ use App\Http\Controllers\Cashier\SaleController;
 use App\Http\Controllers\Admin\SaleController as AdminSaleController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\AccountReceivableController as AdminAccountReceivableController;
+use App\Http\Controllers\Admin\QuotationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -188,8 +189,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/export', [AdminAccountReceivableController::class, 'export'])->name('export');
         Route::get('/{accountReceivable}', [AdminAccountReceivableController::class, 'show'])->name('show');
         Route::get('/{accountReceivable}/export-pdf', [AdminAccountReceivableController::class, 'exportPdf'])->name('exportPdf');
-        // Create payment for a specific account receivable
         Route::post('/{accountReceivable}/payments', [AdminAccountReceivableController::class, 'storePayment'])->name('payments.store');
+    });
+
+    // Quotations (Admin)
+    Route::prefix('admin/quotations')->name('admin.quotations.')->group(function () {
+        Route::get('/', [QuotationController::class, 'index'])->name('index');
+        Route::get('/search', [QuotationController::class, 'search'])->name('search');
+        Route::get('/export', [QuotationController::class, 'exportPdf'])->name('export');
+        Route::get('/autocomplete', [QuotationController::class, 'autocomplete'])->name('autocomplete');
     });
 
     // Dashboard
