@@ -365,7 +365,15 @@ class SaleController extends Controller
     // Construye la consulta con todos los filtros soportados
     private function buildSalesQuery(Request $request)
     {
-        $query = Sale::with(['entity', 'user', 'paymentMethod', 'saleDetails.productVariant.product.brand', 'saleDetails.productVariant.color', 'saleDetails.productVariant.size']);
+        $query = Sale::with([
+            'entity',
+            'user',
+            'paymentMethod',
+            'saleDetails.productVariant.product.brand',
+            'saleDetails.productVariant.product.tax',
+            'saleDetails.productVariant.color',
+            'saleDetails.productVariant.size',
+        ]);
 
         // Búsqueda por nombre de producto
         if ($search = $request->input('search')) {
