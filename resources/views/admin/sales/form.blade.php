@@ -52,7 +52,7 @@
                         class="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[40px] font-semibold w-full">
                         <i class="fas fa-search fa-sm mr-1"></i> Buscar
                     </button>
-                    <button type="button" @click="openClientModal()"
+                    <button type="button" @click="$dispatch('open-client-modal')"
                         class="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-green-600 hover:bg-green-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-green-500 min-h-[40px]">
                         <i class="fas fa-user-plus"></i> Nuevo
                     </button>
@@ -456,6 +456,10 @@
                             if (input) input.value = text;
                         }
                     });
+                    // Abrir modal desde botón en componente hijo
+                    window.addEventListener('open-client-modal', () => {
+                        this.openClientModal();
+                    });
                 },
                 openClientModal() {
                     this.clientErrors = {};
@@ -465,7 +469,6 @@
                         identity_card: '',
                         phone: '',
                         email: '',
-                        municipality_id: ''
                     };
                     this.isModalOpen = true;
                 },
@@ -489,8 +492,7 @@
                                 last_name: this.clientForm.last_name,
                                 identity_card: this.clientForm.identity_card,
                                 phone: this.clientForm.phone,
-                                email: this.clientForm.email || null,
-                                municipality_id: this.clientForm.municipality_id,
+                                email: this.clientForm.email || null
                             })
                         });
                         if (res.status === 201) {
