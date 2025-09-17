@@ -18,13 +18,23 @@ class PaymentsExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        $payments = $this->query->get();
+        // Eager load related models for performance
+        $payments = $this->query
+            ->with([
+                'user',
+                'entity',
+                'paymentMethod',
+                'accountReceivable.sale.saleDetails.productVariant.product',
+            ])
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->get();
 
         return $payments->map(function ($payment) {
             $client = $payment->entity?->short_name
                 ?: trim(($payment->entity->first_name ?? '') . ' ' . ($payment->entity->last_name ?? ''))
                 ?: '-';
-            $user = $payment->user?->short_name ?? ($payment->user?->name ?? '-');
+            $user = $payment->user?->short_name ?? ($payment->user?->full_name ?? '-');
             $product = $payment->accountReceivable?->sale?->saleDetails?->first()?->productVariant?->product?->name ?? '-';
             return [
                 'id' => $payment->id,
@@ -33,7 +43,7 @@ class PaymentsExport implements FromCollection, WithHeadings
                 'producto' => $product,
                 'metodo' => $payment->paymentMethod->name ?? '-',
                 'monto' => (float) ($payment->amount ?? 0),
-                'fecha' => $payment->payment_date ? \Illuminate\Support\Carbon::parse($payment->payment_date)->format('d/m/Y') : null,
+                'fecha' => $payment->formatted_created_at ?? null,
             ];
         });
     }

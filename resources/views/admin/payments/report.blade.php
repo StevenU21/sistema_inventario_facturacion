@@ -33,12 +33,12 @@
             @foreach($payments as $p)
                 <tr>
                     <td>{{ $p->id }}</td>
-                    <td>{{ $p->user?->name ?? '-' }}</td>
+                    <td>{{ $p->user?->short_name ?? $p->user?->full_name ?? '-' }}</td>
                     <td>{{ $p->entity?->short_name ?: trim(($p->entity->first_name ?? '') . ' ' . ($p->entity->last_name ?? '')) }}</td>
                     <td>{{ $p->accountReceivable?->sale?->saleDetails?->first()?->productVariant?->product?->name ?? '-' }}</td>
                     <td>{{ $p->paymentMethod->name ?? '-' }}</td>
                     <td>${{ number_format($p->amount, 2) }}</td>
-                    <td>{{ $p->payment_date ? \Carbon\Carbon::parse($p->payment_date)->format('d/m/Y') : '' }}</td>
+                    <td>{{ $p->created_at?->format('d/m/Y') }}</td>
                 </tr>
             @endforeach
         </tbody>

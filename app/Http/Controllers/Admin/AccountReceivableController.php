@@ -92,7 +92,16 @@ class AccountReceivableController extends Controller
             'company' => $company,
         ])->setPaper('letter');
 
-        return $pdf->download('cuenta_por_cobrar_' . $accountReceivable->id . '_' . now()->format('Ymd_His') . '.pdf');
+        // Build filename including client name
+        $clientName = trim(($accountReceivable->entity?->first_name ?? '') . ' ' . ($accountReceivable->entity?->last_name ?? ''));
+        $clientSlug = $clientName ? str_replace(' ', '_', $clientName) : 'cliente';
+        $filename = sprintf(
+            'cuenta_por_cobrar_%s_%d_%s.pdf',
+            $clientSlug,
+            $accountReceivable->id,
+            now()->format('Ymd_His')
+        );
+        return $pdf->download($filename);
     }
 
     // Endpoint para autocompletar en índices (cuentas por cobrar)

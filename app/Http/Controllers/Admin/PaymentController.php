@@ -51,7 +51,8 @@ class PaymentController extends Controller
     {
         $this->authorize('export', Payment::class);
         $query = $this->buildPaymentsQuery($request);
-        $payments = $query->orderByDesc('payment_date')->orderByDesc('id')->get();
+    // Order PDF export by creation date for consistency
+    $payments = $query->orderByDesc('created_at')->orderByDesc('id')->get();
         $company = Company::first();
 
         $pdf = Pdf::loadView('admin.payments.report', [
