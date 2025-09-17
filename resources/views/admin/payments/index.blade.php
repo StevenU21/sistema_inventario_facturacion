@@ -106,9 +106,8 @@
                     <div class="flex-1">
                         <label for="search"
                             class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
-                        <x-autocomplete name="search" :value="request('search')"
-                            url="{{ route('admin.payments.autocomplete') }}" placeholder="Nombre del cliente..."
-                            id="search" />
+                        <x-autocomplete name="search" :value="request('search')" url="{{ route('admin.payments.autocomplete') }}"
+                            placeholder="Nombre del cliente..." id="search" />
                     </div>
                     <div class="flex flex-row gap-2 items-end">
                         <button type="submit"
@@ -227,72 +226,37 @@
                         <tr
                             class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase border-b border-gray-200 dark:border-gray-700">
                             <th class="px-4 py-3">ID</th>
-                            <th class="px-4 py-3">Producto</th>
+                            <th class="px-4 py-3">Usuario</th>
                             <th class="px-4 py-3">Cliente</th>
+                            <th class="px-4 py-3">Producto</th>
                             <th class="px-4 py-3">Método de pago</th>
-                            <th class="px-4 py-3">Tipo de pago</th>
-                            <th class="px-4 py-3 text-right">Cantidad</th>
-                            <th class="px-4 py-3 text-right">Precio Unitario</th>
-                            <th class="px-4 py-3 text-right">Impuesto</th>
-                            <th class="px-4 py-3 text-right">Total</th>
-                            <th class="px-4 py-3">Acciones</th>
+                            <th class="px-4 py-3 text-right">Monto</th>
+                            <th class="px-4 py-3">Fecha</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
                         @forelse($payments as $p)
                             @php
-                                $sale = $p->accountReceivable?->sale;
-                                $firstDetail = $sale?->saleDetails->first();
-                                $firstProductName = optional($firstDetail?->productVariant?->product)->name;
                                 $client =
                                     $p->entity?->short_name ?:
                                     trim(($p->entity->first_name ?? '') . ' ' . ($p->entity->last_name ?? ''));
-                                $totalQty = $sale?->saleDetails->sum('quantity');
-                                $firstUnitPrice = $firstDetail?->unit_price;
-                                $taxAmount = $sale?->tax_amount ?? 0;
-                                $total = $sale?->total ?? 0;
+                                $saleId = $p->accountReceivable?->sale_id ?? $p->accountReceivable?->sale?->id;
+                                $fechaPago = $p->payment_date
+                                    ? \Carbon\Carbon::parse($p->payment_date)->format('d/m/Y')
+                                    : $p->formatted_created_at ?? null;
                             @endphp
                             <tr
                                 class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
-                                <td class="px-4 py-3 text-xs"><span
+                                <td class="px-4 py-3 text-xs">
+                                    <span
                                         class="px-2 py-1 font-semibold leading-tight text-white bg-purple-600 rounded-full dark:bg-purple-700">{{ $p->id }}</span>
                                 </td>
-                                <td class="px-4 py-3 text-sm">
-                                    @php
-                                        $firstDetail = $sale?->saleDetails->first();
-                                        $variant = $firstDetail?->productVariant;
-                                        $productName = $variant?->product?->name ?? '-';
-                                        $colorName = isset($variant) ? $colors[$variant->color_id] ?? '-' : '-';
-                                        $sizeName = isset($variant) ? $sizes[$variant->size_id] ?? '-' : '-';
-                                    @endphp
-                                    @if ($variant)
-                                        <span class="font-semibold">{{ $productName }}</span><br>
-                                        <span class="text-xs text-gray-500">{{ $colorName }} /
-                                            {{ $sizeName }}</span>
-                                    @else
-                                        -
-                                    @endif
-                                </td>
+                                <td class="px-4 py-3 text-sm">{{ $p->user->short_name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $client ?: '-' }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $p->accountReceivable?->sale?->saleDetails?->first()?->productVariant?->product?->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $p->paymentMethod->name ?? '-' }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $sale?->is_credit ? 'Crédito' : 'Contado' }}</td>
-                                <td class="px-4 py-3 text-sm text-right">{{ $totalQty > 0 ? $totalQty : '-' }}</td>
-                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($firstUnitPrice ?? 0, 2) }}
-                                </td>
-                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($taxAmount, 2) }}</td>
-                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($total, 2) }}</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2 text-sm">
-                                        <a href="#" title="Ver detalle"
-                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="#" title="PDF"
-                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </a>
-                                    </div>
-                                </td>
+                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($p->amount ?? 0, 2) }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $p->formatted_created_at ?? '-' }}</td>
                             </tr>
                         @empty
                             <tr>

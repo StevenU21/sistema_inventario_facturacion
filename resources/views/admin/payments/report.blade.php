@@ -21,24 +21,24 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Cliente</th>
-                <th>Venta</th>
-                <th>Método</th>
-                <th>Monto</th>
-                <th>Fecha Pago</th>
                 <th>Usuario</th>
+                <th>Cliente</th>
+                <th>Producto</th>
+                <th>Método de pago</th>
+                <th>Monto</th>
+                <th>Fecha</th>
             </tr>
         </thead>
         <tbody>
             @foreach($payments as $p)
                 <tr>
                     <td>{{ $p->id }}</td>
+                    <td>{{ $p->user?->name ?? '-' }}</td>
                     <td>{{ $p->entity?->short_name ?: trim(($p->entity->first_name ?? '') . ' ' . ($p->entity->last_name ?? '')) }}</td>
-                    <td>#{{ optional($p->accountReceivable?->sale)->id }}</td>
+                    <td>{{ $p->accountReceivable?->sale?->saleDetails?->first()?->productVariant?->product?->name ?? '-' }}</td>
                     <td>{{ $p->paymentMethod->name ?? '-' }}</td>
                     <td>${{ number_format($p->amount, 2) }}</td>
                     <td>{{ $p->payment_date ? \Carbon\Carbon::parse($p->payment_date)->format('d/m/Y') : '' }}</td>
-                    <td>{{ $p->user?->name ?? '-' }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -25,16 +25,15 @@ class PaymentsExport implements FromCollection, WithHeadings
                 ?: trim(($payment->entity->first_name ?? '') . ' ' . ($payment->entity->last_name ?? ''))
                 ?: '-';
             $user = $payment->user?->short_name ?? ($payment->user?->name ?? '-');
+            $product = $payment->accountReceivable?->sale?->saleDetails?->first()?->productVariant?->product?->name ?? '-';
             return [
                 'id' => $payment->id,
+                'usuario' => $user,
                 'cliente' => $client,
-                'venta_id' => optional($payment->accountReceivable?->sale)->id,
+                'producto' => $product,
                 'metodo' => $payment->paymentMethod->name ?? '-',
                 'monto' => (float) ($payment->amount ?? 0),
-                'fecha_pago' => $payment->payment_date ? \Illuminate\Support\Carbon::parse($payment->payment_date)->format('d/m/Y') : null,
-                'usuario' => $user,
-                'creado' => optional($payment->created_at)->format('d/m/Y H:i:s'),
-                'actualizado' => optional($payment->updated_at)->format('d/m/Y H:i:s'),
+                'fecha' => $payment->payment_date ? \Illuminate\Support\Carbon::parse($payment->payment_date)->format('d/m/Y') : null,
             ];
         });
     }
@@ -43,14 +42,12 @@ class PaymentsExport implements FromCollection, WithHeadings
     {
         return [
             'ID',
+            'Usuario',
             'Cliente',
-            'Venta ID',
+            'Producto',
             'Método de pago',
             'Monto',
-            'Fecha de pago',
-            'Usuario',
-            'Creado',
-            'Actualizado',
+            'Fecha',
         ];
     }
 }

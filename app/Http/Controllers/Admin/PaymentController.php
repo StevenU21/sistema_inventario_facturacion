@@ -112,8 +112,6 @@ class PaymentController extends Controller
             'paymentMethod',
             'user',
             'accountReceivable.sale.saleDetails.productVariant.product',
-            'accountReceivable.sale.saleDetails.productVariant.color',
-            'accountReceivable.sale.saleDetails.productVariant.size',
         ]);
 
         // Búsqueda general por cliente, ID de pago o ID de venta
