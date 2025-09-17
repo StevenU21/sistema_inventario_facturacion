@@ -12,6 +12,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class EntityController extends Controller
 {
@@ -40,7 +41,8 @@ class EntityController extends Controller
             $collation = 'utf8mb4_unicode_ci';
 
             $query->where(function ($q) use ($tokens, $driver, $collation) {
-                if (empty($tokens)) return;
+                if (empty($tokens))
+                    return;
                 foreach ($tokens as $token) {
                     $like = "%$token%";
                     $q->where(function ($sub) use ($like, $driver, $collation) {
@@ -200,5 +202,53 @@ class EntityController extends Controller
             $entity->save();
             return redirect()->route('entities.index')->with('success', 'Entidad habilitada correctamente.');
         }
+    }
+
+    /**
+     * Quick JSON endpoint to create a minimal client (for POS modal).
+     */
+    public function quickStore(Request $request)
+    {
+        $this->authorize('create', Entity::class);
+
+        $payload = $request->all();
+
+        $validator = Validator::make($payload, [
+            'first_name' => ['required', 'string', 'min:2', 'max:60'],
+            'last_name' => ['required', 'string', 'min:2', 'max:60'],
+            'identity_card' => ['required', 'string', 'max:30'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'email' => ['nullable', 'string', 'email', 'max:255'],
+        ], [], [
+            'first_name' => 'nombre',
+            'last_name' => 'apellido',
+            'identity_card' => 'cédula',
+            'phone' => 'teléfono',
+            'email' => 'correo electrónico',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validación fallida.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $data = $validator->validated();
+        // Defaults for a quick client
+        $data['ruc'] = $request->input('ruc');
+        $data['address'] = $request->input('address');
+        $data['description'] = $request->input('description');
+        $data['is_client'] = true;
+        $data['is_supplier'] = false;
+        $data['is_active'] = true;
+
+        $entity = Entity::create($data);
+        $text = trim(($entity->first_name ?? '') . ' ' . ($entity->last_name ?? ''));
+
+        return response()->json([
+            'id' => $entity->id,
+            'text' => $text,
+        ], 201);
     }
 }

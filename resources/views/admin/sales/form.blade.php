@@ -7,56 +7,37 @@
 
     <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3">Datos de la venta</h3>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Cliente</span>
-            <select name="entity_id" x-model="sale.entity_id"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('entity_id') ? 'border-red-600' : '' }}">
-                <option value="">Seleccionar cliente</option>
-                @foreach ($entities ?? [] as $id => $name)
-                    <option value="{{ $id }}" {{ old('entity_id') == $id ? 'selected' : '' }}>
-                        {{ $name }}</option>
-                @endforeach
-            </select>
-            @error('entity_id')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Método de pago</span>
-            <select name="payment_method_id" x-model="sale.payment_method_id"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('payment_method_id') ? 'border-red-600' : '' }}">
-                <option value="">Seleccionar método</option>
-                @foreach ($methods ?? [] as $id => $name)
-                    <option value="{{ $id }}" {{ old('payment_method_id') == $id ? 'selected' : '' }}>
-                        {{ $name }}</option>
-                @endforeach
-            </select>
-            @error('payment_method_id')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-    </div>
-
-    <div class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-        <div class="md:col-span-1">
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <div class="md:col-span-4 col-span-1">
             <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-200">Tipo de pago</span>
+                <span class="text-gray-700 dark:text-gray-200">Cliente</span>
+                <div class="flex gap-2 mt-1">
+                    <div class="flex-1">
+                        <x-autocomplete id="client_search" name="client_search" :value="old('client_search')"
+                            url="{{ route('entities.autocomplete') }}" placeholder="Nombre del cliente..."
+                            min="2" debounce="250" :submit="false" event="client-selected" />
+                    </div>
+                    <button type="button" @click="openClientModal()"
+                        class="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-green-600 hover:bg-green-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-green-500 min-h-[40px]">
+                        <i class="fas fa-user-plus"></i> Nuevo
+                    </button>
+                </div>
+                <!-- Hidden actual entity_id that will be submitted -->
+                <input type="hidden" name="entity_id" :value="sale.entity_id">
+                @error('entity_id')
+                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+                @enderror
             </label>
-            <div class="flex items-center gap-4 mt-1">
-                <label class="inline-flex items-center gap-2 text-sm">
-                    <input type="radio" name="is_credit" value="0" x-model="sale.is_credit"
-                        :checked="!sale.is_credit">
-                    <span>Contado</span>
-                </label>
-                <label class="inline-flex items-center gap-2 text-sm">
-                    <input type="radio" name="is_credit" value="1" x-model="sale.is_credit">
-                    <span>Crédito</span>
-                </label>
-            </div>
-            @error('is_credit')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
+        </div>
+        <div class="md:col-span-2 col-span-1">
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Crédito</span>
+                <select name="is_credit" x-model="sale.is_credit"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="0">Contado</option>
+                    <option value="1">Crédito</option>
+                </select>
+            </label>
         </div>
     </div>
 
@@ -306,7 +287,7 @@
         function saleForm() {
             return {
                 sale: {
-                    entity_id: @json(old('entity_id')),
+                    entity_id: Number(@json(old('entity_id'))) || '',
                     payment_method_id: @json(old('payment_method_id')),
                     is_credit: @json(old('is_credit', 0)) == 1,
                 },
@@ -315,6 +296,17 @@
                     tax: 0,
                     total: 0
                 },
+                // Client modal state
+                isModalOpen: false,
+                clientForm: {
+                    first_name: '',
+                    last_name: '',
+                    identity_card: '',
+                    phone: '',
+                    email: '',
+                    municipality_id: '',
+                },
+                clientErrors: {},
                 init() {
                     // Cargar items viejos si hubo validación
                     const oldItems = @json($oldItems);
@@ -357,12 +349,92 @@
                         }
                         // Validar que el almacén coincida
                         if (!this.sale.warehouse_id || (rowWarehouseId && this.sale.warehouse_id !==
-                            rowWarehouseId)) {
+                                rowWarehouseId)) {
                             alert('El producto pertenece a otro almacén. Seleccione el almacén correspondiente.');
                             return;
                         }
                         this.fetchInventory(variantId);
                     });
+                    // If an entity is already selected (old input), try to set the search box text
+                    this.$nextTick(() => {
+                        const input = document.querySelector('#client_search');
+                        if (input && !input.value && this.sale.entity_id) {
+                            // Best-effort: set to the option text from server-provided list (if exists)
+                            @if (!empty($entities))
+                                const opts = @json($entities);
+                                const name = opts[String(this.sale.entity_id)] || '';
+                                if (name) input.value = name;
+                            @endif
+                        }
+                    });
+                    // Cliente seleccionado desde autocomplete
+                    window.addEventListener('client-selected', (e) => {
+                        const id = e.detail?.item?.id ?? e.detail?.item?.value ?? null;
+                        const text = e.detail?.text ?? '';
+                        if (id) {
+                            this.sale.entity_id = Number(id);
+                            const input = document.querySelector('#client_search');
+                            if (input) input.value = text;
+                        }
+                    });
+                },
+                openClientModal() {
+                    this.clientErrors = {};
+                    this.clientForm = {
+                        first_name: '',
+                        last_name: '',
+                        identity_card: '',
+                        phone: '',
+                        email: '',
+                        municipality_id: ''
+                    };
+                    this.isModalOpen = true;
+                },
+                closeModal() {
+                    this.isModalOpen = false;
+                },
+                async saveClient() {
+                    this.clientErrors = {};
+                    try {
+                        const res = await fetch(@json(route('entities.quickStore')), {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                    'content')
+                            },
+                            body: JSON.stringify({
+                                first_name: this.clientForm.first_name,
+                                last_name: this.clientForm.last_name,
+                                identity_card: this.clientForm.identity_card,
+                                phone: this.clientForm.phone,
+                                email: this.clientForm.email || null,
+                                municipality_id: this.clientForm.municipality_id,
+                            })
+                        });
+                        if (res.status === 201) {
+                            const data = await res.json();
+                            this.sale.entity_id = data.id;
+                            // Reflect in the autocomplete input
+                            const input = document.querySelector('#client_search');
+                            if (input) input.value = data.text || '';
+                            this.isModalOpen = false;
+                            return;
+                        }
+                        if (res.status === 422) {
+                            const err = await res.json();
+                            this.clientErrors = err.errors || {};
+                            return;
+                        }
+                        const txt = await res.text();
+                        alert('No se pudo crear el cliente.');
+                        console.error('quickStore error', res.status, txt);
+                    } catch (e) {
+                        alert('Error de red al crear el cliente.');
+                        console.error(e);
+                    }
                 },
                 async fetchInventory(variantId) {
                     try {
@@ -536,6 +608,59 @@
             return Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;
         }
     </script>
+
     <!-- Enviar almacén seleccionado al backend -->
     <input type="hidden" name="warehouse_id" :value="sale.warehouse_id">
+
+    <!-- Modal: Nuevo cliente rápido -->
+    <x-modal maxWidth="xl" title="Nuevo cliente" description="Cree rápidamente un cliente con los datos mínimos">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label class="block text-sm">
+                <span class="text-gray-700 dark:text-gray-200">Nombre</span>
+                <input type="text" x-model="clientForm.first_name"
+                    class="mt-1 block w-full px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                <template x-if="clientErrors.first_name">
+                    <span class="text-xs text-red-600" x-text="clientErrors.first_name[0]"></span>
+                </template>
+            </label>
+            <label class="block text-sm">
+                <span class="text-gray-700 dark:text-gray-200">Apellido</span>
+                <input type="text" x-model="clientForm.last_name"
+                    class="mt-1 block w-full px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                <template x-if="clientErrors.last_name">
+                    <span class="text-xs text-red-600" x-text="clientErrors.last_name[0]"></span>
+                </template>
+            </label>
+            <label class="block text-sm">
+                <span class="text-gray-700 dark:text-gray-200">Cédula</span>
+                <input type="text" x-model="clientForm.identity_card"
+                    class="mt-1 block w-full px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                <template x-if="clientErrors.identity_card">
+                    <span class="text-xs text-red-600" x-text="clientErrors.identity_card[0]"></span>
+                </template>
+            </label>
+            <label class="block text-sm">
+                <span class="text-gray-700 dark:text-gray-200">Teléfono (opcional)</span>
+                <input type="text" x-model="clientForm.phone"
+                    class="mt-1 block w-full px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                    placeholder="85850000">
+                <template x-if="clientErrors.phone">
+                    <span class="text-xs text-red-600" x-text="clientErrors.phone[0]"></span>
+                </template>
+            </label>
+            <label class="block text-sm md:col-span-2">
+                <span class="text-gray-700 dark:text-gray-200">Correo (opcional)</span>
+                <input type="email" x-model="clientForm.email"
+                    class="mt-1 block w-full px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                <template x-if="clientErrors.email">
+                    <span class="text-xs text-red-600" x-text="clientErrors.email[0]"></span>
+                </template>
+            </label>
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+            <button type="button" @click="closeModal()" class="px-4 py-2 text-sm rounded border">Cancelar</button>
+            <button type="button" @click="saveClient()"
+                class="px-4 py-2 text-sm rounded bg-green-600 text-white">Guardar cliente</button>
+        </div>
+    </x-modal>
 </div>

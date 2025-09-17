@@ -18,6 +18,7 @@ use App\Models\ProductVariant;
 use App\Models\Warehouse;
 use App\Models\Category;
 use App\Models\Inventory;
+use App\Models\Municipality;
 use App\Services\SaleService;
 use App\Http\Requests\SaleRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -47,7 +48,8 @@ class SaleController extends Controller
         $suppliers = Entity::where('is_active', true)->where('is_supplier', true)
             ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
 
-        return view('admin.sales.create', compact('entities', 'methods', 'warehouses', 'categories', 'brands', 'colors', 'sizes', 'suppliers'));
+    $municipalities = Municipality::orderBy('name')->pluck('name', 'id');
+    return view('admin.sales.create', compact('entities', 'methods', 'warehouses', 'categories', 'brands', 'colors', 'sizes', 'suppliers', 'municipalities'));
     }
 
     // JSON: devuelve marcas filtradas por categoría

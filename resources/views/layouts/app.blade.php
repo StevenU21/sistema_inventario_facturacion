@@ -7,6 +7,7 @@
     <title>
         @yield('title') - {{ config('app.name') }}
     </title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Tailwind CSS via CDN (used for the loading screen utilities) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
