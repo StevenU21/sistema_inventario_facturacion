@@ -18,6 +18,18 @@ class Quotation extends Model
         'user_id',
         'entity_id',
     ];
+    /**
+     * The attributes that should be cast to native types.
+     */
+    protected $casts = [
+        'valid_until' => 'datetime',
+    ];
+    /**
+     * Date attributes for Carbon conversion.
+     */
+    protected $dates = [
+        'valid_until',
+    ];
 
     public function getActivitylogOptions(): LogOptions
     {

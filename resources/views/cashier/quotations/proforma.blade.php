@@ -132,11 +132,14 @@
             <div class="meta">
                 <div><strong>Proforma No.:</strong> {{ $quotation?->id ?? '' }}</div>
                 <div><strong>Fecha:</strong> {{ optional($quotation?->created_at)->format('d/m/Y H:i:s') }}</div>
-                @if (isset($quotation) && $quotation?->valid_until)
-                    <div><strong>Válida hasta:</strong> {{ optional($quotation->valid_until)->format('d/m/Y') }}</div>
-                @else
-                    <div><strong>Válida hasta:</strong> {{ optional($quotation?->created_at)->addDays(7)->format('d/m/Y') }}</div>
-                @endif
+                {{-- Válida hasta: usa valid_until o created_at +7 días --}}
+                <div><strong>Válida hasta:</strong>
+                    @if($quotation->valid_until)
+                        {{ $quotation->valid_until->format('d/m/Y') }}
+                    @else
+                        {{ $quotation->created_at->addDays(7)->format('d/m/Y') }}
+                    @endif
+                </div>
                 <div><strong>Vendedor:</strong> {{ $user?->short_name ?? 'N/D' }}</div>
             </div>
         </div>
@@ -200,6 +203,24 @@
         <div class="footer">
             <p style="color:#b91c1c;"><strong>Esta proforma es válida por 7 días y únicamente con los precios y
                     descuentos aquí detallados.</strong></p>
+        </div>
+        <!-- Condiciones Generales -->
+        <div class="legal" style="margin-top:20px; font-size:13px; color:#555;">
+            <h4 style="margin-bottom:8px;">Condiciones Generales</h4>
+            <ul style="list-style:disc; padding-left:20px;">
+                <li>Vigencia de 7 días.</li>
+                <li>Garantía para cada producto según especificaciones del fabricante.</li>
+                <li>Oferta a nombre de:
+                    {{ trim(($entity?->first_name ?? '') . ' ' . ($entity?->last_name ?? '')) ?: $entity?->short_name ?? '' }}.
+                </li>
+            </ul>
+        </div>
+        <!-- Firmas -->
+        <div class="signature" style="margin-top:30px; display:flex; justify-content:space-between;">
+            <div style="text-align:center;">
+                <p>______________________________</p>
+                <p>Firma del Vendedor<br>{{ $user?->name ?? ($user?->short_name ?? '') }}</p>
+            </div>
         </div>
     </div>
 </body>
