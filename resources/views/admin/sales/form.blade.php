@@ -290,7 +290,7 @@
                         <th class="px-3 py-2 text-right">Precio (sin imp)</th>
                         <th class="px-3 py-2 text-right">Stock</th>
                         <th class="px-3 py-2 text-right">Cantidad</th>
-                        <th class="px-3 py-2 text-right">Descuento</th>
+                        <th class="px-3 py-2 text-right">Descuento (%)</th>
                         <th class="px-3 py-2 text-right">Subtotal</th>
                         <th class="px-3 py-2"></th>
                     </tr>
@@ -329,12 +329,16 @@
                                         x-model="it.discount" @change="recalc(idx)">
                                     <span class="text-gray-700 dark:text-gray-200">Aplica</span>
                                 </label>
-                                <div class="mt-1">
-                                    <input type="number" min="0" step="0.01"
-                                        class="w-28 text-right px-2 py-1 border rounded"
-                                        :name="`items[${idx}][discount_amount]`" x-model.number="it.discount_amount"
-                                        :disabled="!it.discount" @input="recalc(idx)" />
+                                <div class="mt-1 flex items-center gap-2 justify-end">
+                                    <!-- Visible input: porcentaje -->
+                                    <input type="number" min="0" max="100" step="0.01"
+                                        class="w-24 text-right px-2 py-1 border rounded"
+                                        x-model.number="it.discount_pct" :disabled="!it.discount"
+                                        @input="recalc(idx)" placeholder="0-100" />
+                                    <span class="text-xs text-gray-500">%</span>
                                 </div>
+                                <!-- Hidden field sent to backend: monto absoluto -->
+                                <input type="hidden" :name="`items[${idx}][discount_amount]`" :value="it.discount_amount">
                             </td>
                             <td class="px-3 py-2 text-right tabular-nums text-gray-700 dark:text-gray-200">
                                 <span x-text="currency(it.sub_total)"></span>
@@ -348,6 +352,13 @@
                     </template>
                 </tbody>
                 <tfoot class="bg-gray-50 dark:bg-gray-800/50">
+                    <tr>
+                        <td class="px-3 py-2" colspan="4"></td>
+                        <td class="px-3 py-2 text-right font-semibold text-gray-700 dark:text-gray-200">Descuento</td>
+                        <td class="px-3 py-2 text-right tabular-nums text-gray-700 dark:text-gray-200"><span
+                                x-text="currency(totals.discount)"></span></td>
+                        <td></td>
+                    </tr>
                     <tr>
                         <td class="px-3 py-2" colspan="4"></td>
                         <td class="px-3 py-2 text-right font-semibold text-gray-700 dark:text-gray-200">Impuesto</td>
@@ -381,6 +392,7 @@
                 },
                 items: [],
                 totals: {
+                    discount: 0,
                     tax: 0,
                     total: 0
                 },
@@ -407,6 +419,17 @@
                             stock: Number(row.stock || 0),
                             quantity: Number(row.quantity || 1),
                             discount: !!row.discount,
+                            // porcentaje si venimos de validación (intentar inferir)
+                            discount_pct: (() => {
+                                const qty = Number(row.quantity || 1);
+                                const unit = Number(row.unit_price || row.sale_price || 0);
+                                const gross = unit * qty;
+                                const amt = Number(row.discount_amount || 0);
+                                if (gross > 0 && amt > 0) {
+                                    return Math.min(100, round2((amt / gross) * 100));
+                                }
+                                return Number(row.discount_pct || 0);
+                            })(),
                             discount_amount: Number(row.discount_amount || 0),
                             sub_total: Number(row.sub_total || 0),
                             tax_percentage: Number(row.tax_percentage || 0),
@@ -585,6 +608,7 @@
                             stock: Number(data.stock || 0),
                             quantity: 1,
                             discount: false,
+                            discount_pct: 0,
                             discount_amount: 0,
                             tax_percentage: Number(data.tax_percentage || 0),
                             tax_amount: 0,
@@ -611,8 +635,12 @@
                 recalcItem(it) {
                     const qty = Math.max(1, Number(it.quantity || 1));
                     const unit = Number(it.unit_price || 0); // base price without tax
-                    const disc = it.discount ? Math.max(0, Number(it.discount_amount || 0)) : 0;
-                    const base = Math.max(0, (unit * qty) - disc);
+                    const gross = Math.max(0, unit * qty);
+                    // discount as percentage 0-100 -> compute absolute amount for backend
+                    const pct = it.discount ? Math.min(100, Math.max(0, Number(it.discount_pct || 0))) : 0;
+                    it.discount_pct = pct;
+                    it.discount_amount = round2(gross * (pct / 100));
+                    const base = Math.max(0, gross - it.discount_amount);
                     const taxPct = Math.max(0, Number(it.tax_percentage || 0));
                     it.tax_amount = round2(base * (taxPct / 100));
                     it.sub_total = round2(base + it.tax_amount);
@@ -620,13 +648,16 @@
                 },
                 recalcAll() {
                     let total = 0,
-                        tax = 0;
+                        tax = 0,
+                        discount = 0;
                     this.items.forEach(it => {
                         total += Number(it.sub_total || 0);
                         tax += Number(it.tax_amount || 0);
+                        discount += (it.discount ? Number(it.discount_amount || 0) : 0);
                     });
                     this.totals.total = round2(total);
                     this.totals.tax = round2(tax);
+                    this.totals.discount = round2(discount);
                 },
                 remove(idx) {
                     this.items.splice(idx, 1);
