@@ -54,7 +54,7 @@
                     <div>
                         <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center">
                             <i class="fas fa-money-bill-wave text-white/90 mr-3"></i>
-                            Pagos a Cuentas por Cobrar
+                            Historial de Pagos a Cuentas por Cobrar
                         </h1>
                         <p class="mt-1 text-white/80 text-sm">Busca, filtra y exporta tus pagos.</p>
                     </div>
