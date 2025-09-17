@@ -60,7 +60,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <a href="{{ route('admin.quotations.create') }}"
-                           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/90 hover:bg-white text-purple-700 text-sm font-medium transition">
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/90 hover:bg-white text-purple-700 text-sm font-medium transition">
                             <i class="fas fa-plus"></i>
                             Nueva cotización
                         </a>
@@ -76,18 +76,37 @@
         <!-- Filtros -->
         <section class="mt-4 rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 sm:p-5">
             <form method="GET" action="{{ route('admin.quotations.search') }}"
-                class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3 items-end">
-                <div class="col-span-1 sm:col-span-3 lg:col-span-4">
-                    <label for="search"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
-                    <x-autocomplete name="search" :value="request('search')" url="{{ route('admin.quotations.autocomplete') }}"
-                        placeholder="Cliente..." id="search" />
+                class="grid grid-cols-1 sm:grid-cols-5 gap-3 items-end">
+                <div class="sm:col-span-5 flex flex-row gap-2 items-end">
+                    <div class="flex-1">
+                        <label for="search"
+                            class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
+                        <x-autocomplete name="search" :value="request('search')" url="{{ route('admin.quotations.autocomplete') }}"
+                            placeholder="Cliente..." id="search" />
+                    </div>
+                    <div class="flex flex-row gap-2 items-end">
+                        <button type="submit"
+                            class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white shadow">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                        @if (request('search') ||
+                                request('entity_id') ||
+                                request('per_page') ||
+                                request('from') ||
+                                request('to') ||
+                                request('status'))
+                            <a href="{{ route('admin.quotations.index') }}"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
+                                <i class="fas fa-undo"></i> Limpiar
+                            </a>
+                        @endif
+                    </div>
                 </div>
                 <div>
                     <label for="entity_id"
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Cliente</label>
                     <select name="entity_id" id="entity_id"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         onchange="this.form.submit()">
                         <option value="">Todos</option>
                         @isset($entities)
@@ -102,7 +121,7 @@
                     <label for="per_page"
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Mostrar</label>
                     <select name="per_page" id="per_page"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         onchange="this.form.submit()">
                         <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
                         <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
@@ -115,24 +134,25 @@
                     <label for="from"
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Desde</label>
                     <input type="date" name="from" id="from" value="{{ request('from') }}"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         onchange="this.form.submit()" />
                 </div>
                 <div>
                     <label for="to"
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Hasta</label>
                     <input type="date" name="to" id="to" value="{{ request('to') }}"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         onchange="this.form.submit()" />
                 </div>
                 <div>
                     <label for="status"
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Estado</label>
                     <select name="status" id="status"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         onchange="this.form.submit()">
                         <option value="">Todos</option>
-                        <option value="pending" {{ request('status', $status ?? 'pending') == 'pending' ? 'selected' : '' }}>Pendiente</option>
+                        <option value="pending"
+                            {{ request('status', $status ?? 'pending') == 'pending' ? 'selected' : '' }}>Pendiente</option>
                         <option value="accepted" {{ request('status') == 'accepted' ? 'selected' : '' }}>Aceptada</option>
                         <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>Cancelada</option>
                     </select>
@@ -162,7 +182,7 @@
                                 class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
                                 <td class="px-4 py-3 text-xs">
                                     <span
-                                        class="px-2 py-1 font-semibold text-white bg-green-600 rounded-full dark:bg-green-700">{{ $quotation->id }}</span>
+                                        class="px-2 py-1 font-semibold text-white bg-purple-600 rounded-full dark:bg-purple-700">{{ $quotation->id }}</span>
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ trim(($quotation->entity?->first_name ?? '') . ' ' . ($quotation->entity?->last_name ?? '')) ?: '-' }}
@@ -182,29 +202,30 @@
                                 <td class="px-4 py-3 text-sm space-x-2">
                                     <!-- Download Proforma PDF -->
                                     <a href="{{ route('admin.quotations.pdf', $quotation) }}" target="_blank"
-                                       class="text-indigo-600 hover:text-indigo-900"
-                                       title="Descargar Proforma">
+                                       class="inline-flex items-center justify-center h-9 px-3 text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg focus:outline-none gap-2"
+                                       title="Proforma">
                                         <i class="fas fa-file-pdf"></i>
+                                        <span class="hidden sm:inline">Proforma</span>
                                     </a>
-                                    @if($quotation->status === 'pending')
+                                    @if ($quotation->status === 'pending')
                                         <!-- Accept -->
-                                        <form action="{{ route('admin.quotations.accept', $quotation) }}" method="POST"
-                                              class="inline">
+                                        <form action="{{ route('admin.quotations.accept', $quotation) }}" method="POST" class="inline">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="text-green-600 hover:text-green-800"
-                                                    title="Aceptar Proforma">
+                                            <button type="submit" title="Aceptar"
+                                                class="inline-flex items-center justify-center h-9 px-3 text-white bg-green-600 hover:bg-green-700 rounded-lg focus:outline-none gap-2">
                                                 <i class="fas fa-check"></i>
+                                                <span class="hidden sm:inline">Aceptar</span>
                                             </button>
                                         </form>
                                         <!-- Cancel -->
-                                        <form action="{{ route('admin.quotations.cancel', $quotation) }}" method="POST"
-                                              class="inline">
+                                        <form action="{{ route('admin.quotations.cancel', $quotation) }}" method="POST" class="inline">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="text-red-600 hover:text-red-800"
-                                                    title="Cancelar Proforma">
+                                            <button type="submit" title="Cancelar"
+                                                class="inline-flex items-center justify-center h-9 px-3 text-white bg-red-600 hover:bg-red-700 rounded-lg focus:outline-none gap-2">
                                                 <i class="fas fa-times"></i>
+                                                <span class="hidden sm:inline">Cancelar</span>
                                             </button>
                                         </form>
                                     @endif
