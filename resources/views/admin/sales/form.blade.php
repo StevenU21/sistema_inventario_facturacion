@@ -77,18 +77,25 @@
                         </tr>
                     </template>
                     <template x-for="row in results" :key="row.id">
-                        <tr>
+                        <tr :class="isSelected(row.id) ? 'bg-purple-50 dark:bg-purple-900/30' : ''">
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.name"></td>
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.identity_card || '-' ">
                             </td>
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.phone || '-' "></td>
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.email || '-' "></td>
                             <td class="px-3 py-2">
-                                <button type="button"
-                                    @click="$dispatch('client-selected', { item: { id: row.id }, text: row.name })"
-                                    class="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-md bg-purple-600 hover:bg-purple-700 text-white">
-                                    <i class="fas fa-check"></i> Usar
-                                </button>
+                                <template x-if="!isSelected(row.id)">
+                                    <button type="button"
+                                        @click="selectedId = row.id; $dispatch('client-selected', { item: { id: row.id }, text: row.name })"
+                                        class="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-md bg-purple-600 hover:bg-purple-700 text-white">
+                                        <i class="fas fa-check"></i> Usar
+                                    </button>
+                                </template>
+                                <template x-if="isSelected(row.id)">
+                                    <span class="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-md bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200">
+                                        <i class="fas fa-check-circle"></i> Seleccionado
+                                    </span>
+                                </template>
                             </td>
                         </tr>
                     </template>
@@ -445,6 +452,10 @@
                                 if (name) input.value = name;
                             @endif
                         }
+                        // Notificar selección inicial al buscador de clientes
+                        if (this.sale.entity_id) {
+                            window.dispatchEvent(new CustomEvent('selected-entity', { detail: this.sale.entity_id }));
+                        }
                     });
                     // Cliente seleccionado desde autocomplete
                     window.addEventListener('client-selected', (e) => {
@@ -454,6 +465,8 @@
                             this.sale.entity_id = Number(id);
                             const input = document.querySelector('#client_search');
                             if (input) input.value = text;
+                            // Propagar selección para resaltar en la tabla
+                            window.dispatchEvent(new CustomEvent('selected-entity', { detail: this.sale.entity_id }));
                         }
                     });
                     // Abrir modal desde botón en componente hijo
@@ -501,6 +514,8 @@
                             // Reflect in the autocomplete input
                             const input = document.querySelector('#client_search');
                             if (input) input.value = data.text || '';
+                            // Notificar selección para resaltar en tabla
+                            window.dispatchEvent(new CustomEvent('selected-entity', { detail: this.sale.entity_id }));
                             this.isModalOpen = false;
                             return;
                         }
@@ -689,6 +704,7 @@
             return {
                 q: '',
                 results: [],
+                selectedId: null,
                 meta: {
                     current_page: 1,
                     last_page: 1,
@@ -701,6 +717,13 @@
                         this.q = e.detail?.text || '';
                         this.search(1);
                     });
+                    // Mantener sincronizado el cliente seleccionado
+                    window.addEventListener('selected-entity', (e) => {
+                        this.selectedId = Number(e.detail) || null;
+                    });
+                },
+                isSelected(id) {
+                    return Number(this.selectedId) === Number(id);
                 },
                 async search(page = 1) {
                     this.loading = true;

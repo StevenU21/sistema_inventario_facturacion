@@ -13,10 +13,10 @@ return new class extends Migration {
         Schema::create('entities', function (Blueprint $table) {
             $table->increments('id');
             $table->string('first_name');
-            $table->string('last_name');
-            $table->string('identity_card');
+            $table->string('last_name')->nullable();
+            $table->string('identity_card')->nullable();
             $table->string('ruc')->nullable();
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->string('description')->nullable();
@@ -24,7 +24,7 @@ return new class extends Migration {
             $table->boolean('is_supplier')->default(false);
             $table->boolean('is_active')->default(true);
 
-            $table->integer('municipality_id')->unsigned();
+            $table->integer('municipality_id')->unsigned()->nullable();
             $table->foreign('municipality_id')->references('id')->on('municipalities')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });

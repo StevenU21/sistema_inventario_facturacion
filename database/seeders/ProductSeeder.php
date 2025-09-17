@@ -26,7 +26,7 @@ class ProductSeeder extends Seeder
                 'image' => null,
                 'status' => 'available',
                 'brand_id' => 2, // Nike
-                'tax_id' => 1, // IVA
+                'tax_id' => 2, // Exento
                 'unit_measure_id' => 1, // Unidad
                 'entity_id' => 2, // Cliente ejemplo
             ],
