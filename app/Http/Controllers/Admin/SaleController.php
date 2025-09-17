@@ -29,7 +29,6 @@ class SaleController extends Controller
 {
     use AuthorizesRequests;
 
-    // Show create sale form (Admin)
     public function create()
     {
         $this->authorize('create', Sale::class);
@@ -43,11 +42,13 @@ class SaleController extends Controller
         $brands = Brand::pluck('name', 'id');
         $colors = Color::pluck('name', 'id');
         $sizes = Size::pluck('name', 'id');
+        // Proveedores (para filtro de productos)
+        $suppliers = Entity::where('is_active', true)->where('is_supplier', true)
+            ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
 
-        return view('admin.sales.create', compact('entities', 'methods', 'warehouses', 'categories', 'brands', 'colors', 'sizes'));
+        return view('admin.sales.create', compact('entities', 'methods', 'warehouses', 'categories', 'brands', 'colors', 'sizes', 'suppliers'));
     }
 
-    // Persist new sale using SaleService
     public function store(SaleRequest $request, SaleService $saleService)
     {
         $this->authorize('create', Sale::class);
@@ -64,7 +65,6 @@ class SaleController extends Controller
         }
     }
 
-    // JSON: obtener información de inventario para una variante en un almacén
     public function inventory(Request $request)
     {
         $this->authorize('create', Sale::class);
@@ -93,9 +93,15 @@ class SaleController extends Controller
         $unitPriceWithTax = round($salePrice + $unitTaxAmount, 2);
 
         $label = $product?->name ?? ('Variante #' . $variantId);
-        if ($variant?->name) { $label .= ' / ' . $variant->name; }
-        if ($variant?->color) { $label .= ' / ' . $variant->color->name; }
-        if ($variant?->size) { $label .= ' / ' . $variant->size->name; }
+        if ($variant?->name) {
+            $label .= ' / ' . $variant->name;
+        }
+        if ($variant?->color) {
+            $label .= ' / ' . $variant->color->name;
+        }
+        if ($variant?->size) {
+            $label .= ' / ' . $variant->size->name;
+        }
 
         return response()->json([
             'product_variant_id' => $variantId,
@@ -106,6 +112,92 @@ class SaleController extends Controller
             'unit_tax_amount' => $unitTaxAmount,
             'unit_price_with_tax' => $unitPriceWithTax,
             'label' => $label,
+        ]);
+    }
+
+    // JSON: búsqueda de productos/variantes con filtros y por almacén (via inventarios)
+    public function productSearch(Request $request)
+    {
+        $this->authorize('create', Sale::class);
+
+        $q = $request->string('q')->toString();
+        $categoryId = $request->input('category_id');
+        $brandId = $request->input('brand_id');
+        $colorId = $request->input('color_id');
+        $sizeId = $request->input('size_id');
+        $supplierId = $request->input('entity_id'); // proveedor
+        $warehouseId = $request->input('warehouse_id');
+        $perPage = (int) $request->input('per_page', 10);
+
+        $query = ProductVariant::query()
+            ->with(['product.brand', 'product.category'])
+            ->whereHas('product', function ($q2) {
+                $q2->where('status', 'available');
+            });
+
+        if (!empty($categoryId)) {
+            $query->whereHas('product', function ($sp) use ($categoryId) {
+                $sp->where('category_id', $categoryId);
+            });
+        }
+        if (!empty($brandId)) {
+            $query->whereHas('product', function ($sp) use ($brandId) {
+                $sp->where('brand_id', $brandId);
+            });
+        }
+        if (!empty($supplierId)) {
+            $query->whereHas('product', function ($sp) use ($supplierId) {
+                $sp->where('entity_id', $supplierId);
+            });
+        }
+        if (!empty($colorId)) {
+            $query->where('color_id', $colorId);
+        }
+        if (!empty($sizeId)) {
+            $query->where('size_id', $sizeId);
+        }
+
+        if (!empty($q)) {
+            $query->whereHas('product', function ($sp) use ($q) {
+                $sp->where('name', 'like', "%{$q}%");
+            });
+        }
+
+        if (!empty($warehouseId)) {
+            $query->whereHas('inventories', function ($iq) use ($warehouseId) {
+                $iq->where('warehouse_id', $warehouseId);
+            });
+        }
+
+        $variants = $query->latest()->paginate($perPage);
+
+        $colors = Color::whereIn('id', $variants->pluck('color_id')->filter()->unique()->values())
+            ->pluck('name', 'id');
+        $sizes = Size::whereIn('id', $variants->pluck('size_id')->filter()->unique()->values())
+            ->pluck('name', 'id');
+
+        $data = $variants->getCollection()->map(function ($v) use ($colors, $sizes) {
+            return [
+                'id' => $v->id,
+                'product_id' => $v->product_id,
+                'product_name' => optional($v->product)->name,
+                'color_id' => $v->color_id,
+                'color_name' => $v->color_id ? ($colors[$v->color_id] ?? null) : null,
+                'size_id' => $v->size_id,
+                'size_name' => $v->size_id ? ($sizes[$v->size_id] ?? null) : null,
+                'category_name' => optional($v->product?->category)->name,
+                'brand_name' => optional($v->product?->brand)->name,
+            ];
+        })->values();
+
+        return response()->json([
+            'data' => $data,
+            'meta' => [
+                'current_page' => $variants->currentPage(),
+                'last_page' => $variants->lastPage(),
+                'per_page' => $variants->perPage(),
+                'total' => $variants->total(),
+            ],
         ]);
     }
 

@@ -13,24 +13,12 @@
             <select name="entity_id" x-model="sale.entity_id"
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('entity_id') ? 'border-red-600' : '' }}">
                 <option value="">Seleccionar cliente</option>
-                @foreach (($entities ?? []) as $id => $name)
-                    <option value="{{ $id }}" {{ old('entity_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                @foreach ($entities ?? [] as $id => $name)
+                    <option value="{{ $id }}" {{ old('entity_id') == $id ? 'selected' : '' }}>
+                        {{ $name }}</option>
                 @endforeach
             </select>
             @error('entity_id')
-                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-            @enderror
-        </label>
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Almacén</span>
-            <select name="warehouse_id" x-model.number="sale.warehouse_id"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('warehouse_id') ? 'border-red-600' : '' }}">
-                <option value="">Seleccionar almacén</option>
-                @foreach (($warehouses ?? []) as $id => $name)
-                    <option value="{{ $id }}" {{ old('warehouse_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                @endforeach
-            </select>
-            @error('warehouse_id')
                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
             @enderror
         </label>
@@ -39,18 +27,14 @@
             <select name="payment_method_id" x-model="sale.payment_method_id"
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 {{ $errors->has('payment_method_id') ? 'border-red-600' : '' }}">
                 <option value="">Seleccionar método</option>
-                @foreach (($methods ?? []) as $id => $name)
-                    <option value="{{ $id }}" {{ old('payment_method_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                @foreach ($methods ?? [] as $id => $name)
+                    <option value="{{ $id }}" {{ old('payment_method_id') == $id ? 'selected' : '' }}>
+                        {{ $name }}</option>
                 @endforeach
             </select>
             @error('payment_method_id')
                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
             @enderror
-        </label>
-        <label class="block text-sm w-full">
-            <span class="text-gray-700 dark:text-gray-200">Fecha</span>
-            <input type="date" name="sale_date" value="{{ old('sale_date', now()->toDateString()) }}"
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700" />
         </label>
     </div>
 
@@ -61,7 +45,8 @@
             </label>
             <div class="flex items-center gap-4 mt-1">
                 <label class="inline-flex items-center gap-2 text-sm">
-                    <input type="radio" name="is_credit" value="0" x-model="sale.is_credit" :checked="!sale.is_credit">
+                    <input type="radio" name="is_credit" value="0" x-model="sale.is_credit"
+                        :checked="!sale.is_credit">
                     <span>Contado</span>
                 </label>
                 <label class="inline-flex items-center gap-2 text-sm">
@@ -79,37 +64,85 @@
 
     <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3">Agregar productos</h3>
 
-    <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4" x-data="variantSearch()" x-init="init()">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
-            <label class="block text-sm w-full md:col-span-2">
-                <span class="text-gray-700 dark:text-gray-200">Buscar producto/variante</span>
-                <x-autocomplete name="variant_search" id="variant_search" url="{{ route('inventories.variantSearch') }}"
-                    placeholder="Nombre del producto..." min="2" debounce="250" submit="0" event="variant-search" />
+    <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4" x-data="variantSearch()"
+        x-init="init()">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+            <div class="md:col-span-9 col-span-1 flex flex-col">
+                <label class="block text-sm w-full">
+                    <span class="text-gray-700 dark:text-gray-200">Buscar producto/variante</span>
+                    <x-autocomplete name="variant_search" id="variant_search"
+                        url="{{ route('inventories.variantSearch') }}" placeholder="Nombre del producto..." min="2"
+                        debounce="250" submit="0" event="variant-search" />
+                </label>
+            </div>
+            <div class="md:col-span-3 col-span-1 flex items-end">
+                <button type="button" @click="search(1)"
+                    class="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[40px] font-semibold w-50">
+                    <i class="fas fa-search fa-sm mr-1"></i> Buscar
+                </button>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-3 mt-3">
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Proveedor</span>
+                <select x-model="filters.entity_id"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">Todos</option>
+                    @foreach ($suppliers ?? [] as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Color</span>
+                <select x-model="filters.color_id"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">Todos</option>
+                    @foreach ($colors ?? [] as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Talla</span>
+                <select x-model="filters.size_id"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">Todas</option>
+                    @foreach ($sizes ?? [] as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Almacén</span>
+                <select x-model="filters.warehouse_id" @change="$dispatch('warehouse-changed', $event.target.value)"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">Seleccione</option>
+                    @foreach ($warehouses ?? [] as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Categoría</span>
-                <select x-model="filters.category_id" class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                <select x-model="filters.category_id"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Todas</option>
-                    @foreach (($categories ?? []) as $id => $name)
+                    @foreach ($categories ?? [] as $id => $name)
                         <option value="{{ $id }}">{{ $name }}</option>
                     @endforeach
                 </select>
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Marca</span>
-                <select x-model="filters.brand_id" class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                <select x-model="filters.brand_id"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Todas</option>
-                    @foreach (($brands ?? []) as $id => $name)
+                    @foreach ($brands ?? [] as $id => $name)
                         <option value="{{ $id }}">{{ $name }}</option>
                     @endforeach
                 </select>
             </label>
-            <div class="flex items-end">
-                <button type="button" @click="search(1)"
-                    class="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[40px] font-semibold w-full">
-                    <i class="fas fa-search fa-sm mr-1"></i> Buscar
-                </button>
-            </div>
         </div>
         <div class="mt-3 overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
@@ -130,10 +163,13 @@
                     </template>
                     <template x-for="row in results" :key="row.id">
                         <tr>
-                            <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.product_name"></td>
-                            <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.color_name || '-' "></td>
-                            <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.size_name || '-' "></td>
-                            <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.brand_name || '-' "></td>
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.product_name"></td>
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.color_name || '-' ">
+                            </td>
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.size_name || '-' ">
+                            </td>
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.brand_name || '-' ">
+                            </td>
                             <td class="px-3 py-2">
                                 <button type="button" @click="$dispatch('add-item', { id: row.id })"
                                     class="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-md bg-purple-600 hover:bg-purple-700 text-white">
@@ -170,39 +206,45 @@
                 <tbody>
                     <template x-if="items.length === 0">
                         <tr>
-                            <td colspan="7" class="px-3 py-6 text-center text-gray-500">No hay productos en la venta.</td>
+                            <td colspan="7" class="px-3 py-6 text-center text-gray-500">No hay productos en la
+                                venta.</td>
                         </tr>
                     </template>
                     <template x-for="(it, idx) in items" :key="it.key">
                         <tr class="align-top">
-                            <td class="px-3 py-2">
-                                <div class="font-medium text-gray-900 dark:text-gray-100" x-text="it.label"></div>
-                                <input type="hidden" :name="`items[${idx}][product_variant_id]`" :value="it.product_variant_id">
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-200">
+                                <div class="font-medium text-gray-700 dark:text-gray-200" x-text="it.label"></div>
+                                <input type="hidden" :name="`items[${idx}][product_variant_id]`"
+                                    :value="it.product_variant_id">
                             </td>
-                            <td class="px-3 py-2 text-right tabular-nums">
+                            <td class="px-3 py-2 text-right tabular-nums text-gray-700 dark:text-gray-200">
                                 <span x-text="currency(it.unit_price)"></span>
                             </td>
-                            <td class="px-3 py-2 text-right tabular-nums">
+                            <td class="px-3 py-2 text-right tabular-nums text-gray-700 dark:text-gray-200">
                                 <span x-text="it.stock"></span>
                             </td>
                             <td class="px-3 py-2 text-right">
-                                <input type="number" min="1" step="1" class="w-24 text-right px-2 py-1 border rounded"
-                                    :name="`items[${idx}][quantity]`" x-model.number="it.quantity" @input="recalc(idx)"/>
+                                <input type="number" min="1" step="1"
+                                    class="w-24 text-right px-2 py-1 border rounded" :name="`items[${idx}][quantity]`"
+                                    x-model.number="it.quantity" @input="recalc(idx)" />
                                 @error('items.*.quantity')
                                     <div class="text-xs text-red-600 dark:text-red-400">{{ $message }}</div>
                                 @enderror
                             </td>
                             <td class="px-3 py-2 text-right">
                                 <label class="inline-flex items-center gap-2 text-xs">
-                                    <input type="checkbox" :name="`items[${idx}][discount]`" value="1" x-model="it.discount" @change="recalc(idx)">
+                                    <input type="checkbox" :name="`items[${idx}][discount]`" value="1"
+                                        x-model="it.discount" @change="recalc(idx)">
                                     <span>Aplica</span>
                                 </label>
                                 <div class="mt-1">
-                                    <input type="number" min="0" step="0.01" class="w-28 text-right px-2 py-1 border rounded"
-                                        :name="`items[${idx}][discount_amount]`" x-model.number="it.discount_amount" :disabled="!it.discount" @input="recalc(idx)" />
+                                    <input type="number" min="0" step="0.01"
+                                        class="w-28 text-right px-2 py-1 border rounded"
+                                        :name="`items[${idx}][discount_amount]`" x-model.number="it.discount_amount"
+                                        :disabled="!it.discount" @input="recalc(idx)" />
                                 </div>
                             </td>
-                            <td class="px-3 py-2 text-right tabular-nums">
+                            <td class="px-3 py-2 text-right tabular-nums text-gray-700 dark:text-gray-200">
                                 <span x-text="currency(it.sub_total)"></span>
                             </td>
                             <td class="px-3 py-2 text-right">
@@ -216,14 +258,16 @@
                 <tfoot class="bg-gray-50 dark:bg-gray-800/50">
                     <tr>
                         <td class="px-3 py-2" colspan="4"></td>
-                        <td class="px-3 py-2 text-right font-semibold">Impuesto</td>
-                        <td class="px-3 py-2 text-right tabular-nums"><span x-text="currency(totals.tax)"></span></td>
+                        <td class="px-3 py-2 text-right font-semibold text-gray-700 dark:text-gray-200">Impuesto</td>
+                        <td class="px-3 py-2 text-right tabular-nums text-gray-700 dark:text-gray-200"><span
+                                x-text="currency(totals.tax)"></span></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td class="px-3 py-2" colspan="4"></td>
-                        <td class="px-3 py-2 text-right font-bold">Total</td>
-                        <td class="px-3 py-2 text-right tabular-nums font-bold"><span x-text="currency(totals.total)"></span></td>
+                        <td class="px-3 py-2 text-right font-bold text-gray-700 dark:text-gray-200">Total</td>
+                        <td class="px-3 py-2 text-right tabular-nums font-bold text-gray-700 dark:text-gray-200"><span
+                                x-text="currency(totals.total)"></span></td>
                         <td></td>
                     </tr>
                 </tfoot>
@@ -240,12 +284,14 @@
             return {
                 sale: {
                     entity_id: @json(old('entity_id')),
-                    warehouse_id: Number(@json(old('warehouse_id'))) || null,
                     payment_method_id: @json(old('payment_method_id')),
                     is_credit: @json(old('is_credit', 0)) == 1,
                 },
                 items: [],
-                totals: { tax: 0, total: 0 },
+                totals: {
+                    tax: 0,
+                    total: 0
+                },
                 init() {
                     // Cargar items viejos si hubo validación
                     const oldItems = @json($oldItems);
@@ -263,6 +309,17 @@
                         }));
                         this.recalcAll();
                     }
+                    // Sincronizar almacén seleccionado desde el buscador
+                    this.sale.warehouse_id = Number(@json(old('warehouse_id'))) || null;
+                    window.addEventListener('warehouse-changed', (e) => {
+                        this.sale.warehouse_id = Number(e.detail) || null;
+                    });
+                    // Inicializar valor en el buscador (si venimos de validación)
+                    if (this.sale.warehouse_id) {
+                        window.dispatchEvent(new CustomEvent('set-warehouse', {
+                            detail: this.sale.warehouse_id
+                        }));
+                    }
                     // Escuchar evento para agregar variante
                     window.addEventListener('add-item', (e) => {
                         const variantId = Number(e.detail?.id || 0);
@@ -278,7 +335,11 @@
                         const url = new URL(@json(route('admin.sales.inventory')));
                         url.searchParams.set('product_variant_id', variantId);
                         url.searchParams.set('warehouse_id', this.sale.warehouse_id);
-                        const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+                        const res = await fetch(url.toString(), {
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
                         if (!res.ok) {
                             const j = await res.json().catch(() => ({}));
                             throw new Error(j.message || 'No se pudo obtener el inventario');
@@ -319,7 +380,8 @@
                     this.recalcAll();
                 },
                 recalcAll() {
-                    let total = 0, tax = 0;
+                    let total = 0,
+                        tax = 0;
                     this.items.forEach(it => {
                         total += Number(it.sub_total || 0);
                         // No tenemos porcentaje preciso por línea en el cliente; solo aproximamos si se conoce por fetch
@@ -332,12 +394,23 @@
                     this.items.splice(idx, 1);
                     this.recalcAll();
                 },
-                currency(v) { return 'C$ ' + Number(v || 0).toFixed(2); },
+                currency(v) {
+                    return 'C$ ' + Number(v || 0).toFixed(2);
+                },
             }
         }
+
         function variantSearch() {
             return {
-                filters: { q: '', category_id: '', brand_id: '' },
+                filters: {
+                    q: '',
+                    entity_id: '',
+                    category_id: '',
+                    brand_id: '',
+                    color_id: '',
+                    size_id: '',
+                    warehouse_id: Number(@json(old('warehouse_id'))) || ''
+                },
                 results: [],
                 loading: false,
                 init() {
@@ -345,14 +418,24 @@
                         this.filters.q = e.detail?.text || '';
                         this.search(1);
                     });
+                    // Recibir almacén inicial desde el padre
+                    window.addEventListener('set-warehouse', (e) => {
+                        this.filters.warehouse_id = Number(e.detail) || '';
+                    });
                 },
                 async search(page = 1) {
                     this.loading = true;
                     try {
-                        const url = new URL(@json(route('inventories.variantSearch')));
-                        Object.entries(this.filters).forEach(([k, v]) => { if (v) url.searchParams.set(k, v); });
+                        const url = new URL(@json(route('admin.sales.productSearch')));
+                        Object.entries(this.filters).forEach(([k, v]) => {
+                            if (v) url.searchParams.set(k, v);
+                        });
                         url.searchParams.set('page', page);
-                        const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+                        const res = await fetch(url.toString(), {
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
                         const data = await res.json();
                         this.results = Array.isArray(data) ? data : (data.data || []);
                     } catch (e) {
@@ -363,6 +446,11 @@
                 }
             }
         }
-        function round2(n) { return Math.round((Number(n||0) + Number.EPSILON) * 100) / 100; }
+
+        function round2(n) {
+            return Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;
+        }
     </script>
+    <!-- Enviar almacén seleccionado al backend -->
+    <input type="hidden" name="warehouse_id" :value="sale.warehouse_id">
 </div>

@@ -156,6 +156,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [AdminSaleController::class, 'store'])->name('store');
         // Inventory info for POS create form
         Route::get('/inventory', [AdminSaleController::class, 'inventory'])->name('inventory');
+    // Product search with extended filters for admin sales create
+    Route::get('/product-search', [AdminSaleController::class, 'productSearch'])->name('productSearch');
         Route::get('/', [AdminSaleController::class, 'index'])->name('index');
         Route::get('/search', [AdminSaleController::class, 'search'])->name('search');
         Route::get('/export', [AdminSaleController::class, 'export'])->name('export');
