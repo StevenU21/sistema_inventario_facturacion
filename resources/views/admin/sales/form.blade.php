@@ -10,14 +10,19 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <label class="block text-sm">
             <span class="text-gray-700 dark:text-gray-200">Método de pago</span>
-            <select name="payment_method_id" x-model="sale.payment_method_id" required
-                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+            <select name="payment_method_id" x-model="sale.payment_method_id"
+                :required="String(sale.is_credit) === '0'"
+                :disabled="String(sale.is_credit) === '1'"
+                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 disabled:bg-gray-100 disabled:dark:bg-gray-800/40">
                 <option value="">Seleccione el método de pago</option>
                 @foreach ($methods ?? [] as $id => $name)
                     <option value="{{ $id }}" {{ old('payment_method_id') == $id ? 'selected' : '' }}>
                         {{ $name }}</option>
                 @endforeach
             </select>
+            <template x-if="String(sale.is_credit) === '1'">
+                <span class="text-xs text-gray-500">Venta a crédito: no requiere método de pago.</span>
+            </template>
             @error('payment_method_id')
                 <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
             @enderror
@@ -408,6 +413,12 @@
                 },
                 clientErrors: {},
                 init() {
+                    // Limpiar método de pago al cambiar a crédito para evitar confusiones
+                    this.$watch('sale.is_credit', (val) => {
+                        if (String(val) === '1') {
+                            this.sale.payment_method_id = '';
+                        }
+                    });
                     // Cargar items viejos si hubo validación
                     const oldItems = @json($oldItems);
                     if (Array.isArray(oldItems) && oldItems.length) {

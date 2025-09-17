@@ -33,7 +33,8 @@ class SaleRequest extends FormRequest
     {
         return [
             'entity_id' => ['required', 'integer', 'exists:entities,id'],
-            'payment_method_id' => ['required', 'integer', 'exists:payment_methods,id'],
+            // En ventas a crédito, el método de pago no es obligatorio
+            'payment_method_id' => ['required_unless:is_credit,1', 'nullable', 'integer', 'exists:payment_methods,id'],
             'is_credit' => ['required', 'boolean'],
             'sale_date' => ['nullable', 'date'],
             'warehouse_id' => ['required', 'integer', 'exists:warehouses,id'],

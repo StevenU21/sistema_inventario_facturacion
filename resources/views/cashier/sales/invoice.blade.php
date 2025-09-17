@@ -191,6 +191,11 @@
         <div class="center tiny">Tel: {{ $company->phone ?? '' }} RUC: {{ $company->tax_id ?? '' }}</div>
 
         <div class="center bold" style="font-size:14px;">FACTURA: {{ $sale->id }}</div>
+        @if($sale->is_credit)
+            <div class="center tiny" style="margin-top:2px;">
+                Venta a crédito — Se generó una cuenta por cobrar.
+            </div>
+        @endif
         <div class="center tiny">
             Contado:
             @if ($sale->is_credit == true || $sale->is_credit == '1' || $sale->is_credit == 1)
@@ -262,7 +267,7 @@
 
         <div class="divider"></div>
 
-        <div class="totals">
+    <div class="totals">
             @php
                 $discountTotal = (float) ($sale->discount_total ?? 0);
             @endphp
@@ -287,8 +292,17 @@
         </div>
 
         <div class="small meta">Cantidad de Artículos: {{ $details->sum('quantity') }}</div>
-        <div class="small">Paga con: </div>
-        <div class="small mb-2">Vuelto: </div>
+        @if($sale->is_credit)
+            @php
+                $ar = $sale->accountReceivable;
+                $saldo = $ar ? max(0, ($ar->amount_due - ($ar->amount_paid ?? 0))) : $sale->total;
+            @endphp
+            <div class="small">Saldo pendiente: <strong>{{ $currency }}{{ number_format($saldo, 2) }}</strong></div>
+            <div class="tiny muted">Nota: Esta factura corresponde a una venta a crédito. Los pagos se gestionan por separado.</div>
+        @else
+            <div class="small">Paga con: </div>
+            <div class="small mb-2">Vuelto: </div>
+        @endif
 
         <div class="tear"></div>
 

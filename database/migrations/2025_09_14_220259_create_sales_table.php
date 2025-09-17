@@ -25,7 +25,7 @@ return new class extends Migration {
             $table->integer('entity_id')->unsigned();
             $table->foreign('entity_id')->references('id')->on('entities')->onDelete('cascade')->onUpdate('cascade');
 
-            $table->integer('payment_method_id')->unsigned();
+            $table->integer('payment_method_id')->unsigned()->nullable();
             $table->foreign('payment_method_id')->references('id')->on('payment_methods')->onDelete('cascade')->onUpdate('cascade');
 
             $table->timestamps();

@@ -129,7 +129,7 @@ class SaleService
             'sale_date' => $payload['sale_date'] ?? now()->toDateString(),
             'user_id' => $userId,
             'entity_id' => $payload['entity_id'],
-            'payment_method_id' => $payload['payment_method_id'],
+            'payment_method_id' => $payload['payment_method_id'] ?? null,
         ]);
     }
 
@@ -177,6 +177,8 @@ class SaleService
 
     private function generatePdf($sale)
     {
+        // Ensure AR relation is available for invoice view
+        $sale->loadMissing(['accountReceivable']);
         return Pdf::loadView('cashier.sales.invoice', [
             'sale' => $sale,
             'company' => Company::first(),

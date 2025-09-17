@@ -295,7 +295,7 @@ class SaleController extends Controller
     public function pdf(Sale $sale)
     {
         $this->authorize('view', $sale);
-        $sale->load(['saleDetails.productVariant.product.tax', 'user', 'entity', 'paymentMethod']);
+        $sale->load(['saleDetails.productVariant.product.tax', 'user', 'entity', 'paymentMethod', 'accountReceivable']);
 
         $company = Company::first();
         $details = $sale->saleDetails;
