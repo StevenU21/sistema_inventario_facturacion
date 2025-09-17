@@ -7,39 +7,118 @@
 
     <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3">Datos de la venta</h3>
 
-    <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
-        <div class="md:col-span-4 col-span-1">
-            <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-200">Cliente</span>
-                <div class="flex gap-2 mt-1">
-                    <div class="flex-1">
-                        <x-autocomplete id="client_search" name="client_search" :value="old('client_search')"
-                            url="{{ route('entities.autocomplete') }}" placeholder="Nombre del cliente..."
-                            min="2" debounce="250" :submit="false" event="client-selected" />
-                    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <label class="block text-sm">
+            <span class="text-gray-700 dark:text-gray-200">Método de pago</span>
+            <select name="payment_method_id" x-model="sale.payment_method_id" required
+                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                <option value="">Seleccione</option>
+                @foreach ($methods ?? [] as $id => $name)
+                    <option value="{{ $id }}" {{ old('payment_method_id') == $id ? 'selected' : '' }}>
+                        {{ $name }}</option>
+                @endforeach
+            </select>
+            @error('payment_method_id')
+                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+            @enderror
+        </label>
+        <label class="block text-sm">
+            <span class="text-gray-700 dark:text-gray-200">Tipo de venta</span>
+            <select name="is_credit" x-model="sale.is_credit"
+                class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                <option value="0" {{ old('is_credit', 0) == 0 ? 'selected' : '' }}>Contado</option>
+                <option value="1" {{ old('is_credit', 0) == 1 ? 'selected' : '' }}>Crédito</option>
+            </select>
+            @error('is_credit')
+                <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+            @enderror
+        </label>
+    </div>
+
+    <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4" x-data="clientSearch()"
+        x-init="init()">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+            <div class="md:col-span-9 col-span-1 flex flex-col">
+                <label class="block text-sm w-full">
+                    <span class="text-gray-700 dark:text-gray-200">Buscar cliente</span>
+                    <x-autocomplete id="client_search" name="client_search" :value="old('client_search')"
+                        url="{{ route('entities.autocomplete') }}" placeholder="Nombre, cédula, teléfono..."
+                        min="2" debounce="250" :submit="false" event="client-q" />
+                </label>
+            </div>
+            <div class="md:col-span-3 col-span-1 flex items-end">
+                <div class="flex gap-2 w-full">
+                    <button type="button" @click="search(1)"
+                        class="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[40px] font-semibold w-full">
+                        <i class="fas fa-search fa-sm mr-1"></i> Buscar
+                    </button>
                     <button type="button" @click="openClientModal()"
                         class="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-green-600 hover:bg-green-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-green-500 min-h-[40px]">
                         <i class="fas fa-user-plus"></i> Nuevo
                     </button>
                 </div>
-                <!-- Hidden actual entity_id that will be submitted -->
-                <input type="hidden" name="entity_id" :value="sale.entity_id">
-                @error('entity_id')
-                    <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
-                @enderror
-            </label>
+            </div>
         </div>
-        <div class="md:col-span-2 col-span-1">
-            <label class="block text-sm w-full">
-                <span class="text-gray-700 dark:text-gray-200">Crédito</span>
-                <select name="is_credit" x-model="sale.is_credit"
-                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                    <option value="0">Contado</option>
-                    <option value="1">Crédito</option>
-                </select>
-            </label>
+        <div class="mt-3 overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                <thead class="bg-gray-50 dark:bg-gray-800/50">
+                    <tr class="text-left text-gray-600 dark:text-gray-300">
+                        <th class="px-3 py-2">Nombre</th>
+                        <th class="px-3 py-2">Cédula</th>
+                        <th class="px-3 py-2">Teléfono</th>
+                        <th class="px-3 py-2">Correo</th>
+                        <th class="px-3 py-2">Acción</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700" x-show="!loading">
+                    <template x-if="results.length === 0">
+                        <tr>
+                            <td colspan="5" class="px-3 py-6 text-center text-gray-500">Sin resultados</td>
+                        </tr>
+                    </template>
+                    <template x-for="row in results" :key="row.id">
+                        <tr>
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.name"></td>
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.identity_card || '-' ">
+                            </td>
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.phone || '-' "></td>
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.email || '-' "></td>
+                            <td class="px-3 py-2">
+                                <button type="button"
+                                    @click="$dispatch('client-selected', { item: { id: row.id }, text: row.name })"
+                                    class="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-md bg-purple-600 hover:bg-purple-700 text-white">
+                                    <i class="fas fa-check"></i> Usar
+                                </button>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+                <tbody x-show="loading">
+                    <tr>
+                        <td colspan="5" class="px-3 py-6 text-center text-gray-500">Cargando...</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div
+                class="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800/50 text-sm text-gray-600 dark:text-gray-300">
+                <button type="button" @click="search(Math.max(1, (meta.current_page||1)-1))"
+                    :disabled="(meta.current_page || 1) <= 1"
+                    class="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 disabled:opacity-50">Anterior</button>
+                <div>
+                    Página <span x-text="meta.current_page || 1"></span> de <span x-text="meta.last_page || 1"></span>
+                </div>
+                <button type="button" @click="search(Math.min((meta.last_page||1), (meta.current_page||1)+1))"
+                    :disabled="(meta.current_page || 1) >= (meta.last_page || 1)"
+                    class="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 disabled:opacity-50">Siguiente</button>
+            </div>
         </div>
     </div>
+
+    <!-- Hidden actual entity_id that will be submitted (placed outside nested x-data to access saleForm scope) -->
+    <input type="hidden" name="entity_id" :value="sale.entity_id">
+    @error('entity_id')
+        <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span>
+    @enderror
 
     <hr class="my-6 border-gray-200 dark:border-gray-700">
 
@@ -288,8 +367,8 @@
             return {
                 sale: {
                     entity_id: Number(@json(old('entity_id'))) || '',
-                    payment_method_id: @json(old('payment_method_id')),
-                    is_credit: @json(old('is_credit', 0)) == 1,
+                    payment_method_id: String(@json(old('payment_method_id', ''))) || '',
+                    is_credit: String(@json(old('is_credit', 0))),
                 },
                 items: [],
                 totals: {
@@ -604,6 +683,53 @@
             }
         }
 
+        function clientSearch() {
+            return {
+                q: '',
+                results: [],
+                meta: {
+                    current_page: 1,
+                    last_page: 1,
+                    total: 0,
+                    per_page: 5
+                },
+                loading: false,
+                init() {
+                    window.addEventListener('client-q', (e) => {
+                        this.q = e.detail?.text || '';
+                        this.search(1);
+                    });
+                },
+                async search(page = 1) {
+                    this.loading = true;
+                    try {
+                        const url = new URL(@json(route('entities.clientSearch')));
+                        if (this.q) url.searchParams.set('q', this.q);
+                        url.searchParams.set('page', page);
+                        url.searchParams.set('per_page', 5);
+                        const res = await fetch(url.toString(), {
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
+                        const data = await res.json();
+                        this.results = data.data || [];
+                        this.meta = data.meta || this.meta;
+                    } catch (_) {
+                        this.results = [];
+                        this.meta = {
+                            current_page: 1,
+                            last_page: 1,
+                            total: 0,
+                            per_page: 5
+                        };
+                    } finally {
+                        this.loading = false;
+                    }
+                }
+            }
+        }
+
         function round2(n) {
             return Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;
         }
@@ -654,6 +780,19 @@
                     class="mt-1 block w-full px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                 <template x-if="clientErrors.email">
                     <span class="text-xs text-red-600" x-text="clientErrors.email[0]"></span>
+                </template>
+            </label>
+            <label class="block text-sm md:col-span-2">
+                <span class="text-gray-700 dark:text-gray-200">Municipio</span>
+                <select x-model="clientForm.municipality_id"
+                    class="mt-1 block w-full px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">Seleccione</option>
+                    @foreach ($municipalities ?? [] as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+                <template x-if="clientErrors.municipality_id">
+                    <span class="text-xs text-red-600" x-text="clientErrors.municipality_id[0]"></span>
                 </template>
             </label>
         </div>

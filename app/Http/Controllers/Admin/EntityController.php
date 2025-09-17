@@ -149,6 +149,69 @@ class EntityController extends Controller
         return Excel::download(new EntitiesExport($filters), $filename);
     }
 
+    // JSON: búsqueda de clientes para tabla en ventas
+    public function clientSearch(Request $request)
+    {
+        $this->authorize('viewAny', Entity::class);
+
+        $q = trim((string) $request->input('q', ''));
+        $perPage = (int) $request->input('per_page', 5);
+        $perPage = max(1, min(50, $perPage));
+
+        $query = Entity::query()->with('municipality')
+            ->where('is_active', true)
+            ->where('is_client', true);
+
+        if ($q !== '') {
+            $tokens = array_values(array_filter(preg_split('/\s+/', $q)));
+            $driver = DB::getDriverName();
+            $collation = 'utf8mb4_unicode_ci';
+            $query->where(function ($outer) use ($tokens, $driver, $collation) {
+                foreach ($tokens as $token) {
+                    $like = "%$token%";
+                    $outer->where(function ($sub) use ($like, $driver, $collation) {
+                        if ($driver === 'mysql') {
+                            $sub->whereRaw("first_name COLLATE $collation LIKE ?", [$like])
+                                ->orWhereRaw("last_name COLLATE $collation LIKE ?", [$like])
+                                ->orWhereRaw("identity_card COLLATE $collation LIKE ?", [$like])
+                                ->orWhereRaw("phone COLLATE $collation LIKE ?", [$like])
+                                ->orWhereRaw("email COLLATE $collation LIKE ?", [$like]);
+                        } else {
+                            $sub->where('first_name', 'like', $like)
+                                ->orWhere('last_name', 'like', $like)
+                                ->orWhere('identity_card', 'like', $like)
+                                ->orWhere('phone', 'like', $like)
+                                ->orWhere('email', 'like', $like);
+                        }
+                    });
+                }
+            });
+        }
+
+        $entities = $query->latest()->paginate($perPage);
+
+        $data = $entities->getCollection()->map(function ($e) {
+            return [
+                'id' => $e->id,
+                'name' => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')),
+                'identity_card' => $e->identity_card,
+                'phone' => $e->phone,
+                'email' => $e->email,
+                'municipality' => optional($e->municipality)->name,
+            ];
+        })->values();
+
+        return response()->json([
+            'data' => $data,
+            'meta' => [
+                'current_page' => $entities->currentPage(),
+                'last_page' => $entities->lastPage(),
+                'per_page' => $entities->perPage(),
+                'total' => $entities->total(),
+            ],
+        ]);
+    }
+
     public function create()
     {
         $this->authorize('create', Entity::class);
@@ -216,15 +279,17 @@ class EntityController extends Controller
         $validator = Validator::make($payload, [
             'first_name' => ['required', 'string', 'min:2', 'max:60'],
             'last_name' => ['required', 'string', 'min:2', 'max:60'],
-            'identity_card' => ['required', 'string', 'max:30'],
-            'phone' => ['nullable', 'string', 'max:20'],
+                'identity_card' => ['required', 'string', 'max:30', 'unique:entities,identity_card'],
+                'phone' => ['nullable', 'string', 'max:20', 'unique:entities,phone'],
             'email' => ['nullable', 'string', 'email', 'max:255'],
+            'municipality_id' => ['nullable', 'integer', 'exists:municipalities,id'],
         ], [], [
             'first_name' => 'nombre',
             'last_name' => 'apellido',
             'identity_card' => 'cédula',
             'phone' => 'teléfono',
             'email' => 'correo electrónico',
+            'municipality_id' => 'municipio',
         ]);
 
         if ($validator->fails()) {
@@ -234,7 +299,7 @@ class EntityController extends Controller
             ], 422);
         }
 
-        $data = $validator->validated();
+    $data = $validator->validated();
         // Defaults for a quick client
         $data['ruc'] = $request->input('ruc');
         $data['address'] = $request->input('address');

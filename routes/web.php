@@ -98,6 +98,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Entities
     Route::get('entities/search', [EntityController::class, 'search'])->name('entities.search');
     Route::get('entities/autocomplete', [EntityController::class, 'autocomplete'])->name('entities.autocomplete');
+    Route::get('entities/client-search', [EntityController::class, 'clientSearch'])->name('entities.clientSearch');
     Route::get('entities/export', [EntityController::class, 'export'])->name('entities.export');
     // Quick create (JSON) for POS modal
     Route::post('entities/quick-store', [EntityController::class, 'quickStore'])->name('entities.quickStore');
