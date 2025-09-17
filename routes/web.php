@@ -159,8 +159,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [AdminSaleController::class, 'store'])->name('store');
         // Inventory info for POS create form
         Route::get('/inventory', [AdminSaleController::class, 'inventory'])->name('inventory');
-    // Product search with extended filters for admin sales create
-    Route::get('/product-search', [AdminSaleController::class, 'productSearch'])->name('productSearch');
+        // Product search with extended filters for admin sales create
+        Route::get('/product-search', [AdminSaleController::class, 'productSearch'])->name('productSearch');
         // Dependent brands by category for filters
         Route::get('/brands-by-category', [AdminSaleController::class, 'brandsByCategory'])->name('brandsByCategory');
         Route::get('/', [AdminSaleController::class, 'index'])->name('index');
@@ -188,6 +188,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/export', [AdminAccountReceivableController::class, 'export'])->name('export');
         Route::get('/{accountReceivable}', [AdminAccountReceivableController::class, 'show'])->name('show');
         Route::get('/{accountReceivable}/export-pdf', [AdminAccountReceivableController::class, 'exportPdf'])->name('exportPdf');
+        // Create payment for a specific account receivable
+        Route::post('/{accountReceivable}/payments', [AdminAccountReceivableController::class, 'storePayment'])->name('payments.store');
     });
 
     // Dashboard

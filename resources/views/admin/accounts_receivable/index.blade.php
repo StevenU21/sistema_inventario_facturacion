@@ -2,7 +2,19 @@
 @section('title', 'Cuentas por Cobrar')
 
 @section('content')
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8" x-data="{
+        isModalOpen: false,
+        closeModal() { this.isModalOpen = false },
+        paymentForm: { action: '', amount: '', payment_method_id: '' },
+        remainingText: '',
+        openPaymentModal(action, remaining, defaultMethodId) {
+            this.paymentForm.action = action;
+            this.paymentForm.amount = '';
+            this.paymentForm.payment_method_id = defaultMethodId || '';
+            this.remainingText = `Saldo restante: C$ ${Number(remaining).toFixed(2)}`;
+            this.isModalOpen = true;
+        }
+    }">
         <nav class="mt-4 mb-2 text-sm text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
             <ol class="flex items-center gap-2">
                 <li>
@@ -78,6 +90,40 @@
             </div>
         </section>
 
+        <x-modal :title="'Registrar pago'" :description="'Ingrese el monto y método de pago'">
+            <form :action="paymentForm.action" method="POST">
+                @csrf
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="sm:col-span-2">
+                        <label
+                            class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Monto
+                            a pagar</label>
+                        <input type="number" step="0.01" min="0.01" name="amount" x-model="paymentForm.amount" placeholder="Ingrese el monto a pagar"
+                            required
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
+                        <p class="mt-1 text-xs text-gray-500" x-text="remainingText"></p>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Método</label>
+                        <select name="payment_method_id" x-model="paymentForm.payment_method_id" required
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                            <option value="">Seleccione...</option>
+                            @foreach ($methods ?? [] as $id => $name)
+                                <option value="{{ $id }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end gap-3">
+                    <button type="button" @click="closeModal()"
+                        class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">Cancelar</button>
+                    <button type="submit"
+                        class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold">Registrar</button>
+                </div>
+            </form>
+        </x-modal>
+
         <div class="mt-4">
             <x-session-message />
         </div>
@@ -89,8 +135,9 @@
                     <div class="flex-1">
                         <label for="search"
                             class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
-                        <x-autocomplete name="search" :value="request('search')" url="{{ route('admin.accounts_receivable.autocomplete') }}"
-                            placeholder="Nombre del cliente..." id="search" />
+                        <x-autocomplete name="search" :value="request('search')"
+                            url="{{ route('admin.accounts_receivable.autocomplete') }}" placeholder="Nombre del cliente..."
+                            id="search" />
                     </div>
                     <div class="flex flex-row gap-2 items-end">
                         <button type="submit"
@@ -245,12 +292,24 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm">{{ $client ?: '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $ar->translated_status }}</td>
-                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($ar->amount_due ?? 0, 2) }}</td>
-                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($ar->amount_paid ?? 0, 2) }}</td>
-                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format(($ar->amount_due ?? 0) - ($ar->amount_paid ?? 0), 2) }}</td>
+                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($ar->amount_due ?? 0, 2) }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($ar->amount_paid ?? 0, 2) }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-right">C$
+                                    {{ number_format(($ar->amount_due ?? 0) - ($ar->amount_paid ?? 0), 2) }}</td>
                                 <td class="px-4 py-3 text-sm text-right">{{ $ar->formatted_created_at }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2 text-sm">
+                                        @if (in_array($ar->status, ['pending', 'partially_paid']))
+                                            @php $remaining = max(0, round(($ar->amount_due ?? 0) - ($ar->amount_paid ?? 0), 2)); @endphp
+                                            <button type="button" title="Registrar pago"
+                                                class="inline-flex items-center justify-center h-9 px-3 text-white bg-green-600 hover:bg-green-700 rounded-lg focus:outline-none gap-2"
+                                                @click="openPaymentModal('{{ route('admin.accounts_receivable.payments.store', $ar) }}', '{{ number_format($remaining, 2, '.', '') }}', '{{ array_key_first($methods->toArray()) }}')">
+                                                <i class="fas fa-cash-register"></i>
+                                                <span class="hidden sm:inline">Pagar</span>
+                                            </button>
+                                        @endif
                                         <a href="{{ route('admin.accounts_receivable.show', $ar) }}" title="Ver detalle"
                                             class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
                                             <i class="fas fa-eye"></i>

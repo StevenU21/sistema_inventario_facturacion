@@ -9,6 +9,10 @@ use App\Models\AccountReceivable;
 use App\Models\Entity;
 use App\Models\Company;
 use App\Exports\AccountReceivablesExport;
+use App\Models\Payment;
+use App\Models\PaymentMethod;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -39,7 +43,9 @@ class AccountReceivableController extends Controller
             'paid' => __('Pagado'),
         ];
 
-        return view('admin.accounts_receivable.index', compact('accounts', 'entities', 'statuses'));
+        $methods = PaymentMethod::pluck('name', 'id');
+
+        return view('admin.accounts_receivable.index', compact('accounts', 'entities', 'statuses', 'methods'));
     }
 
     public function search(Request $request)
@@ -187,5 +193,63 @@ class AccountReceivableController extends Controller
         }
 
         return $query;
+    }
+
+    /**
+     * Registrar un pago para una cuenta por cobrar específica.
+     */
+    public function storePayment(Request $request, AccountReceivable $accountReceivable)
+    {
+        // Reutilizamos política de creación de pagos
+        $this->authorize('create', Payment::class);
+
+        // No permitir pagos a cuentas ya saldadas
+        if ($accountReceivable->status === 'paid') {
+            return back()->with('error', __('Esta cuenta ya está pagada.'));
+        }
+
+        $amount_due = round($accountReceivable->amount_due ?? 0, 2);
+        $amount_paid = round($accountReceivable->amount_paid ?? 0, 2);
+        $remaining = $amount_due - $amount_paid;
+
+        $validated = $request->validate([
+            'amount' => ['required', 'numeric', 'min:0.01'],
+            'payment_method_id' => ['required', 'exists:payment_methods,id'],
+        ]);
+
+        $paymentAmount = round((float) $validated['amount'], 2);
+
+        // No permitir pagos que excedan el monto total de la cuenta
+        if ($paymentAmount > $remaining) {
+            return back()->withInput()->with('error', __('El monto no puede exceder el saldo restante de C$ :remaining', ['remaining' => number_format($remaining, 2)]));
+        }
+
+        // No permitir pagos si la cuenta ya está pagada
+        if ($accountReceivable->status === 'paid' || $remaining <= 0) {
+            return back()->with('error', __('Esta cuenta ya está pagada.'));
+        }
+
+        DB::transaction(function () use ($validated, $accountReceivable, $amount_due, $amount_paid, $paymentAmount) {
+            $payment = new Payment();
+            $payment->amount = $paymentAmount;
+            $payment->payment_date = now()->toDateString();
+            $payment->account_receivable_id = $accountReceivable->id;
+            $payment->payment_method_id = (int) $validated['payment_method_id'];
+            $payment->entity_id = $accountReceivable->entity_id;
+            $payment->user_id = Auth::id();
+            $payment->save();
+
+            // Actualizar acumulado y estado
+            $newPaid = round($amount_paid + $paymentAmount, 2);
+            $accountReceivable->amount_paid = $newPaid;
+            if ($newPaid >= $amount_due) {
+                $accountReceivable->status = 'paid';
+            } elseif ($newPaid > 0) {
+                $accountReceivable->status = 'partially_paid';
+            }
+            $accountReceivable->save();
+        });
+
+        return back()->with('success', __('Pago registrado correctamente.'));
     }
 }
