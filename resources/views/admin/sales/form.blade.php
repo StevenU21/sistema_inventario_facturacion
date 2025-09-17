@@ -71,8 +71,8 @@
                 <label class="block text-sm w-full">
                     <span class="text-gray-700 dark:text-gray-200">Buscar producto/variante</span>
                     <x-autocomplete name="variant_search" id="variant_search"
-                        url="{{ route('inventories.variantSearch') }}" placeholder="Nombre del producto..." min="2"
-                        debounce="250" submit="0" event="variant-search" />
+                        url="{{ route('inventories.variantSearch') }}" placeholder="Nombre del producto..."
+                        min="2" debounce="250" submit="0" event="variant-search" />
                 </label>
             </div>
             <div class="md:col-span-3 col-span-1 flex items-end">
@@ -115,7 +115,8 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Almacén</span>
-                <select x-model="filters.warehouse_id" @change="$dispatch('warehouse-changed', $event.target.value); search(1)"
+                <select x-model="filters.warehouse_id"
+                    @change="$dispatch('warehouse-changed', $event.target.value); search(1)"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Seleccione</option>
                     @foreach ($warehouses ?? [] as $id => $name)
@@ -149,29 +150,39 @@
                 <thead class="bg-gray-50 dark:bg-gray-800/50">
                     <tr class="text-left text-gray-600 dark:text-gray-300">
                         <th class="px-3 py-2">Producto</th>
+                        <th class="px-3 py-2">Almacén</th>
                         <th class="px-3 py-2">Color</th>
                         <th class="px-3 py-2">Talla</th>
                         <th class="px-3 py-2">Marca</th>
+                        <th class="px-3 py-2">Stock</th>
+                        <th class="px-3 py-2">Precio</th>
                         <th class="px-3 py-2">Acción</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700" x-show="!loading">
                     <template x-if="results.length === 0">
                         <tr>
-                            <td colspan="5" class="px-3 py-6 text-center text-gray-500">Sin resultados</td>
+                            <td colspan="8" class="px-3 py-6 text-center text-gray-500">Sin resultados</td>
                         </tr>
                     </template>
                     <template x-for="row in results" :key="row.id">
                         <tr>
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.product_name"></td>
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-200"
+                                x-text="row.warehouse_name || '-' "></td>
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.color_name || '-' ">
                             </td>
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.size_name || '-' ">
                             </td>
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.brand_name || '-' ">
                             </td>
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="(row.stock ?? '-')"></td>
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-200"
+                                x-text="row.unit_price_with_tax != null ? currency(row.unit_price_with_tax) : (row.sale_price != null ? currency(row.sale_price) : '-')">
+                            </td>
                             <td class="px-3 py-2">
-                                <button type="button" @click="$dispatch('add-item', { id: row.id })"
+                                <button type="button"
+                                    @click="$dispatch('add-item', { product_variant_id: row.product_variant_id || row.id, warehouse_id: row.warehouse_id })"
                                     class="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-md bg-purple-600 hover:bg-purple-700 text-white">
                                     <i class="fas fa-plus"></i> Agregar
                                 </button>
@@ -181,10 +192,22 @@
                 </tbody>
                 <tbody x-show="loading">
                     <tr>
-                        <td colspan="5" class="px-3 py-6 text-center text-gray-500">Cargando...</td>
+                        <td colspan="8" class="px-3 py-6 text-center text-gray-500">Cargando...</td>
                     </tr>
                 </tbody>
             </table>
+            <div
+                class="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800/50 text-sm text-gray-600 dark:text-gray-300">
+                <button type="button" @click="search(Math.max(1, (meta.current_page||1)-1))"
+                    :disabled="(meta.current_page || 1) <= 1"
+                    class="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 disabled:opacity-50">Anterior</button>
+                <div>
+                    Página <span x-text="meta.current_page || 1"></span> de <span x-text="meta.last_page || 1"></span>
+                </div>
+                <button type="button" @click="search(Math.min((meta.last_page||1), (meta.current_page||1)+1))"
+                    :disabled="(meta.current_page || 1) >= (meta.last_page || 1)"
+                    class="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 disabled:opacity-50">Siguiente</button>
+            </div>
         </div>
     </div>
 
@@ -322,9 +345,20 @@
                     }
                     // Escuchar evento para agregar variante
                     window.addEventListener('add-item', (e) => {
-                        const variantId = Number(e.detail?.id || 0);
-                        if (!variantId || !this.sale.warehouse_id) {
-                            alert('Seleccione primero un almacén.');
+                        const variantId = Number(e.detail?.product_variant_id || 0);
+                        const rowWarehouseId = Number(e.detail?.warehouse_id || 0);
+                        if (!variantId) return;
+                        // Si no hay almacén seleccionado, tomarlo del renglón
+                        if (!this.sale.warehouse_id && rowWarehouseId) {
+                            this.sale.warehouse_id = rowWarehouseId;
+                            window.dispatchEvent(new CustomEvent('set-warehouse', {
+                                detail: this.sale.warehouse_id
+                            }));
+                        }
+                        // Validar que el almacén coincida
+                        if (!this.sale.warehouse_id || (rowWarehouseId && this.sale.warehouse_id !==
+                            rowWarehouseId)) {
+                            alert('El producto pertenece a otro almacén. Seleccione el almacén correspondiente.');
                             return;
                         }
                         this.fetchInventory(variantId);
@@ -411,9 +445,18 @@
                     size_id: '',
                     warehouse_id: Number(@json(old('warehouse_id'))) || ''
                 },
-                brandOptions: @json(collect($brands ?? [])->map(fn($name,$id)=>['id'=>$id,'name'=>$name])->values()),
+                brandOptions: @json(collect($brands ?? [])->map(fn($name, $id) => ['id' => $id, 'name' => $name])->values()),
                 results: [],
+                meta: {
+                    current_page: 1,
+                    last_page: 1,
+                    total: 0,
+                    per_page: 5
+                },
                 loading: false,
+                currency(v) {
+                    return 'C$ ' + Number(v || 0).toFixed(2);
+                },
                 init() {
                     window.addEventListener('variant-search', (e) => {
                         this.filters.q = e.detail?.text || '';
@@ -433,7 +476,11 @@
                         if (this.filters.category_id) {
                             url.searchParams.set('category_id', this.filters.category_id);
                         }
-                        const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+                        const res = await fetch(url.toString(), {
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
                         const data = await res.json();
                         this.brandOptions = (data && Array.isArray(data.data)) ? data.data : [];
                     } catch (_) {
@@ -451,15 +498,33 @@
                             if (v) url.searchParams.set(k, v);
                         });
                         url.searchParams.set('page', page);
+                        url.searchParams.set('per_page', 5);
                         const res = await fetch(url.toString(), {
                             headers: {
                                 'Accept': 'application/json'
                             }
                         });
                         const data = await res.json();
-                        this.results = Array.isArray(data) ? data : (data.data || []);
+                        if (Array.isArray(data)) {
+                            this.results = data;
+                            this.meta = {
+                                current_page: 1,
+                                last_page: 1,
+                                total: data.length,
+                                per_page: 5
+                            };
+                        } else {
+                            this.results = data.data || [];
+                            this.meta = data.meta || this.meta;
+                        }
                     } catch (e) {
                         this.results = [];
+                        this.meta = {
+                            current_page: 1,
+                            last_page: 1,
+                            total: 0,
+                            per_page: 5
+                        };
                     } finally {
                         this.loading = false;
                     }

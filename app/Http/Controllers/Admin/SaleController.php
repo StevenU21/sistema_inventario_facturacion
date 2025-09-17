@@ -17,6 +17,7 @@ use App\Models\SaleDetail;
 use App\Models\ProductVariant;
 use App\Models\Warehouse;
 use App\Models\Category;
+use App\Models\Inventory;
 use App\Services\SaleService;
 use App\Http\Requests\SaleRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -132,7 +133,7 @@ class SaleController extends Controller
         ]);
     }
 
-    // JSON: búsqueda de productos/variantes con filtros y por almacén (via inventarios)
+    // JSON: búsqueda basada en inventarios (siempre devuelve almacén, stock y precio)
     public function productSearch(Request $request)
     {
         $this->authorize('create', Sale::class);
@@ -144,77 +145,93 @@ class SaleController extends Controller
         $sizeId = $request->input('size_id');
         $supplierId = $request->input('entity_id'); // proveedor
         $warehouseId = $request->input('warehouse_id');
-        $perPage = (int) $request->input('per_page', 10);
+        $perPage = (int) $request->input('per_page', 5);
 
-        $query = ProductVariant::query()
-            ->with(['product.brand.category'])
-            ->whereHas('product', function ($q2) {
+        // Consulta basada en inventarios para garantizar almacén, stock y precio por fila
+        $query = Inventory::query()
+            ->with([
+                'warehouse',
+                'productVariant.product.tax',
+                'productVariant.product.brand.category',
+                'productVariant.color',
+                'productVariant.size',
+            ])
+            ->whereHas('productVariant.product', function ($q2) {
                 $q2->where('status', 'available');
             });
 
+        if (!empty($warehouseId)) {
+            $query->where('warehouse_id', $warehouseId);
+        }
         if (!empty($categoryId)) {
-            // Filtrar por categoría a través de la marca del producto
-            $query->whereHas('product.brand', function ($sp) use ($categoryId) {
+            $query->whereHas('productVariant.product.brand', function ($sp) use ($categoryId) {
                 $sp->where('category_id', $categoryId);
             });
         }
         if (!empty($brandId)) {
-            $query->whereHas('product', function ($sp) use ($brandId) {
+            $query->whereHas('productVariant.product', function ($sp) use ($brandId) {
                 $sp->where('brand_id', $brandId);
             });
         }
         if (!empty($supplierId)) {
-            $query->whereHas('product', function ($sp) use ($supplierId) {
+            $query->whereHas('productVariant.product', function ($sp) use ($supplierId) {
                 $sp->where('entity_id', $supplierId);
             });
         }
         if (!empty($colorId)) {
-            $query->where('color_id', $colorId);
+            $query->whereHas('productVariant', function ($sp) use ($colorId) {
+                $sp->where('color_id', $colorId);
+            });
         }
         if (!empty($sizeId)) {
-            $query->where('size_id', $sizeId);
+            $query->whereHas('productVariant', function ($sp) use ($sizeId) {
+                $sp->where('size_id', $sizeId);
+            });
         }
-
         if (!empty($q)) {
-            $query->whereHas('product', function ($sp) use ($q) {
+            $query->whereHas('productVariant.product', function ($sp) use ($q) {
                 $sp->where('name', 'like', "%{$q}%");
             });
         }
 
-        if (!empty($warehouseId)) {
-            $query->whereHas('inventories', function ($iq) use ($warehouseId) {
-                $iq->where('warehouse_id', $warehouseId);
-            });
-        }
+        $inventories = $query->latest()->paginate($perPage);
 
-        $variants = $query->latest()->paginate($perPage);
+        $data = $inventories->getCollection()->map(function ($inv) {
+            $variant = $inv->productVariant;
+            $product = optional($variant)->product;
+            $warehouse = $inv->warehouse;
+            $salePrice = (float) ($inv->sale_price ?? 0);
+            $taxPercentage = optional($product?->tax)->percentage;
+            $taxPercentage = $taxPercentage !== null ? (float) $taxPercentage : null;
+            $unitTaxAmount = $taxPercentage ? round($salePrice * ($taxPercentage / 100), 2) : 0.0;
+            $unitPriceWithTax = round($salePrice + $unitTaxAmount, 2);
 
-        $colors = Color::whereIn('id', $variants->pluck('color_id')->filter()->unique()->values())
-            ->pluck('name', 'id');
-        $sizes = Size::whereIn('id', $variants->pluck('size_id')->filter()->unique()->values())
-            ->pluck('name', 'id');
-
-        $data = $variants->getCollection()->map(function ($v) use ($colors, $sizes) {
             return [
-                'id' => $v->id,
-                'product_id' => $v->product_id,
-                'product_name' => optional($v->product)->name,
-                'color_id' => $v->color_id,
-                'color_name' => $v->color_id ? ($colors[$v->color_id] ?? null) : null,
-                'size_id' => $v->size_id,
-                'size_name' => $v->size_id ? ($sizes[$v->size_id] ?? null) : null,
-                'category_name' => optional($v->product?->brand?->category)->name,
-                'brand_name' => optional($v->product?->brand)->name,
+                'id' => $inv->id, // id del inventario (clave de fila)
+                'product_variant_id' => optional($variant)->id,
+                'product_id' => optional($variant)->product_id,
+                'product_name' => optional($product)->name,
+                'color_id' => optional($variant)->color_id,
+                'color_name' => optional($variant?->color)->name,
+                'size_id' => optional($variant)->size_id,
+                'size_name' => optional($variant?->size)->name,
+                'category_name' => optional($product?->brand?->category)->name,
+                'brand_name' => optional($product?->brand)->name,
+                'warehouse_id' => $inv->warehouse_id,
+                'warehouse_name' => optional($warehouse)->name,
+                'stock' => (int) ($inv->stock ?? 0),
+                'sale_price' => $salePrice,
+                'unit_price_with_tax' => $unitPriceWithTax,
             ];
         })->values();
 
         return response()->json([
             'data' => $data,
             'meta' => [
-                'current_page' => $variants->currentPage(),
-                'last_page' => $variants->lastPage(),
-                'per_page' => $variants->perPage(),
-                'total' => $variants->total(),
+                'current_page' => $inventories->currentPage(),
+                'last_page' => $inventories->lastPage(),
+                'per_page' => $inventories->perPage(),
+                'total' => $inventories->total(),
             ],
         ]);
     }
@@ -306,8 +323,8 @@ class SaleController extends Controller
     {
         $this->authorize('viewAny', Sale::class);
         $term = trim((string) $request->input('q', ''));
-        $limit = (int) $request->input('limit', 10);
-        $limit = max(1, min(20, $limit));
+    $limit = (int) $request->input('limit', 5);
+    $limit = max(1, min(5, $limit));
 
         // Solo productos que han sido vendidos (existen en detalles de ventas)
         $productIds = SaleDetail::query()
