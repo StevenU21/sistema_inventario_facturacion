@@ -64,17 +64,6 @@
                             <i class="fas fa-plus"></i>
                             Nueva cotización
                         </a>
-                        <form method="GET" action="{{ route('admin.quotations.export') }}">
-                            <input type="hidden" name="search" value="{{ request('search') }}">
-                            <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
-                            <input type="hidden" name="from" value="{{ request('from') }}">
-                            <input type="hidden" name="to" value="{{ request('to') }}">
-                            <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                                <i class="fas fa-file-pdf"></i>
-                                Exportar PDF
-                            </button>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -136,6 +125,18 @@
                         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                         onchange="this.form.submit()" />
                 </div>
+                <div>
+                    <label for="status"
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Estado</label>
+                    <select name="status" id="status"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        onchange="this.form.submit()">
+                        <option value="">Todos</option>
+                        <option value="pending" {{ request('status', $status ?? 'pending') == 'pending' ? 'selected' : '' }}>Pendiente</option>
+                        <option value="accepted" {{ request('status') == 'accepted' ? 'selected' : '' }}>Aceptada</option>
+                        <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>Cancelada</option>
+                    </select>
+                </div>
             </form>
         </section>
 
@@ -152,6 +153,7 @@
                             <th class="px-4 py-3">Total</th>
                             <th class="px-4 py-3">Estado</th>
                             <th class="px-4 py-3">Fecha</th>
+                            <th class="px-4 py-3">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
@@ -176,6 +178,36 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $quotation->formatted_created_at }}
+                                </td>
+                                <td class="px-4 py-3 text-sm space-x-2">
+                                    <!-- Download Proforma PDF -->
+                                    <a href="{{ route('admin.quotations.pdf', $quotation) }}" target="_blank"
+                                       class="text-indigo-600 hover:text-indigo-900"
+                                       title="Descargar Proforma">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </a>
+                                    @if($quotation->status === 'pending')
+                                        <!-- Accept -->
+                                        <form action="{{ route('admin.quotations.accept', $quotation) }}" method="POST"
+                                              class="inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="text-green-600 hover:text-green-800"
+                                                    title="Aceptar Proforma">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        <!-- Cancel -->
+                                        <form action="{{ route('admin.quotations.cancel', $quotation) }}" method="POST"
+                                              class="inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="text-red-600 hover:text-red-800"
+                                                    title="Cancelar Proforma">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

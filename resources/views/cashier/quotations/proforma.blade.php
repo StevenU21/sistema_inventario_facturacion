@@ -131,18 +131,17 @@
             </div>
             <div class="meta">
                 <div><strong>Proforma No.:</strong> {{ $quotation?->id ?? '' }}</div>
-                <div><strong>Fecha:</strong>
-                    {{ \Carbon\Carbon::parse($quotation_date ?? $quotation?->created_at)->format('d/m/Y H:i:s') }}</div>
-                @if(isset($quotation) && $quotation?->valid_until)
-                    <div><strong>Válida hasta:</strong> {{ \Carbon\Carbon::parse($quotation->valid_until)->format('d/m/Y') }}</div>
+                <div><strong>Fecha:</strong> {{ optional($quotation?->created_at)->format('d/m/Y H:i:s') }}</div>
+                @if (isset($quotation) && $quotation?->valid_until)
+                    <div><strong>Válida hasta:</strong> {{ optional($quotation->valid_until)->format('d/m/Y') }}</div>
                 @else
-                    <div><strong>Válida hasta:</strong> {{ \Carbon\Carbon::parse(($quotation_date ?? now()->toDateString()))->addDays(7)->format('d/m/Y') }}</div>
+                    <div><strong>Válida hasta:</strong> {{ optional($quotation?->created_at)->addDays(7)->format('d/m/Y') }}</div>
                 @endif
-                <div><strong>Vendedor:</strong> {{ $user?->name ?? 'N/D' }}</div>
+                <div><strong>Vendedor:</strong> {{ $user?->short_name ?? 'N/D' }}</div>
             </div>
         </div>
         <div class="client">
-            <strong>Cliente:</strong> {{ $entity?->name ?? 'N/D' }}<br>
+            <strong>Cliente:</strong> {{ $entity?->short_name ?? 'N/D' }}<br>
         </div>
         <table>
             <thead>
@@ -154,6 +153,7 @@
                     <th class="right">Cant</th>
                     <th class="right">P. Unit</th>
                     <th class="right">Desc</th>
+                    <th class="right">Imp.</th>
                     <th class="right">Sub Total</th>
                 </tr>
             </thead>
@@ -171,22 +171,35 @@
                         <td>{{ $color ? $color : 'N/A' }}</td>
                         <td>{{ $size ? $size : 'N/A' }}</td>
                         <td class="right">{{ $d['quantity'] }}</td>
-                        <td class="right">{{ $currency }} {{ number_format($d['unit_price'], 2) }}</td>
+                        <td class="right">{{ $currency }}
+                            {{ number_format($d['unit_price'] - $d['unit_tax_amount'], 2) }}</td>
                         <td class="right">{{ $currency }} {{ number_format($d['discount_amount'] ?? 0, 2) }}</td>
-                        <td class="right">{{ $currency }} {{ number_format($d['sub_total'], 2) }}</td>
+                        <td class="right">{{ $currency }}
+                            {{ number_format($d['unit_tax_amount'] * $d['quantity'], 2) }}</td>
+                        <td class="right">{{ $currency }}
+                            {{ number_format($d['sub_total'] - $d['unit_tax_amount'] * $d['quantity'], 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
         <table class="totals">
             <tr>
-                <td class="right"><strong>Subtotal:</strong></td>
+                <td class="right"><strong>Subtotal (neto):</strong></td>
                 <td class="right" style="width:120px;">{{ $currency }}
                     {{ number_format($totals['sub_total'] ?? 0, 2) }}</td>
             </tr>
+            <tr>
+                <td class="right"><strong>Impuesto total:</strong></td>
+                <td class="right">{{ $currency }} {{ number_format($totals['totalTax'] ?? 0, 2) }}</td>
+            </tr>
+            <tr>
+                <td class="right"><strong>Total:</strong></td>
+                <td class="right">{{ $currency }} {{ number_format($totals['total'] ?? 0, 2) }}</td>
+            </tr>
         </table>
         <div class="footer">
-            <p style="color:#b91c1c;"><strong>Esta proforma es válida por 7 días y únicamente con los precios y descuentos aquí detallados.</strong></p>
+            <p style="color:#b91c1c;"><strong>Esta proforma es válida por 7 días y únicamente con los precios y
+                    descuentos aquí detallados.</strong></p>
         </div>
     </div>
 </body>

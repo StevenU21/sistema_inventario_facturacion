@@ -25,8 +25,10 @@ class QuotationController extends Controller
     public function index(Request $request)
     {
         $this->authorize('viewAny', Quotation::class);
-
+        // Default to pending status
+        $status = $request->input('status', 'pending');
         $query = $this->buildQuotationsQuery($request);
+        $query->where('status', $status);
         $perPage = (int) ($request->input('per_page', 10));
         $quotations = $query->orderByDesc('created_at')->orderByDesc('id')
             ->paginate($perPage)
@@ -35,7 +37,7 @@ class QuotationController extends Controller
         $entities = Entity::where('is_active', true)->get()
             ->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
 
-        return view('admin.quotations.index', compact('quotations', 'entities'));
+        return view('admin.quotations.index', compact('quotations', 'entities', 'status'));
     }
 
     public function create()
@@ -110,21 +112,6 @@ class QuotationController extends Controller
         return $this->index($request);
     }
 
-    public function exportPdf(Request $request)
-    {
-        $this->authorize('export', Quotation::class);
-        $query = $this->buildQuotationsQuery($request);
-        $quotations = $query->orderByDesc('created_at')->orderByDesc('id')->get();
-        $company = Company::first();
-
-        $pdf = Pdf::loadView('admin.quotations.report', [
-            'quotations' => $quotations,
-            'company' => $company,
-            'filters' => $request->all(),
-        ])->setPaper('letter');
-
-        return $pdf->download('cotizaciones_' . now()->format('Ymd_His') . '.pdf');
-    }
 
     public function pdf(Quotation $quotation)
     {
@@ -330,5 +317,24 @@ class QuotationController extends Controller
         }
 
         return $query;
+    }
+    /**
+     * Mark a quotation as accepted.
+     */
+    public function accept(Quotation $quotation)
+    {
+        $this->authorize('update', $quotation);
+        $quotation->update(['status' => 'accepted']);
+        return back()->with('success', 'Proforma aceptada correctamente.');
+    }
+
+    /**
+     * Mark a quotation as canceled.
+     */
+    public function cancel(Quotation $quotation)
+    {
+        $this->authorize('update', $quotation);
+        $quotation->update(['status' => 'canceled']);
+        return back()->with('success', 'Proforma cancelada correctamente.');
     }
 }

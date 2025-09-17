@@ -199,9 +199,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [QuotationController::class, 'store'])->name('store');
         Route::get('/search', [QuotationController::class, 'search'])->name('search');
         Route::get('/product-search', [QuotationController::class, 'productSearch'])->name('productSearch');
-        Route::get('/export', [QuotationController::class, 'exportPdf'])->name('export');
+    // Route::get('/export', [QuotationController::class, 'exportPdf'])->name('export'); // removed general export
         Route::get('/autocomplete', [QuotationController::class, 'autocomplete'])->name('autocomplete');
-        Route::get('/{quotation}/pdf', [QuotationController::class, 'pdf'])->name('pdf');
+    Route::get('/{quotation}/pdf', [QuotationController::class, 'pdf'])->name('pdf');
+    Route::patch('/{quotation}/accept', [QuotationController::class, 'accept'])->name('accept');
+    Route::patch('/{quotation}/cancel', [QuotationController::class, 'cancel'])->name('cancel');
     });
 
     // Dashboard
