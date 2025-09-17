@@ -215,22 +215,6 @@
                         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         onchange="this.form.submit()" />
                 </div>
-                <div>
-                    <label for="min_balance"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Saldo
-                        mín.</label>
-                    <input type="number" step="0.01" name="min_balance" id="min_balance"
-                        value="{{ request('min_balance') }}"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
-                </div>
-                <div>
-                    <label for="max_balance"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Saldo
-                        máx.</label>
-                    <input type="number" step="0.01" name="max_balance" id="max_balance"
-                        value="{{ request('max_balance') }}"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
-                </div>
             </form>
         </section>
 

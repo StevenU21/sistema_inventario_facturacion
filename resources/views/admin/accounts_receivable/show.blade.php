@@ -201,7 +201,7 @@
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Pagos</h3>
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="text-left">
+                        <tr class="text-left text-gray-700 dark:text-gray-300">
                             <th class="py-2">Fecha</th>
                             <th class="py-2">Método</th>
                             <th class="py-2">Monto</th>
@@ -210,12 +210,12 @@
                     </thead>
                     <tbody class="divide-y">
                         @forelse ($ar->payments as $p)
-                            <tr>
+                            <tr class="text-gray-700 dark:text-gray-300">
                                 <td class="py-2">
                                     {{ \Illuminate\Support\Carbon::parse($p->payment_date)->format('d/m/Y') }}</td>
                                 <td class="py-2">{{ $p->paymentMethod?->name ?? '-' }}</td>
                                 <td class="py-2">C$ {{ number_format($p->amount, 2) }}</td>
-                                <td class="py-2">{{ $p->user?->name ?? '-' }}</td>
+                                <td class="py-2">{{ $p->user?->short_name ?? '-' }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -224,7 +224,7 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
+            </div
         </div>
     </div>
 @endsection
