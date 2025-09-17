@@ -752,7 +752,7 @@
                 </template>
             </label>
             <label class="block text-sm">
-                <span class="text-gray-700 dark:text-gray-200">Apellido</span>
+                <span class="text-gray-700 dark:text-gray-200">Apellido (opcional)</span>
                 <input type="text" x-model="clientForm.last_name"
                     class="mt-1 block w-full px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                 <template x-if="clientErrors.last_name">
@@ -760,7 +760,7 @@
                 </template>
             </label>
             <label class="block text-sm">
-                <span class="text-gray-700 dark:text-gray-200">Cédula</span>
+                <span class="text-gray-700 dark:text-gray-200">Cédula (opcional)</span>
                 <input type="text" x-model="clientForm.identity_card"
                     class="mt-1 block w-full px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                 <template x-if="clientErrors.identity_card">
@@ -784,24 +784,17 @@
                     <span class="text-xs text-red-600" x-text="clientErrors.email[0]"></span>
                 </template>
             </label>
-            <label class="block text-sm md:col-span-2">
-                <span class="text-gray-700 dark:text-gray-200">Municipio</span>
-                <select x-model="clientForm.municipality_id"
-                    class="mt-1 block w-full px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                    <option value="">Seleccione</option>
-                    @foreach ($municipalities ?? [] as $id => $name)
-                        <option value="{{ $id }}">{{ $name }}</option>
-                    @endforeach
-                </select>
-                <template x-if="clientErrors.municipality_id">
-                    <span class="text-xs text-red-600" x-text="clientErrors.municipality_id[0]"></span>
-                </template>
-            </label>
         </div>
         <div class="mt-4 flex justify-end gap-2">
-            <button type="button" @click="closeModal()" class="px-4 py-2 text-sm rounded border">Cancelar</button>
+            <button type="button" @click="closeModal()"
+                class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-gray-500 border border-transparent rounded-lg hover:bg-gray-600 focus:outline-none focus:shadow-outline-purple active:bg-gray-500 disabled:opacity-60 disabled:cursor-not-allowed">Cancelar</button>
             <button type="button" @click="saveClient()"
-                class="px-4 py-2 text-sm rounded bg-green-600 text-white">Guardar cliente</button>
+                class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple active:bg-purple-600 disabled:opacity-60 disabled:cursor-not-allowed">
+                <span class="mr-2 flex items-center">
+                    <i class="fas fa-paper-plane"></i>
+                </span>
+                <span>Guardar cliente</span>
+            </button>
         </div>
     </x-modal>
 </div>

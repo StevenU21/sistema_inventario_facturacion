@@ -48,8 +48,8 @@ class SaleController extends Controller
         $suppliers = Entity::where('is_active', true)->where('is_supplier', true)
             ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
 
-    $municipalities = Municipality::orderBy('name')->pluck('name', 'id');
-    return view('admin.sales.create', compact('entities', 'methods', 'warehouses', 'categories', 'brands', 'colors', 'sizes', 'suppliers', 'municipalities'));
+        $municipalities = Municipality::orderBy('name')->pluck('name', 'id');
+        return view('admin.sales.create', compact('entities', 'methods', 'warehouses', 'categories', 'brands', 'colors', 'sizes', 'suppliers', 'municipalities'));
     }
 
     // JSON: devuelve marcas filtradas por categoría
@@ -95,7 +95,7 @@ class SaleController extends Controller
             return response()->json(['message' => 'Parámetros inválidos.'], 422);
         }
 
-        $inventory = \App\Models\Inventory::where('product_variant_id', $variantId)
+        $inventory = Inventory::where('product_variant_id', $variantId)
             ->where('warehouse_id', $warehouseId)
             ->first();
 
@@ -104,7 +104,7 @@ class SaleController extends Controller
         }
 
         // Calcular impuesto por unidad según el producto de la variante
-    $variant = ProductVariant::with('product.tax', 'color', 'size', 'product.brand.category')->find($variantId);
+        $variant = ProductVariant::with('product.tax', 'color', 'size', 'product.brand.category')->find($variantId);
         $product = $variant?->product;
         $tax = $product?->tax;
         $salePrice = (float) ($inventory->sale_price ?? 0);
@@ -325,8 +325,8 @@ class SaleController extends Controller
     {
         $this->authorize('viewAny', Sale::class);
         $term = trim((string) $request->input('q', ''));
-    $limit = (int) $request->input('limit', 5);
-    $limit = max(1, min(5, $limit));
+        $limit = (int) $request->input('limit', 5);
+        $limit = max(1, min(5, $limit));
 
         // Solo productos que han sido vendidos (existen en detalles de ventas)
         $productIds = SaleDetail::query()

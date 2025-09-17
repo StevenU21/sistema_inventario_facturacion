@@ -278,18 +278,16 @@ class EntityController extends Controller
 
         $validator = Validator::make($payload, [
             'first_name' => ['required', 'string', 'min:2', 'max:60'],
-            'last_name' => ['required', 'string', 'min:2', 'max:60'],
-                'identity_card' => ['required', 'string', 'max:30', 'unique:entities,identity_card'],
-                'phone' => ['nullable', 'string', 'max:20', 'unique:entities,phone'],
+            'last_name' => ['nullable', 'string', 'min:2', 'max:60'],
+            'identity_card' => ['nullable', 'string', 'max:30'],
+            'phone' => ['nullable', 'string', 'max:20'],
             'email' => ['nullable', 'string', 'email', 'max:255'],
-            'municipality_id' => ['nullable', 'integer', 'exists:municipalities,id'],
         ], [], [
             'first_name' => 'nombre',
             'last_name' => 'apellido',
             'identity_card' => 'cédula',
             'phone' => 'teléfono',
             'email' => 'correo electrónico',
-            'municipality_id' => 'municipio',
         ]);
 
         if ($validator->fails()) {
@@ -299,7 +297,7 @@ class EntityController extends Controller
             ], 422);
         }
 
-    $data = $validator->validated();
+        $data = $validator->validated();
         // Defaults for a quick client
         $data['ruc'] = $request->input('ruc');
         $data['address'] = $request->input('address');
