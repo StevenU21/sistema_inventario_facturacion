@@ -208,7 +208,7 @@
                             <th class="px-4 py-3 text-right">Deuda</th>
                             <th class="px-4 py-3 text-right">Pagado</th>
                             <th class="px-4 py-3 text-right">Restante</th>
-                            <th class="px-4 py-3 text-right">Fecha</th>
+                            <th class="px-4 py-3 text-center">Fecha</th>
                             <th class="px-4 py-3">Acciones</th>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
