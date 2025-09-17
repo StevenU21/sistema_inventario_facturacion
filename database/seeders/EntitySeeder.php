@@ -97,6 +97,20 @@ class EntitySeeder extends Seeder
                 'is_active' => true,
                 'municipality_id' => 1,
             ],
+            [
+                'first_name' => 'Cliente de Contado',
+                'last_name' => '',
+                'identity_card' => '',
+                'ruc' => '',
+                'email' => '',
+                'phone' => '',
+                'address' => '',
+                'description' => '',
+                'is_client' => true,
+                'is_supplier' => false,
+                'is_active' => true,
+                'municipality_id' => 1,
+            ],
         ];
 
         foreach ($entities as $entity) {
