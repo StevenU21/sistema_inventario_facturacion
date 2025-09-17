@@ -255,7 +255,7 @@
                             <th class="px-4 py-3">Método de pago</th>
                             <th class="px-4 py-3">Tipo de pago</th>
                             <th class="px-4 py-3 text-right">Cantidad</th>
-                            <th class="px-4 py-3 text-right">Precio Unitario (sin imp)</th>
+                            <th class="px-4 py-3 text-right">Precio Unitario</th>
                             <th class="px-4 py-3 text-right">Descuento</th>
                             <th class="px-4 py-3 text-right">Impuesto</th>
                             <th class="px-4 py-3 text-right">Total</th>
@@ -296,16 +296,8 @@
                                         {{ $totalQty > 0 ? $totalQty : '-' }}
                                     </td>
                                     <td class="px-4 py-3 text-sm text-right">C$
-                                        @php
-                                            $firstDetail = $sale->saleDetails->first();
-                                            $unitWithTax = optional($firstDetail)->unit_price;
-                                            $taxPctIdx = optional(optional(optional($firstDetail)->productVariant)->product)->tax->percentage ?? 0;
-                                            $baseUnit = is_null($unitWithTax) ? 0.0 : (float) $unitWithTax;
-                                            if ($taxPctIdx && (float) $taxPctIdx > 0) {
-                                                $baseUnit = $baseUnit / (1 + ((float) $taxPctIdx / 100));
-                                            }
-                                        @endphp
-                                        {{ number_format($baseUnit, 2) }}
+                                        @php $firstUnitPrice = optional($sale->saleDetails->first())->unit_price; @endphp
+                                        {{ number_format($firstUnitPrice ?? 0, 2) }}
                                     </td>
                                     <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($sale->discount_total ?? 0, 2) }}</td>
                                     <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($sale->tax_amount ?? 0, 2) }}

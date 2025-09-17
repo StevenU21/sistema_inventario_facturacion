@@ -69,8 +69,10 @@ class SaleService
             // - base por línea (antes de impuesto) = unitSale * qty - descuento
             // - impuesto por línea = base * %
             // - subtotal por línea = base + impuesto (total con impuesto)
-            $unitPriceWithTax = $unitSale + $unitTaxAmount; // unitario con impuesto (si aplica)
-            $hasDiscount = (bool) ($row['discount'] ?? false);
+            $hasDiscount = false;
+            if (isset($row['discount']) && $row['discount']) {
+                $hasDiscount = true;
+            }
             $discountAmount = (float) ($row['discount_amount'] ?? 0);
             if (!$hasDiscount) {
                 $discountAmount = 0;
@@ -83,8 +85,8 @@ class SaleService
                 'variant' => $variant,
                 'inventory' => $inventory,
                 'quantity' => $qty,
-                // Guardamos unit_price como precio unitario con impuesto para mantener compatibilidad de vistas existentes
-                'unit_price' => round($unitPriceWithTax, 2),
+                // Guardamos unit_price como precio unitario SIN impuesto
+                'unit_price' => round($unitSale, 2),
                 'sub_total' => $lineSubtotal,
                 'discount' => $hasDiscount,
                 'discount_amount' => $discountAmount,
@@ -102,7 +104,10 @@ class SaleService
         $taxPercentageApplied = null;
         foreach ($detailsData as $d) {
             $total += $d['sub_total'];
-            $totalTax += round($d['unit_tax_amount'] * $d['quantity'], 2);
+            // Calcular el impuesto sobre el valor con descuento
+            $lineBase = max(0, ($d['unit_price'] * $d['quantity']) - $d['discount_amount']);
+            $lineTax = round($lineBase * (($d['tax_percentage'] ?? 0) / 100), 2);
+            $totalTax += $lineTax;
             if ($d['tax_percentage']) {
                 $taxPercentageApplied = $d['tax_percentage'];
             }
