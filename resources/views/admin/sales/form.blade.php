@@ -77,7 +77,7 @@
             </div>
             <div class="md:col-span-3 col-span-1 flex items-end">
                 <button type="button" @click="search(1)"
-                    class="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[40px] font-semibold w-50">
+                    class="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white shadow focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[40px] font-semibold w-full">
                     <i class="fas fa-search fa-sm mr-1"></i> Buscar
                 </button>
             </div>
@@ -85,7 +85,7 @@
         <div class="grid grid-cols-1 md:grid-cols-6 gap-3 mt-3">
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Proveedor</span>
-                <select x-model="filters.entity_id"
+                <select x-model="filters.entity_id" @change="search(1)"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Todos</option>
                     @foreach ($suppliers ?? [] as $id => $name)
@@ -95,7 +95,7 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Color</span>
-                <select x-model="filters.color_id"
+                <select x-model="filters.color_id" @change="search(1)"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Todos</option>
                     @foreach ($colors ?? [] as $id => $name)
@@ -105,7 +105,7 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Talla</span>
-                <select x-model="filters.size_id"
+                <select x-model="filters.size_id" @change="search(1)"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Todas</option>
                     @foreach ($sizes ?? [] as $id => $name)
@@ -115,7 +115,7 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Almacén</span>
-                <select x-model="filters.warehouse_id" @change="$dispatch('warehouse-changed', $event.target.value)"
+                <select x-model="filters.warehouse_id" @change="$dispatch('warehouse-changed', $event.target.value); search(1)"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Seleccione</option>
                     @foreach ($warehouses ?? [] as $id => $name)
@@ -125,7 +125,7 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Categoría</span>
-                <select x-model="filters.category_id"
+                <select x-model="filters.category_id" @change="onCategoryChange"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Todas</option>
                     @foreach ($categories ?? [] as $id => $name)
@@ -135,12 +135,12 @@
             </label>
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Marca</span>
-                <select x-model="filters.brand_id"
+                <select x-model="filters.brand_id" @change="search(1)"
                     class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
                     <option value="">Todas</option>
-                    @foreach ($brands ?? [] as $id => $name)
-                        <option value="{{ $id }}">{{ $name }}</option>
-                    @endforeach
+                    <template x-for="b in brandOptions" :key="b.id">
+                        <option :value="b.id" x-text="b.name"></option>
+                    </template>
                 </select>
             </label>
         </div>
@@ -411,6 +411,7 @@
                     size_id: '',
                     warehouse_id: Number(@json(old('warehouse_id'))) || ''
                 },
+                brandOptions: @json(collect($brands ?? [])->map(fn($name,$id)=>['id'=>$id,'name'=>$name])->values()),
                 results: [],
                 loading: false,
                 init() {
@@ -422,6 +423,25 @@
                     window.addEventListener('set-warehouse', (e) => {
                         this.filters.warehouse_id = Number(e.detail) || '';
                     });
+                },
+                async onCategoryChange(e) {
+                    // Reset brand and fetch brands for selected category
+                    this.filters.category_id = e.target.value || '';
+                    this.filters.brand_id = '';
+                    try {
+                        const url = new URL(@json(route('admin.sales.brandsByCategory')));
+                        if (this.filters.category_id) {
+                            url.searchParams.set('category_id', this.filters.category_id);
+                        }
+                        const res = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+                        const data = await res.json();
+                        this.brandOptions = (data && Array.isArray(data.data)) ? data.data : [];
+                    } catch (_) {
+                        this.brandOptions = [];
+                    } finally {
+                        // Trigger search after options are updated
+                        this.search(1);
+                    }
                 },
                 async search(page = 1) {
                     this.loading = true;

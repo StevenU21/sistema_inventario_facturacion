@@ -49,6 +49,23 @@ class SaleController extends Controller
         return view('admin.sales.create', compact('entities', 'methods', 'warehouses', 'categories', 'brands', 'colors', 'sizes', 'suppliers'));
     }
 
+    // JSON: devuelve marcas filtradas por categoría
+    public function brandsByCategory(Request $request)
+    {
+        $this->authorize('create', Sale::class);
+
+        $categoryId = $request->query('category_id');
+        $query = Brand::query();
+        if (!empty($categoryId)) {
+            $query->where('category_id', $categoryId);
+        }
+        $brands = $query->orderBy('name')->get(['id', 'name']);
+
+        return response()->json([
+            'data' => $brands,
+        ]);
+    }
+
     public function store(SaleRequest $request, SaleService $saleService)
     {
         $this->authorize('create', Sale::class);
@@ -84,7 +101,7 @@ class SaleController extends Controller
         }
 
         // Calcular impuesto por unidad según el producto de la variante
-        $variant = ProductVariant::with('product.tax', 'color', 'size', 'product.brand', 'product.category')->find($variantId);
+    $variant = ProductVariant::with('product.tax', 'color', 'size', 'product.brand.category')->find($variantId);
         $product = $variant?->product;
         $tax = $product?->tax;
         $salePrice = (float) ($inventory->sale_price ?? 0);
@@ -130,13 +147,14 @@ class SaleController extends Controller
         $perPage = (int) $request->input('per_page', 10);
 
         $query = ProductVariant::query()
-            ->with(['product.brand', 'product.category'])
+            ->with(['product.brand.category'])
             ->whereHas('product', function ($q2) {
                 $q2->where('status', 'available');
             });
 
         if (!empty($categoryId)) {
-            $query->whereHas('product', function ($sp) use ($categoryId) {
+            // Filtrar por categoría a través de la marca del producto
+            $query->whereHas('product.brand', function ($sp) use ($categoryId) {
                 $sp->where('category_id', $categoryId);
             });
         }
@@ -185,7 +203,7 @@ class SaleController extends Controller
                 'color_name' => $v->color_id ? ($colors[$v->color_id] ?? null) : null,
                 'size_id' => $v->size_id,
                 'size_name' => $v->size_id ? ($sizes[$v->size_id] ?? null) : null,
-                'category_name' => optional($v->product?->category)->name,
+                'category_name' => optional($v->product?->brand?->category)->name,
                 'brand_name' => optional($v->product?->brand)->name,
             ];
         })->values();

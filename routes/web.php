@@ -158,6 +158,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/inventory', [AdminSaleController::class, 'inventory'])->name('inventory');
     // Product search with extended filters for admin sales create
     Route::get('/product-search', [AdminSaleController::class, 'productSearch'])->name('productSearch');
+        // Dependent brands by category for filters
+        Route::get('/brands-by-category', [AdminSaleController::class, 'brandsByCategory'])->name('brandsByCategory');
         Route::get('/', [AdminSaleController::class, 'index'])->name('index');
         Route::get('/search', [AdminSaleController::class, 'search'])->name('search');
         Route::get('/export', [AdminSaleController::class, 'export'])->name('export');
