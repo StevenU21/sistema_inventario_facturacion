@@ -229,6 +229,14 @@
                                             </button>
                                         </form>
                                     @endif
+                                    @if ($quotation->status === 'accepted' && $quotation->sale)
+                                       <a href="{{ route('admin.sales.pdf', $quotation->sale) }}" target="_blank"
+                                          class="inline-flex items-center justify-center h-9 px-3 text-white bg-purple-600 hover:bg-purple-700 rounded-lg focus:outline-none gap-2"
+                                          title="Factura">
+                                            <i class="fas fa-file-invoice"></i>
+                                            <span class="hidden sm:inline">Factura</span>
+                                        </a>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

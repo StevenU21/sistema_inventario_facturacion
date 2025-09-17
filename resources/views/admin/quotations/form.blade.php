@@ -278,7 +278,7 @@
                                 <div class="font-medium text-gray-700 dark:text-gray-200" x-text="it.label"></div>
                                 <input type="hidden" :name="`items[${idx}][product_variant_id]`"
                                     :value="it.product_variant_id">
-                                <input type="hidden" :name="`items[${idx}][warehouse_id]`" :value="it.warehouse_id">
+                                <!-- warehouse_id por línea ya no es requerido en el submit; se infiere -->
                             </td>
                             <td class="px-3 py-2 text-right tabular-nums text-gray-700 dark:text-gray-200">
                                 <span x-text="currency(it.unit_price)"></span>
@@ -358,7 +358,7 @@
                 quotation: {
                     entity_id: Number(@json(old('entity_id'))) || '',
                 },
-                // Selected warehouse at root component level (used for hidden input and inventory fetch)
+                // Almacén seleccionado solo para filtrar búsquedas; no se envía ni valida
                 selectedWarehouseId: Number(@json(old('warehouse_id'))) || '',
                 items: [],
                 totals: {
@@ -450,12 +450,10 @@
                         // Para cotizaciones reutilizamos el endpoint de inventory del módulo de ventas
                         const url = new URL(@json(route('admin.sales.inventory')));
                         const wid = warehouseId || this.selectedWarehouseId || '';
-                        if (!wid) {
-                            alert('Seleccione un almacén para cotizar.');
-                            return;
-                        }
                         url.searchParams.set('product_variant_id', variantId);
-                        url.searchParams.set('warehouse_id', wid);
+                        if (wid) {
+                            url.searchParams.set('warehouse_id', wid);
+                        }
                         const res = await fetch(url.toString(), {
                             headers: {
                                 'Accept': 'application/json'
@@ -466,7 +464,7 @@
                             throw new Error(j.message || 'No se pudo obtener el inventario');
                         }
                         const data = await res.json();
-                        const exists = this.items.find(it => it.product_variant_id === data.product_variant_id && Number(it.warehouse_id) === Number(wid));
+                        const exists = this.items.find(it => it.product_variant_id === data.product_variant_id);
                         if (exists) {
                             exists.quantity += 1;
                             this.recalcItem(exists);
@@ -475,7 +473,7 @@
                         const it = {
                             key: Date.now() + '_' + data.product_variant_id,
                             product_variant_id: data.product_variant_id,
-                            warehouse_id: Number(wid),
+                            warehouse_id: Number(data.warehouse_id || 0),
                             label: data.label,
                             unit_price: Number(data.sale_price || 0),
                             stock: Number(data.stock || 0),

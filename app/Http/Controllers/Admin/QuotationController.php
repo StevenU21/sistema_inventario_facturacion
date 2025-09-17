@@ -72,7 +72,6 @@ class QuotationController extends Controller
             'client.address' => ['nullable', 'string', 'max:255'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_variant_id' => ['required', 'integer', 'exists:product_variants,id'],
-            'items.*.warehouse_id' => ['required', 'integer', 'exists:warehouses,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.discount' => ['nullable', 'boolean'],
             'items.*.discount_amount' => ['nullable', 'numeric', 'min:0'],
@@ -321,11 +320,15 @@ class QuotationController extends Controller
     /**
      * Mark a quotation as accepted.
      */
-    public function accept(Quotation $quotation)
+    public function accept(Quotation $quotation, QuotationService $service)
     {
         $this->authorize('update', $quotation);
+        // Mark quotation as accepted
         $quotation->update(['status' => 'accepted']);
-        return back()->with('success', 'Proforma aceptada correctamente.');
+        // Create corresponding sale
+        app(\App\Services\SaleService::class)->createSaleFromQuotation($quotation);
+        return redirect()->route('admin.quotations.index')
+            ->with('success', 'Proforma aceptada y venta registrada correctamente.');
     }
 
     /**

@@ -143,6 +143,13 @@
                 <div><strong>Vendedor:</strong> {{ $user?->short_name ?? 'N/D' }}</div>
             </div>
         </div>
+        @if(isset($quotation) && $quotation->status === 'accepted' && $quotation->sale)
+        <div style="text-align: right; margin-bottom: 12px;">
+            <a href="{{ route('admin.sales.pdf', $quotation->sale) }}" target="_blank" style="display:inline-block;padding:8px 12px;background:#6b46c1;color:#fff;border-radius:4px;text-decoration:none;font-size:14px;">
+                Imprimir Factura
+            </a>
+        </div>
+        @endif
         <div class="client">
             <strong>Cliente:</strong> {{ $entity?->short_name ?? 'N/D' }}<br>
         </div>

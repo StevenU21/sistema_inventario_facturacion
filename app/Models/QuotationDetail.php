@@ -18,6 +18,7 @@ class QuotationDetail extends Model
         'discount_amount',
         'sub_total',
         'product_variant_id',
+        'warehouse_id',
         'quotation_id',
     ];
 
@@ -31,6 +32,7 @@ class QuotationDetail extends Model
                 'discount_amount',
                 'sub_total',
                 'product_variant_id',
+                'warehouse_id',
                 'quotation_id',
             ]);
     }

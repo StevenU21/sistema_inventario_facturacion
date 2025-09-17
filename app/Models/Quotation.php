@@ -68,6 +68,11 @@ class Quotation extends Model
         return $this->hasMany(QuotationDetail::class);
     }
 
+    public function sale()
+    {
+        return $this->hasOne(Sale::class);
+    }
+
     public function getIsExpiredAttribute(): bool
     {
         return $this->valid_until ? now()->startOfDay()->gt($this->valid_until) : false;

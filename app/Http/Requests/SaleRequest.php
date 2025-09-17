@@ -37,7 +37,6 @@ class SaleRequest extends FormRequest
             'payment_method_id' => ['required_unless:is_credit,1', 'nullable', 'integer', 'exists:payment_methods,id'],
             'is_credit' => ['required', 'boolean'],
             'sale_date' => ['nullable', 'date'],
-            'warehouse_id' => ['required', 'integer', 'exists:warehouses,id'],
 
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_variant_id' => ['required', 'integer', 'exists:product_variants,id'],
@@ -54,18 +53,19 @@ class SaleRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             $items = $this->input('items', []);
-            $warehouseId = $this->input('warehouse_id');
 
             foreach ($items as $i => $row) {
                 // Validación de existencia de inventario y stock
                 $variantId = $row['product_variant_id'] ?? null;
                 $qty = $row['quantity'] ?? 0;
-                if ($variantId && $warehouseId) {
+                $inventory = null;
+                if ($variantId) {
+                    $rowWarehouseId = $row['warehouse_id'] ?? null;
                     $inventory = Inventory::where('product_variant_id', $variantId)
-                        ->where('warehouse_id', $warehouseId)
+                        ->when($rowWarehouseId, fn($q) => $q->where('warehouse_id', $rowWarehouseId))
                         ->first();
                     if (!$inventory) {
-                        $validator->errors()->add("items.$i.product_variant_id", 'No existe inventario para la variante seleccionada en el almacén especificado.');
+                        $validator->errors()->add("items.$i.product_variant_id", 'No existe inventario para la variante seleccionada.');
                     } elseif ($inventory->stock < $qty) {
                         $validator->errors()->add("items.$i.quantity", 'No hay suficiente stock disponible para la variante seleccionada.');
                     }
@@ -76,7 +76,7 @@ class SaleRequest extends FormRequest
                 $discountAmount = $row['discount_amount'] ?? 0;
                 if ($hasDiscount && $discountAmount > 0) {
                     // Opcional: verificar que el descuento no exceda el total de la línea
-                    $unitSale = $inventory->sale_price ?? 0;
+                    $unitSale = $inventory ? ($inventory->sale_price ?? 0) : 0;
                     $lineTotal = $unitSale * $qty;
                     if ($discountAmount > $lineTotal) {
                         $validator->errors()->add("items.$i.discount_amount", 'El monto de descuento no puede ser mayor al total de la línea.');

@@ -19,7 +19,7 @@ class QuotationService
      *
      * Payload esperado:
      * - entity_id: int
-    * - warehouse_id: int (deprecated: use items[*].warehouse_id)
+    * - warehouse_id: int (deprecated; se ignora. El almacén se infiere del inventario)
      * - quotation_date?: Y-m-d
      * - items: [ { product_variant_id:int, quantity:int, discount?:bool, discount_amount?:float } ]
      *
@@ -50,7 +50,7 @@ class QuotationService
 
     /**
      * Persiste la cotización en BD con estado pendiente y genera PDF.
-    * Espera entity_id y items con warehouse_id por línea.
+    * Espera entity_id y items; el almacén se infiere por variante.
      * Devuelve la entidad Quotation creada y el PDF.
      *
      * @return array{quotation: Quotation, pdf: \Barryvdh\DomPDF\PDF}
@@ -84,6 +84,7 @@ class QuotationService
                     'discount' => $d['discount'],
                     'discount_amount' => $d['discount_amount'],
                     'sub_total' => $d['sub_total'],
+                    'warehouse_id' => $d['inventory']?->warehouse_id,
                 ]);
             }
 

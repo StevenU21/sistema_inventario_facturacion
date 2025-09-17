@@ -313,6 +313,8 @@
                                 <div class="font-medium text-gray-700 dark:text-gray-200" x-text="it.label"></div>
                                 <input type="hidden" :name="`items[${idx}][product_variant_id]`"
                                     :value="it.product_variant_id">
+                                <!-- Derivado automáticamente del inventario para no pedirlo al usuario -->
+                                <input type="hidden" :name="`items[${idx}][warehouse_id]`" :value="it.warehouse_id">
                             </td>
                             <td class="px-3 py-2 text-right tabular-nums text-gray-700 dark:text-gray-200">
                                 <span x-text="currency(it.unit_price)"></span>
@@ -448,36 +450,12 @@
                         }));
                         this.recalcAll();
                     }
-                    // Sincronizar almacén seleccionado desde el buscador
-                    this.sale.warehouse_id = Number(@json(old('warehouse_id'))) || null;
-                    window.addEventListener('warehouse-changed', (e) => {
-                        this.sale.warehouse_id = Number(e.detail) || null;
-                    });
-                    // Inicializar valor en el buscador (si venimos de validación)
-                    if (this.sale.warehouse_id) {
-                        window.dispatchEvent(new CustomEvent('set-warehouse', {
-                            detail: this.sale.warehouse_id
-                        }));
-                    }
-                    // Escuchar evento para agregar variante
+                    // Escuchar evento para agregar variante (derivando almacén del renglón, sin exigir selección previa)
                     window.addEventListener('add-item', (e) => {
                         const variantId = Number(e.detail?.product_variant_id || 0);
                         const rowWarehouseId = Number(e.detail?.warehouse_id || 0);
                         if (!variantId) return;
-                        // Si no hay almacén seleccionado, tomarlo del renglón
-                        if (!this.sale.warehouse_id && rowWarehouseId) {
-                            this.sale.warehouse_id = rowWarehouseId;
-                            window.dispatchEvent(new CustomEvent('set-warehouse', {
-                                detail: this.sale.warehouse_id
-                            }));
-                        }
-                        // Validar que el almacén coincida
-                        if (!this.sale.warehouse_id || (rowWarehouseId && this.sale.warehouse_id !==
-                                rowWarehouseId)) {
-                            alert('El producto pertenece a otro almacén. Seleccione el almacén correspondiente.');
-                            return;
-                        }
-                        this.fetchInventory(variantId);
+                        this.fetchInventory(variantId, rowWarehouseId || null);
                     });
                     // If an entity is already selected (old input), try to set the search box text
                     this.$nextTick(() => {
@@ -589,11 +567,13 @@
                         console.error(e);
                     }
                 },
-                async fetchInventory(variantId) {
+                async fetchInventory(variantId, warehouseId = null) {
                     try {
                         const url = new URL(@json(route('admin.sales.inventory')));
                         url.searchParams.set('product_variant_id', variantId);
-                        url.searchParams.set('warehouse_id', this.sale.warehouse_id);
+                        if (warehouseId) {
+                            url.searchParams.set('warehouse_id', warehouseId);
+                        }
                         const res = await fetch(url.toString(), {
                             headers: {
                                 'Accept': 'application/json'
@@ -613,6 +593,7 @@
                         const it = {
                             key: Date.now() + '_' + data.product_variant_id,
                             product_variant_id: data.product_variant_id,
+                            warehouse_id: Number(data.warehouse_id || 0),
                             label: data.label,
                             // We store base sale price without tax
                             unit_price: Number(data.sale_price || 0),
@@ -866,8 +847,7 @@
         }
     </script>
 
-    <!-- Enviar almacén seleccionado al backend -->
-    <input type="hidden" name="warehouse_id" :value="sale.warehouse_id">
+    <!-- warehouse_id removido del envío: se infiere a partir del inventario/variante -->
 
     <!-- Modal: Nuevo cliente rápido -->
     <x-modal maxWidth="xl" title="Nuevo cliente" description="Cree rápidamente un cliente con los datos mínimos">

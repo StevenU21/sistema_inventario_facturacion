@@ -18,9 +18,8 @@ class SaleService
         return DB::transaction(function () use ($payload) {
             $userId = Auth::id();
             $items = $payload['items'] ?? [];
-            $warehouseId = $payload['warehouse_id'];
-
-            $detailsData = $this->calculateDetails($items, $warehouseId);
+            // Derivar inventario desde la variante de producto; no usar warehouse_id del payload
+            $detailsData = $this->calculateDetails($items);
             $totals = $this->calculateTotals($detailsData);
 
             $sale = $this->createSaleRecord($payload, $userId, $totals);
@@ -45,15 +44,20 @@ class SaleService
         });
     }
 
-    private function calculateDetails(array $items, $warehouseId): array
+    private function calculateDetails(array $items): array
     {
         $detailsData = [];
         foreach ($items as $row) {
             $variant = ProductVariant::with(['product.tax'])->findOrFail($row['product_variant_id']);
+            // Buscar inventario por variante; si el item incluye warehouse_id (derivado automáticamente), filtrarlo
+            $rowWarehouseId = $row['warehouse_id'] ?? null;
             $inventory = Inventory::where('product_variant_id', $variant->id)
-                ->where('warehouse_id', $warehouseId)
+                ->when($rowWarehouseId, fn($q) => $q->where('warehouse_id', $rowWarehouseId))
                 ->lockForUpdate()
                 ->first();
+            if (!$inventory) {
+                throw new \RuntimeException('No hay inventario para la variante seleccionada.');
+            }
             $qty = (int) ($row['quantity'] ?? 0);
             $unitSale = (float) ($inventory->sale_price ?? 0);
             $product = $variant->product;
@@ -184,5 +188,39 @@ class SaleService
             'company' => Company::first(),
             'details' => $sale->saleDetails,
         ])->setPaper('letter');
+    }
+
+    /**
+     * Create a Sale record from a given Quotation.
+     */
+    public function createSaleFromQuotation(\App\Models\Quotation $quotation): Sale
+    {
+        // Prepare payload from quotation details
+        $items = $quotation->QuotationDetails->map(function($d) {
+            return [
+                'product_variant_id' => $d->product_variant_id,
+                'quantity' => $d->quantity,
+                'discount' => $d->discount,
+                'discount_amount' => $d->discount_amount,
+                // warehouse derivado automáticamente en la etapa de cotización
+                'warehouse_id' => $d->warehouse_id,
+            ];
+        })->toArray();
+
+        $payload = [
+            'items' => $items,
+            'entity_id' => $quotation->entity_id,
+            'sale_date' => now()->toDateString(),
+            // is_credit, warehouse_id, payment_method_id can be set as needed
+        ];
+
+        $result = $this->createSale($payload);
+        $sale = $result['sale'];
+
+        // Link sale to quotation
+        $sale->quotation_id = $quotation->id;
+        $sale->save();
+
+        return $sale;
     }
 }

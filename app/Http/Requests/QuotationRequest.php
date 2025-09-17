@@ -23,7 +23,6 @@ class QuotationRequest extends FormRequest
     {
         return [
             'entity_id' => ['required', 'integer', 'exists:entities,id'],
-            'warehouse_id' => ['required', 'integer', 'exists:warehouses,id'],
             'quotation_date' => ['nullable', 'date'],
 
             'items' => ['required', 'array', 'min:1'],
@@ -38,7 +37,6 @@ class QuotationRequest extends FormRequest
     {
         return [
             'entity_id' => 'cliente',
-            'warehouse_id' => 'almacén',
             'quotation_date' => 'fecha de cotización',
             'items' => 'items',
             'items.*.product_variant_id' => 'variante de producto',
@@ -53,8 +51,6 @@ class QuotationRequest extends FormRequest
         return [
             'entity_id.required' => 'El :attribute es obligatorio.',
             'entity_id.exists' => 'El :attribute seleccionado no existe.',
-            'warehouse_id.required' => 'El :attribute es obligatorio.',
-            'warehouse_id.exists' => 'El :attribute seleccionado no existe.',
             'quotation_date.date' => 'La :attribute no tiene un formato de fecha válido.',
             'items.required' => 'Debe agregar al menos un producto a la cotización.',
             'items.array' => 'Los :attribute deben ser un arreglo válido.',
@@ -74,17 +70,18 @@ class QuotationRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             $items = $this->input('items', []);
-            $warehouseId = $this->input('warehouse_id');
 
             foreach ($items as $i => $row) {
+                $inventory = null;
                 $variantId = $row['product_variant_id'] ?? null;
                 $qty = (int) ($row['quantity'] ?? 0);
-                if ($variantId && $warehouseId) {
+                if ($variantId) {
+                    $rowWarehouseId = $row['warehouse_id'] ?? null;
                     $inventory = \App\Models\Inventory::where('product_variant_id', $variantId)
-                        ->where('warehouse_id', $warehouseId)
+                        ->when($rowWarehouseId, fn($q) => $q->where('warehouse_id', $rowWarehouseId))
                         ->first();
                     if (!$inventory) {
-                        $validator->errors()->add("items.$i.product_variant_id", 'No existe inventario para la variante seleccionada en el almacén especificado.');
+                        $validator->errors()->add("items.$i.product_variant_id", 'No existe inventario para la variante seleccionada.');
                     } elseif ($inventory->stock < $qty) {
                         $validator->errors()->add("items.$i.quantity", 'No hay suficiente stock disponible para la variante seleccionada.');
                     }
@@ -93,7 +90,7 @@ class QuotationRequest extends FormRequest
                 $hasDiscount = (bool) ($row['discount'] ?? false);
                 $discountAmount = (float) ($row['discount_amount'] ?? 0);
                 if ($hasDiscount && $discountAmount > 0) {
-                    $unitSale = isset($inventory) ? ($inventory->sale_price ?? 0) : 0;
+                    $unitSale = $inventory ? ($inventory->sale_price ?? 0) : 0;
                     $lineTotal = $unitSale * $qty;
                     if ($discountAmount > $lineTotal) {
                         $validator->errors()->add("items.$i.discount_amount", 'El monto de descuento no puede ser mayor al total de la línea.');

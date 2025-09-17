@@ -91,16 +91,16 @@ class SaleController extends Controller
 
         $variantId = (int) $request->query('product_variant_id');
         $warehouseId = (int) $request->query('warehouse_id');
-        if (!$variantId || !$warehouseId) {
+        if (!$variantId) {
             return response()->json(['message' => 'Parámetros inválidos.'], 422);
         }
 
         $inventory = Inventory::where('product_variant_id', $variantId)
-            ->where('warehouse_id', $warehouseId)
+            ->when($warehouseId, fn($q) => $q->where('warehouse_id', $warehouseId))
             ->first();
 
         if (!$inventory) {
-            return response()->json(['message' => 'No existe inventario para la variante en el almacén seleccionado.'], 404);
+            return response()->json(['message' => 'No existe inventario para la variante seleccionada.'], 404);
         }
 
         // Calcular impuesto por unidad según el producto de la variante
@@ -125,7 +125,7 @@ class SaleController extends Controller
 
         return response()->json([
             'product_variant_id' => $variantId,
-            'warehouse_id' => $warehouseId,
+            'warehouse_id' => $inventory->warehouse_id,
             'stock' => (int) ($inventory->stock ?? 0),
             'sale_price' => $salePrice,
             'tax_percentage' => $taxPercentage,

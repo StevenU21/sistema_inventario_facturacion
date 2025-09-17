@@ -67,6 +67,11 @@ class Sale extends Model
         return $this->hasMany(SaleDetail::class);
     }
 
+    public function quotation()
+    {
+        return $this->belongsTo(Quotation::class);
+    }
+
     public function accountReceivable()
     {
         return $this->hasOne(AccountReceivable::class);
