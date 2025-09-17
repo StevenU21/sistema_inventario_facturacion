@@ -23,7 +23,7 @@ class PaymentController extends Controller
 
         $query = $this->buildPaymentsQuery($request);
         $perPage = (int) ($request->input('per_page', 10));
-        $payments = $query->orderByDesc('payment_date')->orderByDesc('id')
+        $payments = $query->orderByDesc('created_at')->orderByDesc('id')
             ->paginate($perPage)
             ->appends($request->all());
 

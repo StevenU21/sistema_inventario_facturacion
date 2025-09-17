@@ -12,7 +12,7 @@
             <span class="text-gray-700 dark:text-gray-200">Método de pago</span>
             <select name="payment_method_id" x-model="sale.payment_method_id" required
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
-                <option value="">Seleccione</option>
+                <option value="">Seleccione el método de pago</option>
                 @foreach ($methods ?? [] as $id => $name)
                     <option value="{{ $id }}" {{ old('payment_method_id') == $id ? 'selected' : '' }}>
                         {{ $name }}</option>
@@ -77,7 +77,8 @@
                         </tr>
                     </template>
                     <template x-for="row in results" :key="row.id">
-                        <tr :class="isSelected(row.id) ? 'bg-purple-50 dark:bg-purple-900/30' : ''" :data-client-row-id="row.id">
+                        <tr :class="isSelected(row.id) ? 'bg-purple-50 dark:bg-purple-900/30' : ''"
+                            :data-client-row-id="row.id">
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.name"></td>
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.identity_card || '-' ">
                             </td>
@@ -92,7 +93,8 @@
                                     </button>
                                 </template>
                                 <template x-if="isSelected(row.id)">
-                                    <span class="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-md bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200">
+                                    <span
+                                        class="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-md bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200">
                                         <i class="fas fa-check-circle"></i> Seleccionado
                                     </span>
                                 </template>
@@ -245,7 +247,7 @@
                             </td>
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="(row.stock ?? '-')"></td>
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200"
-                                x-text="row.unit_price_with_tax != null ? currency(row.unit_price_with_tax) : (row.sale_price != null ? currency(row.sale_price) : '-')">
+                                x-text="row.sale_price != null ? currency(row.sale_price) : (row.unit_price_with_tax != null ? currency(row.unit_price_with_tax) : '-')">
                             </td>
                             <td class="px-3 py-2">
                                 <button type="button"
@@ -285,7 +287,7 @@
                 <thead class="bg-gray-50 dark:bg-gray-800/50">
                     <tr class="text-left text-gray-600 dark:text-gray-300">
                         <th class="px-3 py-2">Producto</th>
-                        <th class="px-3 py-2 text-right">Precio (c/imp)</th>
+                        <th class="px-3 py-2 text-right">Precio (sin imp)</th>
                         <th class="px-3 py-2 text-right">Stock</th>
                         <th class="px-3 py-2 text-right">Cantidad</th>
                         <th class="px-3 py-2 text-right">Descuento</th>
@@ -325,7 +327,7 @@
                                 <label class="inline-flex items-center gap-2 text-xs">
                                     <input type="checkbox" :name="`items[${idx}][discount]`" value="1"
                                         x-model="it.discount" @change="recalc(idx)">
-                                    <span>Aplica</span>
+                                    <span class="text-gray-700 dark:text-gray-200">Aplica</span>
                                 </label>
                                 <div class="mt-1">
                                     <input type="number" min="0" step="0.01"
@@ -401,12 +403,14 @@
                             key: i + '_' + Date.now(),
                             product_variant_id: Number(row.product_variant_id),
                             label: row.label || `Variante #${row.product_variant_id}`,
-                            unit_price: Number(row.unit_price || 0),
+                            unit_price: Number(row.unit_price || row.sale_price || 0),
                             stock: Number(row.stock || 0),
                             quantity: Number(row.quantity || 1),
                             discount: !!row.discount,
                             discount_amount: Number(row.discount_amount || 0),
                             sub_total: Number(row.sub_total || 0),
+                            tax_percentage: Number(row.tax_percentage || 0),
+                            tax_amount: Number(row.tax_amount || 0),
                         }));
                         this.recalcAll();
                     }
@@ -454,7 +458,9 @@
                         }
                         // Notificar selección inicial al buscador de clientes
                         if (this.sale.entity_id) {
-                            window.dispatchEvent(new CustomEvent('selected-entity', { detail: this.sale.entity_id }));
+                            window.dispatchEvent(new CustomEvent('selected-entity', {
+                                detail: this.sale.entity_id
+                            }));
                         }
                     });
                     // Cliente seleccionado desde autocomplete
@@ -466,7 +472,9 @@
                             const input = document.querySelector('#client_search');
                             if (input) input.value = text;
                             // Propagar selección para resaltar en la tabla
-                            window.dispatchEvent(new CustomEvent('selected-entity', { detail: this.sale.entity_id }));
+                            window.dispatchEvent(new CustomEvent('selected-entity', {
+                                detail: this.sale.entity_id
+                            }));
                         }
                     });
                     // Abrir modal desde botón en componente hijo
@@ -515,18 +523,22 @@
                             const input = document.querySelector('#client_search');
                             if (input) input.value = data.text || '';
                             // Notificar selección para resaltar en tabla
-                            window.dispatchEvent(new CustomEvent('selected-entity', { detail: this.sale.entity_id }));
+                            window.dispatchEvent(new CustomEvent('selected-entity', {
+                                detail: this.sale.entity_id
+                            }));
                             // Notificar al listado para insertar y seleccionar al nuevo cliente, con datos suficientes para mostrar
-                            window.dispatchEvent(new CustomEvent('client-added', { detail: {
-                                id: data.id,
-                                name: data.text || undefined,
-                                text: data.text || undefined,
-                                first_name: this.clientForm.first_name || undefined,
-                                last_name: this.clientForm.last_name || undefined,
-                                identity_card: this.clientForm.identity_card || undefined,
-                                phone: this.clientForm.phone || undefined,
-                                email: this.clientForm.email || undefined,
-                            } }));
+                            window.dispatchEvent(new CustomEvent('client-added', {
+                                detail: {
+                                    id: data.id,
+                                    name: data.text || undefined,
+                                    text: data.text || undefined,
+                                    first_name: this.clientForm.first_name || undefined,
+                                    last_name: this.clientForm.last_name || undefined,
+                                    identity_card: this.clientForm.identity_card || undefined,
+                                    phone: this.clientForm.phone || undefined,
+                                    email: this.clientForm.email || undefined,
+                                }
+                            }));
                             this.isModalOpen = false;
                             return;
                         }
@@ -568,13 +580,24 @@
                             key: Date.now() + '_' + data.product_variant_id,
                             product_variant_id: data.product_variant_id,
                             label: data.label,
-                            unit_price: Number(data.unit_price_with_tax || data.sale_price || 0),
+                            // We store base sale price without tax
+                            unit_price: Number(data.sale_price || 0),
                             stock: Number(data.stock || 0),
                             quantity: 1,
                             discount: false,
                             discount_amount: 0,
+                            tax_percentage: Number(data.tax_percentage || 0),
+                            tax_amount: 0,
                             sub_total: 0,
                         };
+                        // Fallback: infer tax percentage if not provided
+                        if (!it.tax_percentage) {
+                            const base = Number(data.sale_price || 0);
+                            const withTax = Number(data.unit_price_with_tax || 0);
+                            if (base > 0 && withTax > base) {
+                                it.tax_percentage = Math.max(0, round2(((withTax / base) - 1) * 100));
+                            }
+                        }
                         this.items.push(it);
                         this.recalcItem(it);
                     } catch (e) {
@@ -587,9 +610,12 @@
                 },
                 recalcItem(it) {
                     const qty = Math.max(1, Number(it.quantity || 1));
-                    const unit = Number(it.unit_price || 0);
+                    const unit = Number(it.unit_price || 0); // base price without tax
                     const disc = it.discount ? Math.max(0, Number(it.discount_amount || 0)) : 0;
-                    it.sub_total = Math.max(0, (unit * qty) - disc);
+                    const base = Math.max(0, (unit * qty) - disc);
+                    const taxPct = Math.max(0, Number(it.tax_percentage || 0));
+                    it.tax_amount = round2(base * (taxPct / 100));
+                    it.sub_total = round2(base + it.tax_amount);
                     this.recalcAll();
                 },
                 recalcAll() {
@@ -597,11 +623,10 @@
                         tax = 0;
                     this.items.forEach(it => {
                         total += Number(it.sub_total || 0);
-                        // No tenemos porcentaje preciso por línea en el cliente; solo aproximamos si se conoce por fetch
-                        // Si llegara tax_percentage/ unit_tax_amount en el endpoint, se podría usar por línea.
+                        tax += Number(it.tax_amount || 0);
                     });
                     this.totals.total = round2(total);
-                    this.totals.tax = 0; // El backend calculará exacto; lo mostramos 0 o podríamos aproximar.
+                    this.totals.tax = round2(tax);
                 },
                 remove(idx) {
                     this.items.splice(idx, 1);
@@ -737,7 +762,8 @@
                         const d = e.detail || {};
                         this.selectedId = Number(d.id) || null;
                         const exists = this.results.some(r => Number(r.id) === Number(d.id));
-                        const displayName = (d.text || d.name || [d.first_name, d.last_name].filter(Boolean).join(' ')).trim() || 'Nuevo cliente';
+                        const displayName = (d.text || d.name || [d.first_name, d.last_name].filter(Boolean).join(
+                            ' ')).trim() || 'Nuevo cliente';
                         const row = {
                             id: d.id,
                             name: displayName,
@@ -752,7 +778,10 @@
                         this.$nextTick(() => {
                             const tr = document.querySelector(`[data-client-row-id="${d.id}"]`);
                             if (tr && typeof tr.scrollIntoView === 'function') {
-                                tr.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                                tr.scrollIntoView({
+                                    block: 'nearest',
+                                    behavior: 'smooth'
+                                });
                             }
                         });
                     });
