@@ -69,7 +69,7 @@
                     <li class="px-6 py-2">
                         <x-ui.submit-link :href="route('admin.payments.index')" :active-class="Route::is('admin.payments.*') ? 'text-gray-800 dark:text-gray-100' : ''" icon="fas fa-money-bill-wave"
                             class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold">
-                            <span class="ml-4">Historia de pagos</span>
+                            <span class="ml-4">Historial de pagos</span>
                         </x-ui.submit-link>
                     </li>
                 </ul>
