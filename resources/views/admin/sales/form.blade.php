@@ -77,7 +77,7 @@
                         </tr>
                     </template>
                     <template x-for="row in results" :key="row.id">
-                        <tr :class="isSelected(row.id) ? 'bg-purple-50 dark:bg-purple-900/30' : ''">
+                        <tr :class="isSelected(row.id) ? 'bg-purple-50 dark:bg-purple-900/30' : ''" :data-client-row-id="row.id">
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.name"></td>
                             <td class="px-3 py-2 text-gray-700 dark:text-gray-200" x-text="row.identity_card || '-' ">
                             </td>
@@ -516,6 +516,17 @@
                             if (input) input.value = data.text || '';
                             // Notificar selección para resaltar en tabla
                             window.dispatchEvent(new CustomEvent('selected-entity', { detail: this.sale.entity_id }));
+                            // Notificar al listado para insertar y seleccionar al nuevo cliente, con datos suficientes para mostrar
+                            window.dispatchEvent(new CustomEvent('client-added', { detail: {
+                                id: data.id,
+                                name: data.text || undefined,
+                                text: data.text || undefined,
+                                first_name: this.clientForm.first_name || undefined,
+                                last_name: this.clientForm.last_name || undefined,
+                                identity_card: this.clientForm.identity_card || undefined,
+                                phone: this.clientForm.phone || undefined,
+                                email: this.clientForm.email || undefined,
+                            } }));
                             this.isModalOpen = false;
                             return;
                         }
@@ -720,6 +731,30 @@
                     // Mantener sincronizado el cliente seleccionado
                     window.addEventListener('selected-entity', (e) => {
                         this.selectedId = Number(e.detail) || null;
+                    });
+                    // Insertar nuevo cliente en resultados al crearlo
+                    window.addEventListener('client-added', (e) => {
+                        const d = e.detail || {};
+                        this.selectedId = Number(d.id) || null;
+                        const exists = this.results.some(r => Number(r.id) === Number(d.id));
+                        const displayName = (d.text || d.name || [d.first_name, d.last_name].filter(Boolean).join(' ')).trim() || 'Nuevo cliente';
+                        const row = {
+                            id: d.id,
+                            name: displayName,
+                            identity_card: d.identity_card || '-',
+                            phone: d.phone || '-',
+                            email: d.email || '-',
+                        };
+                        if (!exists) {
+                            this.results = [row, ...this.results];
+                            this.meta.total = (this.meta.total || 0) + 1;
+                        }
+                        this.$nextTick(() => {
+                            const tr = document.querySelector(`[data-client-row-id="${d.id}"]`);
+                            if (tr && typeof tr.scrollIntoView === 'function') {
+                                tr.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                            }
+                        });
                     });
                 },
                 isSelected(id) {
