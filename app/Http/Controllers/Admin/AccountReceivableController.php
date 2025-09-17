@@ -21,6 +21,10 @@ class AccountReceivableController extends Controller
         $this->authorize('viewAny', AccountReceivable::class);
 
         $query = $this->buildAccountsReceivableQuery($request);
+        // Filtrar por defecto solo estados 'pending' o 'partially_paid' si no se especifica 'status'
+        if (!$request->has('status')) {
+            $query->whereIn('status', ['pending', 'partially_paid']);
+        }
         $perPage = (int) ($request->input('per_page', 10));
         $accounts = $query->orderByDesc('id')
             ->paginate($perPage)

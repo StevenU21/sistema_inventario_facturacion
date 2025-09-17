@@ -204,14 +204,12 @@
                             <th class="px-4 py-3">ID</th>
                             <th class="px-4 py-3">Producto</th>
                             <th class="px-4 py-3">Cliente</th>
-                            <th class="px-4 py-3">Método de pago</th>
-                            <th class="px-4 py-3">Tipo de pago</th>
-                            <th class="px-4 py-3 text-right">Cantidad</th>
-                            <th class="px-4 py-3 text-right">Precio Unitario</th>
-                            <th class="px-4 py-3 text-right">Impuesto</th>
-                            <th class="px-4 py-3 text-right">Total</th>
+                            <th class="px-4 py-3">Estado</th>
+                            <th class="px-4 py-3 text-right">Deuda</th>
+                            <th class="px-4 py-3 text-right">Pagado</th>
+                            <th class="px-4 py-3 text-right">Restante</th>
+                            <th class="px-4 py-3 text-right">Fecha</th>
                             <th class="px-4 py-3">Acciones</th>
-                        </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
                         @forelse ($accounts as $ar)
@@ -246,13 +244,11 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">{{ $client ?: '-' }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $sale?->paymentMethod?->name ?? '-' }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $sale?->is_credit ? 'Crédito' : 'Contado' }}</td>
-                                <td class="px-4 py-3 text-sm text-right">{{ $totalQty > 0 ? $totalQty : '-' }}</td>
-                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($firstUnitPrice ?? 0, 2) }}
-                                </td>
-                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($taxAmount, 2) }}</td>
-                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($total, 2) }}</td>
+                                <td class="px-4 py-3 text-sm">{{ $ar->translated_status }}</td>
+                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($ar->amount_due ?? 0, 2) }}</td>
+                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($ar->amount_paid ?? 0, 2) }}</td>
+                                <td class="px-4 py-3 text-sm text-right">C$ {{ number_format(($ar->amount_due ?? 0) - ($ar->amount_paid ?? 0), 2) }}</td>
+                                <td class="px-4 py-3 text-sm text-right">{{ $ar->formatted_created_at }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2 text-sm">
                                         <a href="{{ route('admin.accounts_receivable.show', $ar) }}" title="Ver detalle"

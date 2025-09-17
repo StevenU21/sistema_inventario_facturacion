@@ -55,15 +55,15 @@
                     x-transition:leave-end="opacity-0 transform scale-95"
                     class="mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 dark:text-gray-400">
                     <li class="px-6 py-2">
-                        <x-ui.submit-link :href="route('admin.accounts_receivable.index')" :active-class="Route::is('admin.accounts_receivable.*') ? 'text-gray-800 dark:text-gray-100' : ''" icon="fas fa-user-clock"
+                        <x-ui.submit-link :href="route('admin.sales.index')" :active-class="Route::is('admin.sales.*') ? 'text-gray-800 dark:text-gray-100' : ''" icon="fas fa-receipt"
                             class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold">
-                            <span class="ml-4">Cuentas por Cobrar</span>
+                            <span class="ml-4">Gestión de Ventas</span>
                         </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
-                        <x-ui.submit-link :href="route('admin.sales.index')" :active-class="Route::is('admin.sales.*') ? 'text-gray-800 dark:text-gray-100' : ''" icon="fas fa-receipt"
+                        <x-ui.submit-link :href="route('admin.accounts_receivable.index')" :active-class="Route::is('admin.accounts_receivable.*') ? 'text-gray-800 dark:text-gray-100' : ''" icon="fas fa-user-clock"
                             class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold">
-                            <span class="ml-4">Historial de Ventas</span>
+                            <span class="ml-4">Cuentas por Cobrar</span>
                         </x-ui.submit-link>
                     </li>
                     <li class="px-6 py-2">
