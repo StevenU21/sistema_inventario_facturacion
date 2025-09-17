@@ -151,6 +151,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Sales (Admin)
     Route::prefix('admin/sales')->name('admin.sales.')->group(function () {
+        // Create & Store
+        Route::get('/create', [AdminSaleController::class, 'create'])->name('create');
+        Route::post('/', [AdminSaleController::class, 'store'])->name('store');
+        // Inventory info for POS create form
+        Route::get('/inventory', [AdminSaleController::class, 'inventory'])->name('inventory');
         Route::get('/', [AdminSaleController::class, 'index'])->name('index');
         Route::get('/search', [AdminSaleController::class, 'search'])->name('search');
         Route::get('/export', [AdminSaleController::class, 'export'])->name('export');

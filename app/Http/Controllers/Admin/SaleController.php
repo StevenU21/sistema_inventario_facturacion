@@ -15,6 +15,10 @@ use App\Models\Company;
 use App\Models\Product;
 use App\Models\SaleDetail;
 use App\Models\ProductVariant;
+use App\Models\Warehouse;
+use App\Models\Category;
+use App\Services\SaleService;
+use App\Http\Requests\SaleRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -24,6 +28,86 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class SaleController extends Controller
 {
     use AuthorizesRequests;
+
+    // Show create sale form (Admin)
+    public function create()
+    {
+        $this->authorize('create', Sale::class);
+
+        // Catálogos
+        $entities = Entity::where('is_active', true)->where('is_client', true)
+            ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
+        $methods = PaymentMethod::pluck('name', 'id');
+        $warehouses = Warehouse::pluck('name', 'id');
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $colors = Color::pluck('name', 'id');
+        $sizes = Size::pluck('name', 'id');
+
+        return view('admin.sales.create', compact('entities', 'methods', 'warehouses', 'categories', 'brands', 'colors', 'sizes'));
+    }
+
+    // Persist new sale using SaleService
+    public function store(SaleRequest $request, SaleService $saleService)
+    {
+        $this->authorize('create', Sale::class);
+
+        try {
+            $result = $saleService->createSale($request->validated());
+            /** @var \App\Models\Sale $sale */
+            $sale = $result['sale'];
+            return redirect()->route('admin.sales.pdf', $sale)->with('success', 'Venta registrada correctamente.');
+        } catch (\Throwable $e) {
+            \Log::error('Error al registrar venta', ['error' => $e->getMessage()]);
+            return back()->withErrors(['error' => 'Ocurrió un error al registrar la venta: ' . $e->getMessage()])
+                ->withInput();
+        }
+    }
+
+    // JSON: obtener información de inventario para una variante en un almacén
+    public function inventory(Request $request)
+    {
+        $this->authorize('create', Sale::class);
+
+        $variantId = (int) $request->query('product_variant_id');
+        $warehouseId = (int) $request->query('warehouse_id');
+        if (!$variantId || !$warehouseId) {
+            return response()->json(['message' => 'Parámetros inválidos.'], 422);
+        }
+
+        $inventory = \App\Models\Inventory::where('product_variant_id', $variantId)
+            ->where('warehouse_id', $warehouseId)
+            ->first();
+
+        if (!$inventory) {
+            return response()->json(['message' => 'No existe inventario para la variante en el almacén seleccionado.'], 404);
+        }
+
+        // Calcular impuesto por unidad según el producto de la variante
+        $variant = ProductVariant::with('product.tax', 'color', 'size', 'product.brand', 'product.category')->find($variantId);
+        $product = $variant?->product;
+        $tax = $product?->tax;
+        $salePrice = (float) ($inventory->sale_price ?? 0);
+        $taxPercentage = $tax ? (float) $tax->percentage : null;
+        $unitTaxAmount = $taxPercentage ? round($salePrice * ($taxPercentage / 100), 2) : 0.0;
+        $unitPriceWithTax = round($salePrice + $unitTaxAmount, 2);
+
+        $label = $product?->name ?? ('Variante #' . $variantId);
+        if ($variant?->name) { $label .= ' / ' . $variant->name; }
+        if ($variant?->color) { $label .= ' / ' . $variant->color->name; }
+        if ($variant?->size) { $label .= ' / ' . $variant->size->name; }
+
+        return response()->json([
+            'product_variant_id' => $variantId,
+            'warehouse_id' => $warehouseId,
+            'stock' => (int) ($inventory->stock ?? 0),
+            'sale_price' => $salePrice,
+            'tax_percentage' => $taxPercentage,
+            'unit_tax_amount' => $unitTaxAmount,
+            'unit_price_with_tax' => $unitPriceWithTax,
+            'label' => $label,
+        ]);
+    }
 
     public function index(Request $request)
     {

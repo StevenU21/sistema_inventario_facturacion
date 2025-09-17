@@ -59,6 +59,11 @@
                         <p class="mt-1 text-white/80 text-sm">Busca, filtra y exporta tus ventas.</p>
                     </div>
                     <div class="flex items-center gap-2">
+                        <a href="{{ route('admin.sales.create') }}"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                            <i class="fas fa-plus"></i>
+                            Registrar venta
+                        </a>
                         <form method="GET" action="{{ route('admin.sales.export') }}">
                             <input type="hidden" name="search" value="{{ request('search') }}">
                             <input type="hidden" name="payment_method_id" value="{{ request('payment_method_id') }}">
