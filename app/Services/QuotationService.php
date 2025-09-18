@@ -28,7 +28,7 @@ class QuotationService
     public function createQuotation(array $payload): array
     {
         $items = $payload['items'] ?? [];
-    $details = $this->calculateDetails($items);
+        $details = $this->calculateDetails($items);
         $totals = $this->calculateTotals($details);
 
         $entity = Entity::find($payload['entity_id']);
@@ -61,7 +61,7 @@ class QuotationService
         $items = $payload['items'] ?? [];
         $entity = Entity::findOrFail($payload['entity_id']);
 
-    $details = $this->calculateDetails($items);
+        $details = $this->calculateDetails($items);
         $totals = $this->calculateTotals($details);
 
         $validUntil = now()->addDays(7)->toDateString();
@@ -113,34 +113,38 @@ class QuotationService
                 ->first();
 
             $qty = (int) ($row['quantity'] ?? 0);
+            // unitSale is price WITHOUT tax (net unit price), same as SaleService
             $unitSale = (float) ($inventory->sale_price ?? 0);
             $tax = $variant->product?->tax;
-            $unitTaxAmount = 0.0;
-            $taxPercentageApplied = null;
-            if ($tax) {
-                $percentage = (float) $tax->percentage;
-                $taxPercentageApplied = $percentage;
-                $unitTaxAmount = round($unitSale * ($percentage / 100), 2);
-            }
+            $taxPercentageApplied = $tax ? (float) $tax->percentage : null; // e.g., 15 for IVA
 
-            $unitPriceWithTax = $unitSale + $unitTaxAmount;
+            // Discount flags/amount
             $hasDiscount = (bool) ($row['discount'] ?? false);
             $discountAmount = (float) ($row['discount_amount'] ?? 0);
             if (!$hasDiscount) {
-                $discountAmount = 0;
+                $discountAmount = 0.0;
             }
-            $lineSubtotal = round(($unitPriceWithTax * $qty) - $discountAmount, 2);
+
+            // Base before tax considering discount
+            $lineBase = max(0, ($unitSale * $qty) - $discountAmount);
+            $lineTax = round($lineBase * (($taxPercentageApplied ?? 0) / 100), 2);
+            $lineSubtotal = round($lineBase + $lineTax, 2);
+
+            // Keep unit_tax_amount for compatibility (tax on one unit at base price), though totals use lineTax
+            $unitTaxAmount = round($unitSale * (($taxPercentageApplied ?? 0) / 100), 2);
 
             $details[] = [
                 'variant' => $variant,
                 'inventory' => $inventory,
                 'quantity' => $qty,
-                'unit_price' => round($unitPriceWithTax, 2),
+                // Store as NET unit price (without tax), same as SaleService
+                'unit_price' => round($unitSale, 2),
                 'sub_total' => $lineSubtotal,
                 'discount' => $hasDiscount,
                 'discount_amount' => $discountAmount,
                 'unit_tax_amount' => $unitTaxAmount,
                 'tax_percentage' => $taxPercentageApplied,
+                'line_tax' => $lineTax,
             ];
         }
         return $details;
@@ -153,7 +157,10 @@ class QuotationService
         $taxPercentageApplied = null;
         foreach ($details as $d) {
             $total += $d['sub_total'];
-            $totalTax += round($d['unit_tax_amount'] * $d['quantity'], 2);
+            // Compute tax on discounted base per line, same as SaleService
+            $lineBase = max(0, ($d['unit_price'] * $d['quantity']) - $d['discount_amount']);
+            $lineTax = round($lineBase * (($d['tax_percentage'] ?? 0) / 100), 2);
+            $totalTax += $lineTax;
             if ($d['tax_percentage']) {
                 $taxPercentageApplied = $d['tax_percentage'];
             }

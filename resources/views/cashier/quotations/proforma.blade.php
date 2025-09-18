@@ -182,12 +182,12 @@
                         <td>{{ $size ? $size : 'N/A' }}</td>
                         <td class="right">{{ $d['quantity'] }}</td>
                         <td class="right">{{ $currency }}
-                            {{ number_format($d['unit_price'] - $d['unit_tax_amount'], 2) }}</td>
+                            {{ number_format($d['unit_price'], 2) }}</td>
                         <td class="right">{{ $currency }} {{ number_format($d['discount_amount'] ?? 0, 2) }}</td>
                         <td class="right">{{ $currency }}
-                            {{ number_format($d['unit_tax_amount'] * $d['quantity'], 2) }}</td>
+                            {{ number_format($d['line_tax'] ?? ($d['unit_tax_amount'] * $d['quantity']), 2) }}</td>
                         <td class="right">{{ $currency }}
-                            {{ number_format($d['sub_total'] - $d['unit_tax_amount'] * $d['quantity'], 2) }}</td>
+                            {{ number_format($d['sub_total'], 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>

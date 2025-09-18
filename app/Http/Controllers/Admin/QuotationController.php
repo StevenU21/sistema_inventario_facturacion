@@ -123,28 +123,36 @@ class QuotationController extends Controller
             $variant = $qd->productVariant;
             $product = $variant?->product;
             $tax = $product?->tax;
-            $salePrice = (float) $qd->unit_price; // ya incluye impuesto en nuestro flujo de cálculo
+            // In quotations, store unit_price as NET (without tax) to match sales logic
+            $unitNetPrice = (float) $qd->unit_price;
             $taxPercentage = $tax ? (float) $tax->percentage : null;
-            $unitTaxAmount = $taxPercentage ? round(($salePrice / (1 + $taxPercentage / 100)) * ($taxPercentage / 100), 2) : 0.0;
+            // Discount handling
+            $discountAmount = (float) ($qd->discount ? ($qd->discount_amount ?? 0) : 0);
+            $qty = (int) $qd->quantity;
+            // Base before tax considering discount
+            $lineBase = max(0, ($unitNetPrice * $qty) - $discountAmount);
+            $lineTax = round($lineBase * (($taxPercentage ?? 0) / 100), 2);
+            $lineSubtotal = round($lineBase + $lineTax, 2);
+            // unit tax amount (for display if needed) based on unit net price
+            $unitTaxAmount = round($unitNetPrice * (($taxPercentage ?? 0) / 100), 2);
 
             $details[] = [
                 'variant' => $variant,
                 'inventory' => null,
-                'quantity' => (int) $qd->quantity,
-                'unit_price' => (float) $qd->unit_price,
-                'sub_total' => (float) $qd->sub_total,
+                'quantity' => $qty,
+                'unit_price' => $unitNetPrice,
+                'sub_total' => $lineSubtotal,
                 'discount' => (bool) $qd->discount,
-                'discount_amount' => (float) $qd->discount_amount,
+                'discount_amount' => $discountAmount,
                 'unit_tax_amount' => $unitTaxAmount,
                 'tax_percentage' => $taxPercentage,
+                'line_tax' => $lineTax,
             ];
         }
 
         $total = array_sum(array_column($details, 'sub_total'));
-        $totalTax = 0.0;
-        foreach ($details as $d) {
-            $totalTax += round($d['unit_tax_amount'] * $d['quantity'], 2);
-        }
+        // total tax as sum of line taxes based on discounted base
+        $totalTax = array_sum(array_column($details, 'line_tax'));
 
         $totals = [
             'sub_total' => max(0, $total - $totalTax),
