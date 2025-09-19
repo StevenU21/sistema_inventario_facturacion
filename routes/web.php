@@ -141,6 +141,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Kardex
     Route::get('kardex', [KardexController::class, 'index'])->name('kardex.index');
+    // AJAX generation of Kardex data
+    Route::post('kardex/generate', [\App\Http\Controllers\Admin\KardexController::class, 'generateAjax'])->name('kardex.generate');
     Route::get('kardex/export', [KardexController::class, 'exportPdf'])->name('kardex.export');
 
     // Purchases

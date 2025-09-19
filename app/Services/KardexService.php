@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Inventory;
 use App\Models\InventoryMovement;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Warehouse;
 use App\Models\Kardex;
 use Carbon\Carbon;
@@ -23,15 +24,21 @@ class KardexService
     /**
      * @param string $metodo 'cpp'|'peps'|'ueps'
      */
-    public function generate(int $productId, ?int $warehouseId = null, ?string $from = null, ?string $to = null, string $metodo = 'cpp', ?int $colorId = null, ?int $sizeId = null): Kardex
+    /**
+     * Genera kardex.
+     * Prioriza variante específica si se proporciona $productVariantId; en ese caso se ignoran colorId/sizeId porque ya pertenecen a la variante.
+     * Mantiene compatibilidad retro: llamadas antiguas sin variant siguen funcionando por producto + color/talla.
+     */
+    public function generate(int $productId, ?int $warehouseId = null, ?string $from = null, ?string $to = null, string $metodo = 'cpp', ?int $colorId = null, ?int $sizeId = null, ?int $productVariantId = null): Kardex
     {
         $kardex = new Kardex();
 
-        [$product, $warehouse] = $this->findProductAndWarehouse($productId, $warehouseId);
+        [$product, $variant, $warehouse] = $this->findProductVariantAndWarehouse($productId, $productVariantId, $warehouseId);
         [$dateFrom, $dateTo] = $this->resolveDateRange($from, $to);
-        $inventoryIds = $this->getInventoryIds($productId, $warehouseId, $colorId, $sizeId);
+        $inventoryIds = $this->getInventoryIds($productId, $warehouseId, $colorId, $sizeId, $productVariantId);
 
         $kardex->product = $product;
+        $kardex->variant = $variant;
         $kardex->warehouse = $warehouse;
         $kardex->date_from = $dateFrom->toDateString();
         $kardex->date_to = $dateTo->toDateString();
@@ -68,18 +75,34 @@ class KardexService
      * Obtiene producto y almacén (si aplica).
      * @return array{0:Product,1:Warehouse|null}
      */
-    private function findProductAndWarehouse(int $productId, ?int $warehouseId): array
+    /**
+     * Obtiene producto, variante (si aplica) y almacén.
+     * @return array{0:Product,1:ProductVariant|null,2:Warehouse|null}
+     */
+    private function findProductVariantAndWarehouse(int $productId, ?int $productVariantId, ?int $warehouseId): array
     {
         $product = Product::findOrFail($productId);
+        $variant = null;
+        if ($productVariantId) {
+            $variant = ProductVariant::where('product_id', $productId)->findOrFail($productVariantId);
+        }
         $warehouse = $warehouseId ? Warehouse::findOrFail($warehouseId) : null;
-        return [$product, $warehouse];
+        return [$product, $variant, $warehouse];
     }
 
     /**
      * Obtiene IDs de inventarios filtrando por variantes del producto y opcionalmente almacén/color/talla.
      */
-    private function getInventoryIds(int $productId, ?int $warehouseId, ?int $colorId, ?int $sizeId)
+    private function getInventoryIds(int $productId, ?int $warehouseId, ?int $colorId, ?int $sizeId, ?int $productVariantId)
     {
+        // Si se especifica la variante, filtramos directamente por ella y omitimos color/talla (ya pertenecen a la variante)
+        if ($productVariantId) {
+            return Inventory::where('product_variant_id', $productVariantId)
+                ->when($warehouseId, fn($q) => $q->where('warehouse_id', $warehouseId))
+                ->pluck('id');
+        }
+
+        // Modo anterior (por producto + filtros color/talla)
         return Inventory::whereHas('productVariant', function ($q) use ($productId, $colorId, $sizeId) {
             $q->where('product_id', $productId);
             if (!is_null($colorId)) {

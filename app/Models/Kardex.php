@@ -12,6 +12,8 @@ class Kardex extends Model
     protected $guarded = [];
 
     public $product;
+    // Variante específica (ProductVariant) cuando el kardex se genera por variante
+    public $variant;
     public $warehouse;
     public $date_from;
     public $date_to;

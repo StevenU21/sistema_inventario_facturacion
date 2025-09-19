@@ -90,105 +90,186 @@
             </ul>
         </section>
 
+        <!-- Script moved BEFORE component usage to avoid 'kardexComponent is not defined' -->
+        <script>
+            // Definir función global antes de que Alpine procese x-data
+            function kardexComponent() {
+                return {
+                    filters: {
+                        product_id: null,
+                        warehouse_id: null,
+                        color_id: null,
+                        size_id: null,
+                        category_id: null,
+                        brand_id: null,
+                        metodo: 'cpp',
+                        from: null,
+                        to: null,
+                        product_variant_id: null,
+                    },
+                    // result siempre será un objeto para evitar errores al acceder a .rows en el template
+                    result: { rows: [], final: null },
+                    loading: false,
+                    errors: [],
+                    async generate() {
+                        this.errors = [];
+                        // Validaciones mínimas
+                        if (!this.filters.product_variant_id && !this.filters.product_id) {
+                            this.errors.push('Seleccione una variante de producto.');
+                        }
+                        if (!this.filters.from) {
+                            this.errors.push('La fecha Desde es obligatoria.');
+                        }
+                        if (this.errors.length) return;
+                        this.loading = true;
+                        try {
+                            const res = await fetch("{{ route('kardex.generate') }}", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify(this.filters)
+                            });
+                            const text = await res.text();
+                            if (!res.ok) {
+                                console.error('Request failed', res.status, text);
+                                this.errors.push('Error al generar el kardex.');
+                                return;
+                            }
+                            try {
+                                const parsed = JSON.parse(text);
+                                // Normalizar estructura para evitar result.rows undefined/null
+                                this.result = {
+                                    ...parsed,
+                                    rows: Array.isArray(parsed?.rows) ? parsed.rows : (Array.isArray(parsed?.data) ? parsed.data : []),
+                                    final: parsed?.final || null,
+                                };
+                            } catch (err) {
+                                console.error('Invalid JSON response:', text);
+                                this.errors.push('Respuesta inválida del servidor.');
+                            }
+                        } catch (e) {
+                            console.error('Fetch error:', e);
+                            this.errors.push('Error de red al generar.');
+                        } finally {
+                            this.loading = false;
+                        }
+                    }
+                }
+            }
+        </script>
         <!-- Filtros -->
-        <section class="mt-4 rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 sm:p-5">
-            <form method="GET" action="{{ route('kardex.index') }}"
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
-                <div class="sm:col-span-2">
-                    <label
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Producto</label>
-                    <select name="product_id" required
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                        <option value="">Seleccionar Producto</option>
-                        @foreach ($products as $id => $name)
-                            <option value="{{ $id }}"
-                                {{ (string) $id === (string) ($productId ?? '') ? 'selected' : '' }}>{{ $name }}
-                            </option>
-                        @endforeach
+        <section class="mt-4 rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 sm:p-5" x-data="kardexComponent()" x-init="
+            window.addEventListener('kardex-variant-picked', e => { filters.product_variant_id = e.detail.product_variant_id; filters.product_id = e.detail.product_id; });
+        ">
+            <form @submit.prevent="generate" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
+                <!-- Selector de variante: ocupa toda la fila -->
+                <div class="sm:col-span-2 lg:col-span-6 mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Selecciona la variante</h3>
+                    <x-kardex.variant-picker
+                        :colors="$colors ?? []"
+                        :sizes="$sizes ?? []"
+                        :product-id="$productId ?? null"
+                        :entities="$entities ?? []"
+                        :categories="$categories ?? []"
+                        :brands="$brands ?? []"
+                    />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Seleccionar Kardex</label>
+                    <select name="metodo" x-model="filters.metodo" class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <option value="cpp">Costo Promedio</option>
+                        <option value="peps">PEPS (FIFO)</option>
+                        <option value="ueps">UEPS (LIFO)</option>
                     </select>
                 </div>
                 <div>
-                    <label
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Color</label>
-                    <select name="color_id"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                        <option value="">Todos los colores</option>
-                        @isset($colors)
-                            @foreach ($colors as $id => $name)
-                                <option value="{{ $id }}"
-                                    {{ (string) $id === (string) ($colorId ?? '') ? 'selected' : '' }}>{{ $name }}
-                                </option>
-                            @endforeach
-                        @endisset
-                    </select>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Desde</label>
+                    <input type="date" x-model="filters.from" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
                 </div>
                 <div>
-                    <label
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Talla</label>
-                    <select name="size_id"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                        <option value="">Todas las tallas</option>
-                        @isset($sizes)
-                            @foreach ($sizes as $id => $name)
-                                <option value="{{ $id }}"
-                                    {{ (string) $id === (string) ($sizeId ?? '') ? 'selected' : '' }}>{{ $name }}
-                                </option>
-                            @endforeach
-                        @endisset
-                    </select>
-                </div>
-                <div>
-                    <label
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Almacén</label>
-                    <select name="warehouse_id"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                        <option value="">Seleccionar Almacén</option>
-                        @foreach ($warehouses as $id => $name)
-                            <option value="{{ $id }}"
-                                {{ (string) $id === (string) ($warehouseId ?? '') ? 'selected' : '' }}>{{ $name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Seleccionar
-                        Kardex</label>
-                    <select name="metodo"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                        <option value="cpp" {{ request('metodo', 'cpp') == 'cpp' ? 'selected' : '' }}>Costo Promedio
-                        </option>
-                        <option value="peps" {{ request('metodo') == 'peps' ? 'selected' : '' }}>PEPS (FIFO)</option>
-                        <option value="ueps" {{ request('metodo') == 'ueps' ? 'selected' : '' }}>UEPS (LIFO)</option>
-                    </select>
-                </div>
-                <div>
-                    <label
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Desde</label>
-                    <input type="date" name="from" value="{{ $from }}" required
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
-                </div>
-                <div>
-                    <label
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Hasta</label>
-                    <input type="date" name="to" value="{{ $to }}"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Hasta</label>
+                    <input type="date" x-model="filters.to" class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
                 </div>
                 <div class="sm:col-span-2 lg:col-span-6 flex gap-2">
-                    <button type="submit"
-                        class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-semibold rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white shadow">
-                        <i class="fas fa-cogs"></i>
-                        Generar
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-semibold rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white shadow" :disabled="loading">
+                        <span x-show="!loading" class="inline-flex items-center gap-2"><i class="fas fa-cogs"></i> Generar</span>
+                        <span x-show="loading" class="inline-flex items-center gap-2"><i class="fas fa-spinner fa-spin"></i> Procesando...</span>
                     </button>
-                    @if (request()->hasAny(['product_id', 'color_id', 'size_id', 'warehouse_id', 'metodo', 'from', 'to']))
-                        <a href="{{ route('kardex.index') }}"
-                            class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
-                            <i class="fas fa-undo"></i>
-                            Limpiar
-                        </a>
-                    @endif
+                    <button type="button" @click="result={rows:[], final:null}; filters={...filters, product_id:null, product_variant_id:null};" class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-undo"></i> Limpiar
+                    </button>
                 </div>
             </form>
+            <template x-if="errors.length">
+                <div class="mt-4 space-y-1">
+                    <template x-for="(err,i) in errors" :key="i">
+                        <div class="text-sm text-red-600 dark:text-red-400" x-text="err"></div>
+                    </template>
+                </div>
+            </template>
+            <div class="mt-4" x-show="result" x-cloak>
+                <div class="mb-4 text-gray-700 dark:text-gray-200">
+                    <p><strong>Producto:</strong> <span x-text="(result && result.product) || ''"></span></p>
+                    <p><strong>Almacén:</strong> <span x-text="(result && result.warehouse) ? result.warehouse : 'Todos'"></span></p>
+                    <p><strong>Rango:</strong> <span x-text="(result && result.date_from) || ''"></span> a <span x-text="(result && result.date_to) || ''"></span></p>
+                    <p><strong>Método:</strong> <span x-text="(result && result.method) || ''"></span></p>
+                </div>
+                <div class="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <table class="min-w-full text-left text-sm">
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                            <tr class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase border-b border-gray-200 dark:border-gray-700">
+                                <th class="px-4 py-3">Fecha y hora</th>
+                                <th class="px-4 py-3">Concepto</th>
+                                <th class="px-4 py-3">Almacén</th>
+                                <th class="px-4 py-3 text-right">Entrada (Cant.)</th>
+                                <th class="px-4 py-3 text-right">Salida (Cant.)</th>
+                                <th class="px-4 py-3 text-right">Existencias</th>
+                                <th class="px-4 py-3 text-right">Costo unitario</th>
+                                <th class="px-4 py-3 text-right">Costo promedio</th>
+                                <th class="px-4 py-3 text-right">Debe</th>
+                                <th class="px-4 py-3 text-right">Haber</th>
+                                <th class="px-4 py-3 text-right">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                            <template x-if="!result || !result.rows || result.rows.length===0">
+                                <tr><td colspan="11" class="px-4 py-3">Sin movimientos en el rango.</td></tr>
+                            </template>
+                            <template x-for="(r,i) in result.rows" :key="i">
+                                <tr class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
+                                    <td class="px-4 py-3 text-sm" x-text="r.date"></td>
+                                    <td class="px-4 py-3 text-sm" x-text="r.concept || ''"></td>
+                                    <td class="px-4 py-3 text-sm" x-text="r.warehouse"></td>
+                                    <td class="px-4 py-3 text-sm text-right" x-text="r.entry_qty"></td>
+                                    <td class="px-4 py-3 text-sm text-right" x-text="r.exit_qty"></td>
+                                    <td class="px-4 py-3 text-sm text-right" x-text="r.balance_qty"></td>
+                                    <td class="px-4 py-3 text-sm text-right" x-text="`C$ ${Number(r.unit_cost).toFixed(2)}`"></td>
+                                    <td class="px-4 py-3 text-sm text-right" x-text="`C$ ${Number(r.avg_cost).toFixed(2)}`"></td>
+                                    <td class="px-4 py-3 text-sm text-right" x-text="`C$ ${Number(r.debe).toFixed(2)}`"></td>
+                                    <td class="px-4 py-3 text-sm text-right" x-text="`C$ ${Number(r.haber).toFixed(2)}`"></td>
+                                    <td class="px-4 py-3 text-sm text-right" x-text="`C$ ${Number(r.saldo).toFixed(2)}`"></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4 text-gray-700 dark:text-gray-200" x-show="result && result.final">
+                    <p><strong>Determinación final del inventario:</strong>
+                        Unidades finales <span x-text="(result && result.final) ? result.final.qty : 0"></span> × Costo promedio
+                        C$ <span x-text="(result && result.final) ? Number(result.final.unit_cost).toFixed(2) : '0.00'"></span>
+                        = <strong>C$ <span x-text="(result && result.final) ? (result.final.qty * result.final.unit_cost).toFixed(2) : '0.00'"></span></strong>
+                    </p>
+                    <p>Saldo final reportado: <strong>C$ <span x-text="(result && result.final) ? Number(result.final.total).toFixed(2) : '0.00'"></span></strong></p>
+                    <div class="mt-3">
+                        <a :href="`{{ route('kardex.export') }}?product_id=${filters.product_id||''}&product_variant_id=${filters.product_variant_id||''}&from=${filters.from||''}&to=${filters.to||''}&metodo=${filters.metodo}`" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
         </section>
 
         @if ($kardexModel)
@@ -266,3 +347,5 @@
         @endif
     </div>
 @endsection
+
+@push('scripts')<!-- (Definición movida arriba) -->@endpush
