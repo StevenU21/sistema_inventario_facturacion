@@ -7,6 +7,7 @@
     'categories' => [],
     'brands' => [],
     'brandsByCategory' => [],
+    'warehouses' => [],
 ])
 
 <fieldset x-data="{
@@ -29,6 +30,7 @@
         entity_id: @js(old('filter.entity_id')),
         category_id: @js(old('filter.category_id')),
         brand_id: @js(old('filter.brand_id')),
+        warehouse_id: @js(old('filter.warehouse_id')),
     },
     // datos para dependencia
     brandsByCategory: @js($brandsByCategory),
@@ -117,6 +119,7 @@
                 entity_id: null,
                 category_id: null,
                 brand_id: null,
+                warehouse_id: null,
             };
             this.filteredBrands = this.brands;
         });
@@ -141,7 +144,7 @@
                     x-ref="variantBadge"></span>
             </template>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
             <label class="block text-sm w-full">
                 <span class="text-gray-700 dark:text-gray-200">Color</span>
                 <select x-model="filters.color_id" @change="search(1)"
@@ -192,6 +195,16 @@
                     </template>
                 </select>
             </label>
+            <label class="block text-sm w-full">
+                <span class="text-gray-700 dark:text-gray-200">Almacén</span>
+                <select x-model="filters.warehouse_id" @change="search(1)"
+                    class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                    <option value="">Todos</option>
+                    @foreach ($warehouses as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+            </label>
         </div>
     </div>
 
@@ -203,13 +216,17 @@
                         <th class="px-3 py-2">Producto</th>
                         <th class="px-3 py-2">Color</th>
                         <th class="px-3 py-2">Talla</th>
+                        <th class="px-3 py-2">Proveedor</th>
+                        <th class="px-3 py-2">Almacenes</th>
+                        <th class="px-3 py-2">Categoría</th>
+                        <th class="px-3 py-2">Marca</th>
                         <th class="px-3 py-2">Acción</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700" x-show="!loading">
                     <template x-if="results.length === 0">
                         <tr>
-                            <td colspan="4" class="px-3 py-6 text-center text-gray-500">Sin resultados</td>
+                            <td colspan="8" class="px-3 py-6 text-center text-gray-500">Sin resultados</td>
                         </tr>
                     </template>
                     <template x-for="row in results" :key="row.id">
@@ -217,6 +234,10 @@
                             <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.product_name"></td>
                             <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.color_name || '-' "></td>
                             <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.size_name || '-' "></td>
+                            <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.entity_name || '-' "></td>
+                            <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.warehouse_names || '-' "></td>
+                            <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.category_name || '-' "></td>
+                            <td class="px-3 py-2 text-gray-900 dark:text-gray-100" x-text="row.brand_name || '-' "></td>
                             <td class="px-3 py-2">
                                 <template x-if="selectedVariantId == row.id">
                                     <span
@@ -236,7 +257,7 @@
                 </tbody>
                 <tbody x-show="loading">
                     <tr>
-                        <td colspan="4" class="px-3 py-6 text-center text-gray-500">Cargando...</td>
+                        <td colspan="8" class="px-3 py-6 text-center text-gray-500">Cargando...</td>
                     </tr>
                 </tbody>
             </table>

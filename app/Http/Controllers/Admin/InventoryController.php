@@ -441,13 +441,14 @@ class InventoryController extends Controller
         $productId = $request->input('product_id');
         $colorId = $request->input('color_id');
         $sizeId = $request->input('size_id');
-        $categoryId = $request->input('category_id');
+    $categoryId = $request->input('category_id'); // ahora se filtrará vía brand->category
         $brandId = $request->input('brand_id');
         $entityId = $request->input('entity_id');
+    $warehouseId = $request->input('warehouse_id');
         $perPage = (int) $request->input('per_page', 10);
 
         $query = ProductVariant::query()
-            ->with(['product.brand', 'product.category'])
+            ->with(['product.brand.category', 'product.entity'])
             ->whereHas('product', function ($q2) {
                 $q2->where('status', 'available');
             });
@@ -462,8 +463,15 @@ class InventoryController extends Controller
             $query->where('size_id', $sizeId);
         }
         if (!empty($categoryId)) {
-            $query->whereHas('product', function ($sp) use ($categoryId) {
+            // Filtrar por categoría a través de la marca asociada al producto
+            $query->whereHas('product.brand', function ($sp) use ($categoryId) {
                 $sp->where('category_id', $categoryId);
+            });
+        }
+        if (!empty($warehouseId)) {
+            // Filtrar variantes que tengan inventario en el almacén indicado
+            $query->whereHas('inventories', function ($inv) use ($warehouseId) {
+                $inv->where('warehouse_id', $warehouseId);
             });
         }
         if (!empty($brandId)) {
@@ -484,12 +492,38 @@ class InventoryController extends Controller
 
         $variants = $query->latest()->paginate($perPage);
 
+        // Pre-cargar nombres de almacenes por variante (lista concatenada)
+        $variantIds = $variants->getCollection()->pluck('id')->all();
+        $warehousesByVariant = [];
+        if (!empty($variantIds)) {
+            $warehousePivot = Inventory::with('warehouse')
+                ->whereIn('product_variant_id', $variantIds)
+                ->get()
+                ->groupBy('product_variant_id')
+                ->map(function ($grp) {
+                    return $grp->pluck('warehouse.name')
+                        ->filter()
+                        ->unique()
+                        ->values();
+                });
+            $warehousesByVariant = $warehousePivot->toArray();
+        }
+
         $colors = Color::whereIn('id', $variants->pluck('color_id')->filter()->unique()->values())
             ->pluck('name', 'id');
         $sizes = Size::whereIn('id', $variants->pluck('size_id')->filter()->unique()->values())
             ->pluck('name', 'id');
 
-        $data = $variants->getCollection()->map(function ($v) use ($colors, $sizes) {
+        $data = $variants->getCollection()->map(function ($v) use ($colors, $sizes, $warehousesByVariant) {
+            $entity = optional($v->product?->entity);
+            $supplierName = null;
+            if ($entity) {
+                $supplierName = trim(implode(' ', array_filter([
+                    $entity->first_name ?? null,
+                    $entity->last_name ?? null,
+                ])));
+            }
+            $warehouseNames = isset($warehousesByVariant[$v->id]) ? implode(', ', $warehousesByVariant[$v->id]) : null;
             return [
                 'id' => $v->id,
                 'product_id' => $v->product_id,
@@ -500,8 +534,10 @@ class InventoryController extends Controller
                 'color_name' => $v->color_id ? ($colors[$v->color_id] ?? null) : null,
                 'size_id' => $v->size_id,
                 'size_name' => $v->size_id ? ($sizes[$v->size_id] ?? null) : null,
-                'category_name' => optional($v->product?->category)->name,
+                'category_name' => optional($v->product?->brand?->category)->name,
                 'brand_name' => optional($v->product?->brand)->name,
+                'entity_name' => $supplierName,
+                'warehouse_names' => $warehouseNames,
                 'label' => optional($v->product)->name,
                 'text' => optional($v->product)->name,
             ];

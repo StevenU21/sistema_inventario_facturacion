@@ -241,7 +241,7 @@
                 <!-- Selector de variante: ocupa toda la fila -->
                 <div class="sm:col-span-2 lg:col-span-6 mb-4">
                     <x-kardex.variant-picker :colors="$colors ?? []" :sizes="$sizes ?? []" :product-id="$productId ?? null" :entities="$entities ?? []"
-                        :categories="$categories ?? []" :brands="$brands ?? []" />
+                        :categories="$categories ?? []" :brands="$brands ?? []" :warehouses="$warehouses ?? []" />
                 </div>
             </form>
             <template x-if="errors.length">
