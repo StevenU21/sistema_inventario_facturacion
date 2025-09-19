@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
         $now = now();
         $driver = DB::getDriverName();
@@ -164,6 +164,105 @@ class DashboardController extends Controller
             $now->copy()->endOfYear()->toDateTimeString(),
         ])->sum('total');
 
+        // Tasa de crecimiento (ventas mes actual vs mes anterior)
+        $prevMonthSales = Sale::whereRaw("$coalesceDate BETWEEN ? AND ?", [
+            $now->copy()->subMonth()->startOfMonth()->toDateTimeString(),
+            $now->copy()->subMonth()->endOfMonth()->toDateTimeString(),
+        ])->sum('total');
+        $growthRate = ($prevMonthSales > 0)
+            ? round((($monthSales - $prevMonthSales) / $prevMonthSales) * 100, 2)
+            : null; // null si no hay base de comparación
+
+        // Ventas cobradas vs pendientes (basado en cuentas por cobrar)
+        // Consideramos ventas de crédito (is_credit = 1) vinculadas a account_receivables
+        $totalCreditDue = DB::table('account_receivables')->sum('amount_due');
+        $totalCreditPaid = DB::table('account_receivables')->sum('amount_paid');
+        $totalCreditPending = $totalCreditDue - $totalCreditPaid; // puede ser 0 o más
+
+        // Deuda total clientes y top deudores (TOP 5)
+        $clientsDebtRaw = DB::table('account_receivables')
+            ->select('entity_id', DB::raw('SUM(amount_due - amount_paid) as debt'))
+            ->groupBy('entity_id')
+            ->havingRaw('debt > 0')
+            ->orderByDesc('debt')
+            ->limit(5)
+            ->get();
+        $totalClientsDebt = $clientsDebtRaw->sum('debt');
+
+        // Obtener nombres clientes para top deudores
+        $topDebtors = collect();
+        if ($clientsDebtRaw->isNotEmpty()) {
+            $entityIds = $clientsDebtRaw->pluck('entity_id');
+            $entitiesMap = Entity::whereIn('id', $entityIds)->get()->keyBy('id');
+            $topDebtors = $clientsDebtRaw->map(function ($row) use ($entitiesMap) {
+                $entity = $entitiesMap->get($row->entity_id);
+                $fullName = $entity ? trim(($entity->first_name ?? '') . ' ' . ($entity->last_name ?? '')) : ('ID #' . $row->entity_id);
+                return [
+                    'entity_id' => $row->entity_id,
+                    'name' => $fullName,
+                    'debt' => round($row->debt, 2),
+                ];
+            });
+        }
+
+        // Heatmap anual estilo GitHub (días del año)
+        $heatmapYear = (int) $request->query('year', $now->year);
+        if ($heatmapYear < 2000 || $heatmapYear > ($now->year + 1)) {
+            $heatmapYear = $now->year;
+        }
+        $yearStart = Carbon::create($heatmapYear, 1, 1, 0, 0, 0, $now->timezone)->startOfDay();
+        $yearEnd = Carbon::create($heatmapYear, 12, 31, 23, 59, 59, $now->timezone)->endOfDay();
+        // Totales por fecha dentro del año
+        $salesByDate = Sale::select(DB::raw("DATE($coalesceDate) as d"), DB::raw('SUM(total) as total'))
+            ->whereRaw("$coalesceDate BETWEEN ? AND ?", [
+                $yearStart->toDateTimeString(),
+                $yearEnd->toDateTimeString(),
+            ])
+            ->groupBy('d')
+            ->pluck('total', 'd');
+
+        // Alinear inicio calendario a domingo anterior y final a sábado posterior
+        $calendarStart = $yearStart->copy()->startOfWeek(Carbon::SUNDAY);
+        $calendarEnd = $yearEnd->copy()->endOfWeek(Carbon::SATURDAY);
+        $weeks = [];
+        $maxDayTotal = 0;
+        $cursorDay = $calendarStart->copy();
+        $base = $calendarStart->copy();
+        while ($cursorDay <= $calendarEnd) {
+            $weekIndex = intdiv($base->diffInDays($cursorDay), 7);
+            $dow = $cursorDay->dayOfWeek; // 0 domingo
+            $dateKey = $cursorDay->toDateString();
+            $val = 0;
+            if ($cursorDay->year === $heatmapYear && isset($salesByDate[$dateKey])) {
+                $val = (float) $salesByDate[$dateKey];
+                if ($val > $maxDayTotal) $maxDayTotal = $val;
+            }
+            $isFuture = ($heatmapYear === $now->year) && $cursorDay->greaterThan($now);
+            $weeks[$weekIndex][$dow] = [
+                'date' => $dateKey,
+                'v' => round($val, 2),
+                'in_year' => $cursorDay->year === $heatmapYear,
+                'future' => $isFuture,
+            ];
+            $cursorDay->addDay();
+        }
+        ksort($weeks);
+        foreach ($weeks as $wi => &$week) {
+            for ($d = 0; $d < 7; $d++) {
+                if (!isset($week[$d])) {
+                    $week[$d] = [
+                        'date' => null,
+                        'v' => 0,
+                        'in_year' => false,
+                        'future' => false,
+                    ];
+                }
+            }
+            ksort($week);
+        }
+        unset($week);
+        $yearsRange = range($now->year - 4, $now->year);
+
         return view('dashboard', [
             'products' => $products,
             'entities' => $entities,
@@ -188,6 +287,21 @@ class DashboardController extends Controller
             'todaySales' => $todaySales,
             'monthSales' => $monthSales,
             'yearSales' => $yearSales,
+            // Nuevas métricas
+            'growthRate' => $growthRate, // porcentaje o null
+            'prevMonthSales' => $prevMonthSales,
+            'totalCreditDue' => $totalCreditDue,
+            'totalCreditPaid' => $totalCreditPaid,
+            'totalCreditPending' => $totalCreditPending,
+            'totalClientsDebt' => round($totalClientsDebt, 2),
+            'topDebtors' => $topDebtors,
+            // Heatmap anual
+            'heatmapYear' => $heatmapYear,
+            'heatmapWeeks' => $weeks,
+            'heatmapMax' => $maxDayTotal,
+            'heatmapCalendarStart' => $calendarStart->toDateString(),
+            'heatmapCalendarEnd' => $calendarEnd->toDateString(),
+            'yearsRange' => $yearsRange,
         ]);
     }
 }

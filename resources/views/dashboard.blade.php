@@ -143,7 +143,7 @@
                         <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Mejor Mes</p>
                         <p class="mt-1 text-sm font-medium text-gray-600 dark:text-gray-300">{{ $bestMonthLabel ?? '---' }}
                         </p>
-                        <p class="mt-1 text-lg font-semibold text-gray-700 dark:text-gray-100">$
+                        <p class="mt-1 text-lg font-semibold text-gray-700 dark:text-gray-100">C$
                             {{ number_format($bestMonthAmount, 2) }}</p>
                     </div>
                     <div class="p-2 rounded-lg bg-gradient-to-br from-fuchsia-500/10 to-fuchsia-500/5 text-fuchsia-400">
@@ -157,7 +157,7 @@
                 <div class="flex items-start justify-between">
                     <div>
                         <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total 12 Meses</p>
-                        <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100">$
+                        <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100">C$
                             {{ number_format($totalSales, 2) }}</p>
                     </div>
                     <div class="p-2 rounded-lg bg-gradient-to-br from-amber-500/10 to-amber-500/5 text-amber-400">
@@ -167,66 +167,200 @@
             </div>
         </div>
 
-        <!-- Reportes periódicos -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <!-- Reportes periódicos y KPIs financieros -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4 mt-6">
+            <!-- Ventas Hoy -->
             <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4">
-                <p class="text-xs font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Hoy</p>
-                <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100">$
-                    {{ number_format($todaySales, 2) }}
+                <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Hoy</p>
+                <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100">C$
+                    {{ number_format($todaySales, 2) }}</p>
+            </div>
+            <!-- Ventas Mes -->
+            <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4">
+                <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Mes</p>
+                <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100">C$
+                    {{ number_format($monthSales, 2) }}</p>
+            </div>
+            <!-- Ventas Año -->
+            <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4">
+                <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Año</p>
+                <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100">C$
+                    {{ number_format($yearSales, 2) }}</p>
+            </div>
+            <!-- Crecimiento Mes -->
+            <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4">
+                <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Crecimiento Mes</p>
+                <p
+                    class="mt-2 text-2xl font-semibold flex items-center gap-2 {{ ($growthRate ?? 0) > 0 ? 'text-emerald-600 dark:text-emerald-400' : (($growthRate ?? 0) < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-gray-700 dark:text-gray-100') }}">
+                    @if (!is_null($growthRate))
+                        <span>{{ $growthRate > 0 ? '+' : '' }}{{ number_format($growthRate, 2) }}%</span>
+                        @if ($growthRate > 0)
+                            <i class="fas fa-arrow-trend-up"></i>
+                        @elseif($growthRate < 0)
+                            <i class="fas fa-arrow-trend-down"></i>
+                        @else
+                            <i class="fas fa-minus"></i>
+                        @endif
+                    @else
+                        <span class="text-xs font-medium text-gray-400">Sin datos previos</span>
+                    @endif
                 </p>
             </div>
+            <!-- Crédito Cobrado -->
             <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4">
-                <p class="text-xs font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Mes</p>
-                <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100">$
-                    {{ number_format($monthSales, 2) }}
+                <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Crédito Cobrado</p>
+                <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100">C$
+                    {{ number_format($totalCreditPaid, 2) }}</p>
+                <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">de C$ {{ number_format($totalCreditDue, 2) }}
                 </p>
             </div>
+            <!-- Crédito Pendiente -->
             <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4">
-                <p class="text-xs font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Año</p>
-                <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100">$
-                    {{ number_format($yearSales, 2) }}
-                </p>
+                <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Crédito Pendiente</p>
+                <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100">C$
+                    {{ number_format($totalCreditPending, 2) }}</p>
+                <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">Saldo Clientes</p>
             </div>
         </div>
 
-        <!-- Gráficos principales -->
+        <!-- Heatmap Anual (estilo GitHub) -->
+        <div class="mt-10">
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow">
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide">Actividad de Ventas
+                            por Día</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $heatmapYear }}
+                            ({{ $heatmapCalendarStart }} → {{ $heatmapCalendarEnd }})</p>
+                    </div>
+                    <form method="GET" action="{{ route('dashboard.index') }}" class="flex items-center gap-2">
+                        <label class="text-xs text-gray-500 dark:text-gray-400">Año:</label>
+                        <select name="year" onchange="this.form.submit()"
+                            class="text-xs rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:ring-indigo-500 focus:border-indigo-500">
+                            @foreach ($yearsRange as $y)
+                                <option value="{{ $y }}" {{ $y == $heatmapYear ? 'selected' : '' }}>
+                                    {{ $y }}</option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
+                <div class="overflow-x-auto pb-2" id="yearly-heatmap">
+                    <div class="flex items-start gap-1">
+                        <!-- Weeks -->
+                        @php
+                            $monthMarkers = [];
+                        @endphp
+                        @foreach ($heatmapWeeks as $weekIndex => $week)
+                            @php
+                                // Determinar mes representativo (día del medio de la semana)
+                                $middleDay =
+                                    collect($week)->filter(fn($d) => $d['in_year'])->values()->get(3) ??
+                                    collect($week)->first();
+                                $monthNum = null;
+                                if ($middleDay && $middleDay['date']) {
+                                    $monthNum = (int) \Illuminate\Support\Carbon::parse($middleDay['date'])->format(
+                                        'n',
+                                    );
+                                    if (!isset($monthMarkers[$monthNum])) {
+                                        $monthMarkers[$monthNum] = $weekIndex; // primera semana donde aparece el mes
+                                    }
+                                }
+                            @endphp
+                            <div class="flex flex-col gap-1">
+                                @foreach ($week as $dow => $cell)
+                                    @php
+                                        $val = $cell['v'];
+                                        $future = $cell['future'];
+                                        $inYear = $cell['in_year'];
+                                        $date = $cell['date'];
+                                        $ratio = $heatmapMax > 0 ? $val / $heatmapMax : 0;
+                                        // Escala 5 niveles similar GitHub
+                                        if (!$inYear) {
+                                            $colorClass = 'bg-transparent';
+                                        } elseif ($future) {
+                                            $colorClass = 'bg-gray-200 dark:bg-gray-700 opacity-30';
+                                        } elseif ($val == 0) {
+                                            $colorClass = 'bg-slate-200 dark:bg-gray-800';
+                                        } elseif ($ratio < 0.25) {
+                                            $colorClass = 'bg-emerald-200 dark:bg-emerald-900/50';
+                                        } elseif ($ratio < 0.5) {
+                                            $colorClass = 'bg-emerald-300 dark:bg-emerald-800/70';
+                                        } elseif ($ratio < 0.75) {
+                                            $colorClass = 'bg-emerald-500 dark:bg-emerald-700';
+                                        } else {
+                                            $colorClass = 'bg-emerald-700 dark:bg-emerald-500';
+                                        }
+                                    @endphp
+                                    <div class="group relative w-3 h-3 rounded-sm {{ $colorClass }} transition-colors"
+                                        @if ($date) data-date="{{ $date }}" data-value="{{ $val }}" @endif>
+                                        <div
+                                            class="pointer-events-none opacity-0 group-hover:opacity-100 transition bg-gray-900 text-white text-[10px] px-2 py-1 rounded shadow absolute z-10 -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                                            @if ($date)
+                                                <span
+                                                    class="font-medium">{{ $val > 0 ? 'C$ ' . number_format($val, 2) : 'Sin ventas' }}</span>
+                                                <span class="ml-1 text-gray-300">{{ $date }}</span>
+                                            @else
+                                                <span>&nbsp;</span>
+                                            @endif
+                                            <span
+                                                class="absolute w-2 h-2 bg-gray-900 rotate-45 left-1/2 -translate-x-1/2 -bottom-1"></span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endforeach
+                    </div>
+                    <!-- Meses labels -->
+                    <div class="flex mt-2 ml-0.5 text-[10px] text-gray-500 dark:text-gray-400 select-none relative">
+                        @php
+                            $monthNames = [
+                                1 => 'Ene',
+                                'Feb',
+                                'Mar',
+                                'Abr',
+                                'May',
+                                'Jun',
+                                'Jul',
+                                'Ago',
+                                'Sep',
+                                'Oct',
+                                'Nov',
+                                'Dic',
+                            ];
+                            $totalWeeks = count($heatmapWeeks);
+                        @endphp
+                        @foreach ($monthMarkers as $m => $wIndex)
+                            @php
+                                $leftPercent = ($wIndex / $totalWeeks) * 100;
+                            @endphp
+                            <span class="absolute" style="left:{{ $leftPercent }}%">{{ $monthNames[$m] }}</span>
+                        @endforeach
+                    </div>
+                    <!-- Leyenda -->
+                    <div class="flex items-center gap-2 mt-4 text-[10px] text-gray-500 dark:text-gray-400">
+                        <span>Menos</span>
+                        <div class="flex gap-1">
+                            <span class="w-3 h-3 rounded-sm bg-slate-200 dark:bg-gray-800"></span>
+                            <span class="w-3 h-3 rounded-sm bg-emerald-200 dark:bg-emerald-900/50"></span>
+                            <span class="w-3 h-3 rounded-sm bg-emerald-300 dark:bg-emerald-800/70"></span>
+                            <span class="w-3 h-3 rounded-sm bg-emerald-500 dark:bg-emerald-700"></span>
+                            <span class="w-3 h-3 rounded-sm bg-emerald-700 dark:bg-emerald-500"></span>
+                        </div>
+                        <span>Más</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos principales (componentes) -->
         <div class="mt-8 grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <!-- Ventas por mes -->
-            <div
-                class="xl:col-span-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide">Ventas por Mes</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Últimos 12 meses</p>
-                    </div>
-                </div>
-                <div class="chart-box"><canvas id="chartMonthly"></canvas></div>
-            </div>
-            <!-- Ventas por hora -->
-            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide">Ventas por Hora
-                        </h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Hoy</p>
-                    </div>
-                </div>
-                <div class="chart-box"><canvas id="chartHourly"></canvas></div>
-            </div>
+            <x-dashboard.monthly-sales-chart :labels="$monthsLabels" :totals="$monthsTotals" />
+            <x-dashboard.hourly-sales-chart :labels="$hoursLabels" :totals="$hoursTotals" />
         </div>
 
-        <!-- Gráfico diario y tablas -->
+        <!-- Gráfico diario y tablas (componentes) -->
         <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div
-                class="lg:col-span-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide">Ventas por Día</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Últimos 14 días</p>
-                    </div>
-                </div>
-                <div class="chart-box"><canvas id="chartDaily"></canvas></div>
-            </div>
+            <x-dashboard.daily-sales-chart :labels="$daysLabels" :totals="$daysTotals" />
             <!-- Top productos -->
             <div
                 class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow flex flex-col">
@@ -251,11 +385,12 @@
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                     <td class="py-2 px-3 text-gray-700 dark:text-gray-300 font-medium">
                                         {{ $p->product_name }}</td>
-                                    <td class="py-2 px-3 text-gray-600 dark:text-gray-400">{{ $p->color_name ?? '-' }}</td>
+                                    <td class="py-2 px-3 text-gray-600 dark:text-gray-400">{{ $p->color_name ?? '-' }}
+                                    </td>
                                     <td class="py-2 px-3 text-gray-600 dark:text-gray-400">{{ $p->size_name ?? '-' }}</td>
                                     <td class="py-2 px-3 text-right text-gray-700 dark:text-gray-300">{{ $p->qty_total }}
                                     </td>
-                                    <td class="py-2 px-3 text-right text-gray-700 dark:text-gray-300">$
+                                    <td class="py-2 px-3 text-right text-gray-700 dark:text-gray-300">C$
                                         {{ number_format($p->revenue, 2) }}</td>
                                 </tr>
                             @empty
@@ -270,8 +405,8 @@
             </div>
         </div>
 
-        <!-- Top clientes -->
-        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Top clientes y Deudores -->
+        <div class="mt-8 grid grid-cols-1 2xl:grid-cols-3 gap-6">
             <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow">
                 <div class="flex items-start justify-between mb-3">
                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide">Top Clientes (30d)
@@ -294,7 +429,7 @@
                                         {{ $c->client_name }}</td>
                                     <td class="py-2 px-3 text-right text-gray-700 dark:text-gray-300">
                                         {{ $c->sales_count }}</td>
-                                    <td class="py-2 px-3 text-right text-gray-700 dark:text-gray-300">$
+                                    <td class="py-2 px-3 text-right text-gray-700 dark:text-gray-300">C$
                                         {{ number_format($c->total_amount, 2) }}</td>
                                 </tr>
                             @empty
@@ -307,7 +442,52 @@
                     </table>
                 </div>
             </div>
-            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow">
+            <!-- Deuda Clientes -->
+            <div
+                class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow flex flex-col">
+                <div class="flex items-start justify-between mb-3">
+                    <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide">Top Deudores</h3>
+                </div>
+                <div class="overflow-x-auto -mx-3 flex-1">
+                    <table class="min-w-full text-xs">
+                        <thead>
+                            <tr
+                                class="text-left text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                                <th class="py-2 px-3 font-medium">Cliente</th>
+                                <th class="py-2 px-3 font-medium text-right">Deuda</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            @forelse($topDebtors as $d)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                    <td class="py-2 px-3 text-gray-700 dark:text-gray-300 font-medium">{{ $d['name'] }}
+                                    </td>
+                                    <td class="py-2 px-3 text-right text-gray-700 dark:text-gray-300">C$
+                                        {{ number_format($d['debt'], 2) }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="py-4 px-3 text-center text-gray-500 dark:text-gray-400">Sin
+                                        deudas</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                        <tfoot>
+                            <tr class="border-t border-gray-200 dark:border-gray-700">
+                                <td
+                                    class="py-2 px-3 text-right text-[11px] font-semibold text-gray-500 dark:text-gray-400">
+                                    Total</td>
+                                <td
+                                    class="py-2 px-3 text-right text-[11px] font-semibold text-gray-700 dark:text-gray-200">
+                                    C$ {{ number_format($totalClientsDebt, 2) }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <!-- Notas -->
+            <div
+                class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow hidden 2xl:block">
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide mb-4">Notas / Acciones
                     Rápidas</h3>
                 <ul class="space-y-3 text-xs text-gray-600 dark:text-gray-400">
@@ -325,160 +505,7 @@
     </div>
 
     @push('scripts')
+        <!-- Librería Chart.js (los gráficos se renderizan en componentes Blade separados) -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const monthlyCanvas = document.getElementById('chartMonthly');
-                const hourlyCanvas = document.getElementById('chartHourly');
-                const dailyCanvas = document.getElementById('chartDaily');
-                if (!monthlyCanvas || !hourlyCanvas || !dailyCanvas || !window.Chart) return;
-                const monthlyCtx = monthlyCanvas.getContext('2d');
-                const hourlyCtx = hourlyCanvas.getContext('2d');
-                const dailyCtx = dailyCanvas.getContext('2d');
-
-                const baseGrid = 'rgba(148,163,184,0.15)';
-                const baseTicks = '#94a3b8';
-                const fontFamily = 'Inter, system-ui, sans-serif';
-                const moneyFmt = v => '$ ' + new Intl.NumberFormat('es-NI', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                }).format(v);
-
-                // Data desde backend
-                const monthsLabels = @json($monthsLabels);
-                const monthsTotals = @json($monthsTotals);
-                const hoursLabels = @json($hoursLabels);
-                const hoursTotals = @json($hoursTotals);
-                const daysLabels = @json($daysLabels);
-                const daysTotals = @json($daysTotals);
-
-                const commonOptions = {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(30,41,59,0.9)',
-                            titleColor: '#f1f5f9',
-                            bodyColor: '#e2e8f0',
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            borderWidth: 1,
-                            padding: 10,
-                            callbacks: {
-                                label: ctx => moneyFmt(ctx.parsed.y)
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                color: baseGrid
-                            },
-                            ticks: {
-                                color: baseTicks,
-                                font: {
-                                    family: fontFamily
-                                }
-                            }
-                        },
-                        y: {
-                            grid: {
-                                color: baseGrid
-                            },
-                            ticks: {
-                                color: baseTicks,
-                                font: {
-                                    family: fontFamily
-                                },
-                                callback: v => '$' + v
-                            }
-                        }
-                    }
-                };
-
-                // Crear gradiente correcto para Chart.js (no acepta string CSS de gradient)
-                const createBarGradient = (ctx) => {
-                    const g = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
-                    g.addColorStop(0, 'rgba(99,102,241,0.9)');
-                    g.addColorStop(1, 'rgba(79,70,229,0.35)');
-                    return g;
-                };
-                const monthlyGradient = createBarGradient(monthlyCtx);
-
-                new Chart(monthlyCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: monthsLabels,
-                        datasets: [{
-                            label: 'Ventas',
-                            data: monthsTotals,
-                            borderRadius: 6,
-                            backgroundColor: monthlyGradient,
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        ...commonOptions,
-                        scales: {
-                            ...commonOptions.scales,
-                            y: {
-                                ...commonOptions.scales.y,
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-
-                new Chart(hourlyCtx, {
-                    type: 'line',
-                    data: {
-                        labels: hoursLabels,
-                        datasets: [{
-                            label: 'Ventas',
-                            data: hoursTotals,
-                            fill: true,
-                            tension: .35,
-                            borderColor: 'rgba(16,185,129,0.9)',
-                            backgroundColor: 'rgba(16,185,129,0.15)',
-                            pointRadius: 3,
-                            pointBackgroundColor: 'rgba(16,185,129,1)',
-                            pointBorderWidth: 0
-                        }]
-                    },
-                    options: commonOptions
-                });
-
-                new Chart(dailyCtx, {
-                    type: 'line',
-                    data: {
-                        labels: daysLabels,
-                        datasets: [{
-                            label: 'Ventas',
-                            data: daysTotals,
-                            fill: true,
-                            tension: .25,
-                            borderColor: 'rgba(236,72,153,0.9)',
-                            backgroundColor: 'rgba(236,72,153,0.15)',
-                            pointRadius: 0,
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        ...commonOptions,
-                        elements: {
-                            line: {
-                                borderJoinStyle: 'round'
-                            }
-                        },
-                    }
-                });
-            });
-        </script>
     @endpush
 @endsection
