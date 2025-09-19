@@ -27,11 +27,7 @@
 
     <script src="{{ asset('js/init-alpine.js') }}"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" defer></script>
-
-    <script src="{{ asset('js/charts-lines.js') }}" defer></script>
-    <script src="{{ asset('js/charts-pie.js') }}" defer></script>
+    {{-- Chart.js se carga de forma diferida sólo en las vistas que lo necesitan mediante @push('scripts') --}}
 </head>
 
 <body>
@@ -77,6 +73,8 @@
             }
         }, 7000);
     </script>
+    {{-- Stack for page-specific scripts (e.g., dashboard charts) --}}
+    @stack('scripts')
 </body>
 
 </html>

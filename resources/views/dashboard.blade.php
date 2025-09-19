@@ -28,6 +28,23 @@
                 will-change: background-position;
             }
 
+            /* Tamaños compactos para los gráficos */
+            .chart-box {
+                height: 170px;
+            }
+
+            @media (min-width: 640px) {
+                .chart-box {
+                    height: 190px;
+                }
+            }
+
+            @media (min-width: 1024px) {
+                .chart-box {
+                    height: 200px;
+                }
+            }
+
             @keyframes gradientShift {
                 0% {
                     background-position: 100% 50%;
@@ -183,7 +200,7 @@
                         <p class="text-xs text-gray-500 dark:text-gray-400">Últimos 12 meses</p>
                     </div>
                 </div>
-                <canvas id="chartMonthly" height="120"></canvas>
+                <div class="chart-box"><canvas id="chartMonthly"></canvas></div>
             </div>
             <!-- Ventas por hora -->
             <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow">
@@ -194,7 +211,7 @@
                         <p class="text-xs text-gray-500 dark:text-gray-400">Hoy</p>
                     </div>
                 </div>
-                <canvas id="chartHourly" height="120"></canvas>
+                <div class="chart-box"><canvas id="chartHourly"></canvas></div>
             </div>
         </div>
 
@@ -208,7 +225,7 @@
                         <p class="text-xs text-gray-500 dark:text-gray-400">Últimos 14 días</p>
                     </div>
                 </div>
-                <canvas id="chartDaily" height="120"></canvas>
+                <div class="chart-box"><canvas id="chartDaily"></canvas></div>
             </div>
             <!-- Top productos -->
             <div
@@ -310,146 +327,157 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
         <script>
-            const monthlyCtx = document.getElementById('chartMonthly').getContext('2d');
-            const hourlyCtx = document.getElementById('chartHourly').getContext('2d');
-            const dailyCtx = document.getElementById('chartDaily').getContext('2d');
+            document.addEventListener('DOMContentLoaded', () => {
+                const monthlyCanvas = document.getElementById('chartMonthly');
+                const hourlyCanvas = document.getElementById('chartHourly');
+                const dailyCanvas = document.getElementById('chartDaily');
+                if (!monthlyCanvas || !hourlyCanvas || !dailyCanvas || !window.Chart) return;
+                const monthlyCtx = monthlyCanvas.getContext('2d');
+                const hourlyCtx = hourlyCanvas.getContext('2d');
+                const dailyCtx = dailyCanvas.getContext('2d');
 
-            const baseGrid = 'rgba(148,163,184,0.15)';
-            const baseTicks = '#94a3b8';
-            const fontFamily = 'Inter, system-ui, sans-serif';
-            const moneyFmt = v => '$ ' + new Intl.NumberFormat('es-NI', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(v);
+                const baseGrid = 'rgba(148,163,184,0.15)';
+                const baseTicks = '#94a3b8';
+                const fontFamily = 'Inter, system-ui, sans-serif';
+                const moneyFmt = v => '$ ' + new Intl.NumberFormat('es-NI', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(v);
 
-            // Data desde backend
-            const monthsLabels = @json($monthsLabels);
-            const monthsTotals = @json($monthsTotals);
-            const hoursLabels = @json($hoursLabels);
-            const hoursTotals = @json($hoursTotals);
-            const daysLabels = @json($daysLabels);
-            const daysTotals = @json($daysTotals);
+                // Data desde backend
+                const monthsLabels = @json($monthsLabels);
+                const monthsTotals = @json($monthsTotals);
+                const hoursLabels = @json($hoursLabels);
+                const hoursTotals = @json($hoursTotals);
+                const daysLabels = @json($daysLabels);
+                const daysTotals = @json($daysTotals);
 
-            const commonOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                },
-                plugins: {
-                    legend: {
-                        display: false
+                const commonOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
                     },
-                    tooltip: {
-                        backgroundColor: 'rgba(30,41,59,0.9)',
-                        titleColor: '#f1f5f9',
-                        bodyColor: '#e2e8f0',
-                        borderColor: 'rgba(255,255,255,0.1)',
-                        borderWidth: 1,
-                        padding: 10,
-                        callbacks: {
-                            label: ctx => moneyFmt(ctx.parsed.y)
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            color: baseGrid
+                    plugins: {
+                        legend: {
+                            display: false
                         },
-                        ticks: {
-                            color: baseTicks,
-                            font: {
-                                family: fontFamily
+                        tooltip: {
+                            backgroundColor: 'rgba(30,41,59,0.9)',
+                            titleColor: '#f1f5f9',
+                            bodyColor: '#e2e8f0',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                label: ctx => moneyFmt(ctx.parsed.y)
                             }
                         }
                     },
-                    y: {
-                        grid: {
-                            color: baseGrid
-                        },
-                        ticks: {
-                            color: baseTicks,
-                            font: {
-                                family: fontFamily
-                            },
-                            callback: v => '$' + v
-                        }
-                    }
-                }
-            };
-
-            // Monthly chart (bar + line overlay optional later)
-            new Chart(monthlyCtx, {
-                type: 'bar',
-                data: {
-                    labels: monthsLabels,
-                    datasets: [{
-                        label: 'Ventas',
-                        data: monthsTotals,
-                        borderRadius: 6,
-                        backgroundColor: monthsTotals.map(v =>
-                            'linear-gradient(180deg, rgba(99,102,241,0.9), rgba(79,70,229,0.4))'),
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    ...commonOptions,
                     scales: {
-                        ...commonOptions.scales,
+                        x: {
+                            grid: {
+                                color: baseGrid
+                            },
+                            ticks: {
+                                color: baseTicks,
+                                font: {
+                                    family: fontFamily
+                                }
+                            }
+                        },
                         y: {
-                            ...commonOptions.scales.y,
-                            beginAtZero: true
+                            grid: {
+                                color: baseGrid
+                            },
+                            ticks: {
+                                color: baseTicks,
+                                font: {
+                                    family: fontFamily
+                                },
+                                callback: v => '$' + v
+                            }
                         }
                     }
-                }
-            });
+                };
 
-            // Hourly chart (line)
-            new Chart(hourlyCtx, {
-                type: 'line',
-                data: {
-                    labels: hoursLabels,
-                    datasets: [{
-                        label: 'Ventas',
-                        data: hoursTotals,
-                        fill: true,
-                        tension: .35,
-                        borderColor: 'rgba(16,185,129,0.9)',
-                        backgroundColor: 'rgba(16,185,129,0.15)',
-                        pointRadius: 3,
-                        pointBackgroundColor: 'rgba(16,185,129,1)',
-                        pointBorderWidth: 0
-                    }]
-                },
-                options: commonOptions
-            });
+                // Crear gradiente correcto para Chart.js (no acepta string CSS de gradient)
+                const createBarGradient = (ctx) => {
+                    const g = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
+                    g.addColorStop(0, 'rgba(99,102,241,0.9)');
+                    g.addColorStop(1, 'rgba(79,70,229,0.35)');
+                    return g;
+                };
+                const monthlyGradient = createBarGradient(monthlyCtx);
 
-            // Daily chart (area)
-            new Chart(dailyCtx, {
-                type: 'line',
-                data: {
-                    labels: daysLabels,
-                    datasets: [{
-                        label: 'Ventas',
-                        data: daysTotals,
-                        fill: true,
-                        tension: .25,
-                        borderColor: 'rgba(236,72,153,0.9)',
-                        backgroundColor: 'rgba(236,72,153,0.15)',
-                        pointRadius: 0,
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    ...commonOptions,
-                    elements: {
-                        line: {
-                            borderJoinStyle: 'round'
-                        }
+                new Chart(monthlyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: monthsLabels,
+                        datasets: [{
+                            label: 'Ventas',
+                            data: monthsTotals,
+                            borderRadius: 6,
+                            backgroundColor: monthlyGradient,
+                            borderWidth: 0
+                        }]
                     },
-                }
+                    options: {
+                        ...commonOptions,
+                        scales: {
+                            ...commonOptions.scales,
+                            y: {
+                                ...commonOptions.scales.y,
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                new Chart(hourlyCtx, {
+                    type: 'line',
+                    data: {
+                        labels: hoursLabels,
+                        datasets: [{
+                            label: 'Ventas',
+                            data: hoursTotals,
+                            fill: true,
+                            tension: .35,
+                            borderColor: 'rgba(16,185,129,0.9)',
+                            backgroundColor: 'rgba(16,185,129,0.15)',
+                            pointRadius: 3,
+                            pointBackgroundColor: 'rgba(16,185,129,1)',
+                            pointBorderWidth: 0
+                        }]
+                    },
+                    options: commonOptions
+                });
+
+                new Chart(dailyCtx, {
+                    type: 'line',
+                    data: {
+                        labels: daysLabels,
+                        datasets: [{
+                            label: 'Ventas',
+                            data: daysTotals,
+                            fill: true,
+                            tension: .25,
+                            borderColor: 'rgba(236,72,153,0.9)',
+                            backgroundColor: 'rgba(236,72,153,0.15)',
+                            pointRadius: 0,
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        ...commonOptions,
+                        elements: {
+                            line: {
+                                borderJoinStyle: 'round'
+                            }
+                        },
+                    }
+                });
             });
         </script>
     @endpush
