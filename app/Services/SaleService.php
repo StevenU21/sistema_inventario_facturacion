@@ -27,7 +27,17 @@ class SaleService
             foreach ($detailsData as $d) {
                 $this->createSaleDetail($sale, $d);
                 $this->updateInventory($d['inventory'], $d['quantity']);
-                $this->recordInventoryMovement($d['inventory'], $d['quantity'], $sale->id, $userId);
+                // Calcular costo unitario usado (se podría mejorar con estrategia de valuación futura)
+                $unitCost = (float) ($d['inventory']->purchase_price ?? 0);
+                $this->recordInventoryMovement(
+                    inventory: $d['inventory'],
+                    quantity: $d['quantity'],
+                    saleId: $sale->id,
+                    userId: $userId,
+                    unitCost: $unitCost,
+                    unitSalePrice: $d['unit_price'],
+                    discountAmount: $d['discount_amount']
+                );
             }
 
             if ($sale->is_credit) {
@@ -59,6 +69,12 @@ class SaleService
                 throw new \RuntimeException('No hay inventario para la variante seleccionada.');
             }
             $qty = (int) ($row['quantity'] ?? 0);
+            if ($qty <= 0) {
+                throw new \InvalidArgumentException('La cantidad debe ser mayor que cero.');
+            }
+            if ($inventory->stock < $qty) {
+                throw new \RuntimeException('Stock insuficiente para la variante (' . $variant->id . '). Disponible: ' . $inventory->stock);
+            }
             $unitSale = (float) ($inventory->sale_price ?? 0);
             $product = $variant->product;
             $tax = $product?->tax;
@@ -151,21 +167,61 @@ class SaleService
 
     private function updateInventory($inventory, $quantity)
     {
+        // Validación de stock (defensiva, ya verificada antes)
+        if ($inventory->stock < $quantity) {
+            throw new \RuntimeException('Stock insuficiente para completar la venta.');
+        }
         $inventory->stock -= $quantity;
         $inventory->save();
     }
 
-    private function recordInventoryMovement($inventory, $quantity, $saleId, $userId)
-    {
-        $inventory->inventoryMovements()->create([
+    private function recordInventoryMovement(
+        $inventory,
+        int $quantity,
+        int $saleId,
+        int $userId,
+        float $unitCost,
+        float $unitSalePrice,
+        float $discountAmount = 0.0
+    ) {
+        // Precio de venta bruto (sin impuesto) antes de descuento
+        $grossRevenue = round($unitSalePrice * $quantity, 2);
+        // Total neto después de descuento (sin impuesto)
+        $netRevenue = max(0, $grossRevenue - $discountAmount);
+        // Precio unitario neto (sin impuesto) luego de aplicar descuento proporcional
+        $netUnitSale = $quantity > 0 ? round($netRevenue / $quantity, 2) : 0.0;
+
+        $movementData = [
             'type' => 'out',
             'quantity' => $quantity,
-            'unit_price' => $inventory->purchase_price ?? 0,
-            'total_price' => ($inventory->purchase_price ?? 0) * $quantity,
+            // Requerimiento: unit_price debe reflejar precio de venta neto (sin impuestos) tras descuento
+            'unit_price' => $netUnitSale,
+            'total_price' => $netRevenue,
             'reference' => 'Venta #' . $saleId,
             'notes' => 'Salida de inventario por venta',
             'user_id' => $userId,
-        ]);
+        ];
+
+        // Campos adicionales si existen en la tabla (conservamos información útil para análisis de margen)
+        if (\Schema::hasColumn('inventory_movements', 'sale_price')) {
+            // Guardar precio de lista (sin descuento) por unidad
+            $movementData['sale_price'] = $unitSalePrice;
+        }
+        if (\Schema::hasColumn('inventory_movements', 'discount_amount')) {
+            $movementData['discount_amount'] = $discountAmount;
+        }
+        if (\Schema::hasColumn('inventory_movements', 'net_revenue')) {
+            $movementData['net_revenue'] = $netRevenue;
+        }
+        // Si hubiera columnas para costo original se podrían mapear (p.ej. cost_unit, cost_total)
+        if (\Schema::hasColumn('inventory_movements', 'cost_unit')) {
+            $movementData['cost_unit'] = round($unitCost, 2);
+        }
+        if (\Schema::hasColumn('inventory_movements', 'cost_total')) {
+            $movementData['cost_total'] = round($unitCost * $quantity, 2);
+        }
+
+        $inventory->inventoryMovements()->create($movementData);
     }
 
     private function createAccountReceivable($sale)
@@ -196,7 +252,7 @@ class SaleService
     public function createSaleFromQuotation(\App\Models\Quotation $quotation): Sale
     {
         // Prepare payload from quotation details
-        $items = $quotation->QuotationDetails->map(function($d) {
+        $items = $quotation->QuotationDetails->map(function ($d) {
             return [
                 'product_variant_id' => $d->product_variant_id,
                 'quantity' => $d->quantity,

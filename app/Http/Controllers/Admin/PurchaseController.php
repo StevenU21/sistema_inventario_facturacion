@@ -64,10 +64,10 @@ class PurchaseController extends Controller
         if ($to = $request->input('to')) {
             $query->whereDate('created_at', '<=', $to);
         }
-            if ($categoryId = $request->input('category_id')) {
-                $query->whereHas('details.productVariant.product.brand', function ($q) use ($categoryId) {
-                    $q->where('category_id', $categoryId);
-                });
+        if ($categoryId = $request->input('category_id')) {
+            $query->whereHas('details.productVariant.product.brand', function ($q) use ($categoryId) {
+                $q->where('category_id', $categoryId);
+            });
         }
         if ($brandId = $request->input('brand_id')) {
             $query->whereHas('details.productVariant.product', function ($q) use ($brandId) {
@@ -93,9 +93,9 @@ class PurchaseController extends Controller
         $warehouses = Warehouse::pluck('name', 'id');
         $methods = PaymentMethod::pluck('name', 'id');
         // Catálogo para filtros
-    $categories = Category::pluck('name', 'id');
-    $brands = Brand::pluck('name', 'id');
-    $brandsList = Brand::select('id', 'name', 'category_id')->get();
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $brandsList = Brand::select('id', 'name', 'category_id')->get();
         $brandsByCategory = Brand::with('category')
             ->get()
             ->groupBy('category_id')
@@ -104,7 +104,7 @@ class PurchaseController extends Controller
         $colors = Color::pluck('name', 'id');
         $sizes = Size::pluck('name', 'id');
 
-    return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'brandsList', 'brandsByCategory', 'colors', 'sizes'));
+        return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'brandsList', 'brandsByCategory', 'colors', 'sizes'));
     }
 
     public function create()
@@ -114,9 +114,9 @@ class PurchaseController extends Controller
             ->get()->pluck(fn($e) => trim(($e->first_name ?? '') . ' ' . ($e->last_name ?? '')), 'id');
         $warehouses = Warehouse::pluck('name', 'id');
         $methods = PaymentMethod::pluck('name', 'id');
-    $categories = Category::pluck('name', 'id');
-    $brands = Brand::pluck('name', 'id');
-    $brandsList = Brand::select('id', 'name', 'category_id')->get();
+        $categories = Category::pluck('name', 'id');
+        $brands = Brand::pluck('name', 'id');
+        $brandsList = Brand::select('id', 'name', 'category_id')->get();
         $brandsByCategory = Brand::with('category')
             ->get()
             ->groupBy('category_id')
@@ -282,7 +282,7 @@ class PurchaseController extends Controller
         $colors = Color::pluck('name', 'id');
         $sizes = Size::pluck('name', 'id');
 
-    return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'brandsList', 'brandsByCategory', 'colors', 'sizes'));
+        return view('admin.purchases.index', compact('purchases', 'entities', 'warehouses', 'methods', 'categories', 'brands', 'brandsList', 'brandsByCategory', 'colors', 'sizes'));
     }
 
     // Exportación a Excel usando los mismos filtros
@@ -517,8 +517,8 @@ class PurchaseController extends Controller
                         ->orWhere('barcode', 'like', $like);
                 } else {
                     $sub->where('name', 'like', $like)
-                    ->orWhere('code', 'like', $like)
-                    ->orWhere('sku', 'like', $like)
+                        ->orWhere('code', 'like', $like)
+                        ->orWhere('sku', 'like', $like)
                         ->orWhere('barcode', 'like', $like);
                 }
             });
