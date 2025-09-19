@@ -28,6 +28,7 @@ class DashboardController extends Controller
         $inventoryTotal = Inventory::sum('stock');
         $movementsToday = InventoryMovement::whereDate('created_at', $now->toDateString())->count();
 
+
         // Ventas por mes (últimos 12 meses) - compatibilidad multi driver (sqlite / mysql / pgsql)
         switch ($driver) {
             case 'sqlite':
@@ -235,6 +236,45 @@ class DashboardController extends Controller
             });
         }
 
+        // Nuevos KPIs requeridos (colocados aquí para depender de métricas ya calculadas)
+        // 1. Porcentaje ventas a crédito vs contado (mes actual)
+        $monthStartDate = $now->copy()->startOfMonth()->toDateTimeString();
+        $monthEndDate = $now->copy()->endOfMonth()->toDateTimeString();
+        $creditVsContadoBaseQuery = Sale::whereRaw("$coalesceDate BETWEEN ? AND ?", [$monthStartDate, $monthEndDate]);
+        $creditSalesAmount = (clone $creditVsContadoBaseQuery)->where('is_credit', 1)->sum('total');
+        $cashSalesAmount = (clone $creditVsContadoBaseQuery)->where('is_credit', 0)->sum('total');
+        $totalCreditCash = $creditSalesAmount + $cashSalesAmount;
+        $percentCredit = $totalCreditCash > 0 ? round(($creditSalesAmount / $totalCreditCash) * 100, 2) : 0;
+        $percentCash = $totalCreditCash > 0 ? round(($cashSalesAmount / $totalCreditCash) * 100, 2) : 0;
+
+        // 2. Valor inventario a costo y a precio de venta (stock actual * purchase_price / sale_price)
+        $inventoryValueCost = Inventory::select(DB::raw('SUM(stock * purchase_price) as total'))->value('total') ?? 0;
+        $inventoryValueSale = Inventory::select(DB::raw('SUM(stock * sale_price) as total'))->value('total') ?? 0;
+
+        // 3. Margen bruto estimado del mes actual
+        $salesIdsMonth = Sale::whereRaw("$coalesceDate BETWEEN ? AND ?", [$monthStartDate, $monthEndDate])->pluck('id');
+        $monthSaleDetails = collect();
+        if ($salesIdsMonth->isNotEmpty()) {
+            $monthSaleDetails = \App\Models\SaleDetail::whereIn('sale_id', $salesIdsMonth)->get();
+        }
+        $netSalesRevenue = $monthSaleDetails->sum(function ($d) { return ($d->sub_total - $d->discount_amount); });
+        $variantIdsSold = $monthSaleDetails->pluck('product_variant_id')->unique();
+        $inventoryByVariant = collect();
+        if ($variantIdsSold->isNotEmpty()) {
+            $inventoryByVariant = Inventory::whereIn('product_variant_id', $variantIdsSold)->get()->groupBy('product_variant_id');
+        }
+        $estimatedCost = 0;
+        foreach ($monthSaleDetails as $detail) {
+            $invGroup = $inventoryByVariant->get($detail->product_variant_id);
+            if ($invGroup && $invGroup->count() > 0) {
+                $totalStockForVariant = max(1, $invGroup->sum('stock'));
+                $weightedCost = $invGroup->sum(function ($inv) { return $inv->stock * $inv->purchase_price; }) / $totalStockForVariant;
+                $estimatedCost += $weightedCost * $detail->quantity;
+            }
+        }
+        $grossMarginAmount = $netSalesRevenue - $estimatedCost;
+        $grossMarginPercent = $netSalesRevenue > 0 ? round(($grossMarginAmount / $netSalesRevenue) * 100, 2) : 0;
+
 
         return view('dashboard', [
             'products' => $products,
@@ -271,6 +311,15 @@ class DashboardController extends Controller
             'topSellers' => $topSellers,
             'totalSellersCount' => $topSellers->sum('sales_count'),
             'totalSellersProfit' => $totalSellersProfit,
+            // Nuevos KPIs
+            'percentCredit' => $percentCredit,
+            'percentCash' => $percentCash,
+            'inventoryValueCost' => $inventoryValueCost,
+            'inventoryValueSale' => $inventoryValueSale,
+            'grossMarginAmount' => $grossMarginAmount,
+            'grossMarginPercent' => $grossMarginPercent,
+            'netSalesRevenue' => $netSalesRevenue,
+            'estimatedCost' => $estimatedCost,
         ]);
     }
 }

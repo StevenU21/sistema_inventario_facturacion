@@ -167,55 +167,57 @@
 
         <!-- KPI Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-4 mt-6">
-            <!-- Clientes -->
-            <div
-                class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition">
-                <div class="flex items-start justify-between">
+            <!-- % Ventas Crédito vs Contado -->
+            <div class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition">
+                <div class="flex items-start justify-between w-full">
                     <div>
-                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Clientes</p>
-                        <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100">{{ $entities }}</p>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Ventas Crédito vs Contado</p>
+                        <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100 flex items-center gap-2">
+                            <span class="text-emerald-600 dark:text-emerald-400">{{ number_format($percentCredit,2) }}% Crédito</span>
+                        </p>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400">{{ number_format($percentCash,2) }}% Contado</p>
                     </div>
                     <div class="p-2 rounded-lg bg-gradient-to-br from-indigo-500/10 to-indigo-500/5 text-indigo-400">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-balance-scale"></i>
                     </div>
                 </div>
             </div>
-            <!-- Productos -->
-            <div
-                class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition">
+            <!-- Valor Inventario a Costo -->
+            <div class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Productos</p>
-                        <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100">{{ $products }}</p>
-                    </div>
-                    <div class="p-2 rounded-lg bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 text-emerald-400">
-                        <i class="fas fa-boxes"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- Inventario total -->
-            <div
-                class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Inventario Total</p>
-                        <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100">{{ $inventoryTotal }}</p>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Inventario a Costo</p>
+                        <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100 whitespace-nowrap">C$ {{ number_format($inventoryValueCost,2) }}</p>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400">Stock: {{ $inventoryTotal }}</p>
                     </div>
                     <div class="p-2 rounded-lg bg-gradient-to-br from-sky-500/10 to-sky-500/5 text-sky-400">
-                        <i class="fas fa-warehouse"></i>
+                        <i class="fas fa-layer-group"></i>
                     </div>
                 </div>
             </div>
-            <!-- Movimientos hoy -->
-            <div
-                class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition">
+            <!-- Valor Inventario a Precio de Venta -->
+            <div class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Movimientos Hoy</p>
-                        <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100">{{ $movementsToday }}</p>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Inventario a Precio Venta</p>
+                        <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100 whitespace-nowrap">C$ {{ number_format($inventoryValueSale,2) }}</p>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400">Potencial bruto: C$ {{ number_format($inventoryValueSale - $inventoryValueCost,2) }}</p>
+                    </div>
+                    <div class="p-2 rounded-lg bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 text-emerald-400">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- Margen Bruto Estimado Mes -->
+            <div class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Margen Bruto (Mes)</p>
+                        <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100 whitespace-nowrap">C$ {{ number_format($grossMarginAmount,2) }}</p>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400">{{ number_format($grossMarginPercent,2) }}% de C$ {{ number_format($netSalesRevenue,2) }}</p>
                     </div>
                     <div class="p-2 rounded-lg bg-gradient-to-br from-teal-500/10 to-teal-500/5 text-teal-400">
-                        <i class="fas fa-exchange-alt"></i>
+                        <i class="fas fa-percentage"></i>
                     </div>
                 </div>
             </div>
