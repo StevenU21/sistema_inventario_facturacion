@@ -382,21 +382,54 @@
                     </table>
                 </div>
             </div>
-            <!-- Notas -->
+            <!-- Top Vendedores -->
             <div
-                class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow hidden 2xl:block">
-                <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide mb-4">Notas / Acciones
-                    Rápidas</h3>
-                <ul class="space-y-3 text-xs text-gray-600 dark:text-gray-400">
-                    <li class="flex items-start gap-2"><span
-                            class="mt-0.5 w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Revisar inventario bajo y
-                        reabastecer.</li>
-                    <li class="flex items-start gap-2"><span class="mt-0.5 w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-                        Analizar comportamiento horario de ventas.</li>
-                    <li class="flex items-start gap-2"><span
-                            class="mt-0.5 w-1.5 h-1.5 rounded-full bg-fuchsia-500"></span> Preparar campaña para mes con
-                        menor desempeño.</li>
-                </ul>
+                class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow flex flex-col">
+                <div class="flex items-start justify-between mb-3">
+                    <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide">Top Vendedores</h3>
+                </div>
+                <div class="overflow-x-auto -mx-3 flex-1">
+                    <table class="min-w-full text-xs">
+                        <thead>
+                            <tr
+                                class="text-left text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                                <th class="py-2 px-3 font-medium">Vendedor</th>
+                                <th class="py-2 px-3 font-medium text-right">Ventas</th>
+                                <th class="py-2 px-3 font-medium text-right">Ganancia</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            @forelse($topSellers as $s)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                    <td class="py-2 px-3 text-gray-700 dark:text-gray-300 font-medium">{{ $s['name'] }}
+                                    </td>
+                                    <td class="py-2 px-3 text-right text-gray-700 dark:text-gray-300">
+                                        {{ $s['sales_count'] }}</td>
+                                    <td class="py-2 px-3 text-right text-gray-700 dark:text-gray-300">
+                                        C$ {{ number_format($s['total_amount'], 2) }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="py-4 px-3 text-center text-gray-500 dark:text-gray-400">Sin
+                                        ventas</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                        <tfoot>
+                            <tr class="border-t border-gray-200 dark:border-gray-700">
+                                <td
+                                    class="py-2 px-3 text-right text-[11px] font-semibold text-gray-500 dark:text-gray-400">
+                                    Total</td>
+                                <td
+                                    class="py-2 px-3 text-right text-[11px] font-semibold text-gray-700 dark:text-gray-200">
+                                    {{ $totalSellersCount }}</td>
+                                <td
+                                    class="py-2 px-3 text-right text-[11px] font-semibold text-gray-700 dark:text-gray-200">
+                                    C$ {{ number_format($totalSellersProfit, 2) }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

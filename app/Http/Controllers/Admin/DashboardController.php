@@ -152,6 +152,36 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        // Top vendedores (ventas últimos 30 días)
+        $topSellersRaw = Sale::select(
+            'user_id',
+            DB::raw('COUNT(id) as sales_count'),
+            DB::raw('SUM(total) as total_amount')
+        )
+            ->whereRaw("COALESCE(sale_date, created_at) >= ?", [$now->copy()->subDays(30)->startOfDay()->toDateTimeString()])
+            ->groupBy('user_id')
+            ->orderByDesc('sales_count')
+            ->limit(5)
+            ->get();
+        $topSellers = collect();
+        if ($topSellersRaw->isNotEmpty()) {
+            $userIds = $topSellersRaw->pluck('user_id');
+            $usersMap = User::whereIn('id', $userIds)->get()->keyBy('id');
+            $topSellers = $topSellersRaw->map(function ($row) use ($usersMap) {
+                $user = $usersMap->get($row->user_id);
+                $name = $user ? $user->short_name : ('ID #' . $row->user_id);
+                return [
+                    'user_id' => $row->user_id,
+                    'name' => $name,
+                    'sales_count' => $row->sales_count,
+                    'total_amount' => $row->total_amount,
+                ];
+            });
+        }
+
+        // Total profit for top sellers
+        $totalSellersProfit = $topSellers->sum('total_amount');
+
         // Métricas rápidas periódicas
         // Métricas rápidas utilizando COALESCE para contemplar registros sin sale_date
         $todaySales = Sale::whereRaw("date($coalesceDate) = ?", [$now->toDateString()])->sum('total');
@@ -238,6 +268,9 @@ class DashboardController extends Controller
             'totalCreditPending' => $totalCreditPending,
             'totalClientsDebt' => round($totalClientsDebt, 2),
             'topDebtors' => $topDebtors,
+            'topSellers' => $topSellers,
+            'totalSellersCount' => $topSellers->sum('sales_count'),
+            'totalSellersProfit' => $totalSellersProfit,
         ]);
     }
 }
