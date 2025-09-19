@@ -206,11 +206,6 @@ class ProductController extends Controller
         $data['status'] = 'available';
         DB::transaction(function () use ($request, $fileService, $data) {
             $product = new Product($data);
-            // Derivar category_id desde la marca seleccionada para cumplir NOT NULL en DB
-            $brand = Brand::find($data['brand_id'] ?? null);
-            if ($brand) {
-                $product->category_id = $brand->category_id;
-            }
             if ($request->hasFile('image')) {
                 $product->image = $fileService->storeLocal($product, $request->file('image'));
             }
@@ -296,10 +291,6 @@ class ProductController extends Controller
         DB::transaction(function () use ($request, $fileService, $data, $product) {
             // Rellenar y sincronizar category_id con la marca seleccionada
             $product->fill($data);
-            $brand = Brand::find($product->brand_id);
-            if ($brand) {
-                $product->category_id = $brand->category_id;
-            }
             $product->save();
 
             // Manejo de variantes (detalles)

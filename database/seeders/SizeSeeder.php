@@ -19,7 +19,7 @@ class SizeSeeder extends Seeder
             ['name' => 'M'],
             ['name' => 'L'],
             ['name' => 'XL'],
-            ['name' => 'XXL'],
+            ['name' => 'XXL']
         ];
         foreach ($sizes as $size) {
             Size::firstOrCreate(['name' => $size['name']], $size);

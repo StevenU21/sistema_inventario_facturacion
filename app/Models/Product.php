@@ -80,10 +80,6 @@ class Product extends Model
     }
 
     // Category the product belongs to
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
 
     // Variantes del producto (necesario para filtros por almacén en las búsquedas)
     public function variants()
