@@ -145,6 +145,56 @@ class AuditTranslation
                 'product_variant_id' => 'Variante de Producto',
                 'purchase_id' => 'Compra',
             ],
+            'Sale' => [
+                'total' => 'Total',
+                'is_credit' => 'Es Crédito',
+                'tax_percentage' => 'Porcentaje de Impuesto',
+                'tax_amount' => 'Monto de Impuesto',
+                'sale_date' => 'Fecha de Venta',
+                'user_id' => 'Usuario',
+                'entity_id' => 'Entidad',
+                'payment_method_id' => 'Método de Pago',
+            ],
+            'SaleDetail' => [
+                'quantity' => 'Cantidad',
+                'unit_price' => 'Precio Unitario',
+                'sub_total' => 'Subtotal',
+                'discount' => 'Descuento (%)',
+                'discount_amount' => 'Monto de Descuento',
+                'product_variant_id' => 'Variante de Producto',
+                'sale_id' => 'Venta',
+            ],
+            'Quotation' => [
+                'total' => 'Total',
+                'valid_until' => 'Válido Hasta',
+                'status' => 'Estado',
+                'user_id' => 'Usuario',
+                'entity_id' => 'Entidad',
+            ],
+            'QuotationDetail' => [
+                'quantity' => 'Cantidad',
+                'unit_price' => 'Precio Unitario',
+                'discount' => 'Descuento (%)',
+                'discount_amount' => 'Monto de Descuento',
+                'sub_total' => 'Subtotal',
+                'product_variant_id' => 'Variante de Producto',
+                'quotation_id' => 'Cotización',
+            ],
+            'AccountReceivable' => [
+                'amount_due' => 'Monto a Cobrar',
+                'amount_paid' => 'Monto Pagado',
+                'status' => 'Estado',
+                'entity_id' => 'Entidad',
+                'sale_id' => 'Venta',
+            ],
+            'Payment' => [
+                'amount' => 'Monto',
+                'payment_date' => 'Fecha de Pago',
+                'account_receivable_id' => 'Cuenta por Cobrar',
+                'payment_method_id' => 'Método de Pago',
+                'entity_id' => 'Entidad',
+                'user_id' => 'Usuario',
+            ],
         ];
     }
 
@@ -186,6 +236,12 @@ class AuditTranslation
             'Purchase' => 'Compra',
             'PurchaseDetail' => 'Detalle de Compra',
             'ProductVariant' => 'Variante de Producto',
+            'Sale' => 'Venta',
+            'SaleDetail' => 'Detalle de Venta',
+            'Quotation' => 'Cotización',
+            'QuotationDetail' => 'Detalle de Cotización',
+            'AccountReceivable' => 'Cuenta por Cobrar',
+            'Payment' => 'Pago'
         ];
     }
     /**

@@ -197,7 +197,7 @@ class InventoryMovementController extends Controller
         $limit = max(1, min(20, (int) $request->input('limit', 10)));
 
         // Autocomplete basado en productos, como en ProductController
-        $q = \App\Models\Product::query();
+        $q = Product::query();
         if ($term !== '') {
             $tokens = array_values(array_filter(preg_split('/\s+/', $term)));
             $driver = DB::getDriverName();

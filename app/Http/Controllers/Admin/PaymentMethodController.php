@@ -18,8 +18,8 @@ class PaymentMethodController extends Controller
     {
         $this->authorize('viewAny', PaymentMethod::class);
         $perPage = request('per_page', 10);
-    $perPage = request('per_page', 10);
-    $paymentMethods = PaymentMethod::latest()->paginate($perPage);
+        $perPage = request('per_page', 10);
+        $paymentMethods = PaymentMethod::latest()->paginate($perPage);
         return view('admin.payment_methods.index', compact('paymentMethods'));
     }
 

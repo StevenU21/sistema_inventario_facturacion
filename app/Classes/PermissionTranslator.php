@@ -88,6 +88,23 @@ class PermissionTranslator
         'export kardex' => 'Exportar kardex',
         'export purchases' => 'Exportar compras',
         'generate kardex' => 'Generar kardex',
+        'read sales' => 'Ver ventas',
+        'create sales' => 'Crear ventas',
+        'update sales' => 'Editar ventas',
+        'export sales' => 'Exportar ventas',
+        'generate invoice' => 'Generar factura',
+        'read account_receivables' => 'Ver cuentas por cobrar',
+        'create account_receivables' => 'Crear cuentas por cobrar',
+        'update account_receivables' => 'Editar cuentas por cobrar',
+        'export account_receivables' => 'Exportar cuentas por cobrar',
+        'read payments' => 'Ver pagos',
+        'create payments' => 'Crear pagos',
+        'update payments' => 'Editar pagos',
+        'export payments' => 'Exportar pagos',
+        'read quotations' => 'Ver cotizaciones',
+        'create quotations' => 'Crear cotizaciones',
+        'update quotations' => 'Editar cotizaciones',
+        'export quotations' => 'Exportar cotizaciones',
     ];
 
     /**

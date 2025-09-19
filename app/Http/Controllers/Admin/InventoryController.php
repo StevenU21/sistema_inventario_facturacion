@@ -441,10 +441,10 @@ class InventoryController extends Controller
         $productId = $request->input('product_id');
         $colorId = $request->input('color_id');
         $sizeId = $request->input('size_id');
-    $categoryId = $request->input('category_id'); // ahora se filtrará vía brand->category
+        $categoryId = $request->input('category_id'); // ahora se filtrará vía brand->category
         $brandId = $request->input('brand_id');
         $entityId = $request->input('entity_id');
-    $warehouseId = $request->input('warehouse_id');
+        $warehouseId = $request->input('warehouse_id');
         $perPage = (int) $request->input('per_page', 10);
 
         $query = ProductVariant::query()
