@@ -220,7 +220,8 @@
                 </div>
             </div>
             <!-- Crédito Cobrado -->
-            <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4 flex items-start justify-between">
+            <div
+                class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4 flex items-start justify-between">
                 <div class="flex flex-col">
                     <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Crédito Cobrado</p>
                     <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100 whitespace-nowrap">C$
@@ -247,135 +248,6 @@
             </div>
         </div>
 
-        <!-- Heatmap Anual (estilo GitHub) -->
-        <div class="mt-10">
-            <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow">
-                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
-                    <div>
-                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide">Actividad de
-                            Ventas
-                            por Día</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $heatmapYear }}
-                            ({{ $heatmapCalendarStart }} → {{ $heatmapCalendarEnd }})</p>
-                    </div>
-                    <form method="GET" action="{{ route('dashboard.index') }}" class="flex items-center gap-2">
-                        <label class="text-xs text-gray-500 dark:text-gray-400">Año:</label>
-                        <select name="year" onchange="this.form.submit()"
-                            class="text-xs rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:ring-indigo-500 focus:border-indigo-500">
-                            @foreach ($yearsRange as $y)
-                                <option value="{{ $y }}" {{ $y == $heatmapYear ? 'selected' : '' }}>
-                                    {{ $y }}</option>
-                            @endforeach
-                        </select>
-                    </form>
-                </div>
-                <div class="overflow-x-auto pb-2" id="yearly-heatmap">
-                    <div class="flex items-start gap-1">
-                        <!-- Weeks -->
-                        @php
-                            $monthMarkers = [];
-                        @endphp
-                        @foreach ($heatmapWeeks as $weekIndex => $week)
-                            @php
-                                // Determinar mes representativo (día del medio de la semana)
-                                $middleDay =
-                                    collect($week)->filter(fn($d) => $d['in_year'])->values()->get(3) ??
-                                    collect($week)->first();
-                                $monthNum = null;
-                                if ($middleDay && $middleDay['date']) {
-                                    $monthNum = (int) \Illuminate\Support\Carbon::parse($middleDay['date'])->format(
-                                        'n',
-                                    );
-                                    if (!isset($monthMarkers[$monthNum])) {
-                                        $monthMarkers[$monthNum] = $weekIndex; // primera semana donde aparece el mes
-                                    }
-                                }
-                            @endphp
-                            <div class="flex flex-col gap-1">
-                                @foreach ($week as $dow => $cell)
-                                    @php
-                                        $val = $cell['v'];
-                                        $future = $cell['future'];
-                                        $inYear = $cell['in_year'];
-                                        $date = $cell['date'];
-                                        $ratio = $heatmapMax > 0 ? $val / $heatmapMax : 0;
-                                        // Escala 5 niveles similar GitHub
-                                        if (!$inYear) {
-                                            $colorClass = 'bg-transparent';
-                                        } elseif ($future) {
-                                            $colorClass = 'bg-gray-200 dark:bg-gray-700 opacity-30';
-                                        } elseif ($val == 0) {
-                                            $colorClass = 'bg-slate-200 dark:bg-gray-800';
-                                        } elseif ($ratio < 0.25) {
-                                            $colorClass = 'bg-emerald-200 dark:bg-emerald-900/50';
-                                        } elseif ($ratio < 0.5) {
-                                            $colorClass = 'bg-emerald-300 dark:bg-emerald-800/70';
-                                        } elseif ($ratio < 0.75) {
-                                            $colorClass = 'bg-emerald-500 dark:bg-emerald-700';
-                                        } else {
-                                            $colorClass = 'bg-emerald-700 dark:bg-emerald-500';
-                                        }
-                                    @endphp
-                                    <div class="group relative w-3 h-3 rounded-sm {{ $colorClass }} transition-colors"
-                                        @if ($date) data-date="{{ $date }}" data-value="{{ $val }}" @endif>
-                                        <div
-                                            class="pointer-events-none opacity-0 group-hover:opacity-100 transition bg-gray-900 text-white text-[10px] px-2 py-1 rounded shadow absolute z-10 -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                                            @if ($date)
-                                                <span
-                                                    class="font-medium">{{ $val > 0 ? 'C$ ' . number_format($val, 2) : 'Sin ventas' }}</span>
-                                                <span class="ml-1 text-gray-300">{{ $date }}</span>
-                                            @else
-                                                <span>&nbsp;</span>
-                                            @endif
-                                            <span
-                                                class="absolute w-2 h-2 bg-gray-900 rotate-45 left-1/2 -translate-x-1/2 -bottom-1"></span>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endforeach
-                    </div>
-                    <!-- Meses labels -->
-                    <div class="flex mt-2 ml-0.5 text-[10px] text-gray-500 dark:text-gray-400 select-none relative">
-                        @php
-                            $monthNames = [
-                                1 => 'Ene',
-                                'Feb',
-                                'Mar',
-                                'Abr',
-                                'May',
-                                'Jun',
-                                'Jul',
-                                'Ago',
-                                'Sep',
-                                'Oct',
-                                'Nov',
-                                'Dic',
-                            ];
-                            $totalWeeks = count($heatmapWeeks);
-                        @endphp
-                        @foreach ($monthMarkers as $m => $wIndex)
-                            @php
-                                $leftPercent = ($wIndex / $totalWeeks) * 100;
-                            @endphp
-                            <span class="absolute" style="left:{{ $leftPercent }}%">{{ $monthNames[$m] }}</span>
-                        @endforeach
-                    </div>
-                    <!-- Leyenda -->
-                    <div class="flex items-center gap-2 mt-4 text-[10px] text-gray-500 dark:text-gray-400">
-                        <span>Menos</span>
-                        <div class="flex gap-1">
-                            <span class="w-3 h-3 rounded-sm bg-slate-200 dark:bg-gray-800"></span>
-                            <span class="w-3 h-3 rounded-sm bg-emerald-200 dark:bg-emerald-900/50"></span>
-                            <span class="w-3 h-3 rounded-sm bg-emerald-300 dark:bg-emerald-800/70"></span>
-                            <span class="w-3 h-3 rounded-sm bg-emerald-500 dark:bg-emerald-700"></span>
-                            <span class="w-3 h-3 rounded-sm bg-emerald-700 dark:bg-emerald-500"></span>
-                        </div>
-                        <span>Más</span>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Gráficos principales (componentes) -->
         <div class="mt-8 grid grid-cols-1 xl:grid-cols-3 gap-6">

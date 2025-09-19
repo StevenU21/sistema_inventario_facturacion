@@ -205,25 +205,35 @@ class DashboardController extends Controller
             });
         }
 
-        // Heatmap anual estilo GitHub (días del año)
-        $heatmapYear = (int) $request->query('year', $now->year);
-        if ($heatmapYear < 2000 || $heatmapYear > ($now->year + 1)) {
+        // Heatmap mensual estilo GitHub (días del mes seleccionado)
+        // Parámetro combinado periodo: YYYY-MM (últimos 12 meses)
+        $defaultPeriod = $now->format('Y-m');
+        $heatmapPeriod = $request->query('period', $defaultPeriod);
+        if (!preg_match('/^\d{4}-\d{2}$/', $heatmapPeriod)) {
+            $heatmapPeriod = $defaultPeriod;
+        }
+        [$heatmapYear, $heatmapMonth] = array_map('intval', explode('-', $heatmapPeriod));
+        if ($heatmapMonth < 1 || $heatmapMonth > 12) {
+            $heatmapMonth = (int) $now->format('m');
+        }
+        if ($heatmapYear < ($now->year - 10) || $heatmapYear > ($now->year + 1)) {
             $heatmapYear = $now->year;
         }
-        $yearStart = Carbon::create($heatmapYear, 1, 1, 0, 0, 0, $now->timezone)->startOfDay();
-        $yearEnd = Carbon::create($heatmapYear, 12, 31, 23, 59, 59, $now->timezone)->endOfDay();
-        // Totales por fecha dentro del año
+        $monthStartDT = Carbon::create($heatmapYear, $heatmapMonth, 1, 0, 0, 0, $now->timezone)->startOfDay();
+        $monthEndDT = $monthStartDT->copy()->endOfMonth()->endOfDay();
+
+        // Totales por fecha dentro del mes seleccionado
         $salesByDate = Sale::select(DB::raw("DATE($coalesceDate) as d"), DB::raw('SUM(total) as total'))
             ->whereRaw("$coalesceDate BETWEEN ? AND ?", [
-                $yearStart->toDateTimeString(),
-                $yearEnd->toDateTimeString(),
+                $monthStartDT->toDateTimeString(),
+                $monthEndDT->toDateTimeString(),
             ])
             ->groupBy('d')
             ->pluck('total', 'd');
 
-        // Alinear inicio calendario a domingo anterior y final a sábado posterior
-        $calendarStart = $yearStart->copy()->startOfWeek(Carbon::SUNDAY);
-        $calendarEnd = $yearEnd->copy()->endOfWeek(Carbon::SATURDAY);
+        // Alinear a semanas completas
+        $calendarStart = $monthStartDT->copy()->startOfWeek(Carbon::SUNDAY);
+        $calendarEnd = $monthEndDT->copy()->endOfWeek(Carbon::SATURDAY);
         $weeks = [];
         $maxDayTotal = 0;
         $cursorDay = $calendarStart->copy();
@@ -233,15 +243,16 @@ class DashboardController extends Controller
             $dow = $cursorDay->dayOfWeek; // 0 domingo
             $dateKey = $cursorDay->toDateString();
             $val = 0;
-            if ($cursorDay->year === $heatmapYear && isset($salesByDate[$dateKey])) {
+            if ($cursorDay->betweenIncluded($monthStartDT, $monthEndDT) && isset($salesByDate[$dateKey])) {
                 $val = (float) $salesByDate[$dateKey];
                 if ($val > $maxDayTotal) $maxDayTotal = $val;
             }
-            $isFuture = ($heatmapYear === $now->year) && $cursorDay->greaterThan($now);
+            $isFuture = $cursorDay->greaterThan($now);
             $weeks[$weekIndex][$dow] = [
                 'date' => $dateKey,
                 'v' => round($val, 2),
-                'in_year' => $cursorDay->year === $heatmapYear,
+                // reutilizamos la clave 'in_year' para no cambiar Blade => indica pertenencia al mes
+                'in_year' => $cursorDay->betweenIncluded($monthStartDT, $monthEndDT),
                 'future' => $isFuture,
             ];
             $cursorDay->addDay();
@@ -261,7 +272,18 @@ class DashboardController extends Controller
             ksort($week);
         }
         unset($week);
-        $yearsRange = range($now->year - 4, $now->year);
+
+        // Lista de últimos 12 meses para selector
+        $heatmapPeriods = [];
+        $cursorPeriod = $now->copy()->subMonths(11)->startOfMonth();
+        while ($cursorPeriod <= $now->copy()->startOfMonth()) {
+            $heatmapPeriods[] = [
+                'value' => $cursorPeriod->format('Y-m'),
+                'label' => ucfirst($cursorPeriod->translatedFormat('M Y')),
+            ];
+            $cursorPeriod->addMonth();
+        }
+        $heatmapMonthLabel = ucfirst($monthStartDT->translatedFormat('F Y'));
 
         return view('dashboard', [
             'products' => $products,
@@ -295,13 +317,14 @@ class DashboardController extends Controller
             'totalCreditPending' => $totalCreditPending,
             'totalClientsDebt' => round($totalClientsDebt, 2),
             'topDebtors' => $topDebtors,
-            // Heatmap anual
-            'heatmapYear' => $heatmapYear,
+            // Heatmap mensual
+            'heatmapPeriod' => $heatmapPeriod,
+            'heatmapMonthLabel' => $heatmapMonthLabel,
             'heatmapWeeks' => $weeks,
             'heatmapMax' => $maxDayTotal,
             'heatmapCalendarStart' => $calendarStart->toDateString(),
             'heatmapCalendarEnd' => $calendarEnd->toDateString(),
-            'yearsRange' => $yearsRange,
+            'heatmapPeriods' => $heatmapPeriods,
         ]);
     }
 }
