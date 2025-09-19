@@ -205,85 +205,6 @@ class DashboardController extends Controller
             });
         }
 
-        // Heatmap mensual estilo GitHub (días del mes seleccionado)
-        // Parámetro combinado periodo: YYYY-MM (últimos 12 meses)
-        $defaultPeriod = $now->format('Y-m');
-        $heatmapPeriod = $request->query('period', $defaultPeriod);
-        if (!preg_match('/^\d{4}-\d{2}$/', $heatmapPeriod)) {
-            $heatmapPeriod = $defaultPeriod;
-        }
-        [$heatmapYear, $heatmapMonth] = array_map('intval', explode('-', $heatmapPeriod));
-        if ($heatmapMonth < 1 || $heatmapMonth > 12) {
-            $heatmapMonth = (int) $now->format('m');
-        }
-        if ($heatmapYear < ($now->year - 10) || $heatmapYear > ($now->year + 1)) {
-            $heatmapYear = $now->year;
-        }
-        $monthStartDT = Carbon::create($heatmapYear, $heatmapMonth, 1, 0, 0, 0, $now->timezone)->startOfDay();
-        $monthEndDT = $monthStartDT->copy()->endOfMonth()->endOfDay();
-
-        // Totales por fecha dentro del mes seleccionado
-        $salesByDate = Sale::select(DB::raw("DATE($coalesceDate) as d"), DB::raw('SUM(total) as total'))
-            ->whereRaw("$coalesceDate BETWEEN ? AND ?", [
-                $monthStartDT->toDateTimeString(),
-                $monthEndDT->toDateTimeString(),
-            ])
-            ->groupBy('d')
-            ->pluck('total', 'd');
-
-        // Alinear a semanas completas
-        $calendarStart = $monthStartDT->copy()->startOfWeek(Carbon::SUNDAY);
-        $calendarEnd = $monthEndDT->copy()->endOfWeek(Carbon::SATURDAY);
-        $weeks = [];
-        $maxDayTotal = 0;
-        $cursorDay = $calendarStart->copy();
-        $base = $calendarStart->copy();
-        while ($cursorDay <= $calendarEnd) {
-            $weekIndex = intdiv($base->diffInDays($cursorDay), 7);
-            $dow = $cursorDay->dayOfWeek; // 0 domingo
-            $dateKey = $cursorDay->toDateString();
-            $val = 0;
-            if ($cursorDay->betweenIncluded($monthStartDT, $monthEndDT) && isset($salesByDate[$dateKey])) {
-                $val = (float) $salesByDate[$dateKey];
-                if ($val > $maxDayTotal) $maxDayTotal = $val;
-            }
-            $isFuture = $cursorDay->greaterThan($now);
-            $weeks[$weekIndex][$dow] = [
-                'date' => $dateKey,
-                'v' => round($val, 2),
-                // reutilizamos la clave 'in_year' para no cambiar Blade => indica pertenencia al mes
-                'in_year' => $cursorDay->betweenIncluded($monthStartDT, $monthEndDT),
-                'future' => $isFuture,
-            ];
-            $cursorDay->addDay();
-        }
-        ksort($weeks);
-        foreach ($weeks as $wi => &$week) {
-            for ($d = 0; $d < 7; $d++) {
-                if (!isset($week[$d])) {
-                    $week[$d] = [
-                        'date' => null,
-                        'v' => 0,
-                        'in_year' => false,
-                        'future' => false,
-                    ];
-                }
-            }
-            ksort($week);
-        }
-        unset($week);
-
-        // Lista de últimos 12 meses para selector
-        $heatmapPeriods = [];
-        $cursorPeriod = $now->copy()->subMonths(11)->startOfMonth();
-        while ($cursorPeriod <= $now->copy()->startOfMonth()) {
-            $heatmapPeriods[] = [
-                'value' => $cursorPeriod->format('Y-m'),
-                'label' => ucfirst($cursorPeriod->translatedFormat('M Y')),
-            ];
-            $cursorPeriod->addMonth();
-        }
-        $heatmapMonthLabel = ucfirst($monthStartDT->translatedFormat('F Y'));
 
         return view('dashboard', [
             'products' => $products,
@@ -317,14 +238,6 @@ class DashboardController extends Controller
             'totalCreditPending' => $totalCreditPending,
             'totalClientsDebt' => round($totalClientsDebt, 2),
             'topDebtors' => $topDebtors,
-            // Heatmap mensual
-            'heatmapPeriod' => $heatmapPeriod,
-            'heatmapMonthLabel' => $heatmapMonthLabel,
-            'heatmapWeeks' => $weeks,
-            'heatmapMax' => $maxDayTotal,
-            'heatmapCalendarStart' => $calendarStart->toDateString(),
-            'heatmapCalendarEnd' => $calendarEnd->toDateString(),
-            'heatmapPeriods' => $heatmapPeriods,
         ]);
     }
 }
