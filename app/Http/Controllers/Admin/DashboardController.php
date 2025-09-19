@@ -23,6 +23,8 @@ class DashboardController extends Controller
         Carbon::setLocale('es');
         $driver = DB::getDriverName();
         $coalesceDate = 'COALESCE(sale_date, created_at)';
+        // Expresión de total neto SIN impuestos (impuestos no representan ganancia)
+    $netTotalExpr = '(total - COALESCE(tax_amount,0))'; // usar en SUM() para métricas sin impuestos
 
         // Resumen básico existente
         $products = Product::count();
@@ -45,8 +47,8 @@ class DashboardController extends Controller
 
         $monthStart = $now->copy()->subMonths(11)->startOfMonth()->toDateTimeString();
         $salesByMonthRaw = Sale::select(
-            DB::raw("$groupExpr as ym"),
-            DB::raw('SUM(total) as total')
+            DB::raw($groupExpr . ' as ym'),
+            DB::raw('SUM(' . $netTotalExpr . ') as total')
         )
             ->whereRaw("$coalesceDate >= ?", [$monthStart])
             ->groupBy('ym')
@@ -82,8 +84,8 @@ class DashboardController extends Controller
                 $hourExpr = 'HOUR(created_at)';
         }
         $salesByHourRaw = Sale::select(
-            DB::raw("$hourExpr as h"),
-            DB::raw('SUM(total) as total')
+            DB::raw($hourExpr . ' as h'),
+            DB::raw('SUM(' . $netTotalExpr . ') as total')
         )
             ->whereDate('created_at', $now->toDateString())
             ->groupBy('h')
@@ -98,7 +100,7 @@ class DashboardController extends Controller
         }
 
         // Ventas por día (últimos 14 días)
-        $salesByDayRaw = Sale::select(DB::raw('DATE(created_at) as d'), DB::raw('SUM(total) as total'))
+    $salesByDayRaw = Sale::select(DB::raw('DATE(created_at) as d'), DB::raw('SUM(' . $netTotalExpr . ') as total'))
             ->where('created_at', '>=', $now->copy()->subDays(13)->startOfDay())
             ->groupBy('d')
             ->orderBy('d')
@@ -145,9 +147,9 @@ class DashboardController extends Controller
         }
         $topClients = Sale::select(
             'entities.id',
-            DB::raw("{$clientNameExpr} as client_name"),
+            DB::raw($clientNameExpr . ' as client_name'),
             DB::raw('COUNT(sales.id) as sales_count'),
-            DB::raw('SUM(sales.total) as total_amount')
+            DB::raw('SUM(' . $netTotalExpr . ') as total_amount')
         )
             ->join('entities', 'sales.entity_id', '=', 'entities.id')
             ->whereRaw("COALESCE(sales.sale_date, sales.created_at) >= ?", [$now->copy()->subDays(30)->startOfDay()->toDateTimeString()])
@@ -160,7 +162,7 @@ class DashboardController extends Controller
         $topSellersRaw = Sale::select(
             'user_id',
             DB::raw('COUNT(id) as sales_count'),
-            DB::raw('SUM(total) as total_amount')
+            DB::raw('SUM(' . $netTotalExpr . ') as total_amount')
         )
             ->whereRaw("COALESCE(sale_date, created_at) >= ?", [$now->copy()->subDays(30)->startOfDay()->toDateTimeString()])
             ->groupBy('user_id')
@@ -188,21 +190,23 @@ class DashboardController extends Controller
 
         // Métricas rápidas periódicas
         // Métricas rápidas utilizando COALESCE para contemplar registros sin sale_date
-        $todaySales = Sale::whereRaw("date($coalesceDate) = ?", [$now->toDateString()])->sum('total');
+        $todaySales = Sale::whereRaw("date($coalesceDate) = ?", [$now->toDateString()])
+            ->selectRaw('SUM(' . $netTotalExpr . ') as net_total')
+            ->value('net_total') ?? 0;
         $monthSales = Sale::whereRaw("$coalesceDate BETWEEN ? AND ?", [
             $now->copy()->startOfMonth()->toDateTimeString(),
             $now->copy()->endOfMonth()->toDateTimeString(),
-        ])->sum('total');
+        ])->selectRaw('SUM(' . $netTotalExpr . ') as net_total')->value('net_total') ?? 0;
         $yearSales = Sale::whereRaw("$coalesceDate BETWEEN ? AND ?", [
             $now->copy()->startOfYear()->toDateTimeString(),
             $now->copy()->endOfYear()->toDateTimeString(),
-        ])->sum('total');
+        ])->selectRaw('SUM(' . $netTotalExpr . ') as net_total')->value('net_total') ?? 0;
 
         // Tasa de crecimiento (ventas mes actual vs mes anterior)
         $prevMonthSales = Sale::whereRaw("$coalesceDate BETWEEN ? AND ?", [
             $now->copy()->subMonth()->startOfMonth()->toDateTimeString(),
             $now->copy()->subMonth()->endOfMonth()->toDateTimeString(),
-        ])->sum('total');
+        ])->selectRaw('SUM(' . $netTotalExpr . ') as net_total')->value('net_total') ?? 0;
         $growthRate = ($prevMonthSales > 0)
             ? round((($monthSales - $prevMonthSales) / $prevMonthSales) * 100, 2)
             : null; // null si no hay base de comparación
@@ -244,8 +248,10 @@ class DashboardController extends Controller
         $monthStartDate = $now->copy()->startOfMonth()->toDateTimeString();
         $monthEndDate = $now->copy()->endOfMonth()->toDateTimeString();
         $creditVsContadoBaseQuery = Sale::whereRaw("$coalesceDate BETWEEN ? AND ?", [$monthStartDate, $monthEndDate]);
-        $creditSalesAmount = (clone $creditVsContadoBaseQuery)->where('is_credit', 1)->sum('total');
-        $cashSalesAmount = (clone $creditVsContadoBaseQuery)->where('is_credit', 0)->sum('total');
+        $creditSalesAmount = (clone $creditVsContadoBaseQuery)->where('is_credit', 1)
+            ->selectRaw('SUM(' . $netTotalExpr . ') as net_total')->value('net_total') ?? 0;
+        $cashSalesAmount = (clone $creditVsContadoBaseQuery)->where('is_credit', 0)
+            ->selectRaw('SUM(' . $netTotalExpr . ') as net_total')->value('net_total') ?? 0;
         $totalCreditCash = $creditSalesAmount + $cashSalesAmount;
         $percentCredit = $totalCreditCash > 0 ? round(($creditSalesAmount / $totalCreditCash) * 100, 2) : 0;
         $percentCash = $totalCreditCash > 0 ? round(($cashSalesAmount / $totalCreditCash) * 100, 2) : 0;

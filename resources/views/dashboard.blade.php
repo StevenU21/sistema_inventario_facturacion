@@ -83,11 +83,11 @@
 
         <!-- Reportes periódicos y KPIs financieros -->
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4 mt-6">
-            <!-- Ventas Hoy -->
+            <!-- Ventas Hoy (Netas sin impuesto) -->
             <div
                 class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4 flex items-start justify-between">
                 <div class="flex flex-col">
-                    <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Hoy</p>
+                    <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Netas Hoy</p>
                     <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100 whitespace-nowrap">C$
                         {{ number_format($todaySales, 2) }}</p>
                 </div>
@@ -95,11 +95,11 @@
                     <i class="fas fa-calendar-day"></i>
                 </div>
             </div>
-            <!-- Ventas Mes -->
+            <!-- Ventas Mes (Netas sin impuesto) -->
             <div
                 class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4 flex items-start justify-between">
                 <div class="flex flex-col">
-                    <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Mes</p>
+                    <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Netas Mes</p>
                     <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100 whitespace-nowrap">C$
                         {{ number_format($monthSales, 2) }}</p>
                 </div>
@@ -133,12 +133,12 @@
                 </div>
             </div>
 
-            <!-- Mejor Mes -->
+            <!-- Mejor Mes (Ventas Netas) -->
             <div
                 class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition xl:col-span-2 xl:order-first">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Mejor Mes</p>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Mejor Mes (Neto)</p>
                         <p class="mt-1 text-sm font-medium text-gray-600 dark:text-gray-300">{{ $bestMonthLabel ?? '---' }}
                         </p>
                         <p class="mt-1 text-lg font-semibold text-gray-700 dark:text-gray-100">C$
@@ -149,12 +149,12 @@
                     </div>
                 </div>
             </div>
-            <!-- Ventas últimas 12M -->
+            <!-- Ventas últimas 12M (Netas sin impuesto) -->
             <div
                 class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total 12 Meses</p>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total 12 Meses Netos</p>
                         <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100 whitespace-nowrap">C$
                             {{ number_format($totalSales, 2) }}</p>
                     </div>
