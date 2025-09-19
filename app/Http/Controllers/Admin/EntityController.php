@@ -22,17 +22,43 @@ class EntityController extends Controller
     {
         $this->authorize('viewAny', Entity::class);
         $perPage = request('per_page', 10);
-        $entities = Entity::with('municipality')->latest()->paginate($perPage);
+        $user = auth()->user();
+        // Cargar solo entidades visibles según permisos de lectura de clientes/proveedores
+        $entities = Entity::with('municipality')
+            ->visibleFor($user)
+            ->latest()
+            ->paginate($perPage);
         $departments = Department::orderBy('name')->pluck('name', 'id');
         $municipalities = Municipality::orderBy('name')->pluck('name', 'id');
         $departmentsByMunicipality = Municipality::pluck('department_id', 'id');
-        return view('admin.entities.index', compact('entities', 'departments', 'municipalities', 'departmentsByMunicipality'));
+        // Preparar permisos para la vista
+        $available = [
+            'read suppliers',
+            'create suppliers',
+            'update suppliers',
+            'export suppliers',
+            'read clients',
+            'create clients',
+            'update clients',
+            'export clients',
+        ];
+        $permissions = array_filter($available, fn($perm) => $user->can($perm));
+        return view('admin.entities.index', compact(
+            'entities',
+            'departments',
+            'municipalities',
+            'departmentsByMunicipality',
+            'permissions'
+        ));
     }
 
     public function search(Request $request)
     {
         $this->authorize('viewAny', Entity::class);
-        $query = Entity::with('municipality');
+        $user = $request->user();
+        // Filtrar entidades según permisos de lectura (clientes/proveedores)
+        $query = Entity::with('municipality')
+            ->visibleFor($user);
         // Filtros básicos
         if ($request->filled('search')) {
             $search = trim((string) $request->input('search'));
@@ -86,7 +112,25 @@ class EntityController extends Controller
         $departments = Department::orderBy('name')->pluck('name', 'id');
         $municipalities = Municipality::orderBy('name')->pluck('name', 'id');
         $departmentsByMunicipality = Municipality::pluck('department_id', 'id');
-        return view('admin.entities.index', compact('entities', 'departments', 'municipalities', 'departmentsByMunicipality'));
+        // Preparar permisos para la vista
+        $available = [
+            'read suppliers',
+            'create suppliers',
+            'update suppliers',
+            'export suppliers',
+            'read clients',
+            'create clients',
+            'update clients',
+            'export clients',
+        ];
+        $permissions = array_filter($available, fn($perm) => $user->can($perm));
+        return view('admin.entities.index', compact(
+            'entities',
+            'departments',
+            'municipalities',
+            'departmentsByMunicipality',
+            'permissions'
+        ));
     }
 
     // Endpoint para autocompletar entidades por nombre

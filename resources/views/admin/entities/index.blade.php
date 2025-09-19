@@ -141,28 +141,30 @@
                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                     </select>
                 </div>
-                <div>
-                    <label for="is_client"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Cliente</label>
-                    <select name="is_client" id="is_client"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                        onchange="this.form.submit()">
-                        <option value="">Cliente?</option>
-                        <option value="1" {{ request('is_client') === '1' ? 'selected' : '' }}>Sí</option>
-                        <option value="0" {{ request('is_client') === '0' ? 'selected' : '' }}>No</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="is_supplier"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Proveedor</label>
-                    <select name="is_supplier" id="is_supplier"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                        onchange="this.form.submit()">
-                        <option value="">Proveedor?</option>
-                        <option value="1" {{ request('is_supplier') === '1' ? 'selected' : '' }}>Sí</option>
-                        <option value="0" {{ request('is_supplier') === '0' ? 'selected' : '' }}>No</option>
-                    </select>
-                </div>
+                @if (auth()->user()->can('read suppliers') && auth()->user()->can('read clients'))
+                    <div>
+                        <label for="is_client"
+                            class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Cliente</label>
+                        <select name="is_client" id="is_client"
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                            onchange="this.form.submit()">
+                            <option value="">Cliente?</option>
+                            <option value="1" {{ request('is_client') === '1' ? 'selected' : '' }}>Sí</option>
+                            <option value="0" {{ request('is_client') === '0' ? 'selected' : '' }}>No</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="is_supplier"
+                            class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Proveedor</label>
+                        <select name="is_supplier" id="is_supplier"
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                            onchange="this.form.submit()">
+                            <option value="">Proveedor?</option>
+                            <option value="1" {{ request('is_supplier') === '1' ? 'selected' : '' }}>Sí</option>
+                            <option value="0" {{ request('is_supplier') === '0' ? 'selected' : '' }}>No</option>
+                        </select>
+                    </div>
+                @endif
                 <div>
                     <label for="is_active"
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Activo</label>
@@ -214,10 +216,14 @@
                                     route="entities.search" icon="<i class='fas fa-phone mr-2'></i>" /></th>
                             <th class="px-4 py-3"><x-table-sort-header field="municipality_id" label="Municipio"
                                     route="entities.search" icon="<i class='fas fa-map-marked-alt mr-2'></i>" /></th>
-                            <th class="px-4 py-3"><x-table-sort-header field="is_client" label="Cliente"
+                            @can('read clients')
+                                    <th class="px-4 py-3"><x-table-sort-header field="is_client" label="Cliente"
                                     route="entities.search" icon="<i class='fas fa-user-check mr-2'></i>" /></th>
-                            <th class="px-4 py-3"><x-table-sort-header field="is_supplier" label="Proveedor"
+                            @endcan
+                            @can('read suppliers')
+                                    <th class="px-4 py-3"><x-table-sort-header field="is_supplier" label="Proveedor"
                                     route="entities.search" icon="<i class='fas fa-truck mr-2'></i>" /></th>
+                            @endcan
                             <th class="px-4 py-3"><x-table-sort-header field="is_active" label="Activo"
                                     route="entities.search" icon="<i class='fas fa-check mr-2'></i>" /></th>
                             <th class="px-4 py-3"><i class="fas fa-tools mr-2"></i>Acciones</th>
@@ -235,14 +241,18 @@
                                 <td class="px-4 py-3 text-sm">{{ $entity->formatted_identity_card }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $entity->formatted_phone }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $entity->municipality->name ?? '-' }}</td>
+                                @can('read clients')
                                 <td class="px-4 py-3 text-sm">
                                     <span
                                         class="px-2 py-1 font-semibold leading-tight rounded-full {{ $entity->is_client ? 'text-green-700 bg-green-100 dark:bg-green-700 dark:text-green-100' : 'text-red-700 bg-red-100 dark:bg-red-700 dark:text-red-100' }}">{{ $entity->is_client ? 'Sí' : 'No' }}</span>
                                 </td>
+                                @endcan
+                                @can('read suppliers')
                                 <td class="px-4 py-3 text-sm">
                                     <span
                                         class="px-2 py-1 font-semibold leading-tight rounded-full {{ $entity->is_supplier ? 'text-green-700 bg-green-100 dark:bg-green-700 dark:text-green-100' : 'text-red-700 bg-red-100 dark:bg-red-700 dark:text-red-100' }}">{{ $entity->is_supplier ? 'Sí' : 'No' }}</span>
                                 </td>
+                                @endcan
                                 <td class="px-4 py-3 text-sm">
                                     <span
                                         class="px-2 py-1 font-semibold leading-tight r  ounded-full {{ $entity->is_active ? 'text-green-700 bg-green-100 dark:bg-green-700 dark:text-green-100' : 'text-red-700 bg-red-100 dark:bg-red-700 dark:text-red-100' }}">{{ $entity->is_active ? 'Sí' : 'No' }}</span>
