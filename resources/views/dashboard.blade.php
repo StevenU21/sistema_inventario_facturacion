@@ -81,6 +81,90 @@
 
         <!-- End header card -->
 
+        <!-- Reportes periódicos y KPIs financieros -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4 mt-6">
+            <!-- Ventas Hoy -->
+            <div
+                class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4 flex items-start justify-between">
+                <div class="flex flex-col">
+                    <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Hoy</p>
+                    <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100 whitespace-nowrap">C$
+                        {{ number_format($todaySales, 2) }}</p>
+                </div>
+                <div class="p-2 rounded-lg bg-gradient-to-br from-indigo-500/10 to-indigo-500/5 text-indigo-400">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+            </div>
+            <!-- Ventas Mes -->
+            <div
+                class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4 flex items-start justify-between">
+                <div class="flex flex-col">
+                    <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Mes</p>
+                    <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100 whitespace-nowrap">C$
+                        {{ number_format($monthSales, 2) }}</p>
+                </div>
+                <div class="p-2 rounded-lg bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 text-emerald-400">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+            </div>
+            <!-- Crecimiento Mes -->
+            <div
+                class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4 flex items-start justify-between">
+                <div class="flex flex-col">
+                    <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Crecimiento Mes</p>
+                    <p
+                        class="mt-2 text-2xl font-semibold flex items-center gap-2 {{ ($growthRate ?? 0) > 0 ? 'text-emerald-600 dark:text-emerald-400' : (($growthRate ?? 0) < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-gray-700 dark:text-gray-100') }}">
+                        @if (!is_null($growthRate))
+                            <span>{{ $growthRate > 0 ? '+' : '' }}{{ number_format($growthRate, 2) }}%</span>
+                            @if ($growthRate > 0)
+                                <i class="fas fa-arrow-trend-up"></i>
+                            @elseif($growthRate < 0)
+                                <i class="fas fa-arrow-trend-down"></i>
+                            @else
+                                <i class="fas fa-minus"></i>
+                            @endif
+                        @else
+                            <span class="text-xs font-medium text-gray-400">Sin datos previos</span>
+                        @endif
+                    </p>
+                </div>
+                <div class="p-2 rounded-lg bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 text-emerald-400">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
+
+            <!-- Mejor Mes -->
+            <div
+                class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Mejor Mes</p>
+                        <p class="mt-1 text-sm font-medium text-gray-600 dark:text-gray-300">{{ $bestMonthLabel ?? '---' }}
+                        </p>
+                        <p class="mt-1 text-lg font-semibold text-gray-700 dark:text-gray-100">C$
+                            {{ number_format($bestMonthAmount, 2) }}</p>
+                    </div>
+                    <div class="p-2 rounded-lg bg-gradient-to-br from-fuchsia-500/10 to-fuchsia-500/5 text-fuchsia-400">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- Ventas últimas 12M -->
+            <div
+                class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total 12 Meses</p>
+                        <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100 whitespace-nowrap">C$
+                            {{ number_format($totalSales, 2) }}</p>
+                    </div>
+                    <div class="p-2 rounded-lg bg-gradient-to-br from-amber-500/10 to-amber-500/5 text-amber-400">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- KPI Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-4 mt-6">
             <!-- Clientes -->
@@ -135,91 +219,31 @@
                     </div>
                 </div>
             </div>
-            <!-- Mejor Mes -->
-            <div
-                class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Mejor Mes</p>
-                        <p class="mt-1 text-sm font-medium text-gray-600 dark:text-gray-300">{{ $bestMonthLabel ?? '---' }}
-                        </p>
-                        <p class="mt-1 text-lg font-semibold text-gray-700 dark:text-gray-100">C$
-                            {{ number_format($bestMonthAmount, 2) }}</p>
-                    </div>
-                    <div class="p-2 rounded-lg bg-gradient-to-br from-fuchsia-500/10 to-fuchsia-500/5 text-fuchsia-400">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- Ventas últimas 12M -->
-            <div
-                class="group relative overflow-hidden rounded-xl bg-white/70 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 p-4 shadow hover:shadow-md transition">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total 12 Meses</p>
-                        <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100">C$
-                            {{ number_format($totalSales, 2) }}</p>
-                    </div>
-                    <div class="p-2 rounded-lg bg-gradient-to-br from-amber-500/10 to-amber-500/5 text-amber-400">
-                        <i class="fas fa-coins"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Reportes periódicos y KPIs financieros -->
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4 mt-6">
-            <!-- Ventas Hoy -->
-            <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4">
-                <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Hoy</p>
-                <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100">C$
-                    {{ number_format($todaySales, 2) }}</p>
-            </div>
-            <!-- Ventas Mes -->
-            <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4">
-                <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Mes</p>
-                <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100">C$
-                    {{ number_format($monthSales, 2) }}</p>
-            </div>
-            <!-- Ventas Año -->
-            <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4">
-                <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Ventas Año</p>
-                <p class="mt-2 text-2xl font-semibold text-gray-700 dark:text-gray-100">C$
-                    {{ number_format($yearSales, 2) }}</p>
-            </div>
-            <!-- Crecimiento Mes -->
-            <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4">
-                <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Crecimiento Mes</p>
-                <p
-                    class="mt-2 text-2xl font-semibold flex items-center gap-2 {{ ($growthRate ?? 0) > 0 ? 'text-emerald-600 dark:text-emerald-400' : (($growthRate ?? 0) < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-gray-700 dark:text-gray-100') }}">
-                    @if (!is_null($growthRate))
-                        <span>{{ $growthRate > 0 ? '+' : '' }}{{ number_format($growthRate, 2) }}%</span>
-                        @if ($growthRate > 0)
-                            <i class="fas fa-arrow-trend-up"></i>
-                        @elseif($growthRate < 0)
-                            <i class="fas fa-arrow-trend-down"></i>
-                        @else
-                            <i class="fas fa-minus"></i>
-                        @endif
-                    @else
-                        <span class="text-xs font-medium text-gray-400">Sin datos previos</span>
-                    @endif
-                </p>
-            </div>
             <!-- Crédito Cobrado -->
-            <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4">
-                <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Crédito Cobrado</p>
-                <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100">C$
-                    {{ number_format($totalCreditPaid, 2) }}</p>
-                <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">de C$ {{ number_format($totalCreditDue, 2) }}
-                </p>
+            <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4 flex items-start justify-between">
+                <div class="flex flex-col">
+                    <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Crédito Cobrado</p>
+                    <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100 whitespace-nowrap">C$
+                        {{ number_format($totalCreditPaid, 2) }}</p>
+                    <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400 whitespace-nowrap">de C$
+                        {{ number_format($totalCreditDue, 2) }}</p>
+                </div>
+                <div class="p-2 rounded-lg bg-gradient-to-br from-teal-500/10 to-teal-500/5 text-teal-400">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
             </div>
             <!-- Crédito Pendiente -->
-            <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4">
-                <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Crédito Pendiente</p>
-                <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100">C$
-                    {{ number_format($totalCreditPending, 2) }}</p>
-                <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">Saldo Clientes</p>
+            <div
+                class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4 flex items-start justify-between">
+                <div class="flex flex-col">
+                    <p class="text-[11px] font-medium tracking-wide text-gray-500 dark:text-gray-400">Crédito Pendiente</p>
+                    <p class="mt-2 text-xl font-semibold text-gray-700 dark:text-gray-100 whitespace-nowrap">C$
+                        {{ number_format($totalCreditPending, 2) }}</p>
+                    <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">Saldo Clientes</p>
+                </div>
+                <div class="p-2 rounded-lg bg-gradient-to-br from-rose-500/10 to-rose-500/5 text-rose-400">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
             </div>
         </div>
 
@@ -228,7 +252,8 @@
             <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow">
                 <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
                     <div>
-                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide">Actividad de Ventas
+                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide">Actividad de
+                            Ventas
                             por Día</h3>
                         <p class="text-xs text-gray-500 dark:text-gray-400">{{ $heatmapYear }}
                             ({{ $heatmapCalendarStart }} → {{ $heatmapCalendarEnd }})</p>
