@@ -94,29 +94,13 @@ class RolesAndPermissionSeeder extends Seeder
         $adminRole->givePermissionTo(Permission::all());
 
         $cashierPermissions = array_merge(
-            $this->filterPermissions('users')->only(['read users'])->get(),
-            $this->filterPermissions('categories')->only(['read categories'])->get(),
-            $this->filterPermissions('brands')->only(['read brands'])->get(),
             $this->filterPermissions('companies')->only(['read companies'])->get(),
-            $this->filterPermissions('unit_measures')->only(['read unit_measures'])->get(),
-            $this->filterPermissions('departments')->only(['read departments'])->get(),
-            $this->filterPermissions('municipalities')->only(['read municipalities'])->get(),
-            $this->filterPermissions('payment_methods')->only(['read payment_methods'])->get(),
-            $this->filterPermissions('taxes')->only(['read taxes'])->get(),
             $this->filterPermissions('entities')->only(['read clients', 'create clients', 'update clients'])->get(),
             $this->filterPermissions('products')->only(['read products'])->get(),
-            $this->filterPermissions('roles')->only(['read roles'])->get(),
-            $this->filterPermissions('warehouses')->only(['read warehouses'])->get(),
-            $this->filterPermissions('inventories')->only(['read inventories'])->get(),
-            $this->filterPermissions('inventory_movements')->only(['read inventory_movements'])->get(),
-            $this->filterPermissions('sizes')->only(['read sizes'])->get(),
-            $this->filterPermissions('colors')->only(['read colors'])->get(),
-            $this->filterPermissions('product_variants')->only(['read product_variants'])->get(),
-            $this->filterPermissions('purchases')->only(['read purchases'])->get(),
-            $this->filterPermissions('kardex')->only(['read kardex', 'generate kardex'])->get(),
-            $this->filterPermissions('sales')->only(['read sales', 'create sales', 'update sales'])->get(),
-            $this->filterPermissions('account_receivables')->only(['read account_receivables', 'create account_receivables', 'update account_receivables'])->get(),
-            $this->filterPermissions('payments')->only(['read payments', 'create payments', 'update payments'])->get()
+            $this->filterPermissions('sales')->only(['read sales', 'create sales'])->get(),
+            $this->filterPermissions('quotations')->only(['read quotations', 'create quotations', 'update quotations'])->get(),
+            $this->filterPermissions('account_receivables')->only(['read account_receivables', 'create account_receivables'])->get(),
+            $this->filterPermissions('payments')->only(['read payments', 'create payments'])->get()
         );
 
         $cashierRole->givePermissionTo($cashierPermissions);

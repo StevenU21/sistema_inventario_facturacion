@@ -6,6 +6,7 @@ use App\Models\Color;
 use App\Models\Entity;
 use App\Models\Inventory;
 use App\Models\InventoryMovement;
+use App\Models\Kardex;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Product;
@@ -27,6 +28,7 @@ use App\Policies\CompanyPolicy;
 use App\Policies\EntityPolicy;
 use App\Policies\InventoryMovementPolicy;
 use App\Policies\InventoryPolicy;
+use App\Policies\KardexPolicy;
 use App\Policies\PaymentMethodPolicy;
 use App\Policies\PaymentPolicy;
 use App\Policies\ProductPolicy;
@@ -98,5 +100,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(AccountReceivable::class, AccountReceivablePolicy::class);
         Gate::policy(Payment::class, PaymentPolicy::class);
         Gate::policy(Quotation::class, QuotationPolicy::class);
+        Gate::policy(Kardex::class, KardexPolicy::class);
     }
 }
