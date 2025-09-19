@@ -123,13 +123,21 @@
                         };
                     },
                     // result siempre será un objeto para evitar errores al acceder a .rows en el template
-                    result: { rows: [], final: null },
+                    result: {
+                        rows: [],
+                        final: null
+                    },
                     loading: false,
                     errors: [],
                     hasGenerated: false, // controla visibilidad de la sección de resultados
                     clearAll() {
-                        this.filters = { ...this.initialFilters };
-                        this.result = { rows: [], final: null };
+                        this.filters = {
+                            ...this.initialFilters
+                        };
+                        this.result = {
+                            rows: [],
+                            final: null
+                        };
                         this.errors = [];
                         this.hasGenerated = false;
                         // Disparar evento global para que el variant-picker se limpie
@@ -167,7 +175,8 @@
                                 // Normalizar estructura para evitar result.rows undefined/null
                                 this.result = {
                                     ...parsed,
-                                    rows: Array.isArray(parsed?.rows) ? parsed.rows : (Array.isArray(parsed?.data) ? parsed.data : []),
+                                    rows: Array.isArray(parsed?.rows) ? parsed.rows : (Array.isArray(parsed?.data) ?
+                                        parsed.data : []),
                                     final: parsed?.final || null,
                                 };
                                 this.hasGenerated = true;
@@ -186,46 +195,53 @@
             }
         </script>
         <!-- Filtros -->
-        <section class="mt-4 rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 sm:p-5" x-data="kardexComponent()" x-init="
-            window.addEventListener('kardex-variant-picked', e => { filters.product_variant_id = e.detail.product_variant_id; filters.product_id = e.detail.product_id; });
-        ">
+        <section class="mt-4 rounded-xl bg-white dark:bg-gray-800 shadow-md p-4 sm:p-5" x-data="kardexComponent()"
+            x-init="window.addEventListener('kardex-variant-picked', e => {
+                filters.product_variant_id = e.detail.product_variant_id;
+                filters.product_id = e.detail.product_id;
+            });">
             <form @submit.prevent="generate" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
-                <!-- Selector de variante: ocupa toda la fila -->
-                <div class="sm:col-span-2 lg:col-span-6 mb-4">
-                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Selecciona la variante</h3>
-                    <x-kardex.variant-picker
-                        :colors="$colors ?? []"
-                        :sizes="$sizes ?? []"
-                        :product-id="$productId ?? null"
-                        :entities="$entities ?? []"
-                        :categories="$categories ?? []"
-                        :brands="$brands ?? []"
-                    />
-                </div>
+
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Seleccionar Kardex</label>
-                    <select name="metodo" x-model="filters.metodo" class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Configura el Kardex</h3>
+                    <label
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Seleccionar
+                        Kardex</label>
+                    <select name="metodo" x-model="filters.metodo"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                         <option value="cpp">Costo Promedio</option>
                         <option value="peps">PEPS (FIFO)</option>
                         <option value="ueps">UEPS (LIFO)</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Desde</label>
-                    <input type="date" x-model="filters.from" required class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
+                    <label
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Desde</label>
+                    <input type="date" x-model="filters.from" required
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Hasta</label>
-                    <input type="date" x-model="filters.to" class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
+                    <label
+                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Hasta</label>
+                    <input type="date" x-model="filters.to"
+                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
                 </div>
-                <div class="sm:col-span-2 lg:col-span-6 flex gap-2">
-                    <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-semibold rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white shadow" :disabled="loading">
-                        <span x-show="!loading" class="inline-flex items-center gap-2"><i class="fas fa-cogs"></i> Generar</span>
-                        <span x-show="loading" class="inline-flex items-center gap-2"><i class="fas fa-spinner fa-spin"></i> Procesando...</span>
-                    </button>
-                    <button type="button" @click="clearAll()" class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
-                        <i class="fas fa-undo"></i> Limpiar
-                    </button>
+                <button type="submit"
+                    class="inline-flex items-center justify-center gap-2 px-4 py-2 w-40  sm:w-auto text-sm font-semibold rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white shadow"
+                    :disabled="loading">
+                    <span x-show="!loading" class="inline-flex items-center gap-2"><i class="fas fa-cogs"></i>
+                        Generar</span>
+                    <span x-show="loading" class="inline-flex items-center gap-2"><i class="fas fa-spinner fa-spin"></i>
+                        Procesando...</span>
+                </button>
+                <button type="button" @click="clearAll()"
+                    class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
+                    <i class="fas fa-undo"></i> Limpiar
+                </button>
+                <!-- Selector de variante: ocupa toda la fila -->
+                <div class="sm:col-span-2 lg:col-span-6 mb-4">
+                    <x-kardex.variant-picker :colors="$colors ?? []" :sizes="$sizes ?? []" :product-id="$productId ?? null" :entities="$entities ?? []"
+                        :categories="$categories ?? []" :brands="$brands ?? []" />
                 </div>
             </form>
             <template x-if="errors.length">
@@ -238,14 +254,17 @@
             <div class="mt-4" x-show="hasGenerated" x-cloak>
                 <div class="mb-4 text-gray-700 dark:text-gray-200">
                     <p><strong>Producto:</strong> <span x-text="(result && result.product) || ''"></span></p>
-                    <p><strong>Almacén:</strong> <span x-text="(result && result.warehouse) ? result.warehouse : 'Todos'"></span></p>
-                    <p><strong>Rango:</strong> <span x-text="(result && result.date_from) || ''"></span> a <span x-text="(result && result.date_to) || ''"></span></p>
+                    <p><strong>Almacén:</strong> <span
+                            x-text="(result && result.warehouse) ? result.warehouse : 'Todos'"></span></p>
+                    <p><strong>Rango:</strong> <span x-text="(result && result.date_from) || ''"></span> a <span
+                            x-text="(result && result.date_to) || ''"></span></p>
                     <p><strong>Método:</strong> <span x-text="(result && result.method) || ''"></span></p>
                 </div>
                 <div class="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
                     <table class="min-w-full text-left text-sm">
                         <thead class="bg-gray-50 dark:bg-gray-800">
-                            <tr class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase border-b border-gray-200 dark:border-gray-700">
+                            <tr
+                                class="text-xs font-semibold tracking-wide text-gray-600 dark:text-gray-300 uppercase border-b border-gray-200 dark:border-gray-700">
                                 <th class="px-4 py-3">Fecha y hora</th>
                                 <th class="px-4 py-3">Concepto</th>
                                 <th class="px-4 py-3">Almacén</th>
@@ -261,21 +280,29 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
                             <template x-if="!result || !result.rows || result.rows.length===0">
-                                <tr><td colspan="11" class="px-4 py-3">Sin movimientos en el rango.</td></tr>
+                                <tr>
+                                    <td colspan="11" class="px-4 py-3">Sin movimientos en el rango.</td>
+                                </tr>
                             </template>
                             <template x-for="(r,i) in result.rows" :key="i">
-                                <tr class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
+                                <tr
+                                    class="text-gray-700 dark:text-gray-300 hover:bg-gray-50/60 dark:hover:bg-gray-700/50 transition-colors">
                                     <td class="px-4 py-3 text-sm" x-text="r.date"></td>
                                     <td class="px-4 py-3 text-sm" x-text="r.concept || ''"></td>
                                     <td class="px-4 py-3 text-sm" x-text="r.warehouse"></td>
                                     <td class="px-4 py-3 text-sm text-right" x-text="r.entry_qty"></td>
                                     <td class="px-4 py-3 text-sm text-right" x-text="r.exit_qty"></td>
                                     <td class="px-4 py-3 text-sm text-right" x-text="r.balance_qty"></td>
-                                    <td class="px-4 py-3 text-sm text-right" x-text="`C$ ${Number(r.unit_cost).toFixed(2)}`"></td>
-                                    <td class="px-4 py-3 text-sm text-right" x-text="`C$ ${Number(r.avg_cost).toFixed(2)}`"></td>
-                                    <td class="px-4 py-3 text-sm text-right" x-text="`C$ ${Number(r.debe).toFixed(2)}`"></td>
-                                    <td class="px-4 py-3 text-sm text-right" x-text="`C$ ${Number(r.haber).toFixed(2)}`"></td>
-                                    <td class="px-4 py-3 text-sm text-right" x-text="`C$ ${Number(r.saldo).toFixed(2)}`"></td>
+                                    <td class="px-4 py-3 text-sm text-right"
+                                        x-text="`C$ ${Number(r.unit_cost).toFixed(2)}`"></td>
+                                    <td class="px-4 py-3 text-sm text-right"
+                                        x-text="`C$ ${Number(r.avg_cost).toFixed(2)}`"></td>
+                                    <td class="px-4 py-3 text-sm text-right" x-text="`C$ ${Number(r.debe).toFixed(2)}`">
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-right" x-text="`C$ ${Number(r.haber).toFixed(2)}`">
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-right" x-text="`C$ ${Number(r.saldo).toFixed(2)}`">
+                                    </td>
                                 </tr>
                             </template>
                         </tbody>
@@ -283,13 +310,20 @@
                 </div>
                 <div class="mt-4 text-gray-700 dark:text-gray-200" x-show="result && result.final">
                     <p><strong>Determinación final del inventario:</strong>
-                        Unidades finales <span x-text="(result && result.final) ? result.final.qty : 0"></span> × Costo promedio
-                        C$ <span x-text="(result && result.final) ? Number(result.final.unit_cost).toFixed(2) : '0.00'"></span>
-                        = <strong>C$ <span x-text="(result && result.final) ? (result.final.qty * result.final.unit_cost).toFixed(2) : '0.00'"></span></strong>
+                        Unidades finales <span x-text="(result && result.final) ? result.final.qty : 0"></span> × Costo
+                        promedio
+                        C$ <span
+                            x-text="(result && result.final) ? Number(result.final.unit_cost).toFixed(2) : '0.00'"></span>
+                        = <strong>C$ <span
+                                x-text="(result && result.final) ? (result.final.qty * result.final.unit_cost).toFixed(2) : '0.00'"></span></strong>
                     </p>
-                    <p>Saldo final reportado: <strong>C$ <span x-text="(result && result.final) ? Number(result.final.total).toFixed(2) : '0.00'"></span></strong></p>
+                    <p>Saldo final reportado: <strong>C$ <span
+                                x-text="(result && result.final) ? Number(result.final.total).toFixed(2) : '0.00'"></span></strong>
+                    </p>
                     <div class="mt-3">
-                        <a :href="`{{ route('kardex.export') }}?product_id=${filters.product_id||''}&product_variant_id=${filters.product_variant_id||''}&from=${filters.from||''}&to=${filters.to||''}&metodo=${filters.metodo}`" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium">
+                        <a :href="`{{ route('kardex.export') }}?product_id=${filters.product_id||''}&product_variant_id=${filters.product_variant_id||''}&from=${filters.from||''}&to=${filters.to||''}&metodo=${filters.metodo}`"
+                            target="_blank"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium">
                             <i class="fas fa-file-pdf"></i> Exportar PDF
                         </a>
                     </div>
@@ -373,4 +407,6 @@
     </div>
 @endsection
 
-@push('scripts')<!-- (Definición movida arriba) -->@endpush
+@push('scripts')
+    <!-- (Definición movida arriba) -->
+@endpush
