@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('chartMonthly');
     if(!canvas || !window.Chart) return;
     const ctx = canvas.getContext('2d');
+    // Etiquetas de meses ya en español gracias a Carbon labels
     const labels = @json($labels);
     const totals = @json($totals);
     const baseGrid = 'rgba(148,163,184,0.15)';

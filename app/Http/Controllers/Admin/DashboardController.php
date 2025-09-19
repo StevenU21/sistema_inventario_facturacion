@@ -19,6 +19,8 @@ class DashboardController extends Controller
     public function index(\Illuminate\Http\Request $request)
     {
         $now = now();
+        // Usar locale español para formatos de fecha
+        Carbon::setLocale('es');
         $driver = DB::getDriverName();
         $coalesceDate = 'COALESCE(sale_date, created_at)';
 
@@ -56,7 +58,7 @@ class DashboardController extends Controller
         $cursor = $now->copy()->subMonths(11)->startOfMonth();
         while ($cursor <= $now->copy()->startOfMonth()) {
             $key = $cursor->format('Y-m');
-            $label = ucfirst($cursor->translatedFormat('M Y'));
+            $label = ucfirst($cursor->locale('es')->translatedFormat('M Y'));
             $found = $salesByMonthRaw->firstWhere('ym', $key);
             $monthsLabels[] = $label;
             $monthsTotals[] = $found ? round($found->total, 2) : 0;
@@ -106,7 +108,8 @@ class DashboardController extends Controller
         $cursorDay = $now->copy()->subDays(13)->startOfDay();
         while ($cursorDay <= $now->copy()->startOfDay()) {
             $k = $cursorDay->toDateString();
-            $label = $cursorDay->format('d M');
+            // Etiqueta en español (día mes abreviado)
+            $label = ucfirst($cursorDay->locale('es')->translatedFormat('d M'));
             $row = $salesByDayRaw->firstWhere('d', $k);
             $daysLabels[] = $label;
             $daysTotals[] = $row ? round($row->total, 2) : 0;
@@ -257,7 +260,9 @@ class DashboardController extends Controller
         if ($salesIdsMonth->isNotEmpty()) {
             $monthSaleDetails = \App\Models\SaleDetail::whereIn('sale_id', $salesIdsMonth)->get();
         }
-        $netSalesRevenue = $monthSaleDetails->sum(function ($d) { return ($d->sub_total - $d->discount_amount); });
+        $netSalesRevenue = $monthSaleDetails->sum(function ($d) {
+            return ($d->sub_total - $d->discount_amount);
+        });
         $variantIdsSold = $monthSaleDetails->pluck('product_variant_id')->unique();
         $inventoryByVariant = collect();
         if ($variantIdsSold->isNotEmpty()) {
@@ -268,7 +273,9 @@ class DashboardController extends Controller
             $invGroup = $inventoryByVariant->get($detail->product_variant_id);
             if ($invGroup && $invGroup->count() > 0) {
                 $totalStockForVariant = max(1, $invGroup->sum('stock'));
-                $weightedCost = $invGroup->sum(function ($inv) { return $inv->stock * $inv->purchase_price; }) / $totalStockForVariant;
+                $weightedCost = $invGroup->sum(function ($inv) {
+                    return $inv->stock * $inv->purchase_price;
+                }) / $totalStockForVariant;
                 $estimatedCost += $weightedCost * $detail->quantity;
             }
         }
