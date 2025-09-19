@@ -22,7 +22,10 @@ class EntitiesExport implements FromCollection, WithHeadings
             return !is_null($v) && $v !== '';
         });
 
-        $query = Entity::with('municipality');
+        // Filtrar entidades según permisos de lectura de cliente/proveedor
+        $user = auth()->user();
+        $query = Entity::with('municipality')
+            ->visibleFor($user);
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {

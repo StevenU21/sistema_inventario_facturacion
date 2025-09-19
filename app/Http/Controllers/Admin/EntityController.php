@@ -182,7 +182,7 @@ class EntityController extends Controller
 
     public function export(Request $request)
     {
-        $this->authorize('viewAny', Entity::class);
+        $this->authorize('export', Entity::class);
         $filters = $request->only(['search', 'is_client', 'is_supplier', 'is_active', 'municipality_id']);
         // Remove empty/null values so we don't apply unintended filters
         $filters = array_filter($filters, function ($v) {

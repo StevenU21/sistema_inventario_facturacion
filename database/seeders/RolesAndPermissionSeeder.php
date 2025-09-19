@@ -45,7 +45,7 @@ class RolesAndPermissionSeeder extends Seeder
         'product_variants' => ['export product_variants'],
         'users' => ['reactivate users', 'export users'],
         'audits' => ['export audits'],
-        'entities' => ['read suppliers', 'create suppliers', 'update suppliers', 'read clients', 'create clients', 'update clients', 'export clients', 'export suppliers'],
+        'entities' => ['read suppliers', 'create suppliers', 'update suppliers', 'read clients', 'create clients', 'update clients', 'export entities'],
         'inventory_movements' => ['export inventory_movements'],
         'inventories' => ['export inventories'],
         'kardex' => ['export kardex', 'generate kardex'],
@@ -95,7 +95,7 @@ class RolesAndPermissionSeeder extends Seeder
 
         $cashierPermissions = array_merge(
             $this->filterPermissions('companies')->only(['read companies'])->get(),
-            $this->filterPermissions('entities')->only(['read clients', 'create clients', 'update clients'])->get(),
+            $this->filterPermissions('entities')->only(['read clients', 'create clients', 'update clients', 'export entities'])->get(),
             $this->filterPermissions('products')->only(['read products'])->get(),
             $this->filterPermissions('sales')->only(['read sales', 'create sales'])->get(),
             $this->filterPermissions('quotations')->only(['read quotations', 'create quotations', 'update quotations'])->get(),
