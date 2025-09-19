@@ -142,7 +142,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Kardex
     Route::get('kardex', [KardexController::class, 'index'])->name('kardex.index');
     // AJAX generation of Kardex data
-    Route::post('kardex/generate', [\App\Http\Controllers\Admin\KardexController::class, 'generateAjax'])->name('kardex.generate');
+    Route::post('kardex/generate', [KardexController::class, 'generateAjax'])->name('kardex.generate');
     Route::get('kardex/export', [KardexController::class, 'exportPdf'])->name('kardex.export');
 
     // Purchases
@@ -201,11 +201,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [QuotationController::class, 'store'])->name('store');
         Route::get('/search', [QuotationController::class, 'search'])->name('search');
         Route::get('/product-search', [QuotationController::class, 'productSearch'])->name('productSearch');
-    // Route::get('/export', [QuotationController::class, 'exportPdf'])->name('export'); // removed general export
+        // Route::get('/export', [QuotationController::class, 'exportPdf'])->name('export'); // removed general export
         Route::get('/autocomplete', [QuotationController::class, 'autocomplete'])->name('autocomplete');
-    Route::get('/{quotation}/pdf', [QuotationController::class, 'pdf'])->name('pdf');
-    Route::patch('/{quotation}/accept', [QuotationController::class, 'accept'])->name('accept');
-    Route::patch('/{quotation}/cancel', [QuotationController::class, 'cancel'])->name('cancel');
+        Route::get('/{quotation}/pdf', [QuotationController::class, 'pdf'])->name('pdf');
+        Route::patch('/{quotation}/accept', [QuotationController::class, 'accept'])->name('accept');
+        Route::patch('/{quotation}/cancel', [QuotationController::class, 'cancel'])->name('cancel');
     });
 
     // Dashboard

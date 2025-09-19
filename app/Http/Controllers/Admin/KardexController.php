@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kardex;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Warehouse;
@@ -43,7 +44,7 @@ class KardexController extends Controller
 
         $warehouses = Warehouse::orderBy('name')->pluck('name', 'id');
         // Selects globales de color y talla
-        $variants = \App\Models\ProductVariant::with(['color', 'size'])->get();
+        $variants = ProductVariant::with(['color', 'size'])->get();
         $colors = $variants->pluck('color')->filter()->unique('id')->mapWithKeys(fn($c) => [$c->id => $c->name]);
         $sizes = $variants->pluck('size')->filter()->unique('id')->mapWithKeys(fn($s) => [$s->id => $s->name]);
 
