@@ -99,6 +99,27 @@
                 this.brands;
             this.filters.brand_id = null;
         });
+        // Escuchar limpieza global del Kardex
+        window.addEventListener('kardex-clear', () => {
+            this.selectedVariantId = null;
+            if (this.$refs.variantHidden) this.$refs.variantHidden.value = '';
+            if (this.$refs.variantBadge) this.$refs.variantBadge.textContent = '';
+            this.results = [];
+            this.page = 1;
+            this.lastPage = 1;
+            this.total = 0;
+            // Reset de filtros locales (solo los del picker)
+            this.filters = {
+                q: '',
+                product_id: null,
+                color_id: null,
+                size_id: null,
+                entity_id: null,
+                category_id: null,
+                brand_id: null,
+            };
+            this.filteredBrands = this.brands;
+        });
     }
 }" @variant-search.window="filters.q = ($event.detail?.text || ''); search(1)"
     class="rounded-lg border border-gray-200 dark:border-gray-700 p-4">

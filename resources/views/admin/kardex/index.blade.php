@@ -107,10 +107,34 @@
                         to: null,
                         product_variant_id: null,
                     },
+                    // Snapshot para restablecer filtros originales
+                    get initialFilters() {
+                        return {
+                            product_id: null,
+                            warehouse_id: null,
+                            color_id: null,
+                            size_id: null,
+                            category_id: null,
+                            brand_id: null,
+                            metodo: 'cpp',
+                            from: null,
+                            to: null,
+                            product_variant_id: null,
+                        };
+                    },
                     // result siempre será un objeto para evitar errores al acceder a .rows en el template
                     result: { rows: [], final: null },
                     loading: false,
                     errors: [],
+                    hasGenerated: false, // controla visibilidad de la sección de resultados
+                    clearAll() {
+                        this.filters = { ...this.initialFilters };
+                        this.result = { rows: [], final: null };
+                        this.errors = [];
+                        this.hasGenerated = false;
+                        // Disparar evento global para que el variant-picker se limpie
+                        window.dispatchEvent(new CustomEvent('kardex-clear'));
+                    },
                     async generate() {
                         this.errors = [];
                         // Validaciones mínimas
@@ -146,6 +170,7 @@
                                     rows: Array.isArray(parsed?.rows) ? parsed.rows : (Array.isArray(parsed?.data) ? parsed.data : []),
                                     final: parsed?.final || null,
                                 };
+                                this.hasGenerated = true;
                             } catch (err) {
                                 console.error('Invalid JSON response:', text);
                                 this.errors.push('Respuesta inválida del servidor.');
@@ -198,7 +223,7 @@
                         <span x-show="!loading" class="inline-flex items-center gap-2"><i class="fas fa-cogs"></i> Generar</span>
                         <span x-show="loading" class="inline-flex items-center gap-2"><i class="fas fa-spinner fa-spin"></i> Procesando...</span>
                     </button>
-                    <button type="button" @click="result={rows:[], final:null}; filters={...filters, product_id:null, product_variant_id:null};" class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
+                    <button type="button" @click="clearAll()" class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
                         <i class="fas fa-undo"></i> Limpiar
                     </button>
                 </div>
@@ -210,7 +235,7 @@
                     </template>
                 </div>
             </template>
-            <div class="mt-4" x-show="result" x-cloak>
+            <div class="mt-4" x-show="hasGenerated" x-cloak>
                 <div class="mb-4 text-gray-700 dark:text-gray-200">
                     <p><strong>Producto:</strong> <span x-text="(result && result.product) || ''"></span></p>
                     <p><strong>Almacén:</strong> <span x-text="(result && result.warehouse) ? result.warehouse : 'Todos'"></span></p>
