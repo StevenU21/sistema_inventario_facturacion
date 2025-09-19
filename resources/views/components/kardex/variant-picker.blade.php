@@ -16,7 +16,8 @@
     page: 1,
     lastPage: 1,
     total: 0,
-    perPage: 10,
+    // Paginación: 5 resultados por página (valor inicial)
+    perPage: 5,
     selectedVariantId: @js(old('product_variant_id')) || null,
     // filtros básicos para buscar variantes
     filters: {
@@ -57,7 +58,7 @@
                 this.page = 1;
                 this.lastPage = 1;
                 this.total = 0;
-                this.perPage = 10;
+                this.perPage = 5; // mantener coherencia con valor inicial
                 return;
             }
             const items = Array.isArray(data) ? data : (data.data || []);
