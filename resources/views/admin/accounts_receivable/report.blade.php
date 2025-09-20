@@ -195,7 +195,7 @@
                         <td>{{ \Illuminate\Support\Carbon::parse($p->payment_date)->format('d/m/Y') }}</td>
                         <td>{{ $p->paymentMethod?->name ?? '-' }}</td>
                         <td class="text-right">{{ number_format($p->amount, 2) }}</td>
-                        <td>{{ $p->user?->name ?? '-' }}</td>
+                        <td>{{ $p->user?->short_name ?? '-' }}</td>
                     </tr>
                 @empty
                     <tr>
