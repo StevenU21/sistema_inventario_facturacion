@@ -118,14 +118,15 @@ class DashboardController extends Controller
             $cursorDay->addDay();
         }
 
-        // Top productos (por ganancia = suma sub_total - discount_amount) últimos 30 días
+        // Top productos (Ingresos netos sin impuestos = SUM(unit_price*quantity - discount_amount)) últimos 30 días
+        // Nota: sub_total almacena base + impuesto; para análisis de margen excluimos impuesto
         $topProducts = SaleDetail::select(
             'product_variants.id as variant_id',
             'products.name as product_name',
             'colors.name as color_name',
             'sizes.name as size_name',
             DB::raw('SUM(sale_details.quantity) as qty_total'),
-            DB::raw('SUM(sale_details.sub_total - sale_details.discount_amount) as revenue')
+            DB::raw('SUM( (sale_details.unit_price * sale_details.quantity) - sale_details.discount_amount ) as revenue')
         )
             ->join('product_variants', 'sale_details.product_variant_id', '=', 'product_variants.id')
             ->join('products', 'product_variants.product_id', '=', 'products.id')
@@ -264,10 +265,12 @@ class DashboardController extends Controller
         $salesIdsMonth = Sale::whereRaw("$coalesceDate BETWEEN ? AND ?", [$monthStartDate, $monthEndDate])->pluck('id');
         $monthSaleDetails = collect();
         if ($salesIdsMonth->isNotEmpty()) {
-            $monthSaleDetails = \App\Models\SaleDetail::whereIn('sale_id', $salesIdsMonth)->get();
+            $monthSaleDetails = SaleDetail::whereIn('sale_id', $salesIdsMonth)->get();
         }
         $netSalesRevenue = $monthSaleDetails->sum(function ($d) {
-            return ($d->sub_total - $d->discount_amount);
+            // sub_total incluye descuento aplicado y el impuesto: sub_total = (unit_price*qty - discount) + tax
+            // Queremos la base neta sin impuesto: (unit_price*qty - discount_amount)
+            return max(0, ($d->unit_price * $d->quantity) - $d->discount_amount);
         });
         $variantIdsSold = $monthSaleDetails->pluck('product_variant_id')->unique();
         $inventoryByVariant = collect();
