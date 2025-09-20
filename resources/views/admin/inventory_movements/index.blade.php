@@ -60,7 +60,7 @@
                         <p class="mt-1 text-white/80 text-sm">Historial de entradas, salidas, ajustes y transferencias.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('inventory_movements.export') }}">
+                        {{-- <form method="GET" action="{{ route('inventory_movements.export') }}">
                             <input type="hidden" name="per_page" value="{{ request('per_page') }}">
                             <input type="hidden" name="user_id" value="{{ request('user_id') }}">
                             <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
@@ -78,7 +78,7 @@
                                 <i class="fas fa-file-excel"></i>
                                 Exportar Excel
                             </button>
-                        </form>
+                        </form> --}}
                     </div>
                 </div>
             </div>
@@ -348,4 +348,3 @@
         </div>
     </div>
 @endsection
-    

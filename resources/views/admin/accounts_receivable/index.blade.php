@@ -69,7 +69,7 @@
                         <p class="mt-1 text-white/80 text-sm">Estado por cliente y cuenta, exportable.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('admin.accounts_receivable.export') }}">
+                        {{-- <form method="GET" action="{{ route('admin.accounts_receivable.export') }}">
                             @foreach (request()->all() as $key => $value)
                                 @if (is_array($value))
                                     @foreach ($value as $subValue)
@@ -84,7 +84,7 @@
                                 <i class="fas fa-file-excel"></i>
                                 Exportar Excel
                             </button>
-                        </form>
+                        </form> --}}
                     </div>
                 </div>
             </div>

@@ -69,7 +69,7 @@
                         <p class="mt-1 text-white/80 text-sm">Gestiona, busca y organiza tus entidades.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('entities.export') }}">
+                        {{-- <form method="GET" action="{{ route('entities.export') }}">
                             @if (request()->filled('search'))
                                 <input type="hidden" name="search" value="{{ request('search') }}">
                             @endif
@@ -87,7 +87,7 @@
                                 <i class="fas fa-file-excel"></i>
                                 Exportar Excel
                             </button>
-                        </form>
+                        </form> --}}
                         <button type="button" @click="isModalOpen = true"
                             class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
                             <i class="fas fa-plus"></i>

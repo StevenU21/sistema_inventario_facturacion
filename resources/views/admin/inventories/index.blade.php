@@ -60,7 +60,7 @@
                         <p class="mt-1 text-white/80 text-sm">Administra existencias por variante y almacén.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('inventories.export') }}">
+                        {{-- <form method="GET" action="{{ route('inventories.export') }}">
                             <input type="hidden" name="product_variant_id" value="{{ request('product_variant_id') }}">
                             <input type="hidden" name="warehouse_id" value="{{ request('warehouse_id') }}">
                             <button type="submit"
@@ -68,7 +68,7 @@
                                 <i class="fas fa-file-excel"></i>
                                 Exportar Excel
                             </button>
-                        </form>
+                        </form> --}}
                         <a href="{{ route('inventories.create') }}"
                             class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
                             <i class="fas fa-plus"></i>

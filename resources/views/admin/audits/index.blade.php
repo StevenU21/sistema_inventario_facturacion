@@ -60,7 +60,7 @@
                         </h1>
                         <p class="mt-1 text-white/80 text-sm">Historial de actividades y cambios en el sistema.</p>
                     </div>
-                    <div class="flex items-center gap-2">
+                    {{-- <div class="flex items-center gap-2">
                         <form method="GET" action="{{ route('audits.export') }}">
                             <input type="hidden" name="range" value="{{ request('range') }}">
                             <button type="submit"
@@ -69,7 +69,7 @@
                                 Exportar Excel
                             </button>
                         </form>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </section>

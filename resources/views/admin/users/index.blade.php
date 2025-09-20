@@ -70,7 +70,7 @@
                         <p class="mt-1 text-white/80 text-sm">Administra cuentas, estados y permisos.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('users.export') }}">
+                        {{-- <form method="GET" action="{{ route('users.export') }}">
                             <input type="hidden" name="search" value="{{ request('search') }}">
                             <input type="hidden" name="role" value="{{ request('role') }}">
                             <input type="hidden" name="status" value="{{ request('status') }}">
@@ -80,7 +80,7 @@
                                 <i class="fas fa-file-excel"></i>
                                 Exportar Excel
                             </button>
-                        </form>
+                        </form> --}}
                         <button type="button" @click="isModalOpen = true"
                             class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
                             <i class="fas fa-user-plus"></i>

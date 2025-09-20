@@ -60,7 +60,7 @@
                         <p class="mt-1 text-white/80 text-sm">Busca, filtra y gestiona tus productos.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('products.export') }}">
+                        {{-- <form method="GET" action="{{ route('products.export') }}">
                             <input type="hidden" name="search" value="{{ request('search') }}">
                             <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
                             <input type="hidden" name="category_id" value="{{ request('category_id') }}">
@@ -72,7 +72,7 @@
                                 <i class="fas fa-file-excel"></i>
                                 Exportar Excel
                             </button>
-                        </form>
+                        </form> --}}
                         <a href="{{ route('products.create') }}"
                             class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
                             <i class="fas fa-plus"></i>

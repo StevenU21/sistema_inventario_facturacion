@@ -59,7 +59,7 @@
                         <p class="mt-1 text-white/80 text-sm">Busca, filtra y exporta tus pagos.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('admin.payments.export') }}">
+                        {{-- <form method="GET" action="{{ route('admin.payments.export') }}">
                             <input type="hidden" name="search" value="{{ request('search') }}">
                             <input type="hidden" name="payment_method_id" value="{{ request('payment_method_id') }}">
                             <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
@@ -73,7 +73,7 @@
                                 <i class="fas fa-file-excel"></i>
                                 Exportar Excel
                             </button>
-                        </form>
+                        </form> --}}
                         <form method="GET" action="{{ route('admin.payments.exportPdf') }}">
                             <input type="hidden" name="search" value="{{ request('search') }}">
                             <input type="hidden" name="payment_method_id" value="{{ request('payment_method_id') }}">

@@ -59,7 +59,7 @@
                         <p class="mt-1 text-white/80 text-sm">Busca, filtra y gestiona tus compras.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('purchases.export') }}">
+                        {{-- <form method="GET" action="{{ route('purchases.export') }}">
                             <input type="hidden" name="search" value="{{ request('search') }}">
                             <input type="hidden" name="payment_method_id" value="{{ request('payment_method_id') }}">
                             <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
@@ -75,7 +75,7 @@
                                 <i class="fas fa-file-excel"></i>
                                 Exportar Excel
                             </button>
-                        </form>
+                        </form> --}}
                         <a href="{{ route('purchases.create') }}"
                             class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
                             <i class="fas fa-plus"></i>

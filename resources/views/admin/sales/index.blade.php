@@ -64,7 +64,7 @@
                             <i class="fas fa-plus"></i>
                             Registrar venta
                         </a>
-                        <form method="GET" action="{{ route('admin.sales.export') }}">
+                        {{-- <form method="GET" action="{{ route('admin.sales.export') }}">
                             <input type="hidden" name="search" value="{{ request('search') }}">
                             <input type="hidden" name="payment_method_id" value="{{ request('payment_method_id') }}">
                             <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
@@ -79,7 +79,7 @@
                                 <i class="fas fa-file-excel"></i>
                                 Exportar Excel
                             </button>
-                        </form>
+                        </form> --}}
                     </div>
                 </div>
             </div>
@@ -310,11 +310,11 @@
                                                 class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
                                                 <i class="fas fa-file-pdf"></i>
                                             </a>
-                                            <a href="{{ route('admin.sales.exportDetails', $sale) }}"
+                                            {{-- <a href="{{ route('admin.sales.exportDetails', $sale) }}"
                                                 title="Exportar detalle"
                                                 class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
                                                 <i class="fas fa-file-excel"></i>
-                                            </a>
+                                            </a> --}}
                                         </div>
                                     </td>
                                 </tr>
