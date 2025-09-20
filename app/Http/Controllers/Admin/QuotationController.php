@@ -98,7 +98,7 @@ class QuotationController extends Controller
             $result = $service->storeQuotation($validated);
             /** @var \App\Models\Quotation $quotation */
             $quotation = $result['quotation'];
-            return redirect()->route('admin.quotations.pdf', $quotation)->with('success', 'Cotización registrada correctamente.');
+            return redirect()->route('admin.quotations.index')->with('success', 'Cotización registrada correctamente.');
         } catch (\Throwable $e) {
             Log::error('Error al registrar cotización', ['error' => $e->getMessage()]);
             return back()->withErrors(['error' => 'Ocurrió un error al registrar la cotización: ' . $e->getMessage()])

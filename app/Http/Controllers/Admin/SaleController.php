@@ -77,7 +77,8 @@ class SaleController extends Controller
             $result = $saleService->createSale($request->validated());
             /** @var \App\Models\Sale $sale */
             $sale = $result['sale'];
-            return redirect()->route('admin.sales.pdf', $sale)->with('success', 'Venta registrada correctamente.');
+            // Updated to redirect to index instead of PDF
+            return redirect()->route('admin.sales.index')->with('success', 'Venta registrada correctamente.');
         } catch (\Throwable $e) {
             \Log::error('Error al registrar venta', ['error' => $e->getMessage()]);
             return back()->withErrors(['error' => 'Ocurrió un error al registrar la venta: ' . $e->getMessage()])

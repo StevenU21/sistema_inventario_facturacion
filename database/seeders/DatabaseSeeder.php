@@ -68,7 +68,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ColorSeeder::class);
         $this->call(CompanySeeder::class);
         $this->call(EntitySeeder::class);
-        $this->call(ProductSeeder::class);
+        // $this->call(ProductSeeder::class);
         // Warehouse::factory()->count(3)->create();
 
         // Product::factory()->count(500)->create()->each(function ($product) {
@@ -139,13 +139,13 @@ class DatabaseSeeder extends Seeder
         // });
 
         // Generar ventas de ejemplo (contado y crédito)
-        $ventasContado = 60;
-        $ventasCredito = 40;
+        // $ventasContado = 60;
+        // $ventasCredito = 40;
 
-        // Ventas al contado
-        Sale::factory()->count($ventasContado)->state(['is_credit' => false])->create();
+        // // Ventas al contado
+        // Sale::factory()->count($ventasContado)->state(['is_credit' => false])->create();
 
-        // Ventas a crédito (con cuentas por cobrar y pagos automáticos)
-        Sale::factory()->count($ventasCredito)->state(['is_credit' => true])->create();
+        // // Ventas a crédito (con cuentas por cobrar y pagos automáticos)
+        // Sale::factory()->count($ventasCredito)->state(['is_credit' => true])->create();
     }
 }
