@@ -35,7 +35,7 @@
                     aria-haspopup="true">
                     @auth
                         <img class="object-cover w-8 h-8 rounded-full"
-                            src="{{ Auth::user()->profile && Auth::user()->profile->avatar_url ? Auth::user()->profile->avatar_url : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->short_name . ' ' . Auth::user()->last_name) . '&background=6D28D9&color=fff&size=128' }}"
+                            src="{{ Auth::user()->profile->avatar_url }}"
                             alt="Avatar de {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}" />
                     @else
                         <img class="object-cover w-8 h-8 rounded-full"
