@@ -142,7 +142,10 @@ class UserController extends Controller
         $profileData = $profileRequest->validated();
         $profileData['user_id'] = $user->id;
         if ($profileRequest->hasFile('avatar')) {
-            $profileData['avatar'] = $fileService->storeLocal($user, $profileRequest->file('avatar'));
+            $avatarPath = $fileService->storeLocal($user, $profileRequest->file('avatar'));
+            if ($avatarPath) {
+                $profileData['avatar'] = $avatarPath;
+            }
         } elseif ($profileRequest->filled('avatar')) {
             $profileData['avatar'] = $profileRequest->input('avatar');
         }
@@ -175,11 +178,15 @@ class UserController extends Controller
 
         // Actualizar datos de perfil y avatar
         $profileData = $request->only(['phone', 'identity_card', 'gender', 'address']);
-        if ($user->profile && $request->hasFile('avatar')) {
-            $fileService->updateLocal($user->profile, 'avatar', $request);
-            $profileData['avatar'] = $user->profile->avatar;
-        } elseif ($request->hasFile('avatar')) {
-            $profileData['avatar'] = $fileService->storeLocal($user, $request->file('avatar'));
+        if ($request->hasFile('avatar')) {
+            if ($user->profile) {
+                $avatarPath = $fileService->updateLocal($user->profile, 'avatar', $request);
+            } else {
+                $avatarPath = $fileService->storeLocal($user, $request->file('avatar'));
+            }
+            if ($avatarPath) {
+                $profileData['avatar'] = $avatarPath;
+            }
         } elseif ($request->filled('avatar')) {
             $profileData['avatar'] = $request->input('avatar');
         }
