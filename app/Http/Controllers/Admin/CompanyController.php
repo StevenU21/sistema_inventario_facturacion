@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Services\FileNativeService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CompanyRequest;
@@ -28,11 +29,10 @@ class CompanyController extends Controller
         return view('admin.companies.create');
     }
 
-    public function store(CompanyRequest $request)
+    public function store(CompanyRequest $request, FileNativeService $fileService)
     {
         $data = $request->validated();
         $company = Company::create($data);
-        $fileService = new FileService();
         if ($request->hasFile('logo')) {
             $logoPath = $fileService->storeLocal($company, $request->file('logo'));
             if ($logoPath) {
@@ -54,11 +54,10 @@ class CompanyController extends Controller
         return view('admin.companies.edit', compact('company'));
     }
 
-    public function update(CompanyRequest $request, Company $company)
+    public function update(CompanyRequest $request, Company $company, FileNativeService $fileService)
     {
         $data = $request->validated();
         $company->update($data);
-        $fileService = new FileService();
         $logoPath = $fileService->updateLocal($company, 'logo', $request);
         if ($logoPath) {
             $company->logo = $logoPath;

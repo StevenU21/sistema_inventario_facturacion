@@ -40,7 +40,7 @@ class Company extends Model
     public function getAvatarUrlAttribute(): ?string
     {
         return $this->logo
-            ? asset('storage/' . $this->logo)
+            ? route('company.logo', $this)
             : asset('img/image03.png');
     }
 }

@@ -6,7 +6,7 @@ use App\Http\Requests\ProfileRequest;
 use App\Models\User;
 use App\Services\ModelSearchService;
 use App\Models\Profile;
-use App\Services\FileService;
+use App\Services\FileNativeService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
@@ -134,7 +134,7 @@ class UserController extends Controller
         return view('admin.users.create', compact('roles', 'user'));
     }
 
-    public function store(UserRequest $request, ProfileRequest $profileRequest, FileService $fileService)
+    public function store(UserRequest $request, ProfileRequest $profileRequest, FileNativeService $fileService)
     {
         $data = $request->validated();
         $data['password'] = Hash::make($request->password);
@@ -160,7 +160,7 @@ class UserController extends Controller
         return view('admin.users.edit', compact('user', 'roles'));
     }
 
-    public function update(UserRequest $request, User $user)
+    public function update(UserRequest $request, User $user, FileNativeService $fileService)
     {
         $request->validate([
             'role' => 'required|exists:roles,name',
@@ -175,7 +175,6 @@ class UserController extends Controller
 
         // Actualizar datos de perfil y avatar
         $profileData = $request->only(['phone', 'identity_card', 'gender', 'address']);
-        $fileService = new FileService();
         if ($user->profile && $request->hasFile('avatar')) {
             $fileService->updateLocal($user->profile, 'avatar', $request);
             $profileData['avatar'] = $user->profile->avatar;

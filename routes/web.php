@@ -28,6 +28,9 @@ use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\AccountReceivableController as AdminAccountReceivableController;
 use App\Http\Controllers\Admin\QuotationController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Company;
+use App\Models\Product;
+use App\Models\Profile;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -37,6 +40,14 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    Route::get('/profile/avatar/{profile}', function (Profile $profile) {
+        if (!$profile->avatar || !Storage::disk('local')->exists($profile->avatar)) {
+            abort(404);
+        }
+        $path = Storage::disk('local')->path($profile->avatar);
+        return response()->file($path);
+    })->name('profile.avatar');
 
     // Profile Routes
     Route::prefix('/profile')->name('profile.')->group(function () {
@@ -60,6 +71,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('audits/search', [AuditController::class, 'search'])->name('audits.search');
     Route::get('audits', [AuditController::class, 'index'])->name('audits.index');
     Route::get('audits/export', [AuditController::class, 'export'])->name('audits.export');
+
+
+    Route::get('/company/logo/{company}', function (Company $company) {
+        if (!$company->logo || !Storage::disk('local')->exists($company->logo)) {
+            abort(404);
+        }
+        $path = Storage::disk('local')->path($company->logo);
+        return response()->file($path);
+    })->name('company.logo');
 
     // Backups
     Route::get('admin/backups', [BackupController::class, 'index'])->name('backups.index');
@@ -104,6 +124,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Quick create (JSON) for POS modal
     Route::post('entities/quick-store', [EntityController::class, 'quickStore'])->name('entities.quickStore');
     Route::resource('entities', EntityController::class);
+
+    Route::get('/product/image/{product}', function (Product $product) {
+        if (!$product->image || !Storage::disk('local')->exists($product->image)) {
+            abort(404);
+        }
+        $path = Storage::disk('local')->path($product->image);
+        return response()->file($path);
+    })->name('product.image');
 
     // Products
     Route::get('products/search', [ProductController::class, 'search'])->name('products.search');

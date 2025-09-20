@@ -67,7 +67,7 @@ class Profile extends Model
     public function getAvatarUrlAttribute(): ?string
     {
         return $this->avatar
-            ? asset('storage/' . $this->avatar)
+            ? route('profile.avatar', $this)
             : asset('img/image03.png');
     }
 }

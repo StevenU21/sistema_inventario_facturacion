@@ -17,7 +17,7 @@ use App\Models\Color;
 use App\Models\Size;
 use App\Models\Inventory;
 use App\Models\InventoryMovement;
-use App\Services\FileService;
+use App\Services\FileNativeService;
 use App\Services\ModelSearchService;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
@@ -198,13 +198,13 @@ class ProductController extends Controller
         return view('admin.products.create', compact('product', 'categories', 'brandsByCategory', 'units', 'entities', 'taxes', 'colors', 'sizes'));
     }
 
-    public function store(ProductRequest $request, FileService $fileService)
+    public function store(ProductRequest $request, FileNativeService $fileService)
     {
         $this->authorize("create", Product::class);
         $data = $request->validated();
         // Forzar estado a 'available' al crear
         $data['status'] = 'available';
-        DB::transaction(function () use ($request, $fileService, $data) {
+    DB::transaction(function () use ($request, $fileService, $data) {
             $product = new Product($data);
             if ($request->hasFile('image')) {
                 $product->image = $fileService->storeLocal($product, $request->file('image'));
@@ -280,7 +280,7 @@ class ProductController extends Controller
         return view('admin.products.edit', compact('product', 'categories', 'brandsByCategory', 'units', 'entities', 'taxes', 'colors', 'sizes', 'prefillDetails'));
     }
 
-    public function update(ProductRequest $request, Product $product, FileService $fileService)
+    public function update(ProductRequest $request, Product $product, FileNativeService $fileService)
     {
         $this->authorize("update", $product);
         $data = $request->validated();
