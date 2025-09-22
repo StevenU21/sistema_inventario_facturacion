@@ -11,8 +11,7 @@
         <label class="block text-sm">
             <span class="text-gray-700 dark:text-gray-200">Método de pago</span>
             <select name="payment_method_id" x-model="sale.payment_method_id"
-                :required="String(sale.is_credit) === '0'"
-                :disabled="String(sale.is_credit) === '1'"
+                :required="String(sale.is_credit) === '0'" :disabled="String(sale.is_credit) === '1'"
                 class="block w-full mt-1 px-3 py-2 text-sm border rounded-lg dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 disabled:bg-gray-100 disabled:dark:bg-gray-800/40">
                 <option value="">Seleccione el método de pago</option>
                 @foreach ($methods ?? [] as $id => $name)
@@ -345,7 +344,8 @@
                                     <span class="text-xs text-gray-500">%</span>
                                 </div>
                                 <!-- Hidden field sent to backend: monto absoluto -->
-                                <input type="hidden" :name="`items[${idx}][discount_amount]`" :value="it.discount_amount">
+                                <input type="hidden" :name="`items[${idx}][discount_amount]`"
+                                    :value="it.discount_amount">
                             </td>
                             <td class="px-3 py-2 text-right tabular-nums text-gray-700 dark:text-gray-200">
                                 <span x-text="currency(it.sub_total)"></span>
@@ -448,7 +448,8 @@
                             tax_percentage: Number(row.tax_percentage || 0),
                             tax_amount: Number(row.tax_amount || 0),
                         }));
-                        this.recalcAll();
+                        // Recalcular cada item con la nueva lógica (subtotal sin impuesto)
+                        this.items.forEach(it => this.recalcItem(it));
                     }
                     // Escuchar evento para agregar variante (derivando almacén del renglón, sin exigir selección previa)
                     window.addEventListener('add-item', (e) => {
@@ -635,19 +636,21 @@
                     const base = Math.max(0, gross - it.discount_amount);
                     const taxPct = Math.max(0, Number(it.tax_percentage || 0));
                     it.tax_amount = round2(base * (taxPct / 100));
-                    it.sub_total = round2(base + it.tax_amount);
+                    // Subtotal ahora sólo refleja precio después del descuento, SIN impuesto
+                    it.sub_total = round2(base);
                     this.recalcAll();
                 },
                 recalcAll() {
-                    let total = 0,
+                    let subTotal = 0,
                         tax = 0,
                         discount = 0;
                     this.items.forEach(it => {
-                        total += Number(it.sub_total || 0);
+                        subTotal += Number(it.sub_total || 0);
                         tax += Number(it.tax_amount || 0);
                         discount += (it.discount ? Number(it.discount_amount || 0) : 0);
                     });
-                    this.totals.total = round2(total);
+                    // Total general = subtotal (sin impuesto) + impuesto
+                    this.totals.total = round2(subTotal + tax);
                     this.totals.tax = round2(tax);
                     this.totals.discount = round2(discount);
                 },
