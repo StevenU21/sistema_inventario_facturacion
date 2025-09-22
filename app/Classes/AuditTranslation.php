@@ -282,6 +282,36 @@ class AuditTranslation
                 return 'Mujer';
             }
         }
+
+        // Traducción para movimiento de inventario
+        if ($field === 'type' || $field === 'Tipo') {
+            if ($value === 'in') {
+                return 'Entrada';
+            } elseif ($value === 'out') {
+                return 'Salida';
+            }
+        }
+
+        // Traducción para status en AccountReceivable
+        if ($field === 'status' || $field === 'Estado') {
+            if ($value === 'pending') {
+                return 'Pendiente';
+            } elseif ($value === 'partially_paid') {
+                return 'Parcialmente Pagado';
+            } elseif ($value === 'paid') {
+                return 'Pagado';
+            }
+        }
+
+        // Traducción para is_credit en Sale
+        if ($field === 'is_credit' || $field === 'Es Crédito') {
+            if ($value === 1 || $value === true || $value === '1') {
+                return 'Verdadero';
+            } elseif ($value === 0 || $value === false || $value === '0') {
+                return 'Falso';
+            }
+        }
+
         return $value;
     }
 }
