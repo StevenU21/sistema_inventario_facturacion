@@ -10,7 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Color extends Model
 {
-    use HasFactory, LogsActivity, CacheClearable;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'name',

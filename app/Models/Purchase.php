@@ -10,7 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Purchase extends Model
 {
-    use HasFactory, LogsActivity, CacheClearable;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'reference',

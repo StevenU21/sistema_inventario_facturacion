@@ -59,15 +59,14 @@ class DatabaseSeeder extends Seeder
         $this->call(DepartmentSeeder::class);
         $this->call(CategorySeeder::class);
         $this->call(BrandSeeder::class);
-        $this->call(CompanySeeder::class);
         $this->call(UnitMeasureSeeder::class);
         $this->call(WarehouseSeeder::class);
         $this->call(PaymentMethodSeeder::class);
         $this->call(TaxSeeder::class);
         $this->call(SizeSeeder::class);
         $this->call(ColorSeeder::class);
-        $this->call(CompanySeeder::class);
-        $this->call(EntitySeeder::class);
+        // $this->call(CompanySeeder::class);
+        // $this->call(EntitySeeder::class);
         // $this->call(ProductSeeder::class);
         // Warehouse::factory()->count(3)->create();
 
