@@ -11,7 +11,7 @@ use App\Models\ProductVariant;
 
 class Product extends Model
 {
-    use HasFactory, LogsActivity, CacheClearable;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'name',

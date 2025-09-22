@@ -10,7 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class UnitMeasure extends Model
 {
-    use HasFactory, LogsActivity, CacheClearable;
+    use HasFactory, LogsActivity;
     protected $fillable = [
         'name',
         'abbreviation',

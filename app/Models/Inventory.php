@@ -10,7 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Inventory extends Model
 {
-    use HasFactory, LogsActivity, CacheClearable;
+    use HasFactory, LogsActivity;
     protected $fillable = [
         'stock',
         'min_stock',
