@@ -68,8 +68,8 @@ class ProductSeeder extends Seeder
                     ], [
                         'stock' => 50,
                         'min_stock' => 5,
-                        'purchase_price' => 100.00,
-                        'sale_price' => 150.00,
+                        'purchase_price' => 850.00,
+                        'sale_price' => 1200.00,
                         'warehouse_id' => 1,
                     ]);
 
@@ -77,8 +77,8 @@ class ProductSeeder extends Seeder
                     InventoryMovement::create([
                         'type' => 'in',
                         'quantity' => 50,
-                        'unit_price' => 100.00,
-                        'total_price' => 50 * 100.00,
+                        'unit_price' => 850.00,
+                        'total_price' => 50 * 850.00,
                         'reference' => 'Compra inicial',
                         'notes' => 'Ingreso de stock inicial',
                         'user_id' => 1,
@@ -87,8 +87,8 @@ class ProductSeeder extends Seeder
                     InventoryMovement::create([
                         'type' => 'out',
                         'quantity' => 5,
-                        'unit_price' => 150.00,
-                        'total_price' => 5 * 150.00,
+                        'unit_price' => 1200.00,
+                        'total_price' => 5 * 1200.00,
                         'reference' => 'Venta de prueba',
                         'notes' => 'Salida de stock por venta de prueba',
                         'user_id' => 1,
