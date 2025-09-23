@@ -7,7 +7,7 @@
         isEditModalOpen: false,
         isShowModalOpen: false,
         editAction: '',
-        showUser: { id: '', name: '', email: '', role: '', status: '', gender: '', phone: '', identity_card: '', formatted_created_at: '', formatted_updated_at: '' },
+        showUser: { id: '', name: '', email: '', role: '', status: '', gender_name: '', phone: '', identity_card: '', formatted_created_at: '', formatted_updated_at: '', avatar_url: '' },
         editUser: { id: '', first_name: '', last_name: '', email: '', role: '', gender: '', phone: '', identity_card: '', address: '', avatar_url: '' },
         closeModal() { this.isModalOpen = false },
         closeEditModal() { this.isEditModalOpen = false },
@@ -200,11 +200,15 @@
             <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="md:col-span-2 space-y-4">
                     <div class="border-b pb-3">
-                        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <i class="fas fa-user text-purple-600 dark:text-purple-400"></i>
-                            <span x-text="showUser.name"></span>
-                        </h2>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm" x-text="showUser.email"></p>
+                        <div class="flex items-center gap-4">
+                            <img :src="showUser.avatar_url" alt="Avatar" class="h-16 w-16 rounded-full object-cover">
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+                                    <span x-text="showUser.name"></span>
+                                </h2>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm" x-text="showUser.email"></p>
+                            </div>
+                        </div>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
@@ -221,7 +225,7 @@
                         </div>
                         <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
                             <i class="fas fa-venus-mars text-purple-600 dark:text-purple-400"></i>
-                            <strong>Género:</strong> <span x-text="showUser.gender"></span>
+                            <strong>Género:</strong> <span x-text="showUser.gender_name"></span>
                         </div>
                         <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
                             <i class="fas fa-phone text-purple-600 dark:text-purple-400"></i>
@@ -353,11 +357,12 @@
                                                         email: @json($user->email ?? '-'),
                                                         role: @json($user->roles->count() ? $user->formatted_role_name ?? '-' : 'Sin rol'),
                                                         status: @json($user->is_active ? 'Activo' : 'Inactivo'),
-                                                        gender: @json($user->profile->gender ?? '-'),
+                                                        gender_name: @json($user->profile->gender_name ?? '-'),
                                                         phone: @json($user->profile->formatted_phone ?? '-'),
                                                         identity_card: @json($user->profile->formatted_identity_card ?? '-'),
                                                         formatted_created_at: @json(optional($user->created_at)->format('d/m/Y H:i') ?? ''),
                                                         formatted_updated_at: @json(optional($user->updated_at)->format('d/m/Y H:i') ?? ''),
+                                                        avatar_url: @json($user->profile->avatar_url ?? ''),
                                                     };
                                                     isShowModalOpen = true;
                                                 '>

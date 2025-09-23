@@ -21,6 +21,12 @@ class Profile extends Model
         'address',
         'user_id',
     ];
+    /**
+     * Atributos adicionales para serializar.
+     *
+     * @var array<string>
+     */
+    protected $appends = ['gender_name'];
 
     public function getFormattedPhoneAttribute(): ?string
     {
@@ -69,5 +75,18 @@ class Profile extends Model
         return $this->avatar
             ? asset('storage/' . $this->avatar)
             : asset('img/image03.png');
+    }
+    /**
+     * Nombre de género en español.
+     *
+     * @return string|null
+     */
+    public function getGenderNameAttribute(): ?string
+    {
+        return match ($this->gender) {
+            'male' => 'Masculino',
+            'female' => 'Femenino',
+            default => null,
+        };
     }
 }
