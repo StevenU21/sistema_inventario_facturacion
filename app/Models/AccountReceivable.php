@@ -41,7 +41,6 @@ class AccountReceivable extends Model
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
     }
 
-
     public function entity()
     {
         return $this->belongsTo(Entity::class);
