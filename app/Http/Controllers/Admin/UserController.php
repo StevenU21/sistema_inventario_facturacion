@@ -212,7 +212,7 @@ class UserController extends Controller
             $user->save();
             return redirect()->route('users.index')->with('deleted', 'Usuario desactivado correctamente');
         } else {
-            $this->authorize('update', $user);
+            $this->authorize('destroy', $user);
             $user->is_active = true;
             $user->save();
             return redirect()->route('users.index')->with('updated', 'Usuario reactivado correctamente.');

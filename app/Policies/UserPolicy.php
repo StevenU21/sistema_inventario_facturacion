@@ -35,11 +35,6 @@ class UserPolicy
         return $this->checkPermission($user, 'destroy users');
     }
 
-    public function reactivate(User $user): bool
-    {
-        return $this->checkPermission($user, 'reactivate users');
-    }
-
     public function export(User $user): bool
     {
         return $this->checkPermission($user, 'export users');

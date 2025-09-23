@@ -44,7 +44,7 @@ class RolesAndPermissionSeeder extends Seeder
         'permissions' => ['assign permissions', 'revoke permissions'],
         'products' => ['export products'],
         'product_variants' => ['export product_variants'],
-        'users' => ['reactivate users', 'export users'],
+        'users' => ['export users'],
         'audits' => ['export audits'],
         'entities' => ['read suppliers', 'create suppliers', 'update suppliers', 'read clients', 'create clients', 'update clients', 'export entities'],
         'inventory_movements' => ['export inventory_movements'],
