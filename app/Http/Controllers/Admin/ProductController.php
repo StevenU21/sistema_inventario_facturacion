@@ -122,7 +122,7 @@ class ProductController extends Controller
 
     public function export(Request $request)
     {
-        $this->authorize('viewAny', Product::class);
+        $this->authorize('export', Product::class);
         $brandId = $request->input('brand_id');
         $categoryId = $request->input('category_id');
         $unitId = $request->input('unit_measure_id');

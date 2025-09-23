@@ -25,16 +25,18 @@
                 Blessa Boutique
             </a>
             <ul class="mt-6">
-                <li class="relative px-6 py-3">
-                    <span
-                        class="{{ Route::is('dashboard.index') ? 'absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg' : '' }}"
-                        aria-hidden="true"></span>
-                    <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('dashboard.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
-                        href="{{ route('dashboard.index') }}">
-                        <i class="fas fa-home w-5 h-5"></i>
-                        <span class="ml-4">Panel de Control</span>
-                    </a>
-                </li>
+                @can('read dashboard')
+                    <li class="relative px-6 py-3">
+                        <span
+                            class="{{ Route::is('dashboard.index') ? 'absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg' : '' }}"
+                            aria-hidden="true"></span>
+                        <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 {{ Route::is('dashboard.index') ? 'text-gray-800 dark:text-gray-100' : '' }}"
+                            href="{{ route('dashboard.index') }}">
+                            <i class="fas fa-home w-5 h-5"></i>
+                            <span class="ml-4">Panel de Control</span>
+                        </a>
+                    </li>
+                @endcan
 
                 <!-- Dropdown Gestión de Ventas -->
                 @if (Gate::allows('read sales') ||
@@ -68,7 +70,9 @@
                             @endcan
                             @can('read quotations')
                                 <li class="px-6 py-2">
-                                    <x-ui.submit-link :href="route('admin.quotations.index')" :active-class="Route::is('admin.quotations.*') ? 'text-gray-800 dark:text-gray-100' : ''" icon="fas fa-file-invoice"
+                                    <x-ui.submit-link :href="route('admin.quotations.index')" :active-class="Route::is('admin.quotations.*')
+                                        ? 'text-gray-800 dark:text-gray-100'
+                                        : ''" icon="fas fa-file-invoice"
                                         class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold">
                                         <span class="ml-4">Cotizaciones</span>
                                     </x-ui.submit-link>
@@ -177,7 +181,9 @@
                             @endcan
                             @can('read inventory_movements')
                                 <li class="px-6 py-2">
-                                    <x-ui.submit-link :href="route('inventory_movements.index')" :active-class="Route::is('inventory_movements.*') ? 'text-gray-800 dark:text-gray-100' : ''" icon="fas fa-exchange-alt"
+                                    <x-ui.submit-link :href="route('inventory_movements.index')" :active-class="Route::is('inventory_movements.*')
+                                        ? 'text-gray-800 dark:text-gray-100'
+                                        : ''" icon="fas fa-exchange-alt"
                                         class="inline-flex items-center w-full transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-semibold">
                                         <span class="ml-4">Movimientos</span>
                                     </x-ui.submit-link>

@@ -198,7 +198,7 @@ class InventoryController extends Controller
 
     public function export(Request $request)
     {
-        $this->authorize('viewAny', Inventory::class);
+        $this->authorize('export', Inventory::class);
         $variantId = $request->input('product_variant_id');
         $productId = $request->input('product_id');
         $warehouseId = $request->input('warehouse_id');

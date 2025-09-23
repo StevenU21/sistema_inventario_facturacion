@@ -59,7 +59,7 @@ class WarehouseController extends Controller
 
     public function export(Request $request)
     {
-        $this->authorize('viewAny', Warehouse::class);
+        $this->authorize('export', Warehouse::class);
         $query = Warehouse::query();
         if ($request->filled('search')) {
             $search = $request->input('search');

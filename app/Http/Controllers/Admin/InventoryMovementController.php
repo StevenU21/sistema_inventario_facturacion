@@ -128,7 +128,7 @@ class InventoryMovementController extends Controller
 
     public function export(Request $request)
     {
-        $this->authorize('viewAny', InventoryMovement::class);
+        $this->authorize('export', InventoryMovement::class);
         $query = InventoryMovement::with(['inventory.productVariant.product', 'inventory.warehouse', 'user']);
 
         // Mismos filtros que search

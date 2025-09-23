@@ -34,4 +34,9 @@ class ProductPolicy
     {
         return $this->checkPermission($user, 'destroy products');
     }
+
+    public function export(User $user): bool
+    {
+        return $this->checkPermission($user, 'export products');
+    }
 }

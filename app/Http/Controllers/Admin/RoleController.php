@@ -37,9 +37,9 @@ class RoleController extends Controller
     public function create()
     {
         $this->authorize('create', Role::class);
-    $permissions = Permission::all();
-    $translatedPermissions = PermissionTranslator::translateMany($permissions->pluck('name'));
-    return view('admin.roles.create', compact('permissions', 'translatedPermissions'));
+        $permissions = Permission::all();
+        $translatedPermissions = PermissionTranslator::translateMany($permissions->pluck('name'));
+        return view('admin.roles.create', compact('permissions', 'translatedPermissions'));
     }
 
     public function store(RoleRequest $request)
@@ -55,18 +55,18 @@ class RoleController extends Controller
     public function show(Role $role)
     {
         $this->authorize('view', $role);
-    $permissions = $role->permissions;
-    $translatedPermissions = PermissionTranslator::translateMany($permissions->pluck('name'));
-    return view('admin.roles.show', compact('role', 'permissions', 'translatedPermissions'));
+        $permissions = $role->permissions;
+        $translatedPermissions = PermissionTranslator::translateMany($permissions->pluck('name'));
+        return view('admin.roles.show', compact('role', 'permissions', 'translatedPermissions'));
     }
 
     public function edit(Role $role)
     {
         $this->authorize('update', $role);
-    $permissions = Permission::all();
-    $translatedPermissions = PermissionTranslator::translateMany($permissions->pluck('name'));
-    $rolePermissions = $role->permissions->pluck('id')->toArray();
-    return view('admin.roles.edit', compact('role', 'permissions', 'rolePermissions', 'translatedPermissions'));
+        $permissions = Permission::all();
+        $translatedPermissions = PermissionTranslator::translateMany($permissions->pluck('name'));
+        $rolePermissions = $role->permissions->pluck('id')->toArray();
+        return view('admin.roles.edit', compact('role', 'permissions', 'rolePermissions', 'translatedPermissions'));
     }
 
     public function update(RoleRequest $request, Role $role)

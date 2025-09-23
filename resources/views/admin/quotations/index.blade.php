@@ -58,13 +58,15 @@
                         </h1>
                         <p class="mt-1 text-white/80 text-sm">Lista y exporta tus cotizaciones.</p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <a href="{{ route('admin.quotations.create') }}"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/90 hover:bg-white text-purple-700 text-sm font-medium transition">
-                            <i class="fas fa-plus"></i>
-                            Nueva cotización
-                        </a>
-                    </div>
+                    @can('create quotations')
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('admin.quotations.create') }}"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/90 hover:bg-white text-purple-700 text-sm font-medium transition">
+                                <i class="fas fa-plus"></i>
+                                Nueva cotización
+                            </a>
+                        </div>
+                    @endcan
                 </div>
             </div>
         </section>
@@ -200,43 +202,52 @@
                                     {{ $quotation->formatted_created_at }}
                                 </td>
                                 <td class="px-4 py-3 text-sm space-x-2">
-                                    <!-- Download Proforma PDF -->
-                                    <a href="{{ route('admin.quotations.pdf', $quotation) }}" target="_blank"
-                                       class="inline-flex items-center justify-center h-9 px-3 text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg focus:outline-none gap-2"
-                                       title="Proforma">
-                                        <i class="fas fa-file-pdf"></i>
-                                        <span class="hidden sm:inline">Proforma</span>
-                                    </a>
-                                    @if ($quotation->status === 'pending')
-                                        <!-- Accept -->
-                                        <form action="{{ route('admin.quotations.accept', $quotation) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" title="Aceptar"
-                                                class="inline-flex items-center justify-center h-9 px-3 text-white bg-green-600 hover:bg-green-700 rounded-lg focus:outline-none gap-2">
-                                                <i class="fas fa-check"></i>
-                                                <span class="hidden sm:inline">Aceptar</span>
-                                            </button>
-                                        </form>
-                                        <!-- Cancel -->
-                                        <form action="{{ route('admin.quotations.cancel', $quotation) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" title="Cancelar"
-                                                class="inline-flex items-center justify-center h-9 px-3 text-white bg-red-600 hover:bg-red-700 rounded-lg focus:outline-none gap-2">
-                                                <i class="fas fa-times"></i>
-                                                <span class="hidden sm:inline">Cancelar</span>
-                                            </button>
-                                        </form>
-                                    @endif
-                                    @if ($quotation->status === 'accepted' && $quotation->sale)
-                                       <a href="{{ route('admin.sales.pdf', $quotation->sale) }}" target="_blank"
-                                          class="inline-flex items-center justify-center h-9 px-3 text-white bg-purple-600 hover:bg-purple-700 rounded-lg focus:outline-none gap-2"
-                                          title="Factura">
-                                            <i class="fas fa-file-invoice"></i>
-                                            <span class="hidden sm:inline">Factura</span>
+                                    @can('export quotations')
+                                        <!-- Download Proforma PDF -->
+                                        <a href="{{ route('admin.quotations.pdf', $quotation) }}" target="_blank"
+                                            class="inline-flex items-center justify-center h-9 px-3 text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg focus:outline-none gap-2"
+                                            title="Proforma">
+                                            <i class="fas fa-file-pdf"></i>
+                                            <span class="hidden sm:inline">Proforma</span>
                                         </a>
-                                    @endif
+                                    @endcan
+                                    @can('update quotations')
+                                        @if ($quotation->status === 'pending')
+                                            <!-- Accept -->
+                                            <form action="{{ route('admin.quotations.accept', $quotation) }}" method="POST"
+                                                class="inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" title="Aceptar"
+                                                    class="inline-flex items-center justify-center h-9 px-3 text-white bg-green-600 hover:bg-green-700 rounded-lg focus:outline-none gap-2">
+                                                    <i class="fas fa-check"></i>
+                                                    <span class="hidden sm:inline">Aceptar</span>
+                                                </button>
+                                            </form>
+                                            <!-- Cancel -->
+                                            <form action="{{ route('admin.quotations.cancel', $quotation) }}" method="POST"
+                                                class="inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" title="Cancelar"
+                                                    class="inline-flex items-center justify-center h-9 px-3 text-white bg-red-600 hover:bg-red-700 rounded-lg focus:outline-none gap-2">
+                                                    <i class="fas fa-times"></i>
+                                                    <span class="hidden sm:inline">Cancelar</span>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    @endcan
+
+                                    @can('read quotations|')
+                                        @if ($quotation->status === 'accepted' && $quotation->sale)
+                                            <a href="{{ route('admin.sales.pdf', $quotation->sale) }}" target="_blank"
+                                                class="inline-flex items-center justify-center h-9 px-3 text-white bg-purple-600 hover:bg-purple-700 rounded-lg focus:outline-none gap-2"
+                                                title="Factura">
+                                                <i class="fas fa-file-invoice"></i>
+                                                <span class="hidden sm:inline">Factura</span>
+                                            </a>
+                                        @endif
+                                    @endcan
                                 </td>
                             </tr>
                         @empty

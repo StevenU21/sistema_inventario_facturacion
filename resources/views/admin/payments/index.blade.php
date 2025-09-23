@@ -59,36 +59,39 @@
                         <p class="mt-1 text-white/80 text-sm">Busca, filtra y exporta tus pagos.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('admin.payments.export') }}">
-                            <input type="hidden" name="search" value="{{ request('search') }}">
-                            <input type="hidden" name="payment_method_id" value="{{ request('payment_method_id') }}">
-                            <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
-                            <input type="hidden" name="sale_id" value="{{ request('sale_id') }}">
-                            <input type="hidden" name="from" value="{{ request('from') }}">
-                            <input type="hidden" name="to" value="{{ request('to') }}">
-                            <input type="hidden" name="min_amount" value="{{ request('min_amount') }}">
-                            <input type="hidden" name="max_amount" value="{{ request('max_amount') }}">
-                            <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                                <i class="fas fa-file-excel"></i>
-                                Exportar Excel
-                            </button>
-                        </form>
-                        <form method="GET" action="{{ route('admin.payments.exportPdf') }}">
-                            <input type="hidden" name="search" value="{{ request('search') }}">
-                            <input type="hidden" name="payment_method_id" value="{{ request('payment_method_id') }}">
-                            <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
-                            <input type="hidden" name="sale_id" value="{{ request('sale_id') }}">
-                            <input type="hidden" name="from" value="{{ request('from') }}">
-                            <input type="hidden" name="to" value="{{ request('to') }}">
-                            <input type="hidden" name="min_amount" value="{{ request('min_amount') }}">
-                            <input type="hidden" name="max_amount" value="{{ request('max_amount') }}">
-                            <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                                <i class="fas fa-file-pdf"></i>
-                                Exportar PDF
-                            </button>
-                        </form>
+                        @can('export payments')
+                            <form method="GET" action="{{ route('admin.payments.export') }}">
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                                <input type="hidden" name="payment_method_id" value="{{ request('payment_method_id') }}">
+                                <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
+                                <input type="hidden" name="sale_id" value="{{ request('sale_id') }}">
+                                <input type="hidden" name="from" value="{{ request('from') }}">
+                                <input type="hidden" name="to" value="{{ request('to') }}">
+                                <input type="hidden" name="min_amount" value="{{ request('min_amount') }}">
+                                <input type="hidden" name="max_amount" value="{{ request('max_amount') }}">
+                                <button type="submit"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                    <i class="fas fa-file-excel"></i>
+                                    Exportar Excel
+                                </button>
+                            </form>
+
+                            <form method="GET" action="{{ route('admin.payments.exportPdf') }}">
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                                <input type="hidden" name="payment_method_id" value="{{ request('payment_method_id') }}">
+                                <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
+                                <input type="hidden" name="sale_id" value="{{ request('sale_id') }}">
+                                <input type="hidden" name="from" value="{{ request('from') }}">
+                                <input type="hidden" name="to" value="{{ request('to') }}">
+                                <input type="hidden" name="min_amount" value="{{ request('min_amount') }}">
+                                <input type="hidden" name="max_amount" value="{{ request('max_amount') }}">
+                                <button type="submit"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                    <i class="fas fa-file-pdf"></i>
+                                    Exportar PDF
+                                </button>
+                            </form>
+                        @endcan
                     </div>
                 </div>
             </div>

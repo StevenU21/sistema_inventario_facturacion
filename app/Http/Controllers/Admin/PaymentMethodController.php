@@ -13,7 +13,6 @@ class PaymentMethodController extends Controller
 {
     use AuthorizesRequests;
 
-
     public function index()
     {
         $this->authorize('viewAny', PaymentMethod::class);

@@ -34,4 +34,9 @@ class WarehousePolicy
     {
         return $this->checkPermission($user, 'destroy warehouses');
     }
+
+    public function export(User $user): bool
+    {
+        return $this->checkPermission($user, 'export warehouses');
+    }
 }

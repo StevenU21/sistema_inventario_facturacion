@@ -288,7 +288,7 @@ class PurchaseController extends Controller
     // Exportación a Excel usando los mismos filtros
     public function export(Request $request)
     {
-        $this->authorize('viewAny', Purchase::class);
+        $this->authorize('export', Purchase::class);
         $query = $this->buildPurchasesQuery($request);
         $filename = 'compras_' . now()->format('Ymd_His') . '.xlsx';
         return Excel::download(new PurchasesExport($query), $filename);
@@ -297,7 +297,7 @@ class PurchaseController extends Controller
     // Exporta el detalle completo de una compra específica
     public function exportDetails(Purchase $purchase)
     {
-        $this->authorize('view', $purchase);
+        $this->authorize('export', $purchase);
         $filename = 'compra_' . $purchase->id . '_' . now()->format('Ymd_His') . '.xlsx';
         return Excel::download(new PurchaseDetailsExport($purchase), $filename);
     }

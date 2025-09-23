@@ -295,7 +295,7 @@ class SaleController extends Controller
     // Genera el PDF de una venta específica (factura)
     public function pdf(Sale $sale)
     {
-        $this->authorize('view', $sale);
+        $this->authorize('export', $sale);
         $sale->load(['saleDetails.productVariant.product.tax', 'user', 'entity', 'paymentMethod', 'accountReceivable']);
 
         $company = Company::first();

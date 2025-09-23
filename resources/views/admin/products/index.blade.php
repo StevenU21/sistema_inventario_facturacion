@@ -60,24 +60,29 @@
                         <p class="mt-1 text-white/80 text-sm">Busca, filtra y gestiona tus productos.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('products.export') }}">
-                            <input type="hidden" name="search" value="{{ request('search') }}">
-                            <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
-                            <input type="hidden" name="category_id" value="{{ request('category_id') }}">
-                            <input type="hidden" name="unit_measure_id" value="{{ request('unit_measure_id') }}">
-                            <input type="hidden" name="tax_id" value="{{ request('tax_id') }}">
-                            <input type="hidden" name="status" value="{{ request('status') }}">
-                            <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                                <i class="fas fa-file-excel"></i>
-                                Exportar Excel
-                            </button>
-                        </form>
-                        <a href="{{ route('products.create') }}"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
-                            <i class="fas fa-plus"></i>
-                            Crear producto
-                        </a>
+                        @can('export products')
+                            <form method="GET" action="{{ route('products.export') }}">
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                                <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
+                                <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                                <input type="hidden" name="unit_measure_id" value="{{ request('unit_measure_id') }}">
+                                <input type="hidden" name="tax_id" value="{{ request('tax_id') }}">
+                                <input type="hidden" name="status" value="{{ request('status') }}">
+                                <button type="submit"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                    <i class="fas fa-file-excel"></i>
+                                    Exportar Excel
+                                </button>
+                            </form>
+                        @endcan
+
+                        @can('create products')
+                            <a href="{{ route('products.create') }}"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
+                                <i class="fas fa-plus"></i>
+                                Crear producto
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -163,19 +168,21 @@
                         @endforeach
                     </select>
                 </div>
-                <div>
-                    <label for="entity_id"
-                        class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Proveedor</label>
-                    <select name="entity_id" id="entity_id"
-                        class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                        onchange="this.form.submit()">
-                        <option value="">Todos los proveedores</option>
-                        @foreach ($entities as $id => $name)
-                            <option value="{{ $id }}" {{ request('entity_id') == $id ? 'selected' : '' }}>
-                                {{ $name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                @can('read supplier')
+                    <div>
+                        <label for="entity_id"
+                            class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Proveedor</label>
+                        <select name="entity_id" id="entity_id"
+                            class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                            onchange="this.form.submit()">
+                            <option value="">Todos los proveedores</option>
+                            @foreach ($entities as $id => $name)
+                                <option value="{{ $id }}" {{ request('entity_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endcan
                 <div>
                     <label for="tax_id"
                         class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Impuesto</label>
@@ -236,8 +243,10 @@
                             <th class="px-4 py-3"><x-table-sort-header field="unit_measure_id" label="Medida"
                                     route="products.search" icon="<i class='fas fa-balance-scale mr-2'></i>" />
                             </th>
-                            <th class="px-4 py-3"><x-table-sort-header field="entity_id" label="Proveedor"
-                                    route="products.search" icon="<i class='fas fa-user-tie mr-2'></i>" /></th>
+                            @can('read supplier')
+                                <th class="px-4 py-3"><x-table-sort-header field="entity_id" label="Proveedor"
+                                        route="products.search" icon="<i class='fas fa-user-tie mr-2'></i>" /></th>
+                            @endcan
                             <th class="px-4 py-3"><x-table-sort-header field="status" label="Estado"
                                     route="products.search" icon="<i class='fas fa-money-bill-wave mr-2'></i>" />
                             </th>
@@ -261,9 +270,11 @@
                                 <td class="px-4 py-3 text-sm">{{ $product->brand->category->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $product->brand->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $product->unitMeasure->name ?? '-' }}</td>
-                                <td class="px-4 py-3 text-sm font-medium">
-                                    {{ $product->entity ? $product->entity->short_name : '-' }}
-                                </td>
+                                @can('read supplier')
+                                    <td class="px-4 py-3 text-sm font-medium">
+                                        {{ $product->entity ? $product->entity->short_name : '-' }}
+                                    </td>
+                                @endcan
                                 <td class="px-4 py-3 text-sm">
                                     @php
                                         $statusColors = [
@@ -288,32 +299,40 @@
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2 text-sm">
                                         @if (in_array($product->status, ['available', 'out_of_stock']))
-                                            <a href="{{ route('products.show', $product) }}" title="Ver"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                aria-label="Ver">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('products.edit', $product) }}" title="Editar"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                aria-label="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
+                                            @can('read products')
+                                                <a href="{{ route('products.show', $product) }}" title="Ver"
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                    aria-label="Ver">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            @endcan
+
+                                            @can('update products')
+                                                <a href="{{ route('products.edit', $product) }}" title="Editar"
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                    aria-label="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            @endcan
                                         @endif
-                                        <form action="{{ route('products.destroy', $product) }}" method="POST"
-                                            onsubmit="return confirm('{{ $product->status === 'discontinued' ? '¿Seguro de rehabilitar este producto?' : '¿Seguro de descontinuar este producto?' }}\n\n¿Está seguro que desea realizar esta acción?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                title="{{ $product->status === 'discontinued' ? 'Rehabilitar' : 'Descontinuar' }}"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                aria-label="{{ $product->status === 'discontinued' ? 'Rehabilitar' : 'Descontinuar' }}">
-                                                @if ($product->status === 'discontinued')
-                                                    <i class="fas fa-undo"></i>
-                                                @else
-                                                    <i class="fas fa-ban"></i>
-                                                @endif
-                                            </button>
-                                        </form>
+
+                                        @can('destroy products')
+                                            <form action="{{ route('products.destroy', $product) }}" method="POST"
+                                                onsubmit="return confirm('{{ $product->status === 'discontinued' ? '¿Seguro de rehabilitar este producto?' : '¿Seguro de descontinuar este producto?' }}\n\n¿Está seguro que desea realizar esta acción?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    title="{{ $product->status === 'discontinued' ? 'Rehabilitar' : 'Descontinuar' }}"
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                    aria-label="{{ $product->status === 'discontinued' ? 'Rehabilitar' : 'Descontinuar' }}">
+                                                    @if ($product->status === 'discontinued')
+                                                        <i class="fas fa-undo"></i>
+                                                    @else
+                                                        <i class="fas fa-ban"></i>
+                                                    @endif
+                                                </button>
+                                            </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

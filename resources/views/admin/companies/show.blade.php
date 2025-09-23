@@ -67,11 +67,13 @@
                             <i class="fas fa-arrow-left"></i>
                             Volver
                         </a>
-                        <a href="{{ route('companies.edit', $company) }}"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
-                            <i class="fas fa-edit"></i>
-                            Editar
-                        </a>
+                        @can('update companies')
+                            <a href="{{ route('companies.edit', $company) }}"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
+                                <i class="fas fa-edit"></i>
+                                Editar
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>

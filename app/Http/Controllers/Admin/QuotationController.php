@@ -111,10 +111,9 @@ class QuotationController extends Controller
         return $this->index($request);
     }
 
-
     public function pdf(Quotation $quotation)
     {
-        $this->authorize('view', $quotation);
+        $this->authorize('export', $quotation);
         $quotation->load(['QuotationDetails.productVariant.product.tax', 'user', 'entity']);
 
         $company = Company::first();

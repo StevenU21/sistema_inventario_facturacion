@@ -25,6 +25,7 @@ use App\Models\Warehouse;
 use App\Policies\BackupPolicy;
 use App\Policies\ColorPolicy;
 use App\Policies\CompanyPolicy;
+use App\Policies\DashboardPolicy;
 use App\Policies\EntityPolicy;
 use App\Policies\InventoryMovementPolicy;
 use App\Policies\InventoryPolicy;
@@ -101,5 +102,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Payment::class, PaymentPolicy::class);
         Gate::policy(Quotation::class, QuotationPolicy::class);
         Gate::policy(Kardex::class, KardexPolicy::class);
+        Gate::policy(User::class, DashboardPolicy::class);
     }
 }

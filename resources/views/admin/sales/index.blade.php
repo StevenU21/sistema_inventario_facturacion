@@ -59,27 +59,32 @@
                         <p class="mt-1 text-white/80 text-sm">Busca, filtra y exporta tus ventas.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <a href="{{ route('admin.sales.create') }}"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                            <i class="fas fa-plus"></i>
-                            Registrar venta
-                        </a>
-                        <form method="GET" action="{{ route('admin.sales.export') }}">
-                            <input type="hidden" name="search" value="{{ request('search') }}">
-                            <input type="hidden" name="payment_method_id" value="{{ request('payment_method_id') }}">
-                            <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
-                            <input type="hidden" name="from" value="{{ request('from') }}">
-                            <input type="hidden" name="to" value="{{ request('to') }}">
-                            <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
-                            <input type="hidden" name="color_id" value="{{ request('color_id') }}">
-                            <input type="hidden" name="size_id" value="{{ request('size_id') }}">
-                            <input type="hidden" name="is_credit" value="{{ request('is_credit') }}">
-                            <button type="submit"
+                        @can('create sales')
+                            <a href="{{ route('admin.sales.create') }}"
                                 class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                                <i class="fas fa-file-excel"></i>
-                                Exportar Excel
-                            </button>
-                        </form>
+                                <i class="fas fa-plus"></i>
+                                Registrar venta
+                            </a>
+                        @endcan
+
+                        @can('export sales')
+                            <form method="GET" action="{{ route('admin.sales.export') }}">
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                                <input type="hidden" name="payment_method_id" value="{{ request('payment_method_id') }}">
+                                <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
+                                <input type="hidden" name="from" value="{{ request('from') }}">
+                                <input type="hidden" name="to" value="{{ request('to') }}">
+                                <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
+                                <input type="hidden" name="color_id" value="{{ request('color_id') }}">
+                                <input type="hidden" name="size_id" value="{{ request('size_id') }}">
+                                <input type="hidden" name="is_credit" value="{{ request('is_credit') }}">
+                                <button type="submit"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                    <i class="fas fa-file-excel"></i>
+                                    Exportar Excel
+                                </button>
+                            </form>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -305,17 +310,19 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm text-right">C$ {{ number_format($sale->total ?? 0, 2) }}</td>
                                     <td class="px-4 py-3">
-                                        <div class="flex items-center gap-2 text-sm">
-                                            <a href="{{ route('admin.sales.pdf', $sale) }}" title="PDF"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
-                                                <i class="fas fa-file-pdf"></i>
-                                            </a>
-                                            <a href="{{ route('admin.sales.exportDetails', $sale) }}"
-                                                title="Exportar detalle"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
-                                                <i class="fas fa-file-excel"></i>
-                                            </a>
-                                        </div>
+                                        @can('export sales')
+                                            <div class="flex items-center gap-2 text-sm">
+                                                <a href="{{ route('admin.sales.pdf', $sale) }}" title="PDF"
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
+                                                    <i class="fas fa-file-pdf"></i>
+                                                </a>
+                                                <a href="{{ route('admin.sales.exportDetails', $sale) }}"
+                                                    title="Exportar detalle"
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
+                                                    <i class="fas fa-file-excel"></i>
+                                                </a>
+                                            </div>
+                                        @endcan
                                     </td>
                                 </tr>
                             @empty

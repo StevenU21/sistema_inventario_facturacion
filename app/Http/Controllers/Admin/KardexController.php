@@ -147,7 +147,7 @@ class KardexController extends Controller
      */
     public function generateAjax(Request $request, KardexService $kardex)
     {
-        $this->authorize('viewAny', Kardex::class);
+        $this->authorize('create', Kardex::class);
         $productId = (int) $request->input('product_id');
         $warehouseId = $request->filled('warehouse_id') ? (int) $request->input('warehouse_id') : null;
         $from = $request->input('from');

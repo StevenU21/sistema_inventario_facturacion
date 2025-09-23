@@ -32,11 +32,12 @@ class RolesAndPermissionSeeder extends Seeder
         'sizes' => [],
         'colors' => [],
         'purchases' => [],
-        'kardex' => ['read'],
+        'kardex' => ['read', 'create'],
         'sales' => ['read', 'create', 'update'],
         'account_receivables' => ['read', 'create', 'update'],
         'payments' => ['read', 'create', 'update'],
         'quotations' => ['read', 'create', 'update'],
+        'dashboard' => ['read'],
     ];
 
     const SPECIAL_PERMISSIONS = [
@@ -48,12 +49,13 @@ class RolesAndPermissionSeeder extends Seeder
         'entities' => ['read suppliers', 'create suppliers', 'update suppliers', 'read clients', 'create clients', 'update clients', 'export entities'],
         'inventory_movements' => ['export inventory_movements'],
         'inventories' => ['export inventories'],
-        'kardex' => ['export kardex', 'generate kardex'],
+        'kardex' => ['export kardex'],
         'purchases' => ['export purchases'],
         'sales' => ['export sales', 'generate invoice'],
         'account_receivables' => ['export account_receivables'],
         'payments' => ['export payments'],
         'quotations' => ['export quotations'],
+        'warehouses' => ['export warehouses'],
     ];
 
     /**
@@ -97,10 +99,11 @@ class RolesAndPermissionSeeder extends Seeder
             $this->filterPermissions('companies')->only(['read companies'])->get(),
             $this->filterPermissions('entities')->only(['read clients', 'create clients', 'update clients', 'export entities'])->get(),
             $this->filterPermissions('products')->only(['read products'])->get(),
-            $this->filterPermissions('sales')->only(['read sales', 'create sales'])->get(),
-            $this->filterPermissions('quotations')->only(['read quotations', 'create quotations', 'update quotations'])->get(),
-            $this->filterPermissions('account_receivables')->only(['read account_receivables', 'create account_receivables'])->get(),
-            $this->filterPermissions('payments')->only(['read payments', 'create payments'])->get()
+            $this->filterPermissions('sales')->only(['read sales', 'create sales', 'export sales'])->get(),
+            $this->filterPermissions('quotations')->only(['read quotations', 'create quotations', 'update quotations', 'export quotations'])->get(),
+            $this->filterPermissions('account_receivables')->only(['read account_receivables', 'create account_receivables', 'export account_receivables'])->get(),
+            $this->filterPermissions('payments')->only(['read payments', 'create payments'])->get(),
+            $this->filterPermissions('dashboard')->only(['read dashboard'])->get()
         );
 
         $cashierRole->givePermissionTo($cashierPermissions);

@@ -69,28 +69,30 @@
                         <p class="mt-1 text-white/80 text-sm">Estado por cliente y cuenta, exportable.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('admin.accounts_receivable.export') }}">
-                            @foreach (request()->all() as $key => $value)
-                                @if (is_array($value))
-                                    @foreach ($value as $subValue)
-                                        <input type="hidden" name="{{ $key }}[]" value="{{ $subValue }}">
-                                    @endforeach
-                                @else
-                                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                                @endif
-                            @endforeach
-                            <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                                <i class="fas fa-file-excel"></i>
-                                Exportar Excel
-                            </button>
-                        </form>
+                        @can('export account_receivables')
+                            <form method="GET" action="{{ route('admin.accounts_receivable.export') }}">
+                                @foreach (request()->all() as $key => $value)
+                                    @if (is_array($value))
+                                        @foreach ($value as $subValue)
+                                            <input type="hidden" name="{{ $key }}[]" value="{{ $subValue }}">
+                                        @endforeach
+                                    @else
+                                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                    @endif
+                                @endforeach
+                                <button type="submit"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                    <i class="fas fa-file-excel"></i>
+                                    Exportar Excel
+                                </button>
+                            </form>
+                        @endcan
                     </div>
                 </div>
             </div>
         </section>
 
-    <x-modal :title="'Registrar pago'" :description="'Ingrese el monto y método de pago'">
+        <x-modal :title="'Registrar pago'" :description="'Ingrese el monto y método de pago'">
             <form :action="paymentForm.action" method="POST">
                 @csrf
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -277,23 +279,29 @@
                                 <td class="px-4 py-3 text-sm text-right">{{ $ar->formatted_created_at }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2 text-sm">
-                                        @if (in_array($ar->status, ['pending', 'partially_paid']))
-                                            @php $remaining = max(0, round(($ar->amount_due ?? 0) - ($ar->amount_paid ?? 0), 2)); @endphp
-                                            <button type="button" title="Registrar pago"
-                                                class="inline-flex items-center justify-center h-9 px-3 text-white bg-purple-600 hover:bg-purple-700 rounded-lg focus:outline-none gap-2"
-                                                @click="openPaymentModal('{{ route('admin.accounts_receivable.payments.store', $ar) }}', '{{ number_format($remaining, 2, '.', '') }}', '{{ array_key_first($methods->toArray()) }}')">
-                                                <i class="fas fa-cash-register"></i>
-                                                <span class="hidden sm:inline">Pagar</span>
-                                            </button>
-                                        @endif
-                                        <a href="{{ route('admin.accounts_receivable.show', $ar) }}" title="Ver detalle"
-                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('admin.accounts_receivable.exportPdf', $ar) }}" title="PDF"
-                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </a>
+                                        @can('create payments')
+                                            @if (in_array($ar->status, ['pending', 'partially_paid']))
+                                                @php $remaining = max(0, round(($ar->amount_due ?? 0) - ($ar->amount_paid ?? 0), 2)); @endphp
+                                                <button type="button" title="Registrar pago"
+                                                    class="inline-flex items-center justify-center h-9 px-3 text-white bg-purple-600 hover:bg-purple-700 rounded-lg focus:outline-none gap-2"
+                                                    @click="openPaymentModal('{{ route('admin.accounts_receivable.payments.store', $ar) }}', '{{ number_format($remaining, 2, '.', '') }}', '{{ array_key_first($methods->toArray()) }}')">
+                                                    <i class="fas fa-cash-register"></i>
+                                                    <span class="hidden sm:inline">Pagar</span>
+                                                </button>
+                                            @endif
+                                        @endcan
+                                        @can('read account_receivables')
+                                            <a href="{{ route('admin.accounts_receivable.show', $ar) }}" title="Ver detalle"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        @endcan
+                                        @can('export account_receivables')
+                                            <a href="{{ route('admin.accounts_receivable.exportPdf', $ar) }}" title="PDF"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </a>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

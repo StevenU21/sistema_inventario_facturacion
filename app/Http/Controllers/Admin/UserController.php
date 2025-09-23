@@ -210,12 +210,12 @@ class UserController extends Controller
         if ($user->is_active) {
             $user->is_active = false;
             $user->save();
-            return redirect()->route('users.index')->with('updated', 'Usuario desactivado correctamente');
+            return redirect()->route('users.index')->with('deleted', 'Usuario desactivado correctamente');
         } else {
             $this->authorize('update', $user);
             $user->is_active = true;
             $user->save();
-            return redirect()->route('users.index')->with('deleted', 'Usuario reactivado correctamente.');
+            return redirect()->route('users.index')->with('updated', 'Usuario reactivado correctamente.');
         }
     }
 }
