@@ -38,8 +38,16 @@ class SalesExport implements FromCollection, WithHeadings
                 'credito' => $sale->is_credit ? 'Sí' : 'No',
                 'cantidad' => (int) $totalQty,
                 'precio_unitario' => (float) ($firstUnitPrice ?? 0),
+                // subtotal before tax (unit price * qty minus discounts)
+                'subtotal' => (float) $sale->saleDetails->sum('sub_total'),
+                // total discount amount
+                'descuento' => (float) $sale->saleDetails->sum('discount_amount'),
+                // unit tax amount (total tax divided by quantity)
+                'impuesto_unitario' => (int) $totalQty > 0 ? (float) (($sale->tax_amount ?? 0) / $totalQty) : 0.0,
+                // tax amount if any
                 'impuesto' => (float) ($sale->tax_amount ?? 0),
-                'total' => (float) ($sale->total ?? 0),
+                // total including tax
+                'total' => (float) ($sale->saleDetails->sum('sub_total') + ($sale->tax_amount ?? 0)),
                 'creado' => optional($sale->created_at)->format('d/m/Y H:i:s'),
                 'actualizado' => optional($sale->updated_at)->format('d/m/Y H:i:s'),
             ];
@@ -57,6 +65,9 @@ class SalesExport implements FromCollection, WithHeadings
             'Crédito',
             'Cantidad',
             'Precio Unitario',
+            'Subtotal',
+            'Descuento',
+            'Impuesto Unitario',
             'Impuesto',
             'Total',
             'Creado',
