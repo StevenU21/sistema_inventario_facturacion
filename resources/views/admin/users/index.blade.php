@@ -70,22 +70,26 @@
                         <p class="mt-1 text-white/80 text-sm">Administra cuentas, estados y permisos.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('users.export') }}">
-                            <input type="hidden" name="search" value="{{ request('search') }}">
-                            <input type="hidden" name="role" value="{{ request('role') }}">
-                            <input type="hidden" name="status" value="{{ request('status') }}">
-                            <input type="hidden" name="gender" value="{{ request('gender') }}">
-                            <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                                <i class="fas fa-file-excel"></i>
-                                Exportar Excel
+                        @can('export users')
+                            <form method="GET" action="{{ route('users.export') }}">
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                                <input type="hidden" name="role" value="{{ request('role') }}">
+                                <input type="hidden" name="status" value="{{ request('status') }}">
+                                <input type="hidden" name="gender" value="{{ request('gender') }}">
+                                <button type="submit"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                    <i class="fas fa-file-excel"></i>
+                                    Exportar Excel
+                                </button>
+                            </form>
+                        @endcan
+                        @can('create users')
+                            <button type="button" @click="isModalOpen = true"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
+                                <i class="fas fa-user-plus"></i>
+                                Crear Usuario
                             </button>
-                        </form>
-                        <button type="button" @click="isModalOpen = true"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
-                            <i class="fas fa-user-plus"></i>
-                            Crear Usuario
-                        </button>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -331,15 +335,18 @@
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2 text-sm">
                                         @if ($user->is_active)
-                                            <a href="{{ route('users.permissions.edit', $user) }}" title="Permisos"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                aria-label="Asignar Permisos">
-                                                <i class="fas fa-user-shield"></i>
-                                            </a>
-                                            <button type="button" title="Ver"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                aria-label="Ver"
-                                                @click='
+                                            @can('assign permissions')
+                                                <a href="{{ route('users.permissions.edit', $user) }}" title="Permisos"
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                    aria-label="Asignar Permisos">
+                                                    <i class="fas fa-user-shield"></i>
+                                                </a>
+                                            @endcan
+                                            @can('read users', $user)
+                                                <button type="button" title="Ver"
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                    aria-label="Ver"
+                                                    @click='
                                                     showUser = {
                                                         id: {{ $user->id }},
                                                         name: @json($user->short_name),
@@ -354,12 +361,14 @@
                                                     };
                                                     isShowModalOpen = true;
                                                 '>
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button type="button" title="Editar"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                aria-label="Editar"
-                                                @click='
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            @endcan
+                                            @can('update users')
+                                                <button type="button" title="Editar"
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                    aria-label="Editar"
+                                                    @click='
                                                     editUser = {
                                                         id: {{ $user->id }},
                                                         first_name: @json($user->first_name ?? ''),
@@ -375,29 +384,35 @@
                                                     editAction = `{{ route('users.update', $user) }}`;
                                                     isEditModalOpen = true;
                                                 '>
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <form action="{{ route('users.destroy', $user) }}" method="POST"
-                                                onsubmit="return confirm('¿Estás seguro de desactivar este usuario?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" title="Desactivar"
-                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                    aria-label="Desactivar">
-                                                    <i class="fas fa-user-slash"></i>
+                                                    <i class="fas fa-edit"></i>
                                                 </button>
-                                            </form>
+                                            @endcan
+
+                                            @can('destroy users')
+                                                <form action="{{ route('users.destroy', $user) }}" method="POST"
+                                                    onsubmit="return confirm('¿Estás seguro de desactivar este usuario?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" title="Desactivar"
+                                                        class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                        aria-label="Desactivar">
+                                                        <i class="fas fa-user-slash"></i>
+                                                    </button>
+                                                </form>
+                                            @endcan
                                         @else
-                                            <form action="{{ route('users.destroy', $user) }}" method="POST"
-                                                onsubmit="return confirm('¿Estás seguro de reactivar este usuario?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" title="Reactivar"
-                                                    class="inline-flex items-center justify-center h-9 w-9 text-green-600 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                    aria-label="Reactivar">
-                                                    <i class="fas fa-user-check"></i>
-                                                </button>
-                                            </form>
+                                            @can('destroy users')
+                                                <form action="{{ route('users.destroy', $user) }}" method="POST"
+                                                    onsubmit="return confirm('¿Estás seguro de reactivar este usuario?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" title="Reactivar"
+                                                        class="inline-flex items-center justify-center h-9 w-9 text-green-600 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                        aria-label="Reactivar">
+                                                        <i class="fas fa-user-check"></i>
+                                                    </button>
+                                                </form>
+                                            @endcan
                                         @endif
                                     </div>
                                 </td>

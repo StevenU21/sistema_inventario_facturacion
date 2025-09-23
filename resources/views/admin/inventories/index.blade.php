@@ -60,20 +60,24 @@
                         <p class="mt-1 text-white/80 text-sm">Administra existencias por variante y almacén.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('inventories.export') }}">
-                            <input type="hidden" name="product_variant_id" value="{{ request('product_variant_id') }}">
-                            <input type="hidden" name="warehouse_id" value="{{ request('warehouse_id') }}">
-                            <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                                <i class="fas fa-file-excel"></i>
-                                Exportar Excel
-                            </button>
-                        </form>
-                        <a href="{{ route('inventories.create') }}"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
-                            <i class="fas fa-plus"></i>
-                            Nuevo Inventario
-                        </a>
+                        @can('export inventories')
+                            <form method="GET" action="{{ route('inventories.export') }}">
+                                <input type="hidden" name="product_variant_id" value="{{ request('product_variant_id') }}">
+                                <input type="hidden" name="warehouse_id" value="{{ request('warehouse_id') }}">
+                                <button type="submit"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                    <i class="fas fa-file-excel"></i>
+                                    Exportar Excel
+                                </button>
+                            </form>
+                        @endcan
+                        @can('create inventories')
+                            <a href="{{ route('inventories.create') }}"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
+                                <i class="fas fa-plus"></i>
+                                Nuevo Inventario
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -93,7 +97,8 @@
                         <label for="search"
                             class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
                         <x-autocomplete id="inventory_search" name="search" url="{{ route('inventories.variantSearch') }}"
-                            :value="request('search')" placeholder="Producto, SKU o código de barras" min="2" debounce="250" />
+                            :value="request('search')" placeholder="Producto, SKU o código de barras" min="2"
+                            debounce="250" />
                     </div>
                     <div class="flex flex-row gap-2 items-end">
                         <button type="submit"
@@ -312,27 +317,34 @@
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2 text-sm">
                                         <!-- Movement/Edit Page link -->
-                                        <a href="{{ route('inventories.edit', $inventory) }}" title="Movimiento"
-                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                            aria-label="Realizar Movimiento">
-                                            <i class="fas fa-exchange-alt"></i>
-                                        </a>
-                                        <!-- Show Page link -->
-                                        <a href="{{ route('inventories.show', $inventory) }}" title="Ver"
-                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                            aria-label="Ver">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <form action="{{ route('inventories.destroy', $inventory) }}" method="POST"
-                                            onsubmit="return confirm('¿Seguro de eliminar este inventario?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" title="Eliminar"
+                                        @can('update inventories')
+                                            <a href="{{ route('inventories.edit', $inventory) }}" title="Movimiento"
                                                 class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                aria-label="Eliminar">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                                aria-label="Realizar Movimiento">
+                                                <i class="fas fa-exchange-alt"></i>
+                                            </a>
+                                        @endcan
+                                        @can('read inventories')
+                                            <!-- Show Page link -->
+                                            <a href="{{ route('inventories.show', $inventory) }}" title="Ver"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                aria-label="Ver">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        @endcan
+
+                                        @can('destroy inventories')
+                                            <form action="{{ route('inventories.destroy', $inventory) }}" method="POST"
+                                                onsubmit="return confirm('¿Seguro de eliminar este inventario?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" title="Eliminar"
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                    aria-label="Eliminar">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

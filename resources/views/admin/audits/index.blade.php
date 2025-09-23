@@ -61,14 +61,16 @@
                         <p class="mt-1 text-white/80 text-sm">Historial de actividades y cambios en el sistema.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('audits.export') }}">
-                            <input type="hidden" name="range" value="{{ request('range') }}">
-                            <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                                <i class="fas fa-file-excel"></i>
-                                Exportar Excel
-                            </button>
-                        </form>
+                        @can('export audits')
+                            <form method="GET" action="{{ route('audits.export') }}">
+                                <input type="hidden" name="range" value="{{ request('range') }}">
+                                <button type="submit"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                    <i class="fas fa-file-excel"></i>
+                                    Exportar Excel
+                                </button>
+                            </form>
+                        @endcan
                     </div>
                 </div>
             </div>

@@ -59,28 +59,33 @@
                         <p class="mt-1 text-white/80 text-sm">Busca, filtra y gestiona tus compras.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('purchases.export') }}">
-                            <input type="hidden" name="search" value="{{ request('search') }}">
-                            <input type="hidden" name="payment_method_id" value="{{ request('payment_method_id') }}">
-                            <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
-                            <input type="hidden" name="warehouse_id" value="{{ request('warehouse_id') }}">
-                            <input type="hidden" name="from" value="{{ request('from') }}">
-                            <input type="hidden" name="to" value="{{ request('to') }}">
-                            <input type="hidden" name="category_id" value="{{ request('category_id') }}">
-                            <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
-                            <input type="hidden" name="color_id" value="{{ request('color_id') }}">
-                            <input type="hidden" name="size_id" value="{{ request('size_id') }}">
-                            <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                                <i class="fas fa-file-excel"></i>
-                                Exportar Excel
-                            </button>
-                        </form>
-                        <a href="{{ route('purchases.create') }}"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
-                            <i class="fas fa-plus"></i>
-                            Nueva compra
-                        </a>
+                        @can('export purchases')
+                            <form method="GET" action="{{ route('purchases.export') }}">
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                                <input type="hidden" name="payment_method_id" value="{{ request('payment_method_id') }}">
+                                <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
+                                <input type="hidden" name="warehouse_id" value="{{ request('warehouse_id') }}">
+                                <input type="hidden" name="from" value="{{ request('from') }}">
+                                <input type="hidden" name="to" value="{{ request('to') }}">
+                                <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                                <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
+                                <input type="hidden" name="color_id" value="{{ request('color_id') }}">
+                                <input type="hidden" name="size_id" value="{{ request('size_id') }}">
+                                <button type="submit"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                    <i class="fas fa-file-excel"></i>
+                                    Exportar Excel
+                                </button>
+                            </form>
+                        @endcan
+
+                        @can('create purchases')
+                            <a href="{{ route('purchases.create') }}"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
+                                <i class="fas fa-plus"></i>
+                                Nueva compra
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -165,7 +170,8 @@
                         <option value="">Todas las marcas</option>
                         @isset($brandsList)
                             @foreach ($brandsList as $b)
-                                <option value="{{ $b->id }}" data-category-id="{{ $b->category_id }}" {{ request('brand_id') == $b->id ? 'selected' : '' }}>
+                                <option value="{{ $b->id }}" data-category-id="{{ $b->category_id }}"
+                                    {{ request('brand_id') == $b->id ? 'selected' : '' }}>
                                     {{ $b->name }}</option>
                             @endforeach
                         @endisset
@@ -248,7 +254,7 @@
         </section>
         <script>
             // Dependencia de marcas por categoría en el filtro
-            (function () {
+            (function() {
                 const categorySelect = document.getElementById('category_id');
                 const brandSelect = document.getElementById('brand_id');
                 if (!categorySelect || !brandSelect) return;
@@ -279,13 +285,13 @@
                     }
                 }
 
-                categorySelect.addEventListener('change', function () {
+                categorySelect.addEventListener('change', function() {
                     filterBrands();
                     // Enviar el formulario después de ajustar las opciones
                     categorySelect.form.submit();
                 });
 
-                brandSelect.addEventListener('change', function () {
+                brandSelect.addEventListener('change', function() {
                     brandSelect.form.submit();
                 });
 
@@ -355,25 +361,33 @@
                                     {{ number_format($purchase->total ?? 0, 2) }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2 text-sm">
-                                        <a href="{{ route('purchases.show', $purchase) }}" title="Ver"
-                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                            aria-label="Ver">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('purchases.edit', $purchase) }}" title="Editar"
-                                            class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                            aria-label="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('purchases.destroy', $purchase) }}" method="POST"
-                                            onsubmit="return confirm('¿Eliminar esta compra?');">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" title="Eliminar"
+                                        @can('read purchases')
+                                            <a href="{{ route('purchases.show', $purchase) }}" title="Ver"
                                                 class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                aria-label="Eliminar">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                                aria-label="Ver">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        @endcan
+
+                                        @can('update purchases')
+                                            <a href="{{ route('purchases.edit', $purchase) }}" title="Editar"
+                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                aria-label="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        @endcan
+
+                                        @can('destroy purchases')
+                                            <form action="{{ route('purchases.destroy', $purchase) }}" method="POST"
+                                                onsubmit="return confirm('¿Eliminar esta compra?');">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" title="Eliminar"
+                                                    class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                    aria-label="Eliminar">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

@@ -60,13 +60,15 @@
                         <p class="mt-1 text-white/80 text-sm">Genera y exporta el informe por producto, rango y método.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        @if ($kardexModel)
-                            <a href="{{ route('kardex.export', request()->all()) }}" target="_blank"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                                <i class="fas fa-file-pdf"></i>
-                                Exportar PDF
-                            </a>
-                        @endif
+                        @can('export kardex')
+                            @if ($kardexModel)
+                                <a href="{{ route('kardex.export', request()->all()) }}" target="_blank"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                    <i class="fas fa-file-pdf"></i>
+                                    Exportar PDF
+                                </a>
+                            @endif
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -226,18 +228,21 @@
                     <input type="date" x-model="filters.to"
                         class="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
                 </div>
-                <button type="submit"
-                    class="inline-flex items-center justify-center gap-2 px-4 py-2 w-40  sm:w-auto text-sm font-semibold rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white shadow"
-                    :disabled="loading">
-                    <span x-show="!loading" class="inline-flex items-center gap-2"><i class="fas fa-cogs"></i>
-                        Generar</span>
-                    <span x-show="loading" class="inline-flex items-center gap-2"><i class="fas fa-spinner fa-spin"></i>
-                        Procesando...</span>
-                </button>
-                <button type="button" @click="clearAll()"
-                    class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
-                    <i class="fas fa-undo"></i> Limpiar
-                </button>
+                @can('export kardex')
+                    <button type="submit"
+                        class="inline-flex items-center justify-center gap-2 px-4 py-2 w-40  sm:w-auto text-sm font-semibold rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white shadow"
+                        :disabled="loading">
+                        <span x-show="!loading" class="inline-flex items-center gap-2"><i class="fas fa-cogs"></i>
+                            Generar</span>
+                        <span x-show="loading" class="inline-flex items-center gap-2"><i class="fas fa-spinner fa-spin"></i>
+                            Procesando...</span>
+                    </button>
+
+                    <button type="button" @click="clearAll()"
+                        class="inline-flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
+                        <i class="fas fa-undo"></i> Limpiar
+                    </button>
+                @endcan
                 <!-- Selector de variante: ocupa toda la fila -->
                 <div class="sm:col-span-2 lg:col-span-6 mb-4">
                     <x-kardex.variant-picker :colors="$colors ?? []" :sizes="$sizes ?? []" :product-id="$productId ?? null" :entities="$entities ?? []"
@@ -320,13 +325,15 @@
                     <p>Saldo final reportado: <strong>C$ <span
                                 x-text="(result && result.final) ? Number(result.final.total).toFixed(2) : '0.00'"></span></strong>
                     </p>
-                    <div class="mt-3">
-                        <a :href="`{{ route('kardex.export') }}?product_id=${filters.product_id||''}&product_variant_id=${filters.product_variant_id||''}&from=${filters.from||''}&to=${filters.to||''}&metodo=${filters.metodo}`"
-                            target="_blank"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium">
-                            <i class="fas fa-file-pdf"></i> Exportar PDF
-                        </a>
-                    </div>
+                    @can('export kardex')
+                        <div class="mt-3">
+                            <a :href="`{{ route('kardex.export') }}?product_id=${filters.product_id||''}&product_variant_id=${filters.product_variant_id||''}&from=${filters.from||''}&to=${filters.to||''}&metodo=${filters.metodo}`"
+                                target="_blank"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium">
+                                <i class="fas fa-file-pdf"></i> Exportar PDF
+                            </a>
+                        </div>
+                    @endcan
                 </div>
             </div>
         </section>

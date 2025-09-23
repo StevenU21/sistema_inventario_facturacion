@@ -71,6 +71,7 @@
                         <p class="mt-1 text-white/80 text-sm">Gestiona tus almacenes y su estado.</p>
                     </div>
                     <div class="flex items-center gap-2">
+                        @can('export warehouses')
                         <form method="GET" action="{{ route('warehouses.export') }}" class="mr-0">
                             <input type="hidden" name="per_page" value="{{ request('per_page') }}">
                             <input type="hidden" name="is_active" value="{{ request('is_active') }}">
@@ -83,6 +84,7 @@
                                 Exportar Excel
                             </button>
                         </form>
+                        @endcan
                         @can('create warehouses')
                             <button @click="isModalOpen = true" type="button"
                                 class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">

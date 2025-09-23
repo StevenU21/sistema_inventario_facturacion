@@ -60,25 +60,27 @@
                         <p class="mt-1 text-white/80 text-sm">Historial de entradas, salidas, ajustes y transferencias.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <form method="GET" action="{{ route('inventory_movements.export') }}">
-                            <input type="hidden" name="per_page" value="{{ request('per_page') }}">
-                            <input type="hidden" name="user_id" value="{{ request('user_id') }}">
-                            <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
-                            <input type="hidden" name="category_id" value="{{ request('category_id') }}">
-                            <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
-                            <input type="hidden" name="warehouse_id" value="{{ request('warehouse_id') }}">
-                            <input type="hidden" name="color_id" value="{{ request('color_id') }}">
-                            <input type="hidden" name="size_id" value="{{ request('size_id') }}">
-                            <input type="hidden" name="type" value="{{ request('type') }}">
-                            <input type="hidden" name="search" value="{{ request('search') }}">
-                            <input type="hidden" name="sort" value="{{ request('sort', 'id') }}">
-                            <input type="hidden" name="direction" value="{{ request('direction', 'desc') }}">
-                            <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
-                                <i class="fas fa-file-excel"></i>
-                                Exportar Excel
-                            </button>
-                        </form>
+                        @can('export inventory_movements')
+                            <form method="GET" action="{{ route('inventory_movements.export') }}">
+                                <input type="hidden" name="per_page" value="{{ request('per_page') }}">
+                                <input type="hidden" name="user_id" value="{{ request('user_id') }}">
+                                <input type="hidden" name="entity_id" value="{{ request('entity_id') }}">
+                                <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                                <input type="hidden" name="brand_id" value="{{ request('brand_id') }}">
+                                <input type="hidden" name="warehouse_id" value="{{ request('warehouse_id') }}">
+                                <input type="hidden" name="color_id" value="{{ request('color_id') }}">
+                                <input type="hidden" name="size_id" value="{{ request('size_id') }}">
+                                <input type="hidden" name="type" value="{{ request('type') }}">
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                                <input type="hidden" name="sort" value="{{ request('sort', 'id') }}">
+                                <input type="hidden" name="direction" value="{{ request('direction', 'desc') }}">
+                                <button type="submit"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                                    <i class="fas fa-file-excel"></i>
+                                    Exportar Excel
+                                </button>
+                            </form>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -99,13 +101,9 @@
                     <div class="flex-1">
                         <label for="search"
                             class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Buscar</label>
-                        <x-autocomplete
-                            name="search"
-                            :value="request('search')"
+                        <x-autocomplete name="search" :value="request('search')"
                             url="{{ route('inventory_movements.autocomplete') }}"
-                            placeholder="Buscar por nombre de producto..."
-                            id="search"
-                        />
+                            placeholder="Buscar por nombre de producto..." id="search" />
                     </div>
                     <div class="flex flex-row gap-2 items-end">
                         <button type="submit"
@@ -113,7 +111,18 @@
                             <i class="fas fa-search"></i>
                             Buscar
                         </button>
-                        @if (request()->hasAny(['search', 'per_page', 'user_id', 'entity_id', 'category_id', 'brand_id', 'warehouse_id', 'color_id', 'size_id', 'type']))
+                        @if (request()->hasAny([
+                                'search',
+                                'per_page',
+                                'user_id',
+                                'entity_id',
+                                'category_id',
+                                'brand_id',
+                                'warehouse_id',
+                                'color_id',
+                                'size_id',
+                                'type',
+                            ]))
                             <a href="{{ route('inventory_movements.index') }}"
                                 class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">
                                 <i class="fas fa-undo"></i>
@@ -348,4 +357,3 @@
         </div>
     </div>
 @endsection
-    
