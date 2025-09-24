@@ -28,7 +28,7 @@ class ProductSeeder extends Seeder
                 'brand_id' => 2, // Nike
                 'tax_id' => 2, // Exento
                 'unit_measure_id' => 1, // Unidad
-                'entity_id' => 2, // Cliente ejemplo
+                'entity_id' => 1, // proveedor ejemplo
             ],
             [
                 'name' => 'Zapatillas Running',
@@ -39,7 +39,7 @@ class ProductSeeder extends Seeder
                 'brand_id' => 3, // Adidas
                 'tax_id' => 1, // IVA
                 'unit_measure_id' => 1, // Unidad
-                'entity_id' => 2, // Cliente ejemplo
+                'entity_id' => 3, // proveedor ejemplo
             ],
         ];
 
