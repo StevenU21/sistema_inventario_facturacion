@@ -168,7 +168,7 @@
                         @endforeach
                     </select>
                 </div>
-                @can('read supplier')
+                @can('read suppliers')
                     <div>
                         <label for="entity_id"
                             class="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 mb-1">Proveedor</label>
@@ -243,7 +243,7 @@
                             <th class="px-4 py-3"><x-table-sort-header field="unit_measure_id" label="Medida"
                                     route="products.search" icon="<i class='fas fa-balance-scale mr-2'></i>" />
                             </th>
-                            @can('read supplier')
+                            @can('read suppliers')
                                 <th class="px-4 py-3"><x-table-sort-header field="entity_id" label="Proveedor"
                                         route="products.search" icon="<i class='fas fa-user-tie mr-2'></i>" /></th>
                             @endcan
@@ -270,7 +270,7 @@
                                 <td class="px-4 py-3 text-sm">{{ $product->brand->category->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $product->brand->name ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $product->unitMeasure->name ?? '-' }}</td>
-                                @can('read supplier')
+                                @can('read suppliers')
                                     <td class="px-4 py-3 text-sm font-medium">
                                         {{ $product->entity ? $product->entity->short_name : '-' }}
                                     </td>
