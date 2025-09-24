@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\CacheClearable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\LogOptions;
