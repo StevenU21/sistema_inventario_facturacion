@@ -196,7 +196,7 @@
                                     C$ {{ number_format($quotation->total ?? 0, 2) }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ ucfirst($quotation->status) }}
+                                    {{ ucfirst($quotation->translated_status) }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $quotation->formatted_created_at }}

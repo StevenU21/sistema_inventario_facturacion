@@ -53,6 +53,16 @@ class Quotation extends Model
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
     }
 
+    public function getTranslatedStatusAttribute(): string
+    {
+        return match ($this->status) {
+            'pending' => __('Pendiente'),
+            'accepted' => __('Aceptado'),
+            'rejected' => __('Rechazado'),
+            default => $this->status,
+        };
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
