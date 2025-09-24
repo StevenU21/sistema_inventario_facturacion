@@ -18,9 +18,9 @@ class UserRequest extends FormRequest
             return $this->user()->can('create', User::class);
         }
 
-        if ($this->isMethod('put') || $this->isMethod('patch')) {
-            return $this->user()->can('update', $this->route('user'));
-        }
+        // if ($this->isMethod('put') || $this->isMethod('patch')) {
+        //     return $this->user()->can('update', $this->route('user'));
+        // }
 
         return false;
     }
