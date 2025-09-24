@@ -25,7 +25,7 @@ class EntitySeeder extends Seeder
                 'is_client' => false,
                 'is_supplier' => true,
                 'is_active' => true,
-                'municipality_id' => 1,
+                'municipality_id' => 161,
             ],
             [
                 'first_name' => 'Raul',
@@ -39,7 +39,7 @@ class EntitySeeder extends Seeder
                 'is_client' => true,
                 'is_supplier' => false,
                 'is_active' => true,
-                'municipality_id' => 2,
+                'municipality_id' => 75,
             ],
             [
                 'first_name' => 'Kevin',
@@ -53,7 +53,7 @@ class EntitySeeder extends Seeder
                 'is_client' => true,
                 'is_supplier' => true,
                 'is_active' => true,
-                'municipality_id' => 1,
+                'municipality_id' => 154,
             ],
             [
                 'first_name' => 'David Manuel',
@@ -67,7 +67,7 @@ class EntitySeeder extends Seeder
                 'is_client' => false,
                 'is_supplier' => true,
                 'is_active' => true,
-                'municipality_id' => 1,
+                'municipality_id' => 72,
             ],
             [
                 'first_name' => 'Jefry',
@@ -81,7 +81,7 @@ class EntitySeeder extends Seeder
                 'is_client' => false,
                 'is_supplier' => true,
                 'is_active' => true,
-                'municipality_id' => 1,
+                'municipality_id' => 38,
             ],
             [
                 'first_name' => 'Kevon           ',
@@ -95,7 +95,7 @@ class EntitySeeder extends Seeder
                 'is_client' => true,
                 'is_supplier' => true,
                 'is_active' => true,
-                'municipality_id' => 1,
+                'municipality_id' => 38,
             ],
             [
                 'first_name' => 'Cliente de Contado',
@@ -109,7 +109,7 @@ class EntitySeeder extends Seeder
                 'is_client' => true,
                 'is_supplier' => false,
                 'is_active' => true,
-                'municipality_id' => 1,
+                'municipality_id' => 38,
             ],
         ];
 
