@@ -2,19 +2,71 @@
 @section('title', 'Editar Empresa')
 
 @section('content')
-    <div class="container px-6 mx-auto grid">
-        <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Editar Empresa
-        </h2>
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumbs -->
+        <nav class="mt-4 mb-2 text-sm text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
+            <ol class="flex items-center gap-2">
+                <li>
+                    <a href="{{ route('companies.index') }}" class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                        <i class="fas fa-cogs w-5 h-5"></i> Módulo de Administración
+                    </a>
+                </li>
+                <li class="text-gray-400">/</li>
+                <li class="truncate max-w-[55vw] md:max-w-none" title="{{ $company->name }}">
+                    <span class="text-gray-700 dark:text-gray-200">Editar Empresa</span>
+                </li>
+            </ol>
+        </nav>
 
-        <div class="mb-4 flex justify-end">
-            <a href="{{ route('companies.index') }}"
-                class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                <i class="fas fa-arrow-left mr-2"></i> Volver
-            </a>
-        </div>
+        <style>
+            .animate-gradient {
+                background-image: linear-gradient(90deg, #c026d3, #7c3aed, #4f46e5, #c026d3);
+                background-size: 300% 100%;
+                animation: gradientShift 8s linear infinite alternate;
+                filter: saturate(1.2) contrast(1.05);
+                will-change: background-position;
+            }
 
-        <form action="{{ route('companies.update', $company) }}" method="POST" enctype="multipart/form-data">
+            @keyframes gradientShift {
+                0% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .animate-gradient { animation: none; }
+            }
+        </style>
+
+        <!-- Header -->
+        <section class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg animate-gradient mb-6">
+            <div class="absolute inset-0 opacity-20 pointer-events-none"
+                 style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.35), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.25), transparent 40%);"></div>
+            <div class="relative p-6 sm:p-8">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center">
+                            <i class="fas fa-building text-white/90 mr-3"></i>
+                            Editar Empresa
+                        </h1>
+                        <p class="mt-1 text-white/80 text-sm">Actualiza la información general de la empresa.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('companies.index') }}"
+                           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium backdrop-blur transition">
+                            <i class="fas fa-arrow-left"></i>
+                            Volver
+                        </a>
+                        <a href="{{ route('companies.show', $company) }}"
+                           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-purple-700 hover:bg-gray-100 text-sm font-semibold shadow">
+                            <i class="fas fa-eye"></i>
+                            Ver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <form action="{{ route('companies.update', $company) }}" method="POST" enctype="multipart/form-data" class="mb-10">
             @csrf
             @method('PUT')
             @include('admin.companies.form')
