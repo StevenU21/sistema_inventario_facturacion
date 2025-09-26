@@ -12,7 +12,7 @@ class AccountReceivable extends Model
     use HasFactory, LogsActivity;
 
     protected $fillable = [
-        'amount_due', // Monto total a cobrar
+        'amount_due',
         'amount_paid',
         'status',
         'entity_id',

@@ -22,7 +22,7 @@ class QuotationDetail extends Model
         'quotation_id',
     ];
 
-        public function getActivitylogOptions(): LogOptions
+    public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             ->logOnly([
