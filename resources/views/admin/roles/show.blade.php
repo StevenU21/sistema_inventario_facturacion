@@ -74,12 +74,33 @@
 
                 <!-- Permisos asignados -->
                 <div class="mt-6">
-                    <span class="text-gray-700 dark:text-gray-400 font-semibold">Permisos asignados</span>
+                    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                        <span class="text-gray-700 dark:text-gray-400 font-semibold">Permisos asignados</span>
+                        @if ($permissions->count())
+                            <div class="w-full sm:w-80 relative">
+                                <label for="permission-search" class="sr-only">Buscar permiso</label>
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input id="permission-search" type="text" placeholder="Filtrar permisos..."
+                                    class="w-full pl-10 pr-9 py-2 text-sm text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600"
+                                    autocomplete="off">
+                                <button type="button" id="permission-search-clear" aria-label="Limpiar filtro"
+                                    class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none">
+                                    <i class="fas fa-times-circle text-sm"></i>
+                                </button>
+                                <p id="permission-search-counter" class="mt-1 text-xs text-gray-500 dark:text-gray-400"></p>
+                            </div>
+                        @endif
+                    </div>
                     @if ($permissions->count())
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-2">
+                        <div id="permission-list" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
                             @foreach ($permissions as $permission)
-                                <div class="p-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-200 text-sm">
-                                    {{ $translatedPermissions[$permission->name] ?? ucfirst(str_replace('-', ' ', $permission->name)) }}
+                                @php
+                                    $permLabel = $translatedPermissions[$permission->name] ?? ucfirst(str_replace('-', ' ', $permission->name));
+                                @endphp
+                                <div data-permission-item data-permission-label="{{ Str::lower($permLabel) }}" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-200 text-sm bg-white dark:bg-gray-800">
+                                    {{ $permLabel }}
                                 </div>
                             @endforeach
                         </div>
@@ -87,6 +108,40 @@
                         <div class="text-gray-500 dark:text-gray-400 italic mt-2">Sin permisos asignados</div>
                     @endif
                 </div>
+                @push('scripts')
+                    <script>
+                        (function(){
+                            const input = document.getElementById('permission-search');
+                            if(!input) return;
+                            const clearBtn = document.getElementById('permission-search-clear');
+                            const counter = document.getElementById('permission-search-counter');
+                            const items = Array.from(document.querySelectorAll('#permission-list [data-permission-item]'));
+                            const total = items.length;
+                            function updateCounter(visible){
+                                if(!counter) return;
+                                counter.textContent = visible === total ? `${total} permisos` : `${visible} de ${total} permisos`;
+                            }
+                            function applyFilter(){
+                                const term = input.value.trim().toLowerCase();
+                                if(clearBtn){ term.length ? clearBtn.classList.remove('hidden') : clearBtn.classList.add('hidden'); }
+                                let visible = 0;
+                                items.forEach(el => {
+                                    const label = el.getAttribute('data-permission-label');
+                                    const show = !term || label.includes(term);
+                                    el.classList.toggle('hidden', !show);
+                                    if(show) visible++;
+                                });
+                                updateCounter(visible);
+                            }
+                            input.addEventListener('input', applyFilter);
+                            if(clearBtn){
+                                clearBtn.addEventListener('click', () => { input.value=''; applyFilter(); input.focus(); });
+                            }
+                            // init
+                            updateCounter(total);
+                        })();
+                    </script>
+                @endpush
             </div>
         </div>
     </div>
