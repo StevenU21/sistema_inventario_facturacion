@@ -76,29 +76,15 @@
                 <div class="mt-6">
                     <span class="text-gray-700 dark:text-gray-400 font-semibold">Permisos asignados</span>
                     @if ($permissions->count())
-                        <div class="overflow-x-auto mt-2">
-                            <table class="w-full table-fixed">
-                                <tbody>
-                                    @foreach ($permissions->chunk(4) as $row)
-                                        <tr>
-                                            @foreach ($row as $permission)
-                                                <td class="px-2 py-2 align-middle">
-                                                    <span
-                                                        class="inline-block bg-purple-200 text-purple-900 dark:bg-purple-500 dark:text-white rounded px-2 py-1 text-xs font-semibold uppercase">
-                                                        {{ $translatedPermissions[$permission->name] ?? $permission->name }}
-                                                    </span>
-                                                </td>
-                                            @endforeach
-                                            @for ($i = $row->count(); $i < 4; $i++)
-                                                <td></td>
-                                            @endfor
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-2">
+                            @foreach ($permissions as $permission)
+                                <div class="p-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-200 text-sm">
+                                    {{ $translatedPermissions[$permission->name] ?? ucfirst(str_replace('-', ' ', $permission->name)) }}
+                                </div>
+                            @endforeach
                         </div>
                     @else
-                        <div class="text-gray-400 dark:text-gray-500 italic mt-2">Sin permisos asignados</div>
+                        <div class="text-gray-500 dark:text-gray-400 italic mt-2">Sin permisos asignados</div>
                     @endif
                 </div>
             </div>
