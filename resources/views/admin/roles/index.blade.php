@@ -169,25 +169,27 @@
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                         @endcan
-                                        @can('update roles')
-                                            <a href="{{ route('roles.edit', $role) }}" title="Editar"
-                                                class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                aria-label="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                        @endcan
-                                        @can('destroy roles')
-                                            <form action="{{ route('roles.destroy', $role) }}" method="POST"
-                                                onsubmit="return confirm('¿Estás seguro de eliminar este rol?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" title="Eliminar"
+                                        @unless($role->name == 'admin' || $role->name == 'cashier')
+                                            @can('update roles')
+                                                <a href="{{ route('roles.edit', $role) }}" title="Editar"
                                                     class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
-                                                    aria-label="Eliminar">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        @endcan
+                                                    aria-label="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            @endcan
+                                            @can('destroy roles')
+                                                <form action="{{ route('roles.destroy', $role) }}" method="POST"
+                                                    onsubmit="return confirm('¿Estás seguro de eliminar este rol?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" title="Eliminar"
+                                                        class="inline-flex items-center justify-center h-9 w-9 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg focus:outline-none"
+                                                        aria-label="Eliminar">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endcan
+                                        @endunless
                                     </div>
                                 </td>
                             </tr>
