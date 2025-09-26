@@ -20,7 +20,8 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
-        $this->authorize('read dashboard', User::class);
+        // Ahora 'read dashboard' es una habilidad directa (Gate::define)
+        $this->authorize('read dashboard');
         $data = $this->dashboardService->getDashboardData();
         return view('dashboard', $data);
     }

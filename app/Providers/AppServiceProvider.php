@@ -102,6 +102,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Payment::class, PaymentPolicy::class);
         Gate::policy(Quotation::class, QuotationPolicy::class);
         Gate::policy(Kardex::class, KardexPolicy::class);
-        Gate::policy(User::class, DashboardPolicy::class);
+        // IMPORTANTE: No mapear nuevamente User::class a DashboardPolicy porque sobrescribe UserPolicy
+        // Definimos habilidades específicas para el dashboard vía Gate::define
+        Gate::define('read dashboard', function (User $user) {
+            return $user->hasRole('admin') || $user->hasPermissionTo('read dashboard');
+        });
+        Gate::define('export dashboard', function (User $user) {
+            return $user->hasRole('admin') || $user->hasPermissionTo('export dashboard');
+        });
     }
 }

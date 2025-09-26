@@ -162,6 +162,7 @@ class UserController extends Controller
 
     public function update(UserRequest $request, User $user)
     {
+        $this->authorize('update', $user);
         $request->validate([
             'role' => 'required|exists:roles,name',
         ]);
@@ -206,7 +207,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        // $this->authorize("destroy", $user);
+        $this->authorize('destroy', $user);
         if ($user->is_active) {
             $user->is_active = false;
             $user->save();
