@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use App\Classes\PermissionManager;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class RolesAndPermissionSeeder extends Seeder
 {
@@ -63,49 +61,27 @@ class RolesAndPermissionSeeder extends Seeder
      */
     public function run()
     {
-        $manager = new PermissionManager(self::PERMISSIONS, self::SPECIAL_PERMISSIONS);
-        $allPermissions = $manager->get();
+        $rolesDefinition = [
+            'admin' => '*',
+            'cashier' => [
+                'companies' => 'read',
+                'entities' => [
+                    'read clients',
+                    'create clients',
+                    'update clients',
+                    'export entities'
+                ],
+                'products' => 'read',
+                'sales' => ['read', 'create', 'export sales'],
+                'quotations' => ['read', 'create', 'update', 'export quotations'],
+                'account_receivables' => ['read', 'create', 'export account_receivables'],
+                'payments' => ['read', 'create'],
+                'dashboard' => 'read',
+            ],
+        ];
 
-        $this->createPermissions($allPermissions);
-
-        $this->assignPermissionsToRoles();
-    }
-
-    protected function createPermissions($permissions): void
-    {
-        foreach ($permissions as $perms) {
-            foreach ($perms as $perm) {
-                Permission::firstOrCreate(['name' => $perm]);
-            }
-        }
-    }
-
-    protected function filterPermissions($permission): PermissionManager
-    {
-        $permissions = self::PERMISSIONS[$permission] ?? [];
-        $specialPermissions = self::SPECIAL_PERMISSIONS[$permission] ?? [];
-
-        return new PermissionManager([$permission => $permissions], [$permission => $specialPermissions]);
-    }
-
-    protected function assignPermissionsToRoles(): void
-    {
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        $cashierRole = Role::firstOrCreate(['name' => 'cashier']);
-
-        $adminRole->givePermissionTo(Permission::all());
-
-        $cashierPermissions = array_merge(
-            $this->filterPermissions('companies')->only(['read companies'])->get(),
-            $this->filterPermissions('entities')->only(['read clients', 'create clients', 'update clients', 'export entities'])->get(),
-            $this->filterPermissions('products')->only(['read products'])->get(),
-            $this->filterPermissions('sales')->only(['read sales', 'create sales', 'export sales'])->get(),
-            $this->filterPermissions('quotations')->only(['read quotations', 'create quotations', 'update quotations', 'export quotations'])->get(),
-            $this->filterPermissions('account_receivables')->only(['read account_receivables', 'create account_receivables', 'export account_receivables'])->get(),
-            $this->filterPermissions('payments')->only(['read payments', 'create payments'])->get(),
-            $this->filterPermissions('dashboard')->only(['read dashboard'])->get()
-        );
-
-        $cashierRole->givePermissionTo($cashierPermissions);
+        PermissionManager::make(self::PERMISSIONS, self::SPECIAL_PERMISSIONS)
+            ->withRoles($rolesDefinition)
+            ->sync();
     }
 }
