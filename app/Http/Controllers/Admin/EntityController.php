@@ -25,7 +25,7 @@ class EntityController extends Controller
         $user = auth()->user();
         // Cargar solo entidades visibles según permisos de lectura de clientes/proveedores
         $entities = Entity::with('municipality')
-            ->visibleFor($user)
+            ->visibleFor($user) // default only active
             ->latest()
             ->paginate($perPage);
         $departments = Department::orderBy('name')->pluck('name', 'id');
@@ -57,8 +57,11 @@ class EntityController extends Controller
         $this->authorize('viewAny', Entity::class);
         $user = $request->user();
         // Filtrar entidades según permisos de lectura (clientes/proveedores)
+        // If the request contains an explicit is_active filter we need to include
+        // inactive entities in the base query so the filter can work.
+        $explicitStatus = $request->filled('is_active');
         $query = Entity::with('municipality')
-            ->visibleFor($user);
+            ->visibleFor($user, !$explicitStatus);
         // Filtros básicos
         if ($request->filled('search')) {
             $search = trim((string) $request->input('search'));
@@ -89,7 +92,7 @@ class EntityController extends Controller
         if ($request->filled('is_supplier')) {
             $query->where('is_supplier', (bool) $request->boolean('is_supplier'));
         }
-        if ($request->filled('is_active')) {
+        if ($explicitStatus) {
             $query->where('is_active', (bool) $request->boolean('is_active'));
         }
         if ($request->filled('municipality_id')) {

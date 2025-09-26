@@ -79,12 +79,24 @@ class Entity extends Model
         return $this->updated_at ? $this->updated_at->format('d/m/Y H:i:s') : null;
     }
 
-    public function scopeVisibleFor($query, $user)
+    /**
+     * Scope to restrict visibility of entities according to the user's permissions.
+     * By default it returns only active entities. If you need to include inactive
+     * ones (for example when applying an explicit is_active filter in a search),
+     * pass $onlyActive = false and apply the desired status condition outside.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed $user
+     * @param bool $onlyActive  When true (default) adds where('is_active', true).
+     */
+    public function scopeVisibleFor($query, $user, bool $onlyActive = true)
     {
         $canViewClients = $user && $user->can('read clients');
         $canViewSuppliers = $user && $user->can('read suppliers');
 
-        $query->where('is_active', true);
+        if ($onlyActive) {
+            $query->where('is_active', true);
+        }
 
         if ($canViewClients && !$canViewSuppliers) {
             $query->where('is_client', true)->where('is_supplier', false);
