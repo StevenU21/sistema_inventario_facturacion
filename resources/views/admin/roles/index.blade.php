@@ -152,7 +152,13 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    {{ $role->name }}
+                                    @if ($role->name == 'admin')
+                                        Administrador
+                                    @elseif ($role->name == 'cashier')
+                                        Cajero
+                                    @else
+                                        {{ $role->name }}
+                                    @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $role->created_at ?? '-' }}
